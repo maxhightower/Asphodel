@@ -1,0 +1,6 @@
+numpy>=1.24
+matplotlib>=3.7
+pandas>=2.0
+pyyaml>=6.0
+# pillow is only needed for the optional belief-cascade GIF (--animate)
+pillow>=10.0
