@@ -113,3 +113,47 @@ plot, the belief-cascade heatmap grid (and optional GIF), and the sweep plots.
 
 See **[`FINDINGS.md`](FINDINGS.md)** for the numbers, the controllable envelope,
 the failure modes, and the answer to the research question.
+
+---
+
+## Phase 4a — Macro↔Micro handoff & calibration
+
+Phase 4a "promotes" a single macro zone into **discrete agents** moving in
+continuous 2D space, transmitting by physical **proximity** instead of the
+macro's mass-action term, then "demotes" it back to math. It answers one
+statistical question:
+
+> **Can the agent-resolved (micro) simulation reproduce the macro model's
+> epidemic curve *in expectation*, so that promoting a zone to agents does not
+> change how fast the disease spreads — for any pathogen genome?**
+
+The short answer (see [`FINDINGS_PHASE4A.md`](FINDINGS_PHASE4A.md)): **yes.** A
+closed-form genome→micro-parameter relation (plus a small, genome-stable ≈1.04×
+correction) makes the mean micro epidemic track the macro single-zone curve
+across four genomes (β = 0.20–1.00) — growth rate, peak timing and final attack
+rate agree to a few percent. The agent model and macro reference reuse the
+**same `PathogenGenome`**; only the transmission step is calibrated.
+
+```
+asphodel/
+  micro.py        # AgentZone: agents on a torus, proximity transmission, spatial-hash neighbours
+  macro_ref.py    # the trusted macro Simulation as a single passive closed zone (the ground truth)
+  calibration.py  # genome -> micro params (analytic + empirical), growth-rate + agreement metrics
+  handoff.py      # promote / derived-update / demote messages, hysteresis, round-trip
+  phase4a.py      # overlay+metrics across genomes, N sweep, demotion continuity
+```
+
+```bash
+# Run the full Phase 4a suite (overlay plots + metrics + N sweep + continuity)
+python -m asphodel.phase4a
+#   -> output/phase4a_overlay_<genome>.png   macro vs mean-micro (+ ±2σ band)
+#   -> output/phase4a_n_sweep.png            agreement & variance vs agent count
+#   -> output/phase4a_demotion_continuity.png  promote->demote, no kink at seams
+#   -> output/phase4a_summary.json           machine-readable metrics
+
+# Phase 4a tests (round-trip conservation, continuity, calibration-in-expectation)
+python tests/test_phase4a.py     # or:  python -m pytest tests/test_phase4a.py -q
+```
+
+The micro/handoff parameters are documented as data in
+[`scenarios/phase4a_micro.yaml`](scenarios/phase4a_micro.yaml).

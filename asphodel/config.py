@@ -219,3 +219,75 @@ class ScenarioConfig:
             events=EventParams(**model_d.get("events", {})),
         )
         return cls(genome=genome, model=model, **data)
+
+
+# ===========================================================================
+# Phase 4a: macro <-> micro (agent) tier configuration
+# ===========================================================================
+# These dataclasses live alongside the genome but are independent of the macro
+# ScenarioConfig above.  They configure the *single-zone agent simulation* that
+# promotes one macro zone into discrete people moving in continuous 2D space,
+# and the macro<->micro handoff.  The disease genome is reused unchanged -- the
+# only thing that needs calibrating between the tiers is the transmission step.
+@dataclass
+class MicroParams:
+    """Tunable parameters of the single-zone agent (micro) tier.
+
+    The micro tier promotes one zone into ``n_agents`` discrete people wandering
+    a continuous ``area_size`` x ``area_size`` square (a torus, so density is
+    uniform and edge effects vanish).  Transmission is proximity-based: a
+    susceptible within ``infection_radius`` of an infectious agent accrues
+    infection hazard.  Every parameter here is exposed so experiments can sweep
+    it; the per-contact ``contact_prob`` in particular is the calibration knob
+    derived from the genome (see ``calibration.py``).
+    """
+
+    # Population & geometry.
+    n_agents: int = 1000               # discrete people in the zone (the N sweep
+    #                                    moves this; ~500-2000 is the useful band)
+    area_size: float = 100.0           # side length L of the square zone (metres)
+
+    # Proximity transmission.
+    infection_radius: float = 2.0      # r: contact distance (metres).  Fixed as a
+    #                                    modelling choice; contact_prob is then
+    #                                    derived from the genome to hit macro beta.
+    contact_prob: Optional[float] = None  # p: per-day infection hazard from ONE
+    #                                    infectious agent within r.  None => derive
+    #                                    analytically from the genome each tick.
+    rel_infectious_asymp: float = 1.0  # infectiousness of I_a relative to I_s.
+    #                                    The macro treats them equally (=1.0).
+
+    # Movement / mixing (continuous random walk on the torus).
+    well_mixed: bool = False           # if True, re-randomise all positions each
+    #                                    tick (perfect mixing -> exact mass action;
+    #                                    the idealised validation case).
+    mixing_step_frac: float = 0.12     # per-tick Gaussian step std as a fraction
+    #                                    of L (per axis).  Larger => better mixing,
+    #                                    closer to the well-mixed mean field.
+
+    # Calibration correction (empirical residual; 1.0 = pure analytic).
+    contact_prob_correction: float = 1.0
+
+    # Optional simple shelter behaviour (the forward-looking "active" check).
+    # Applied consistently with the macro behaviour layer: a fraction of agents
+    # shelter, cutting their contact by shelter_effectiveness.  Off by default so
+    # calibration happens in the passive condition.
+    shelter_fraction: float = 0.0
+    shelter_effectiveness: float = 0.75
+
+
+@dataclass
+class HandoffParams:
+    """Promotion/demotion triggers for the macro<->micro boundary.
+
+    Hysteresis is built in (promote and demote thresholds differ) so the
+    interface is correct for the later multi-zone game even though a single-zone
+    test never thrashes across it.  Triggers are expressed as a zone infectious
+    fraction here; in the full game a player-proximity / visibility term would
+    dominate (noted as the extension point).
+    """
+
+    promote_threshold: float = 0.005   # promote a zone to agents above this
+    #                                    infectious fraction (or player nearby)
+    demote_threshold: float = 0.002    # demote back to macro below this
+    #                                    (< promote_threshold => hysteresis)

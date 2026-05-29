@@ -17,9 +17,16 @@ from .config import (
     AuthorityParams,
     EventParams,
 )
+from .config import MicroParams, HandoffParams
 from .graph import ZoneGraph
 from .model import Simulation, TickRecord
 from .runner import run_scenario, run_multi_seed, RunResult
+
+# --- Phase 4a: macro <-> micro (agent) tier --------------------------------
+from .micro import AgentZone, run_micro, run_micro_ensemble, STATE_NAMES
+from .macro_ref import run_macro_reference, passive_macro_config
+from .calibration import calibrate, agreement_metrics, passes
+from .handoff import promote, demote, round_trip, largest_remainder_counts
 
 __all__ = [
     "ScenarioConfig",
@@ -31,10 +38,26 @@ __all__ = [
     "InfrastructureParams",
     "AuthorityParams",
     "EventParams",
+    "MicroParams",
+    "HandoffParams",
     "ZoneGraph",
     "Simulation",
     "TickRecord",
     "run_scenario",
     "run_multi_seed",
     "RunResult",
+    # Phase 4a
+    "AgentZone",
+    "run_micro",
+    "run_micro_ensemble",
+    "STATE_NAMES",
+    "run_macro_reference",
+    "passive_macro_config",
+    "calibrate",
+    "agreement_metrics",
+    "passes",
+    "promote",
+    "demote",
+    "round_trip",
+    "largest_remainder_counts",
 ]
