@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 
 from .config import ScenarioConfig
 from .runner import run_scenario, RunResult
+from . import metrics
 
 OUTDIR = "output"
 
@@ -33,27 +34,26 @@ def _clone(cfg: ScenarioConfig) -> ScenarioConfig:
 
 
 def _tip_days(res: RunResult) -> tuple[float | None, float | None]:
-    """(day 10% of zones panic, day 90% of zones panic)."""
+    """(day 10% of zones panic, day 90% of zones panic).
+
+    Delegates to the consolidated ``metrics`` module (Phase 4b) -- same
+    definition as before, now defined in exactly one place."""
     n = res.graph.n_zones
-    d = res.frame
-
-    def day_at(frac):
-        c = d["n_panic"] >= frac * n
-        return float(d.loc[c, "day"].iloc[0]) if c.any() else None
-
-    return day_at(0.1), day_at(0.9)
+    return (metrics.panic_day(res.frame, n, 0.1),
+            metrics.panic_day(res.frame, n, 0.9))
 
 
 def _summary(res: RunResult) -> dict:
-    t10, t90 = _tip_days(res)
-    sharpness = (t90 - t10) if (t10 is not None and t90 is not None) else None
+    """The Phase 3a experiment summary, re-expressed via ``metrics`` (the
+    reported numbers are unchanged -- the formulas live in ``metrics`` now)."""
+    n = res.graph.n_zones
     return {
-        "silent_until": t10,        # day the cascade becomes visible (10% zones)
-        "fully_panicked": t90,      # day 90% of zones panic
-        "tip_sharpness_days": sharpness,
-        "authority_alarm_day": res.authority_alarm_day(),
-        "final_dead": float(res.frame["D"].iloc[-1]),
-        "peak_water_fail": int(res.frame["n_water_fail"].max()),
+        "silent_until": metrics.panic_day(res.frame, n, 0.1),
+        "fully_panicked": metrics.panic_day(res.frame, n, 0.9),
+        "tip_sharpness_days": metrics.macro_metrics(res.frame, n)["tip_sharpness_days"],
+        "authority_alarm_day": metrics.authority_alarm_day(res.frame),
+        "final_dead": metrics.total_dead(res.frame),
+        "peak_water_fail": metrics.peak_water_fail(res.frame),
     }
 
 

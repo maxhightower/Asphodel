@@ -157,3 +157,52 @@ python tests/test_phase4a.py     # or:  python -m pytest tests/test_phase4a.py -
 
 The micro/handoff parameters are documented as data in
 [`scenarios/phase4a_micro.yaml`](scenarios/phase4a_micro.yaml).
+
+---
+
+## Phase 4b — the scenario engine
+
+Phase 4b turns the prototypes into a reusable **scenario engine**: a run is data
+*(genome × start_date × location × params × seed)*, runnable single / ensemble /
+swept, returning structured results and distribution summaries — plus
+**inter-zone agent flux** at the micro tier (several adjacent zones promoted at
+once, agents migrate between them, population conserved exactly).
+
+```
+asphodel/
+  scenario.py   # the Scenario object: composes the existing configs + start_date,
+                #   location_profile, flux_params, metadata; YAML round-trip
+  metrics.py    # the outcome metrics, consolidated into one place
+  engine.py     # run_single / run_ensemble / run_sweep (+ dotted-path axis setter)
+  flux.py       # MicroFluxBlock: inter-zone agent flux, layered on the frozen AgentZone
+  phase4b.py    # migrated experiments + regression + flux demo + demonstration sweep
+```
+
+```bash
+# Define a run as data and round-trip it (examples in scenarios/scn_*.yaml)
+python -c "from asphodel import Scenario; print(Scenario.from_yaml('scenarios/scn_generic_baseline.yaml').metadata.name)"
+
+# The full Phase 4b suite: example scenarios + regression + flux + demo sweep
+python -m asphodel.phase4b          # or:  python run.py --phase4b
+
+# Pieces
+python -m asphodel.phase4b --regression   # engine numbers == legacy path, asserted
+python -m asphodel.phase4b --flux         # inter-zone flux conservation + mobility check
+python -m asphodel.phase4b --demo         # genome × w_social × seed -> output/phase4b_demo_sweep.*
+```
+
+A two-axis, multi-seed sweep in one call:
+
+```python
+from asphodel import Scenario, build_sweep, run_sweep
+base = Scenario()                                          # = the Phase 3a baseline
+axes = {"genome.incubation_period": [2, 5, 8, 12],
+        "model_params.belief.w_social": [0.6, 0.8, 1.0]}
+df = run_sweep(build_sweep(base, axes), seeds=range(20))   # tidy table, one row per run
+```
+
+All existing findings are provably intact — see
+**[`REGRESSION_PHASE4B.md`](REGRESSION_PHASE4B.md)** (15 old + 11 new tests pass;
+every migrated experiment reproduces its headline number exactly) — and the
+engine result + inter-zone-flux findings are in
+**[`FINDINGS_PHASE4B.md`](FINDINGS_PHASE4B.md)**.

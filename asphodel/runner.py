@@ -15,6 +15,7 @@ import pandas as pd
 
 from .config import ScenarioConfig
 from .model import Simulation
+from . import metrics
 
 
 class RunResult:
@@ -31,24 +32,18 @@ class RunResult:
         self.events_log = sim.events_log
 
     # -- derived metrics used by FINDINGS / experiments ----------------------
+    # These delegate to the consolidated ``metrics`` module (Phase 4b) so the
+    # definitions live in exactly one place; the returned numbers are unchanged.
     def panic_day(self, threshold_zones: float = 0.5) -> float | None:
         """Day at which the fraction of zones in panic first crosses
         `threshold_zones` (the social tipping point).  None if it never does."""
-        n_zones = self.graph.n_zones
-        crossed = self.frame["n_panic"] >= threshold_zones * n_zones
-        if not crossed.any():
-            return None
-        return float(self.frame.loc[crossed, "day"].iloc[0])
+        return metrics.panic_day(self.frame, self.graph.n_zones, threshold_zones)
 
     def peak_infection_day(self) -> float:
-        infectious = self.frame["I_asymp"] + self.frame["I_symp"]
-        return float(self.frame["day"].iloc[int(infectious.values.argmax())])
+        return metrics.peak_infection_day(self.frame)
 
     def authority_alarm_day(self, threshold: float = 0.5) -> float | None:
-        crossed = self.frame["official_signal"] >= threshold
-        if not crossed.any():
-            return None
-        return float(self.frame.loc[crossed, "day"].iloc[0])
+        return metrics.authority_alarm_day(self.frame, threshold)
 
     def to_csv(self, path: str) -> None:
         os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)

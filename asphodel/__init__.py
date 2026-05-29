@@ -28,6 +28,18 @@ from .macro_ref import run_macro_reference, passive_macro_config
 from .calibration import calibrate, agreement_metrics, passes
 from .handoff import promote, demote, round_trip, largest_remainder_counts
 
+# --- Phase 4b: scenario engine, consolidated metrics, inter-zone flux -------
+from . import metrics
+from .scenario import (
+    Scenario, ScenarioMetadata, LocationProfile, FluxParams,
+    get_location_profile, LOCATION_PROFILES,
+)
+from .engine import (
+    run_single, run_ensemble, run_sweep, build_sweep, set_path,
+    EnsembleResult, export_table, dump_sweep_spec,
+)
+from .flux import MicroFluxBlock, promote_block
+
 __all__ = [
     "ScenarioConfig",
     "PathogenGenome",
@@ -60,4 +72,22 @@ __all__ = [
     "demote",
     "round_trip",
     "largest_remainder_counts",
+    # Phase 4b
+    "metrics",
+    "Scenario",
+    "ScenarioMetadata",
+    "LocationProfile",
+    "FluxParams",
+    "get_location_profile",
+    "LOCATION_PROFILES",
+    "run_single",
+    "run_ensemble",
+    "run_sweep",
+    "build_sweep",
+    "set_path",
+    "EnsembleResult",
+    "export_table",
+    "dump_sweep_spec",
+    "MicroFluxBlock",
+    "promote_block",
 ]

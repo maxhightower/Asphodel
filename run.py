@@ -94,6 +94,9 @@ def main() -> None:
     p.add_argument("--events", action="store_true", help="enable stochastic events")
     p.add_argument("--animate", action="store_true", help="also render belief GIF")
     p.add_argument("--experiments", action="store_true", help="run the full sweep suite")
+    p.add_argument("--phase4b", action="store_true",
+                   help="run the Phase 4b scenario-engine suite "
+                        "(regression + inter-zone flux + demo sweep)")
     p.add_argument("--outdir", default="output", help="output directory")
     args = p.parse_args()
 
@@ -101,6 +104,11 @@ def main() -> None:
 
     if args.experiments:
         from asphodel.experiments import run_all
+        run_all()
+        return
+
+    if args.phase4b:
+        from asphodel.phase4b import run_all
         run_all()
         return
 
