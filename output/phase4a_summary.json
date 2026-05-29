@@ -1,0 +1,121 @@
+{
+  "tolerance": 0.1,
+  "analytic": {
+    "baseline": {
+      "passes": false,
+      "correction": 1.0,
+      "beta": 0.4286,
+      "peakH_relerr": 0.1368,
+      "peakT_relerr": 0.0083,
+      "attack_relerr": 0.0129,
+      "growth_relerr": 0.0312,
+      "attack_macro": 0.9753,
+      "attack_micro": 0.9626
+    },
+    "fast_hot": {
+      "passes": false,
+      "correction": 1.0,
+      "beta": 1.0,
+      "peakH_relerr": 0.1542,
+      "peakT_relerr": 0.0063,
+      "attack_relerr": 0.0036,
+      "growth_relerr": 0.0255,
+      "attack_macro": 0.9988,
+      "attack_micro": 0.9952
+    },
+    "slow_silent": {
+      "passes": false,
+      "correction": 1.0,
+      "beta": 0.2,
+      "peakH_relerr": 0.2034,
+      "peakT_relerr": 0.0563,
+      "attack_relerr": 0.1083,
+      "growth_relerr": 0.0268,
+      "attack_macro": 0.7939,
+      "attack_micro": 0.7079
+    },
+    "low_r0": {
+      "passes": false,
+      "correction": 1.0,
+      "beta": 0.2286,
+      "peakH_relerr": 0.2385,
+      "peakT_relerr": 0.0042,
+      "attack_relerr": 0.086,
+      "growth_relerr": 0.0451,
+      "attack_macro": 0.792,
+      "attack_micro": 0.7238
+    }
+  },
+  "empirical": {
+    "baseline": {
+      "passes": true,
+      "correction": 1.0462,
+      "beta": 0.4286,
+      "peakH_relerr": 0.0909,
+      "peakT_relerr": 0.0083,
+      "attack_relerr": 0.0068,
+      "growth_relerr": 0.0122,
+      "attack_macro": 0.9753,
+      "attack_micro": 0.9686
+    },
+    "fast_hot": {
+      "passes": false,
+      "correction": 1.0544,
+      "beta": 1.0,
+      "peakH_relerr": 0.1328,
+      "peakT_relerr": 0.0021,
+      "attack_relerr": 0.0025,
+      "growth_relerr": 0.0118,
+      "attack_macro": 0.9988,
+      "attack_micro": 0.9963
+    },
+    "slow_silent": {
+      "passes": false,
+      "correction": 1.0239,
+      "beta": 0.2,
+      "peakH_relerr": 0.1112,
+      "peakT_relerr": 0.0021,
+      "attack_relerr": 0.0473,
+      "growth_relerr": 0.0008,
+      "attack_macro": 0.7939,
+      "attack_micro": 0.7564
+    },
+    "low_r0": {
+      "passes": false,
+      "correction": 1.0303,
+      "beta": 0.2286,
+      "peakH_relerr": 0.1863,
+      "peakT_relerr": 0.0104,
+      "attack_relerr": 0.0604,
+      "growth_relerr": 0.0052,
+      "attack_macro": 0.792,
+      "attack_micro": 0.7441
+    }
+  },
+  "n_sweep": [
+    [
+      200,
+      0.4131059076353517,
+      0.0869083859180011,
+      0.2698980596972416
+    ],
+    [
+      500,
+      0.2223411024891979,
+      0.021421448520242723,
+      0.1009845047180794
+    ],
+    [
+      1000,
+      0.1368102518242783,
+      0.01294505996353918,
+      0.057352839277288806
+    ],
+    [
+      2000,
+      0.11174531975631083,
+      0.010415814990974343,
+      0.05107340677476296
+    ]
+  ]
+}

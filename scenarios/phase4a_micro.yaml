@@ -1,0 +1,40 @@
+# Phase 4a micro-tier reference scenario.
+#
+# This is NOT a macro ScenarioConfig -- it documents the micro (agent) tier
+# parameters used in the Phase 4a calibration validation, alongside the genome.
+# The micro tier is driven programmatically (asphodel.phase4a / asphodel.micro);
+# this file exists so the parameter set is described as data, matching the
+# project's "everything tunable lives in config" convention.
+#
+# Reuse the existing PathogenGenome unchanged -- only the transmission step is
+# calibrated between the tiers.
+genome:
+  R0: 3.0
+  incubation_period: 5.0
+  infectious_period: 7.0
+  asymptomatic_fraction: 0.4
+  symptom_onset_delay: 2.0
+  mortality_fraction: 0.02
+
+micro:
+  n_agents: 1000          # discrete people in the promoted zone
+  area_size: 100.0        # side length L of the square zone (metres); torus
+  infection_radius: 2.0   # r: contact distance (metres) -- fixed modelling choice
+  contact_prob: null      # null => derive analytically from the genome each tick
+  rel_infectious_asymp: 1.0   # macro treats I_a and I_s equally
+  well_mixed: false       # finite random-walk mixing (not idealised re-shuffle)
+  mixing_step_frac: 0.12  # per-tick Gaussian step std as a fraction of L
+  contact_prob_correction: 1.0   # 1.0 = pure analytic; empirical fit raises it
+  shelter_fraction: 0.0   # passive condition: nobody shelters (calibration case)
+  shelter_effectiveness: 0.75
+
+handoff:
+  promote_threshold: 0.005   # promote zone to agents above this infectious frac
+  demote_threshold: 0.002    # demote below this (< promote => hysteresis)
+
+run:
+  dt: 0.25
+  n_days: 120.0
+  seed_exposed: 10
+  # The seed suite for an expectation estimate is range(n_seeds), logged per run.
+  n_seeds: 60
