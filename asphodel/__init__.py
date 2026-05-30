@@ -31,8 +31,12 @@ from .handoff import promote, demote, round_trip, largest_remainder_counts
 # --- Phase 4b: scenario engine, consolidated metrics, inter-zone flux -------
 from . import metrics
 from .scenario import (
-    Scenario, ScenarioMetadata, LocationProfile, FluxParams,
+    Scenario, ScenarioMetadata, LocationProfile, FluxParams, TerminationParams,
     get_location_profile, LOCATION_PROFILES,
+)
+from .episodes import (
+    run_episodes, macro_episode, micro_episode,
+    EpisodeResult, EpisodesResult,
 )
 from .engine import (
     run_single, run_ensemble, run_sweep, build_sweep, set_path,
@@ -78,8 +82,14 @@ __all__ = [
     "ScenarioMetadata",
     "LocationProfile",
     "FluxParams",
+    "TerminationParams",
     "get_location_profile",
     "LOCATION_PROFILES",
+    "run_episodes",
+    "macro_episode",
+    "micro_episode",
+    "EpisodeResult",
+    "EpisodesResult",
     "run_single",
     "run_ensemble",
     "run_sweep",

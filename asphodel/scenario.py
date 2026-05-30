@@ -121,6 +121,31 @@ class ScenarioMetadata:
     notes: str = ""
 
 
+@dataclass
+class TerminationParams:
+    """When a run *ends*, for episode (run-to-termination) mode.
+
+    The default ``"burnout"`` mode runs until the epidemic reaches its absorbing
+    state -- no *active* infection left (``E + Ia + Is`` below ``min_active``) or
+    every susceptible has been infected (``S`` below ``min_susceptible``) --
+    whichever comes first, with a ``max_days`` safety cap so a long low plateau
+    can't run forever.  At termination the population is split into never-infected
+    (S) + recovered (R) + dead (D): infected mostly *recover*, they do not all
+    die, so "burnout" is the meaningful end state for this SEIR model.
+
+    ``warmup_days`` prevents the macro run (whose seed deterministically ignites
+    the outbreak) from terminating before the epidemic has taken off; the micro
+    tier is integer-exact and may legitimately go extinct immediately (a
+    stochastic die-out episode), so the warmup only gates the macro burnout test.
+    """
+
+    mode: str = "burnout"          # "burnout" | "susceptibles" | "fixed"
+    min_active: float = 1.0        # active infection (E+Ia+Is) below this => over
+    min_susceptible: float = 1.0   # S below this => everyone has been infected
+    max_days: float = 2000.0       # safety cap on run length (days)
+    warmup_days: float = 5.0       # macro: no burnout-termination before this
+
+
 # --------------------------------------------------------------------------- #
 # the Scenario
 # --------------------------------------------------------------------------- #
@@ -142,6 +167,9 @@ class Scenario:
     micro_params: MicroParams = field(default_factory=MicroParams)
     handoff_params: HandoffParams = field(default_factory=HandoffParams)
     flux_params: FluxParams = field(default_factory=FluxParams)
+
+    # --- run-to-termination (episode mode) settings -------------------------
+    termination: TerminationParams = field(default_factory=TerminationParams)
 
     # --- the new scenario axes (carried/recorded this phase) ----------------
     start_date: str = "2020-01-01"     # in-world ISO calendar date (YYYY-MM-DD)
@@ -236,9 +264,11 @@ class Scenario:
         micro = MicroParams(**data.pop("micro_params", {}) or {})
         handoff = HandoffParams(**data.pop("handoff_params", {}) or {})
         flux = FluxParams(**data.pop("flux_params", {}) or {})
+        termination = TerminationParams(**data.pop("termination", {}) or {})
         loc = LocationProfile(**data.pop("location_profile", {}) or {})
         return cls(metadata=metadata, genome=genome, model_params=model,
                    micro_params=micro, handoff_params=handoff, flux_params=flux,
+                   termination=termination,
                    location_profile=loc, **data)
 
 
