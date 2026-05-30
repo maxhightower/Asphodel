@@ -335,11 +335,65 @@ def flux_demo(n_seeds: int = 8, n_ticks: int = 200, outdir: str = OUTDIR) -> dic
 
 
 # --------------------------------------------------------------------------- #
+# episode mode (run-to-termination) demonstration
+# --------------------------------------------------------------------------- #
+def episodes_demo(n_episodes: int = 24, outdir: str = OUTDIR) -> dict:
+    """Run-to-termination on both tiers: one macro burnout + a micro episode
+    distribution (incl. a subcritical die-out case), with a summary plot."""
+    from .episodes import macro_episode, run_episodes
+
+    os.makedirs(outdir, exist_ok=True)
+    print("\n=== Phase 4b episode mode (run to termination) ===")
+
+    # Macro: deterministic, runs to burnout (well past the old 120-day horizon).
+    macro = macro_episode(_base_scenario(), seed=0)
+    fs = macro.final_state
+    print(f"  MACRO baseline: {macro.terminal_reason} at day {macro.duration_days:.0f} "
+          f"-> attack {fs['attack_rate']:.1%}, recovered {fs['R']:.0f}, dead {fs['D']:.0f} "
+          f"(infected mostly recover, not die)")
+
+    # Micro: stochastic -> a real distribution of outcomes, each to termination.
+    sc = Scenario(); sc.micro_params.n_agents = 1000
+    res = run_episodes(sc, n_episodes=n_episodes, tier="micro", seed_exposed=10)
+    atk = res.summary["attack_rate"]; dur = res.summary["duration_days"]
+    print(f"  MICRO baseline ({n_episodes} episodes): reasons={res.reasons}")
+    print(f"    attack rate: mean {atk['mean']:.1%}  p5 {atk['p5']:.1%}  p95 {atk['p95']:.1%}")
+    print(f"    duration:    mean {dur['mean']:.0f}d  p5 {dur['p5']:.0f}d  p95 {dur['p95']:.0f}d")
+
+    # Subcritical genome -> stochastic die-out (extinction) episodes.
+    sub = Scenario(); sub.genome.R0 = 0.7; sub.micro_params.n_agents = 1000
+    res_sub = run_episodes(sub, n_episodes=n_episodes, tier="micro", seed_exposed=5)
+    atk_sub = res_sub.summary["attack_rate"]
+    print(f"  MICRO subcritical (R0=0.7): reasons={res_sub.reasons}  "
+          f"attack mean {atk_sub['mean']:.1%} (outbreak fails to take off)")
+
+    # Plot: per-episode attack vs duration (supercritical vs subcritical).
+    fig, ax = plt.subplots(figsize=(8, 5.5))
+    a1 = [e.final_state["attack_rate"] for e in res.episodes]
+    d1 = [e.duration_days for e in res.episodes]
+    a0 = [e.final_state["attack_rate"] for e in res_sub.episodes]
+    d0 = [e.duration_days for e in res_sub.episodes]
+    ax.scatter(d1, a1, alpha=0.7, label="baseline (R0=3): takes off, burns out")
+    ax.scatter(d0, a0, alpha=0.7, color="tab:red", label="subcritical (R0=0.7): dies out")
+    ax.set_xlabel("episode duration (days to termination)")
+    ax.set_ylabel("attack rate (ever-infected fraction)")
+    ax.set_title(f"Episode mode: {n_episodes} micro runs each to its absorbing state")
+    ax.legend(); ax.grid(alpha=0.3)
+    fig.tight_layout()
+    path = os.path.join(outdir, "phase4b_episodes.png")
+    fig.savefig(path, dpi=110); plt.close(fig)
+    print(f"  -> {path}")
+    return {"macro": macro, "micro_reasons": res.reasons,
+            "subcritical_reasons": res_sub.reasons}
+
+
+# --------------------------------------------------------------------------- #
 def run_all() -> None:
     write_example_scenarios()
     regression()
     phase4a_via_scenario()
     flux_demo()
+    episodes_demo()
     demo_sweep()
 
 
@@ -350,8 +404,10 @@ def main() -> None:
     ap.add_argument("--scenarios", action="store_true")
     ap.add_argument("--phase4a", action="store_true")
     ap.add_argument("--flux", action="store_true")
+    ap.add_argument("--episodes", action="store_true")
     args = ap.parse_args()
-    if not any([args.regression, args.demo, args.scenarios, args.phase4a, args.flux]):
+    if not any([args.regression, args.demo, args.scenarios, args.phase4a,
+                args.flux, args.episodes]):
         run_all()
         return
     if args.scenarios:
@@ -362,6 +418,8 @@ def main() -> None:
         phase4a_via_scenario()
     if args.flux:
         flux_demo()
+    if args.episodes:
+        episodes_demo()
     if args.demo:
         demo_sweep()
 
