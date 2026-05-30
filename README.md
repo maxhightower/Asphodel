@@ -188,6 +188,7 @@ python -m asphodel.phase4b          # or:  python run.py --phase4b
 # Pieces
 python -m asphodel.phase4b --regression   # engine numbers == legacy path, asserted
 python -m asphodel.phase4b --flux         # inter-zone flux conservation + mobility check
+python -m asphodel.phase4b --episodes     # run-to-termination (burnout) on both tiers
 python -m asphodel.phase4b --demo         # genome × w_social × seed -> output/phase4b_demo_sweep.*
 ```
 
@@ -199,6 +200,16 @@ base = Scenario()                                          # = the Phase 3a base
 axes = {"genome.incubation_period": [2, 5, 8, 12],
         "model_params.belief.w_social": [0.6, 0.8, 1.0]}
 df = run_sweep(build_sweep(base, axes), seeds=range(20))   # tidy table, one row per run
+```
+
+**Episode mode** runs to the epidemic's absorbing state (burnout) instead of a
+fixed horizon — on either tier (the macro grid is deterministic; the micro tier
+is stochastic, so N episodes give a distribution including die-out runs):
+
+```python
+from asphodel import Scenario, run_episodes, macro_episode
+macro = macro_episode(Scenario(), seed=0)            # one macro run to burnout (~day 576)
+res   = run_episodes(Scenario(), 50, tier="micro")   # 50 stochastic episodes + distribution
 ```
 
 All existing findings are provably intact — see

@@ -162,7 +162,55 @@ edge; the points lie on the identity line). The test
 
 ---
 
-## 3. Integration bugs / decisions found during consolidation
+## 3. Episode mode — running to termination, not a fixed horizon
+
+A run can now advance until the epidemic reaches its **absorbing state** instead
+of stopping at a fixed `n_days`. The natural end state in this SEIR model is
+**burnout** — no *active* infection left (`E + Ia + Is` below a threshold) or
+susceptibles exhausted, whichever first — with a `max_days` safety cap. (See
+`TerminationParams`; `episodes.py` drives the frozen `Simulation` / `AgentZone`
+loops to termination — neither core was edited.)
+
+This also fixed a real mis-scoping: the default `n_days = 120` **cut the baseline
+off mid-epidemic** — peak infection isn't until ~day 156. Run to termination, the
+baseline macro epidemic resolves at **day 576**, leaving **48.4% attack rate,
+152 366 recovered, and 2 603 dead.** Two facts the model insists on:
+
+* **Infected mostly recover, they don't all die** — 152 366 recovered vs 2 603
+  dead. "All infected dead" is not a state this model reaches; burnout is.
+* **~52% are never infected** at baseline — belief-driven sheltering flattens the
+  curve into a herd-immunity-like plateau. "All healthy infected" (S→0) only
+  happens without mitigation (~97% attack, resolves by ~day 197).
+
+**Both tiers** run as episodes. The macro tier is deterministic (events off), so
+its episodes are identical across seeds. The **micro tier is stochastic**, so N
+episodes give a genuine distribution — and naturally include **stochastic
+die-out** episodes where the outbreak never takes off:
+
+| micro episodes (baseline genome, N = 1000, 24 runs) | result |
+|---|---|
+| terminal reason | burnout, 24/24 |
+| attack rate | mean 96.4% (p5 95.1%, p95 97.5%) |
+| duration to termination | mean 113 d (p5 98, p95 129) |
+| subcritical R0 = 0.7 (24 runs) | all burn out, attack ≈ 2.9% (fails to take off) |
+
+(`output/phase4b_episodes.png` plots attack vs duration for take-off vs die-out.)
+Run via `python -m asphodel.phase4b --episodes`, or:
+
+```python
+from asphodel import Scenario, run_episodes, macro_episode
+macro = macro_episode(Scenario(), seed=0)            # one macro run to burnout
+res   = run_episodes(Scenario(), 50, tier="micro")   # 50 stochastic episodes + distribution
+```
+
+Note the micro single-zone episode is the *passive* SEIR reference (no belief /
+behaviour feedback), so it burns hotter (~96% attack) than the macro grid (~48%,
+which has the sheltering feedback) — an honest, expected tier difference, not an
+error.
+
+---
+
+## 4. Integration bugs / decisions found during consolidation
 
 * **Repo state vs handoff brief.** The session began with Phase 4a not present
   on the working branch; it was merged in before any work, and the 15-test
@@ -182,7 +230,7 @@ edge; the points lie on the identity line). The test
 
 ---
 
-## 4. Documented extension points (where later phases plug in)
+## 5. Documented extension points (where later phases plug in)
 
 * **Events layer** (hurricanes, freezes, transport hazard): `start_date` +
   `location_profile` are threaded and recorded but inert. The events phase reads
@@ -204,7 +252,7 @@ edge; the points lie on the identity line). The test
 
 ---
 
-## 5. Conclusion for the larger project
+## 6. Conclusion for the larger project
 
 Phase 4b delivers the platform the rest of the project builds on: **a trustworthy
 scenario engine that makes every future experiment cheap, with all existing
