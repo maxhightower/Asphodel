@@ -39,3 +39,38 @@ def polygon_area(points: list[tuple[float, float]]) -> float:
         x2, y2 = points[(i + 1) % n]
         s += x1 * y2 - x2 * y1
     return abs(s) / 2.0
+
+
+def place_blocks(
+    density: float,
+    center_xy: tuple[float, float],
+    cell_extent: tuple[float, float],
+    rng,
+    max_blocks: int = 8,
+    min_height: float = 4.0,
+    max_height: float = 40.0,
+) -> list[dict]:
+    """Representative low-poly blocks for one cell, count & height proportional to density.
+
+    `density` in [0, 1]; positions are jittered within 80% of the cell to leave
+    visible streets. `rng` is a `random.Random` for deterministic placement.
+    Returns dicts: {"xy": [x, z], "height": float, "footprint": float}.
+    """
+    n = int(round(max(0.0, min(1.0, density)) * max_blocks))
+    cx, cz = center_xy
+    w, h = cell_extent
+    blocks = []
+    for _ in range(n):
+        bx = cx + (rng.random() - 0.5) * w * 0.8
+        bz = cz + (rng.random() - 0.5) * h * 0.8
+        height = min_height + density * (max_height - min_height) * (0.6 + 0.8 * rng.random())
+        footprint = 4.0 + 6.0 * rng.random()
+        blocks.append({"xy": [bx, bz], "height": round(height, 3), "footprint": round(footprint, 3)})
+    return blocks
+
+
+def project_polyline(
+    latlon_points: Iterable[tuple[float, float]], lat0: float, lon0: float
+) -> list[list[float]]:
+    """Project a sequence of (lat, lon) into a list of [x, z] pairs."""
+    return [list(project(lat, lon, lat0, lon0)) for lat, lon in latlon_points]
