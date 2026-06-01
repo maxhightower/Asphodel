@@ -32,8 +32,41 @@ class ZoneGraph:
         self.rows = params.grid_rows
         self.cols = params.grid_cols
         self.n_zones = self.rows * self.cols
+        self._rng = np.random.default_rng(params.topology_seed)
 
-        # Build symmetric mobility weights between 4-connected neighbours.
+        # Per-zone population: an explicit vector (e.g. real OSM building density,
+        # ordered row*cols+col) overrides the uniform default; otherwise every
+        # zone starts equal and a topology may then make it heterogeneous (e.g.
+        # commute hubs).
+        if params.population is not None:
+            if len(params.population) != self.n_zones:
+                raise ValueError(
+                    f"graph.population has {len(params.population)} entries "
+                    f"but grid has {self.n_zones} zones"
+                )
+            self.populations = np.asarray(params.population, dtype=float)
+        else:
+            self.populations = np.full(self.n_zones, params.population_per_zone, dtype=float)
+
+        topo = getattr(params, "topology", "grid")
+        if topo == "grid":
+            W = self._grid_weights()
+        elif topo == "small_world":
+            W = self._small_world_weights(params.rewire_prob)
+        elif topo == "commute":
+            W = self._commute_weights(params.n_hubs, params.hub_pop_multiplier)
+        else:
+            raise ValueError(f"unknown topology {topo!r}")
+        self.weights = W
+
+        # Row-normalised mixing matrix (rows with no neighbours stay all-zero).
+        row_sums = W.sum(axis=1, keepdims=True)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            self.mix = np.where(row_sums > 0, W / row_sums, 0.0)
+
+    # ------------------------------------------------------------ topologies
+    def _grid_weights(self) -> np.ndarray:
+        """Uniform weights between 4-connected grid neighbours."""
         W = np.zeros((self.n_zones, self.n_zones), dtype=float)
         for r in range(self.rows):
             for c in range(self.cols):
@@ -41,14 +74,56 @@ class ZoneGraph:
                 for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)):
                     nr, nc = r + dr, c + dc
                     if 0 <= nr < self.rows and 0 <= nc < self.cols:
-                        j = self.index(nr, nc)
-                        W[i, j] = 1.0  # uniform mobility weight to start
-        self.weights = W
+                        W[i, self.index(nr, nc)] = 1.0
+        return W
 
-        # Row-normalised mixing matrix (rows with no neighbours stay all-zero).
-        row_sums = W.sum(axis=1, keepdims=True)
-        with np.errstate(invalid="ignore", divide="ignore"):
-            self.mix = np.where(row_sums > 0, W / row_sums, 0.0)
+    def _small_world_weights(self, rewire_prob: float) -> np.ndarray:
+        """Watts-Strogatz-style: start from the grid, then rewire each edge to a
+        random distant zone with probability ``rewire_prob`` (kept symmetric).
+
+        This injects long-range shortcuts so belief contagion can jump across
+        the map instead of only diffusing to adjacent zones -- the mechanism
+        that turns a slow diffusion wave into a synchronized tip.
+        """
+        W = self._grid_weights()
+        Z = self.n_zones
+        # Iterate the upper-triangular existing edges; rewire one endpoint.
+        edges = [(i, j) for i in range(Z) for j in range(i + 1, Z) if W[i, j] > 0]
+        for i, j in edges:
+            if self._rng.random() < rewire_prob:
+                # Move the j endpoint to a random non-self, non-duplicate zone.
+                candidates = np.where((W[i] == 0))[0]
+                candidates = candidates[candidates != i]
+                if candidates.size == 0:
+                    continue
+                k = int(self._rng.choice(candidates))
+                W[i, j] = W[j, i] = 0.0
+                W[i, k] = W[k, i] = 1.0
+        return W
+
+    def _commute_weights(self, n_hubs: int, hub_mult: float) -> np.ndarray:
+        """Hub-and-spoke commute graph: grid base + every zone connected to a
+        few high-population hubs by a gravity weight (~ hub_pop / distance).
+
+        Hubs carry ``hub_mult`` x the base population, so they are both
+        population centres and mobility centres -- a crude city/suburb commute.
+        """
+        W = self._grid_weights()
+        Z = self.n_zones
+        if n_hubs > 0:
+            hubs = self._rng.choice(Z, size=min(n_hubs, Z), replace=False)
+            self.populations[hubs] *= hub_mult
+            for h in hubs:
+                hr, hc = self.coords(int(h))
+                for i in range(Z):
+                    if i == h:
+                        continue
+                    ir, ic = self.coords(i)
+                    dist = abs(ir - hr) + abs(ic - hc)
+                    w = hub_mult / (1.0 + dist)        # gravity-ish spoke weight
+                    W[i, h] = max(W[i, h], w)
+                    W[h, i] = max(W[h, i], w)
+        return W
 
     def index(self, r: int, c: int) -> int:
         return r * self.cols + c

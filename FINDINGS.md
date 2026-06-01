@@ -210,3 +210,30 @@ experiments would be non-grid topologies (the cascade currently rides grid
 adjacency as a literal wave; a small-world or real-commute graph would test
 whether the synchronized-tip regime dominates the diffusion-wave regime) and a
 heterogeneous-genome / multi-seed-zone study.
+
+---
+
+## 9. Topology (Phase 7 follow-up) — hubs, not random shortcuts, synchronize the tip
+
+`python -c "from asphodel.experiments import topology_comparison; topology_comparison()"`
+→ `output/exp_topology_comparison.png`. Same baseline, only the graph changes:
+
+| topology | silent until (10%) | fully panicked (90%) | **tip sharpness** | authority alarm | final dead |
+|---|---|---|---|---|---|
+| grid (4-neighbour wave) | 27.0 | 54.0 | **27.0 d** | 89.5 | 570 |
+| small-world (rewire p=0.1) | 27.0 | 52.5 | 25.5 d | 87.2 | 594 |
+| small-world (rewire p=0.3) | 29.8 | 55.2 | 25.5 d | 89.2 | 565 |
+| **commute (4 pop hubs)** | 35.0 | 39.8 | **4.75 d** | 66.5 | **1119** |
+
+The open question from §8 has a clear answer: **it is concentration (hubs), not
+mild randomness (small-world rewiring), that flips the diffusion wave into a
+synchronized tip.** Watts-Strogatz shortcuts barely move the tip (27 → 25.5 d) —
+a few long edges aren't enough to overcome the grid's local-diffusion character.
+But a hub-and-spoke commute graph, where every zone shares mobility with a
+handful of high-population centres, collapses the tip almost six-fold (27 →
+4.75 d) into a near-simultaneous flip, and **nearly doubles the death toll**
+(570 → 1119): the hubs both seed belief everywhere at once *and* mix infection
+everywhere at once, so the silent phase ends abruptly and the protective benefit
+of a staggered, observable wave is lost. For the game this means **map structure
+is a first-class difficulty dial** — a centralized city is dramatically more
+fragile than a decentralized one, independent of the pathogen.
