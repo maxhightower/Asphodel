@@ -262,6 +262,55 @@ print(default_timescale().summary(sim_panic_day=42.0))
 # collapse: sim day 42.0 -> player day 2.0 (warp x21.0), ~120 min in
 ```
 
+### Vehicles & traffic (`asphodel/vehicles.py`)
+
+Citizens don't teleport — they **move across the street map**, and when they all
+move at once the roads **jam**. This closes the citizens → buildings → streets
+loop:
+
+- **Travel mode per commuter.** Driving/emergency jobs come with a **work
+  vehicle** (`bus_driver`→bus, `truck_driver`→truck, `delivery_driver`→van,
+  `paramedic`→ambulance, `police_officer`→police car …); everyone else picks
+  walk / bike / car / motorcycle / transit by trip distance and age (short hops
+  cycle, long hops drive, under-17s never drive, transit only where the city has
+  it). Each `VehicleSpec` carries a free-flow speed and a **PCU** road-space
+  weight (foot/bike = 0 — they don't jam).
+- **Road network + congestion.** `RoadNetwork.from_street_map` gives every
+  street segment a speed and capacity; `assign_traffic` routes a trip set and
+  applies the standard **BPR volume-delay** relation
+  `t = t₀·(1 + α·(V/C)^β)`, so a morning commute — or a panicked mass exodus —
+  produces real travel times and bottlenecks, not instant movement.
+- **Hook into the cascade.** `congestion_report` assigns a whole spawned
+  population's commute and reports the network load (mean/worst V/C). This is the
+  micro-tier origin of the macro model's *emergent transport hazard*
+  (`EventParams`: panic-congestion ~ outflow², operator incapacitation ~ infected
+  fraction of fleers) — a fleeing crowd drives these sharply up.
+
+```bash
+# Spawn into a real map AND print a morning-commute traffic snapshot
+python -m asphodel.citizen --world --city harbor --n 6 --seed 2
+#   ... 301 commuters, 133 motorized, 1018 PCU on 91 segments
+#       network load 0.02 (mean V/C), worst 0.07, mean commute 2.9 min
+```
+
+```python
+from asphodel import (default_catalog, default_cities, resolve_world,
+                      spawn_population_in_world, congestion_report)
+world = resolve_world(default_cities()["capital"], seed=0)
+pop = spawn_population_in_world(world, default_catalog(), n=800, seed=0)
+print(congestion_report(world, pop))   # commuters, PCU, network_load, max_voc, mean_commute_min
+```
+
+The single-pass (all-or-nothing) assignment is adequate for a commute snapshot
+or an exodus pulse; iterating to user-equilibrium is the documented next step.
+
+> **Job diversity.** The catalog ships **43 occupations** across medical,
+> education, civic, commercial, industrial, transit and home categories —
+> including the driving/logistics roles the traffic layer needs (taxi, delivery,
+> truck, courier, postal, bus). Add more by editing `default_catalog()` /
+> `cities/_catalog.yaml`; a job spawns in any city whose map hosts its workplace
+> category.
+
 ---
 
 ## Phase 4a — Macro↔Micro handoff & calibration

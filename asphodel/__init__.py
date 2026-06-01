@@ -49,6 +49,21 @@ from .citizen import (
     spawn_population_in_world,
 )
 
+# --- Vehicles & traffic: travel modes, road network, congestion -------------
+from .vehicles import (
+    VehicleSpec,
+    VEHICLES,
+    TrafficParams,
+    Trip,
+    RoadNetwork,
+    TrafficResult,
+    choose_commute,
+    work_vehicle_for,
+    assign_traffic,
+    build_commute_trips,
+    congestion_report,
+)
+
 # --- Game time: real seconds <-> in-game clock <-> sim ticks, PZ-style pacing -
 from .gametime import (
     TimeScale,
@@ -121,6 +136,18 @@ __all__ = [
     "resolve_world",
     "spawn_citizen_in_world",
     "spawn_population_in_world",
+    # Vehicles & traffic
+    "VehicleSpec",
+    "VEHICLES",
+    "TrafficParams",
+    "Trip",
+    "RoadNetwork",
+    "TrafficResult",
+    "choose_commute",
+    "work_vehicle_for",
+    "assign_traffic",
+    "build_commute_trips",
+    "congestion_report",
     # Game time
     "TimeScale",
     "default_timescale",

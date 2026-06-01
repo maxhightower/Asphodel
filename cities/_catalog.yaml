@@ -257,6 +257,397 @@ occupations:
     gloves: 1
     tool_belt: 1
     hi_vis: 1
+- name: pharmacist
+  min_age: 24
+  max_age: 66
+  base_weight: 0.4
+  workplace: medical
+  shift: day
+  tasks:
+  - open dispensary
+  - prescriptions
+  - stock check
+  - advice
+  inventory:
+    id_badge: 1
+    white_coat: 1
+    face_mask: 2
+- name: care_worker
+  min_age: 19
+  max_age: 64
+  base_weight: 0.7
+  workplace: medical
+  shift: day
+  tasks:
+  - handover
+  - personal care
+  - meds round
+  - meals
+  inventory:
+    id_badge: 1
+    gloves: 2
+    face_mask: 3
+- name: lab_technician
+  min_age: 22
+  max_age: 63
+  base_weight: 0.4
+  workplace: medical
+  shift: night
+  tasks:
+  - sample intake
+  - run assays
+  - log results
+  inventory:
+    id_badge: 1
+    lab_coat: 1
+    gloves: 2
+- name: professor
+  min_age: 30
+  max_age: 70
+  base_weight: 0.4
+  workplace: education
+  shift: day
+  tasks:
+  - lecture
+  - research
+  - supervision
+  - faculty meeting
+  inventory:
+    laptop: 1
+    id_card: 1
+    notebook: 1
+- name: childcare_worker
+  min_age: 19
+  max_age: 60
+  base_weight: 0.6
+  workplace: education
+  shift: day
+  tasks:
+  - welcome
+  - activities
+  - lunch
+  - nap time
+  inventory:
+    id_card: 1
+    apron: 1
+    first_aid_kit: 1
+- name: soldier
+  min_age: 18
+  max_age: 50
+  base_weight: 0.4
+  workplace: civic
+  shift: day
+  tasks:
+  - muster
+  - drills
+  - duty
+  - stand-down
+  inventory:
+    id_tag: 1
+    boots: 1
+    rations: 1
+- name: sanitation_worker
+  min_age: 20
+  max_age: 62
+  base_weight: 0.6
+  workplace: civic
+  shift: day
+  tasks:
+  - depot
+  - collection round
+  - transfer station
+  inventory:
+    hi_vis: 1
+    gloves: 2
+    keys: 1
+- name: social_worker
+  min_age: 24
+  max_age: 64
+  base_weight: 0.4
+  workplace: civic
+  shift: day
+  tasks:
+  - case review
+  - home visits
+  - reports
+  inventory:
+    laptop: 1
+    id_card: 1
+    phone: 1
+- name: lawyer
+  min_age: 26
+  max_age: 68
+  base_weight: 0.3
+  workplace: civic
+  shift: day
+  tasks:
+  - case prep
+  - client meetings
+  - court
+  - filings
+  inventory:
+    laptop: 1
+    id_card: 1
+    documents: 3
+- name: waiter
+  min_age: 17
+  max_age: 60
+  base_weight: 0.8
+  workplace: commercial
+  shift: night
+  tasks:
+  - set up
+  - service
+  - bus tables
+  - close
+  inventory:
+    apron: 1
+    order_pad: 1
+    name_tag: 1
+- name: barista
+  min_age: 16
+  max_age: 55
+  base_weight: 0.7
+  workplace: commercial
+  shift: day
+  tasks:
+  - open
+  - morning rush
+  - restock
+  - clean
+  inventory:
+    apron: 1
+    name_tag: 1
+- name: accountant
+  min_age: 23
+  max_age: 67
+  base_weight: 0.6
+  workplace: commercial
+  shift: day
+  tasks:
+  - reconcile
+  - ledgers
+  - client calls
+  - filings
+  inventory:
+    laptop: 1
+    id_card: 1
+    calculator: 1
+- name: it_support
+  min_age: 20
+  max_age: 63
+  base_weight: 0.7
+  workplace: commercial
+  shift: day
+  tasks:
+  - ticket queue
+  - deskside
+  - patching
+  - on-call
+  inventory:
+    laptop: 1
+    id_card: 1
+    phone: 1
+    usb_drive: 1
+- name: security_guard
+  min_age: 21
+  max_age: 67
+  base_weight: 0.6
+  workplace: commercial
+  shift: night
+  tasks:
+  - briefing
+  - patrol
+  - monitor cctv
+  - patrol
+  inventory:
+    radio: 1
+    torch: 1
+    id_badge: 1
+    keys: 1
+- name: cleaner
+  min_age: 18
+  max_age: 68
+  base_weight: 0.8
+  workplace: commercial
+  shift: night
+  tasks:
+  - supplies
+  - offices
+  - restrooms
+  - lock up
+  inventory:
+    gloves: 2
+    keys: 1
+    id_badge: 1
+- name: warehouse_worker
+  min_age: 18
+  max_age: 62
+  base_weight: 0.8
+  workplace: industrial
+  shift: day
+  tasks:
+  - pick list
+  - pack
+  - load bay
+  - stocktake
+  inventory:
+    hi_vis: 1
+    gloves: 1
+    scanner: 1
+- name: electrician
+  min_age: 20
+  max_age: 64
+  base_weight: 0.5
+  workplace: industrial
+  shift: day
+  tasks:
+  - job sheet
+  - first fix
+  - test
+  - sign off
+  inventory:
+    tool_belt: 1
+    multimeter: 1
+    gloves: 1
+- name: plumber
+  min_age: 20
+  max_age: 64
+  base_weight: 0.5
+  workplace: industrial
+  shift: day
+  tasks:
+  - call list
+  - repairs
+  - install
+  - invoice
+  inventory:
+    tool_bag: 1
+    wrench: 2
+    gloves: 1
+- name: mechanic
+  min_age: 18
+  max_age: 64
+  base_weight: 0.6
+  workplace: industrial
+  shift: day
+  tasks:
+  - work orders
+  - diagnostics
+  - repairs
+  - road test
+  inventory:
+    tool_box: 1
+    rag: 1
+    overalls: 1
+- name: welder
+  min_age: 20
+  max_age: 60
+  base_weight: 0.4
+  workplace: industrial
+  shift: night
+  tasks:
+  - setup
+  - weld
+  - grind
+  - inspect
+  inventory:
+    welding_mask: 1
+    gloves: 1
+    overalls: 1
+- name: taxi_driver
+  min_age: 21
+  max_age: 68
+  base_weight: 0.5
+  workplace: transit
+  shift: day
+  tasks:
+  - vehicle check
+  - fares
+  - rank wait
+  - fares
+  inventory:
+    keys: 1
+    phone: 1
+    id_badge: 1
+    cash: 1
+- name: delivery_driver
+  min_age: 19
+  max_age: 64
+  base_weight: 0.8
+  workplace: commercial
+  shift: day
+  tasks:
+  - load van
+  - route
+  - drops
+  - returns
+  inventory:
+    keys: 1
+    scanner: 1
+    hi_vis: 1
+    phone: 1
+- name: truck_driver
+  min_age: 23
+  max_age: 65
+  base_weight: 0.6
+  workplace: industrial
+  shift: day
+  tasks:
+  - pre-trip check
+  - long haul
+  - delivery
+  - logbook
+  inventory:
+    keys: 1
+    logbook: 1
+    hi_vis: 1
+    thermos: 1
+- name: courier
+  min_age: 16
+  max_age: 55
+  base_weight: 0.5
+  workplace: commercial
+  shift: day
+  tasks:
+  - depot
+  - pickups
+  - drops
+  - depot
+  inventory:
+    backpack: 1
+    phone: 1
+    scanner: 1
+    lock: 1
+- name: postal_worker
+  min_age: 18
+  max_age: 65
+  base_weight: 0.6
+  workplace: transit
+  shift: day
+  tasks:
+  - sort
+  - load round
+  - deliver
+  - return
+  inventory:
+    hi_vis: 1
+    keys: 1
+    scanner: 1
+- name: homemaker
+  min_age: 20
+  max_age: 75
+  base_weight: 0.7
+  workplace: home
+  shift: none
+  tasks:
+  - household
+  - errands
+  - childcare
+  inventory:
+    keys: 1
+    phone: 1
+    shopping_bag: 1
 - name: retiree
   min_age: 60
   max_age: 95

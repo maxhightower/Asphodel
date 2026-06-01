@@ -46,6 +46,7 @@ from .world import (
     OSMSource, SynthCitySpec, StreetMap, Building,
     load_osm, synthesize_city,
 )
+from .vehicles import choose_commute, TrafficParams
 
 
 # ===========================================================================
@@ -274,6 +275,8 @@ class CitizenProfile:
     home_xy: Optional[tuple[float, float]] = None
     work_xy: Optional[tuple[float, float]] = None
     commute_metres: Optional[float] = None   # street-routed distance home->work
+    commute_mode: Optional[str] = None       # walk / bike / car / transit / drive_work
+    vehicle: Optional[str] = None            # vehicle kind they travel in
 
     def summary(self) -> str:
         work = self.work_district or "—"
@@ -652,10 +655,19 @@ def spawn_citizen_in_world(world: CityWorld, catalog: CitizenSpawnCatalog,
     inventory = _roll_inventory(rng, occ, catalog, city)
 
     commute_m = None
+    commute_mode = vehicle = None
     if work_b is not None:
         commute_m = sm.route_length(home_b.street_node, work_b.street_node)
         if not np.isfinite(commute_m):
             commute_m = None
+        # Travel mode + vehicle: driving jobs use their work vehicle; everyone
+        # else picks by distance/age, transit only where the city has it.
+        dist = commute_m if commute_m is not None else float(np.hypot(
+            work_b.centroid[0] - home_b.centroid[0],
+            work_b.centroid[1] - home_b.centroid[1]))
+        transit_available = "transit" in sm.categories_present()
+        commute_mode, vehicle = choose_commute(
+            rng, occ.name, dist, age, transit_available, TrafficParams())
 
     spawn_hour = p.spawn_hour if p.spawn_hour is not None else float(rng.uniform(0, 24))
     block = _current_block(schedule, spawn_hour)
@@ -682,6 +694,8 @@ def spawn_citizen_in_world(world: CityWorld, catalog: CitizenSpawnCatalog,
         home_xy=home_b.centroid,
         work_xy=work_b.centroid if work_b else None,
         commute_metres=commute_m,
+        commute_mode=commute_mode,
+        vehicle=vehicle,
     )
 
 
@@ -762,6 +776,92 @@ def default_catalog() -> CitizenSpawnCatalog:
         Occupation("construction_worker", 18, 62, 0.7, "industrial", "day",
                    ["toolbox talk", "build", "lunch", "build"],
                    {"hard_hat": 1, "gloves": 1, "tool_belt": 1, "hi_vis": 1}),
+        # --- expanded diversity ---------------------------------------------
+        # medical
+        Occupation("pharmacist", 24, 66, 0.4, "medical", "day",
+                   ["open dispensary", "prescriptions", "stock check", "advice"],
+                   {"id_badge": 1, "white_coat": 1, "face_mask": 2}),
+        Occupation("care_worker", 19, 64, 0.7, "medical", "day",
+                   ["handover", "personal care", "meds round", "meals"],
+                   {"id_badge": 1, "gloves": 2, "face_mask": 3}),
+        Occupation("lab_technician", 22, 63, 0.4, "medical", "night",
+                   ["sample intake", "run assays", "log results"],
+                   {"id_badge": 1, "lab_coat": 1, "gloves": 2}),
+        # education
+        Occupation("professor", 30, 70, 0.4, "education", "day",
+                   ["lecture", "research", "supervision", "faculty meeting"],
+                   {"laptop": 1, "id_card": 1, "notebook": 1}),
+        Occupation("childcare_worker", 19, 60, 0.6, "education", "day",
+                   ["welcome", "activities", "lunch", "nap time"],
+                   {"id_card": 1, "apron": 1, "first_aid_kit": 1}),
+        # civic / public service
+        Occupation("soldier", 18, 50, 0.4, "civic", "day",
+                   ["muster", "drills", "duty", "stand-down"],
+                   {"id_tag": 1, "boots": 1, "rations": 1}),
+        Occupation("sanitation_worker", 20, 62, 0.6, "civic", "day",
+                   ["depot", "collection round", "transfer station"],
+                   {"hi_vis": 1, "gloves": 2, "keys": 1}),
+        Occupation("social_worker", 24, 64, 0.4, "civic", "day",
+                   ["case review", "home visits", "reports"],
+                   {"laptop": 1, "id_card": 1, "phone": 1}),
+        Occupation("lawyer", 26, 68, 0.3, "civic", "day",
+                   ["case prep", "client meetings", "court", "filings"],
+                   {"laptop": 1, "id_card": 1, "documents": 3}),
+        # commercial / services
+        Occupation("waiter", 17, 60, 0.8, "commercial", "night",
+                   ["set up", "service", "bus tables", "close"],
+                   {"apron": 1, "order_pad": 1, "name_tag": 1}),
+        Occupation("barista", 16, 55, 0.7, "commercial", "day",
+                   ["open", "morning rush", "restock", "clean"],
+                   {"apron": 1, "name_tag": 1}),
+        Occupation("accountant", 23, 67, 0.6, "commercial", "day",
+                   ["reconcile", "ledgers", "client calls", "filings"],
+                   {"laptop": 1, "id_card": 1, "calculator": 1}),
+        Occupation("it_support", 20, 63, 0.7, "commercial", "day",
+                   ["ticket queue", "deskside", "patching", "on-call"],
+                   {"laptop": 1, "id_card": 1, "phone": 1, "usb_drive": 1}),
+        Occupation("security_guard", 21, 67, 0.6, "commercial", "night",
+                   ["briefing", "patrol", "monitor cctv", "patrol"],
+                   {"radio": 1, "torch": 1, "id_badge": 1, "keys": 1}),
+        Occupation("cleaner", 18, 68, 0.8, "commercial", "night",
+                   ["supplies", "offices", "restrooms", "lock up"],
+                   {"gloves": 2, "keys": 1, "id_badge": 1}),
+        # industrial / trades
+        Occupation("warehouse_worker", 18, 62, 0.8, "industrial", "day",
+                   ["pick list", "pack", "load bay", "stocktake"],
+                   {"hi_vis": 1, "gloves": 1, "scanner": 1}),
+        Occupation("electrician", 20, 64, 0.5, "industrial", "day",
+                   ["job sheet", "first fix", "test", "sign off"],
+                   {"tool_belt": 1, "multimeter": 1, "gloves": 1}),
+        Occupation("plumber", 20, 64, 0.5, "industrial", "day",
+                   ["call list", "repairs", "install", "invoice"],
+                   {"tool_bag": 1, "wrench": 2, "gloves": 1}),
+        Occupation("mechanic", 18, 64, 0.6, "industrial", "day",
+                   ["work orders", "diagnostics", "repairs", "road test"],
+                   {"tool_box": 1, "rag": 1, "overalls": 1}),
+        Occupation("welder", 20, 60, 0.4, "industrial", "night",
+                   ["setup", "weld", "grind", "inspect"],
+                   {"welding_mask": 1, "gloves": 1, "overalls": 1}),
+        # driving / logistics (the vehicle-bound jobs)
+        Occupation("taxi_driver", 21, 68, 0.5, "transit", "day",
+                   ["vehicle check", "fares", "rank wait", "fares"],
+                   {"keys": 1, "phone": 1, "id_badge": 1, "cash": 1}),
+        Occupation("delivery_driver", 19, 64, 0.8, "commercial", "day",
+                   ["load van", "route", "drops", "returns"],
+                   {"keys": 1, "scanner": 1, "hi_vis": 1, "phone": 1}),
+        Occupation("truck_driver", 23, 65, 0.6, "industrial", "day",
+                   ["pre-trip check", "long haul", "delivery", "logbook"],
+                   {"keys": 1, "logbook": 1, "hi_vis": 1, "thermos": 1}),
+        Occupation("courier", 16, 55, 0.5, "commercial", "day",
+                   ["depot", "pickups", "drops", "depot"],
+                   {"backpack": 1, "phone": 1, "scanner": 1, "lock": 1}),
+        Occupation("postal_worker", 18, 65, 0.6, "transit", "day",
+                   ["sort", "load round", "deliver", "return"],
+                   {"hi_vis": 1, "keys": 1, "scanner": 1}),
+        # home-anchored
+        Occupation("homemaker", 20, 75, 0.7, HOME, "none",
+                   ["household", "errands", "childcare"],
+                   {"keys": 1, "phone": 1, "shopping_bag": 1}),
         Occupation("retiree", 60, 95, 1.0, HOME, "none",
                    ["morning walk", "errands", "rest"],
                    {"keys": 1, "reading_glasses": 1, "medication": 2}),
@@ -914,18 +1014,29 @@ def _demo(city_name: str = "generic", n: int = 8, seed: int = 0,
         raise SystemExit(f"unknown city {city_name!r}; have {list(cities)}")
 
     if world:
+        from .vehicles import congestion_report
         cw = resolve_world(city, seed=seed)
         sm = cw.street_map
         print(f"=== '{city.name}': {sm.source}, {len(sm.buildings)} buildings, "
               f"{len(sm.nodes)} street nodes ===\n")
-        for c in spawn_population_in_world(cw, catalog, n, seed=seed):
+        pop = spawn_population_in_world(cw, catalog, n, seed=seed)
+        for c in pop:
             print(c.summary())
             extra = (f"        building #{c.home_building_id} @ "
                      f"({c.home_xy[0]:.0f},{c.home_xy[1]:.0f})")
             if c.commute_metres is not None:
-                extra += f"  commute {c.commute_metres:.0f} m"
+                extra += (f"  commute {c.commute_metres:.0f} m "
+                          f"by {c.commute_mode} ({c.vehicle})")
             print(extra)
             print()
+        # Whole-population morning commute -> traffic snapshot.
+        big = spawn_population_in_world(cw, catalog, max(n, 400), seed=seed)
+        rep = congestion_report(cw, big)
+        print(f"--- morning commute traffic ({len(big)} citizens) ---")
+        print(f"    {rep['commuters']} commuters, {rep['motorized']} motorized, "
+              f"{rep['total_pcu']:.0f} PCU on {rep['loaded_edges']} segments")
+        print(f"    network load {rep['network_load']:.2f} (mean V/C), "
+              f"worst {rep['max_voc']:.2f}, mean commute {rep['mean_commute_min']:.1f} min")
     else:
         print(f"=== {n} citizens spawned in '{city.name}' (seed {seed}) ===\n")
         for c in spawn_population(city, catalog, n, seed=seed):
