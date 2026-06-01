@@ -1,0 +1,34 @@
+{
+  "bbox": [
+    40.0,
+    -73.03,
+    40.02,
+    -73.0
+  ],
+  "center": [
+    40.010000000000005,
+    -73.015
+  ],
+  "dt": 0.25,
+  "genome": {
+    "R0": 3.0,
+    "asymptomatic_fraction": 0.4,
+    "incubation_period": 5.0,
+    "infectious_period": 7.0,
+    "mortality_fraction": 0.02,
+    "symptom_onset_delay": 2.0
+  },
+  "grid": {
+    "cell_m": 317.783,
+    "cols": 8,
+    "rows": 7
+  },
+  "n_days": 80.0,
+  "n_ticks": 320,
+  "name": "Sampleton",
+  "projection": "equirectangular",
+  "query": "Sampleton",
+  "seed": 0,
+  "seed_zone": 19,
+  "version": "1"
+}
