@@ -39,6 +39,24 @@ STATE_NAMES = ("S", "E", "Ia", "Is", "R", "D")
 N_STATES = 6
 
 
+def _concat_ranges(starts: np.ndarray, lengths: np.ndarray) -> np.ndarray:
+    """Concatenate integer ranges ``[start, start+length)`` into one flat array.
+
+    For ``starts=[3,10]`` and ``lengths=[2,3]`` returns ``[3,4,10,11,12]``.
+    Fully vectorised (the standard cumsum-increment trick); requires every
+    ``length >= 1`` (the caller filters out empty cells first).
+    """
+    total = int(lengths.sum())
+    if total == 0:
+        return np.empty(0, dtype=np.int64)
+    out = np.ones(total, dtype=np.int64)
+    out[0] = starts[0]
+    if starts.size > 1:
+        range_start_pos = np.cumsum(lengths)[:-1]
+        out[range_start_pos] = starts[1:] - (starts[:-1] + lengths[:-1]) + 1
+    return np.cumsum(out)
+
+
 def analytic_contact_prob(beta: float, living: float, params: MicroParams) -> float:
     """Per-day, per-infectious-neighbour hazard ``p`` that reproduces macro beta.
 
@@ -234,13 +252,20 @@ class AgentZone:
         """For every susceptible, the sum of infectious weights within radius r
         on the torus.
 
-        Vectorised over the *emitters* (infectious agents) only: the pairwise
-        susceptible-vs-infectious torus distance is computed with numpy
-        broadcasting and thresholded at r.  Because only infectious agents emit
-        and only susceptibles can be infected, the (K x M) block is small for
-        almost the whole arc (M is tiny early, K is tiny late), so this is both
-        exact (true circular radius) and fast.
+        Dispatches to the O(n) spatial-hash implementation when the torus is big
+        enough to tile into a >=3x3 cell grid (the common case); otherwise falls
+        back to the exact pairwise broadcast.  Both return the identical circular
+        -radius load, so the calibration is unchanged.
         """
+        ncell = int(self.L // self.r)
+        if ncell >= 3:
+            return self._neighbour_infectious_load_hashed(inf_w, ncell)
+        return self._neighbour_infectious_load_pairwise(inf_w)
+
+    def _neighbour_infectious_load_pairwise(self, inf_w: np.ndarray) -> np.ndarray:
+        """Exact O(K*M) reference: pairwise susceptible-vs-infectious torus
+        distance via broadcasting, thresholded at r.  Kept as the ground truth
+        the spatial hash is validated against (and used for tiny tori)."""
         L, r = self.L, self.r
         emit = inf_w > 0
         sus = self.state == S
@@ -258,6 +283,75 @@ class AgentZone:
         dy = np.minimum(dy, L - dy)          # torus wrap on y
         within = (dx * dx + dy * dy) <= r * r
         load[sus] = (within * w[None, :]).sum(axis=1)
+        return load
+
+    def _neighbour_infectious_load_hashed(self, inf_w: np.ndarray,
+                                          ncell: int) -> np.ndarray:
+        """O(n) spatial-hash neighbour search on the torus.
+
+        Bin agents into an ``ncell x ncell`` grid whose cell side ``L/ncell`` is
+        >= r, so every agent within radius r of a susceptible lies in the 3x3
+        block of cells around it.  We gather only those candidate emitters
+        (linked-cell list) and then apply the *exact* circular distance test, so
+        the result is bit-identical to the pairwise reference.
+        """
+        L, r = self.L, self.r
+        emit = inf_w > 0
+        sus = self.state == S
+        load = np.zeros(self.n, dtype=float)
+        if not emit.any() or not sus.any():
+            return load
+
+        cs = L / ncell                       # cell side (>= r)
+        ncells_total = ncell * ncell
+
+        # --- bin emitters, sorted by cell, with per-cell (start, length) -----
+        Ppos = self.pos[emit]
+        w = inf_w[emit]
+        eix = (Ppos[:, 0] / cs).astype(np.int64) % ncell
+        eiy = (Ppos[:, 1] / cs).astype(np.int64) % ncell
+        ecell = eiy * ncell + eix
+        order = np.argsort(ecell, kind="stable")
+        ecell_s = ecell[order]
+        Ppos_s = Ppos[order]
+        w_s = w[order]
+        cell_ids, starts = np.unique(ecell_s, return_index=True)
+        lengths = np.diff(np.append(starts, ecell_s.size))
+        cell_start = np.zeros(ncells_total, dtype=np.int64)
+        cell_len = np.zeros(ncells_total, dtype=np.int64)
+        cell_start[cell_ids] = starts
+        cell_len[cell_ids] = lengths
+
+        # --- susceptible cells ----------------------------------------------
+        Qpos = self.pos[sus]
+        six = (Qpos[:, 0] / cs).astype(np.int64) % ncell
+        siy = (Qpos[:, 1] / cs).astype(np.int64) % ncell
+        K = Qpos.shape[0]
+        acc = np.zeros(K, dtype=float)
+
+        # --- scan the 3x3 block of neighbour cells per susceptible ----------
+        for dy in (-1, 0, 1):
+            ny = (siy + dy) % ncell
+            for dx in (-1, 0, 1):
+                nx = (six + dx) % ncell
+                nid = ny * ncell + nx
+                ln = cell_len[nid]                 # (K,) emitters in that cell
+                valid = ln > 0
+                if not valid.any():
+                    continue
+                sloc = np.nonzero(valid)[0]        # susceptible local indices
+                st_v = cell_start[nid][valid]
+                ln_v = ln[valid]
+                eidx = _concat_ranges(st_v, ln_v)  # indices into sorted emitters
+                sus_of = np.repeat(sloc, ln_v)     # owning susceptible per pair
+                ddx = np.abs(Qpos[sus_of, 0] - Ppos_s[eidx, 0])
+                ddx = np.minimum(ddx, L - ddx)
+                ddy = np.abs(Qpos[sus_of, 1] - Ppos_s[eidx, 1])
+                ddy = np.minimum(ddy, L - ddy)
+                hit = (ddx * ddx + ddy * ddy) <= r * r
+                np.add.at(acc, sus_of[hit], w_s[eidx][hit])
+
+        load[sus] = acc
         return load
 
     def step(self) -> None:

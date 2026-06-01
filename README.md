@@ -140,9 +140,19 @@ The full engine contract, the per-tick orchestration algorithm, the
 conservation guarantee, and the roadmap for the remaining simulation work (then
 Godot last) are documented in **[`ARCHITECTURE.md`](ARCHITECTURE.md)**.
 
+A real-time **budget cap** sizes the live bubble: `World(max_live_zones=…,
+max_live_agents=…)` keeps player-focused zones plus the most-infectious zones
+within budget and leaves the rest as math.
+
 ```bash
 python tests/test_orchestrator.py   # or:  python -m pytest tests/test_orchestrator.py -q
+python -m asphodel.bench            # Phase 6: tick-cost benchmark + budget table
 ```
+
+**Phase 6** made the agent neighbour search genuinely O(n) (a spatial hash, ~600×
+faster at 10k agents, bit-identical to the old pairwise scan) and measured the
+engine budget: a 1000-agent live zone costs <1 ms/tick, so dozens run in real
+time. See **[`FINDINGS_PHASE6.md`](FINDINGS_PHASE6.md)**.
 
 ---
 

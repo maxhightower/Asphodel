@@ -150,8 +150,8 @@ zone holds 800 or 5000 people.
 |---|---|---|
 | 3a | Macro belief-cascade tier | ✅ done |
 | 4a | Single-zone micro tier + calibration + handoff | ✅ done |
-| **5** | **Orchestrator (`World`) + inter-zone agent flux + runtime promote/demote + player-focus trigger** | **this change** |
-| 6 | Multi-zone concurrent micro under a measured real-time budget; size the live-bubble count per frame | next |
+| 5 | Orchestrator (`World`) + inter-zone agent flux + runtime promote/demote + player-focus trigger | ✅ done |
+| **6** | **O(n) spatial-hash neighbour search + measured real-time budget + live-bubble budget cap** | ✅ done — see `FINDINGS_PHASE6.md` |
 | 7 | Richer topology (small-world / commute graph) + heterogeneous-genome, multi-seed-zone scenarios | next |
 | 8 | Player interventions (broadcast / shelter order / staffing / cordon) through `world.intervene`; couple agent shelter to live belief | next |
 | 9 | Save/load: full deterministic state serialization (macro + agents + RNG) | next |
@@ -175,6 +175,7 @@ asphodel/
   calibration.py   # genome → micro params, agreement metrics
   handoff.py       # promote / derived-update / merge messages, hysteresis
   orchestrator.py  # World: the engine façade — runs macro + dynamic micro zones
+  bench.py         # Phase 6: real-time tick-cost benchmark + live-bubble budget
   runner.py        # batch scenario runner + RunResult
   viz.py           # plots / heatmaps / GIF
   experiments.py   # parameter sweeps

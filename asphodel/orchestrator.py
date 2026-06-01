@@ -64,8 +64,17 @@ class World:
                  micro_params: MicroParams | None = None,
                  handoff: HandoffParams | None = None,
                  ref_density: float | None = None,
+                 max_live_zones: int | None = None,
+                 max_live_agents: int | None = None,
                  seed: int = 0):
         self.cfg = config
+
+        # Real-time budget caps on the live bubble (None => unbounded).  When a
+        # cap would be exceeded, player-focused zones are always kept and the
+        # remaining budget goes to the highest-infectious zones; the rest stay
+        # macro.  This is how the frame budget sizes the live bubble.
+        self.max_live_zones = max_live_zones
+        self.max_live_agents = max_live_agents
         self.sim = Simulation(config)
         self.Z = self.sim.Z
         self.dt = config.dt
@@ -186,6 +195,9 @@ class World:
     def _update_membership(self) -> None:
         frac = self.infectious_fraction()
         h = self.handoff
+
+        # 1. Desired set from focus + infectious-fraction hysteresis.
+        desired: set[int] = set()
         for z in range(self.Z):
             currently = z in self.promoted
             if z in self.focus:
@@ -194,11 +206,46 @@ class World:
                 want = not should_demote(float(frac[z]), True, h)
             else:
                 want = should_promote(float(frac[z]), False, h)
+            if want:
+                desired.add(z)
 
-            if want and not currently:
-                self._promote_zone(z)
-            elif not want and currently:
-                self._demote_zone(z)
+        # 2. Apply the real-time budget caps, if any.
+        desired = self._apply_budget(desired, frac)
+
+        # 3. Reconcile current -> desired.
+        for z in sorted(desired - set(self.promoted)):
+            self._promote_zone(z)
+        for z in sorted(set(self.promoted) - desired):
+            self._demote_zone(z)
+
+    def _apply_budget(self, desired: set[int], frac: np.ndarray) -> set[int]:
+        """Trim ``desired`` to the live-bubble caps, keeping the most important.
+
+        Player-focused zones are always kept (the camera is non-negotiable);
+        the remaining budget is filled by descending infectious fraction.  A
+        zone's agent cost is its current macro living count.
+        """
+        if self.max_live_zones is None and self.max_live_agents is None:
+            return desired
+
+        living = self.sim.living()
+        # Focus zones first (kept regardless), then the rest by infectiousness.
+        forced = [z for z in desired if z in self.focus]
+        rest = sorted((z for z in desired if z not in self.focus),
+                      key=lambda z: float(frac[z]), reverse=True)
+
+        kept = list(forced)
+        agents = sum(float(living[z]) for z in forced)
+        for z in rest:
+            if self.max_live_zones is not None and len(kept) >= self.max_live_zones:
+                break
+            cost = float(living[z])
+            if (self.max_live_agents is not None
+                    and agents + cost > self.max_live_agents and kept):
+                continue
+            kept.append(z)
+            agents += cost
+        return set(kept)
 
     def _promote_zone(self, z: int) -> None:
         counts = macro_zone_counts(self.sim, z)

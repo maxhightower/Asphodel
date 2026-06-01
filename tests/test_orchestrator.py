@@ -170,6 +170,68 @@ def test_single_promoted_zone_matches_macro_in_expectation():
     assert rel < 0.15, (macro_attack, micro_attack, rel)
 
 
+# --------------------------------------------------------------------------- #
+# Phase 6: spatial-hash neighbour search is exact; live-bubble budget caps
+# --------------------------------------------------------------------------- #
+def test_spatial_hash_matches_pairwise():
+    from asphodel.micro import AgentZone
+    g = PathogenGenome()
+    rng = np.random.default_rng(0)
+    for trial in range(15):
+        N = int(rng.integers(50, 1200))
+        area = float(np.sqrt(N / 0.1))
+        z = AgentZone(g, _micro_n(N, area), dt=0.25, seed=trial)
+        z.state = rng.integers(0, 6, size=N).astype(np.int8)
+        z.pos = rng.uniform(0, z.L, size=(N, 2))
+        w = z._infectious_weight()
+        ncell = int(z.L // z.r)
+        a = z._neighbour_infectious_load_pairwise(w)
+        b = z._neighbour_infectious_load_hashed(w, ncell)
+        assert np.allclose(a, b, atol=1e-9), (trial, np.abs(a - b).max())
+
+
+def test_max_live_zones_cap():
+    cfg = _grid_config(rows=6, cols=6, n_days=80.0)
+    w = World(cfg, micro_params=_micro(), max_live_zones=4, seed=0)
+    peak = 0
+    for _ in range(int(80.0 / cfg.dt)):
+        wt = w.step()
+        peak = max(peak, wt.n_promoted)
+        assert wt.n_promoted <= 4, wt.n_promoted
+    assert peak == 4, f"cap never bound (peak {peak}); test is vacuous"
+
+
+def test_focus_kept_even_when_cap_is_full():
+    # Cap of 2: a focused corner zone (uninfected) must still be promoted, even
+    # though higher-infectious zones are competing for the budget.
+    cfg = _grid_config(rows=6, cols=6, n_days=60.0)
+    w = World(cfg, micro_params=_micro(), max_live_zones=2, seed=0)
+    w.set_focus([0])
+    promoted_with_focus = False
+    for _ in range(int(60.0 / cfg.dt)):
+        wt = w.step()
+        assert wt.n_promoted <= 2
+        if 0 in w.promoted:
+            promoted_with_focus = True
+    assert promoted_with_focus, "focused zone was dropped by the budget cap"
+
+
+def test_max_live_agents_cap():
+    cfg = _grid_config(rows=6, cols=6, pop=1000.0, n_days=80.0)
+    # Budget for ~2.5 zones of ~1000 -> at most 2 full zones promoted.
+    w = World(cfg, micro_params=_micro(), max_live_agents=2500, seed=0)
+    for _ in range(int(80.0 / cfg.dt)):
+        wt = w.step()
+        live_agents = sum(z.n for z in w.promoted.values())
+        # Never exceed the budget by more than one zone's worth.
+        assert live_agents <= 2500 + 1100, live_agents
+
+
+def _micro_n(n, area):
+    return MicroParams(n_agents=n, area_size=area, infection_radius=2.0,
+                       mixing_step_frac=0.12)
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for fn in fns:
