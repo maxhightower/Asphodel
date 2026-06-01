@@ -16,6 +16,7 @@ from asphodel.osm_city import CityNotFound
 from asphodel.osm_city import geometry as geo
 from asphodel.osm_city import overpass as ov
 from asphodel.osm_city import bundle as bnd
+from asphodel.osm_city import pipeline as pipe
 
 
 def test_project_origin_is_zero():
@@ -291,3 +292,35 @@ def test_build_timeline_rounds_and_shapes():
     assert tl["field"] == "belief"
     assert tl["shape"] == [2, 2]
     assert tl["data"][0][0] == 0.12346     # rounded to 5 dp
+
+
+def test_build_bundle_end_to_end_offline(tmp_path):
+    # Use the Overpass fixture parsed into buildings/roads, no network.
+    buildings, roads = ov.parse_osm(_OVERPASS_FIXTURE)
+    bbox = (40.0, -73.01, 40.01, -73.0)
+    out = tmp_path / "city"
+    pipe.build_bundle(
+        query="Toytown", bbox=bbox, buildings=buildings, roads=roads,
+        out_dir=str(out), grid=4, total_pop=20000.0, seed=0, n_days=10.0,
+    )
+    meta = _json.loads((out / "meta.json").read_text())
+    zones = _json.loads((out / "zones.json").read_text())
+    timeline = _json.loads((out / "timeline.json").read_text())
+
+    assert meta["grid"]["rows"] * meta["grid"]["cols"] == len(zones)
+    assert timeline["shape"] == [meta["n_ticks"] + 1, len(zones)]
+    assert abs(sum(z["population"] for z in zones) - 20000.0) < 1.0
+    assert all("blocks" in z for z in zones)
+    # seed_zone is a populated cell
+    assert zones[meta["seed_zone"]]["population"] > 0.0
+
+
+def test_build_bundle_is_byte_deterministic(tmp_path):
+    buildings, roads = ov.parse_osm(_OVERPASS_FIXTURE)
+    bbox = (40.0, -73.01, 40.01, -73.0)
+    a, b = tmp_path / "a", tmp_path / "b"
+    for out in (a, b):
+        pipe.build_bundle(query="Toytown", bbox=bbox, buildings=buildings, roads=roads,
+                          out_dir=str(out), grid=4, total_pop=20000.0, seed=0, n_days=10.0)
+    for name in ("meta.json", "zones.json", "roads.json", "timeline.json"):
+        assert (a / name).read_bytes() == (b / name).read_bytes()
