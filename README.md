@@ -154,6 +154,24 @@ faster at 10k agents, bit-identical to the old pairwise scan) and measured the
 engine budget: a 1000-agent live zone costs <1 ms/tick, so dozens run in real
 time. See **[`FINDINGS_PHASE6.md`](FINDINGS_PHASE6.md)**.
 
+**Phase 7** made the zone graph's topology a swappable dial (`grid` /
+`small_world` / `commute`, with per-zone populations and multi-seed outbreaks).
+Finding: a commute **hub** graph collapses the cascade's tip ~6× and nearly
+doubles deaths, while mild small-world rewiring barely moves it — concentration,
+not randomness, synchronizes the panic (`FINDINGS.md` §9).
+
+**Phase 8** lets the player act on the world via `world.intervene(...)` —
+`broadcast`, `cordon`, `shelter_order`, `allocate_staffing` — flowing through both
+the macro fields and any live agent zone. Finding: propping up infrastructure can
+*increase* deaths by muting an alarm the population relied on
+(`FINDINGS_PHASE8.md`).
+
+```python
+world.intervene("cordon", zones=[seed_zone])         # quarantine a zone
+world.intervene("shelter_order", zones=None, strength=0.85)  # all zones
+world.intervene("broadcast", level=1.0)              # emergency address
+```
+
 ---
 
 ## Phase 4a — Macro↔Micro handoff & calibration

@@ -239,6 +239,63 @@ def topology_comparison(base: ScenarioConfig | None = None) -> None:
     print(f"  -> {path}")
 
 
+# --------------------------------------------------------------------------- #
+# 6. Intervention demo -- the player levers vs a no-intervention baseline
+# --------------------------------------------------------------------------- #
+def intervention_demo(base: ScenarioConfig | None = None) -> None:
+    """Quantify each Phase-8 player intervention (applied at day 0) vs doing
+    nothing, driven through the World.intervene API.
+
+    Promotion is disabled (threshold above 1.0) so this is a deterministic
+    macro comparison -- the interventions act on the same fields the agent tier
+    would inherit.
+    """
+    from .config import HandoffParams
+    from .orchestrator import World
+
+    base = base or ScenarioConfig()
+    seed = base.model.graph.grid_rows // 2 * base.model.graph.grid_cols \
+        + base.model.graph.grid_cols // 2
+    no_promote = HandoffParams(promote_threshold=2.0, demote_threshold=1.9)
+
+    def run(setup) -> dict:
+        cfg = _clone(base)
+        w = World(cfg, handoff=no_promote, seed=0)
+        if setup:
+            setup(w)
+        n = int(round(cfg.n_days / cfg.dt))
+        panic, days, dead, water = [], [], None, 0
+        nz = w.Z
+        for _ in range(n):
+            wt = w.step()
+            panic.append(int((w.sim.belief > cfg.model.belief.panic_threshold).sum()))
+            days.append(wt.day)
+            dead = wt.D
+            water = max(water, int((~w.sim.water_ok).sum()))
+        d = np.array(days)
+        pa = np.array(panic)
+
+        def day_at(frac):
+            c = pa >= frac * nz
+            return float(d[c][0]) if c.any() else None
+        t10, t90 = day_at(0.1), day_at(0.9)
+        return {"final_dead": dead, "silent_until": t10, "fully_panicked": t90,
+                "tip_sharpness_days": (t90 - t10) if t10 and t90 else None,
+                "peak_water_fail": water}
+
+    variants = [
+        ("no intervention", None),
+        ("cordon seed @0", lambda w: w.intervene("cordon", zones=[seed])),
+        ("broadcast @0", lambda w: w.intervene("broadcast", level=1.0)),
+        ("shelter order @0", lambda w: w.intervene("shelter_order", zones=None, strength=0.85)),
+        ("staffing @0", lambda w: w.intervene("allocate_staffing", zones=None, amount=1.0)),
+        ("cordon + shelter", lambda w: (w.intervene("cordon", zones=[seed]),
+                                        w.intervene("shelter_order", zones=None, strength=0.85))),
+    ]
+    rows = [(label, run(setup)) for label, setup in variants]
+    _print_table("Intervention demo (applied at day 0)", rows)
+
+
 def run_all() -> None:
     base = ScenarioConfig()
     incubation_sweep(base)
@@ -246,6 +303,7 @@ def run_all() -> None:
     authority_lag_sweep(base)
     coupling_onoff(base)
     topology_comparison(base)
+    intervention_demo(base)
 
 
 if __name__ == "__main__":

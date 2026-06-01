@@ -99,6 +99,55 @@ class World:
         """Set the player-focus set: these zones are force-promoted (camera)."""
         self.focus = set(int(z) for z in zones)
 
+    def intervene(self, action: str, zones=None, **params) -> None:
+        """Apply a player intervention to the world state.
+
+        Actions (``zones`` is an index, an iterable, or None = all zones;
+        ignored for the global broadcast):
+
+        * ``broadcast`` (level=1.0) / ``stop_broadcast`` -- drive the official
+          belief channel directly (an emergency address), bypassing the
+          authority's lag.
+        * ``cordon`` / ``lift_cordon`` -- seal zones: no inter-zone infection
+          mixing and no fleeing in or out (quarantine).
+        * ``shelter_order`` (strength=0.85) / ``lift_shelter_order`` -- impose a
+          floor on the sheltering fraction (cuts transmission), regardless of
+          belief.
+        * ``allocate_staffing`` (amount=0.4) / ``clear_staffing`` -- add a
+          staffing bonus that props up power/water against the infra cascade.
+        """
+        sim = self.sim
+        if action == "broadcast":
+            sim.broadcast_signal = float(params.get("level", 1.0))
+            return
+        if action == "stop_broadcast":
+            sim.broadcast_signal = 0.0
+            return
+
+        z = self._zone_selector(zones)
+        if action == "cordon":
+            sim.cordoned[z] = True
+        elif action == "lift_cordon":
+            sim.cordoned[z] = False
+        elif action == "shelter_order":
+            sim.mandated_shelter[z] = float(params.get("strength", 0.85))
+        elif action == "lift_shelter_order":
+            sim.mandated_shelter[z] = 0.0
+        elif action == "allocate_staffing":
+            sim.staffing_support[z] = float(params.get("amount", 0.4))
+        elif action == "clear_staffing":
+            sim.staffing_support[z] = 0.0
+        else:
+            raise ValueError(f"unknown intervention {action!r}")
+
+    @staticmethod
+    def _zone_selector(zones):
+        if zones is None:
+            return slice(None)
+        if isinstance(zones, (int, np.integer)):
+            return [int(zones)]
+        return [int(z) for z in zones]
+
     # --------------------------------------------------------------- read state
     def infectious_fraction(self) -> np.ndarray:
         """Per-zone infectious fraction (Ia+Is)/living, from the macro ledger."""
@@ -122,7 +171,13 @@ class World:
         rec = self.sim.step(frozen_internal=frozen)
 
         # --- 3+4. agent internal step, then write-back & realise flux --------
+        # Couple each promoted zone's agent sheltering to the live macro belief
+        # (and any player shelter order), so the tiers stay behaviourally
+        # consistent under interventions.
+        shelter_vec = self.sim._shelter_fraction()
         for z, zone in self.promoted.items():
+            zone.set_shelter_fraction(float(shelter_vec[z]))
+
             # Inter-zone flux the macro applied to this zone this tick (float).
             post_flux = macro_zone_counts(self.sim, z)
 
@@ -175,6 +230,8 @@ class World:
                 "power_ok": bool(sim.power_ok[z]),
                 "water_ok": bool(sim.water_ok[z]),
                 "promoted": z in self.promoted,
+                "cordoned": bool(sim.cordoned[z]),
+                "shelter_order": float(sim.mandated_shelter[z]),
             })
         agents = {}
         for z, zone in self.promoted.items():

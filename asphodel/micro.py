@@ -27,7 +27,7 @@ proximity check is O(n_agents) rather than O(n_agents^2).
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import numpy as np
 
@@ -219,6 +219,22 @@ class AgentZone:
             self.remove_agents(rem)
         if add:
             self.add_agents(add)
+
+    def set_shelter_fraction(self, frac: float) -> None:
+        """Set the fraction of agents sheltering and re-pick the sheltered subset.
+
+        Used by the orchestrator to couple a promoted zone's agent sheltering to
+        the live macro belief field (and to player shelter orders), so the two
+        tiers stay behaviourally consistent.  ``shelter_effectiveness`` (how much
+        a sheltering agent cuts its contact) keeps its configured value.
+        """
+        frac = float(np.clip(frac, 0.0, 1.0))
+        self.params = replace(self.params, shelter_fraction=frac)
+        self.sheltered = np.zeros(self.n, dtype=bool)
+        k = int(round(frac * self.n))
+        if k > 0:
+            idx = self.rng.choice(self.n, size=k, replace=False)
+            self.sheltered[idx] = True
 
     def seed_infection(self, n_exposed: int) -> None:
         """Inject ``n_exposed`` initial E among the susceptibles (outbreak seed)."""
