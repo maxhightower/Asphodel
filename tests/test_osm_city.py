@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json as _json
 import math
+import os
 import random
 
 import numpy as np
@@ -14,6 +15,7 @@ from asphodel.osm_city import geocode as gc
 from asphodel.osm_city import CityNotFound
 from asphodel.osm_city import geometry as geo
 from asphodel.osm_city import overpass as ov
+from asphodel.osm_city import bundle as bnd
 
 
 def test_project_origin_is_zero():
@@ -252,3 +254,40 @@ def test_fetch_osm_uses_cache(tmp_path):
     b = ov.fetch_osm(bbox, cache_dir=str(tmp_path), fetch=fake_fetch)
     assert calls["n"] == 1                        # second call served from cache
     assert a == b
+
+
+def _toy_inputs():
+    meta = {"name": "Toy", "query": "Toy", "bbox": [0, 0, 1, 1],
+            "center": [0.5, 0.5], "projection": "equirectangular",
+            "grid": {"rows": 2, "cols": 2, "cell_m": 100.0},
+            "dt": 0.25, "n_days": 1.0, "n_ticks": 4,
+            "genome": {"R0": 3.0}, "seed": 0, "seed_zone": 0, "version": "1"}
+    zones = [{"id": 0, "row": 0, "col": 0, "center_xy": [0.0, 0.0], "extent": [100.0, 100.0],
+              "population": 1000.0, "density": 1.0, "blocks": []}]
+    roads = {"polylines": [{"class": "primary", "points": [[0.0, 0.0], [10.0, 10.0]]}]}
+    timeline = {"field": "belief", "shape": [5, 1], "data": [[0.0], [0.1], [0.2], [0.3], [0.4]]}
+    return meta, zones, roads, timeline
+
+
+def test_write_bundle_creates_all_files(tmp_path):
+    meta, zones, roads, timeline = _toy_inputs()
+    bnd.write_bundle(str(tmp_path), meta, zones, roads, timeline)
+    for name in ("meta.json", "zones.json", "roads.json", "timeline.json"):
+        assert os.path.exists(tmp_path / name)
+
+
+def test_write_bundle_is_deterministic(tmp_path):
+    meta, zones, roads, timeline = _toy_inputs()
+    a, b = tmp_path / "a", tmp_path / "b"
+    bnd.write_bundle(str(a), meta, zones, roads, timeline)
+    bnd.write_bundle(str(b), meta, zones, roads, timeline)
+    for name in ("meta.json", "zones.json", "roads.json", "timeline.json"):
+        assert (a / name).read_bytes() == (b / name).read_bytes()
+
+
+def test_build_timeline_rounds_and_shapes():
+    hist = np.array([[0.123456789, 0.5], [0.987654321, 0.25]])
+    tl = bnd.build_timeline(hist)
+    assert tl["field"] == "belief"
+    assert tl["shape"] == [2, 2]
+    assert tl["data"][0][0] == 0.12346     # rounded to 5 dp
