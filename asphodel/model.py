@@ -93,7 +93,10 @@ class Simulation:
         # when zones come from real OSM geography -- water, parks, rural edges)
         # would otherwise produce 0/0 NaNs that propagate through belief
         # contagion. For populated zones this equals N0, so dynamics are
-        # unchanged; empty zones divide by 1.0 and stay inert.
+        # unchanged. Empty zones then generate no *local* belief (observation and
+        # infrastructure channels go to zero) and carry no infection; note they
+        # still participate in social-contagion mixing -- whether an unpopulated
+        # cell should relay panic at all is a deferred modelling question.
         self.N0_safe = np.where(self.N0 > 0, self.N0, 1.0)
         self.E = np.zeros(Z)
         self.Ia = np.zeros(Z)                          # infectious, not visible

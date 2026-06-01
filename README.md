@@ -200,6 +200,9 @@ python -m pytest tests/test_osm_city.py -q   # offline: inline fixtures, no netw
 ```
 
 > **Note:** real geography yields empty cells (water, parks, rural edges) with
-> zero population. The macro sim treats such zones as inert (no infection, no
-> infrastructure alarm) so the baked belief timeline stays finite — see the
-> per-zone-population hook in [`asphodel/model.py`](asphodel/model.py).
+> zero population. The macro sim gives such zones no population-driven burden (no
+> infection, no observation- or infrastructure-driven belief) so the baked belief
+> timeline stays finite — see the per-zone-population hook in
+> [`asphodel/model.py`](asphodel/model.py). (They still participate in social
+> contagion; that's a deferred modelling question, and since empty cells render
+> no blocks it has no visual effect.)

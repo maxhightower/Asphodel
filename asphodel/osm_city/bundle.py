@@ -18,7 +18,10 @@ def build_timeline(belief_history, field: str = "belief", ndigits: int = 5) -> d
 
 def _write_json(path: str, obj) -> None:
     with open(path, "w") as f:
-        json.dump(obj, f, indent=2, sort_keys=True)
+        # allow_nan=False turns any non-finite leak into a loud ValueError here
+        # rather than emitting bare NaN/Infinity tokens that are invalid JSON and
+        # would make Godot's parser reject the bundle silently.
+        json.dump(obj, f, indent=2, sort_keys=True, allow_nan=False)
         f.write("\n")
 
 

@@ -65,7 +65,10 @@ def build_bundle(query, bbox, buildings, roads, out_dir, grid=16,
         "name": query, "query": query,
         "bbox": [south, west, north, east], "center": [lat0, lon0],
         "projection": "equirectangular",
-        "grid": {"rows": t.rows, "cols": t.cols, "cell_m": round(t.cell_w, 3)},
+        # cell_m is the mean cell side (cells are near-square but not exactly);
+        # Godot uses each zone's own `extent` for precise sizing.
+        "grid": {"rows": t.rows, "cols": t.cols,
+                 "cell_m": round((t.cell_w + t.cell_h) / 2.0, 3)},
         "dt": dt, "n_days": n_days, "n_ticks": cfg.n_ticks,
         "genome": asdict(genome), "seed": seed, "seed_zone": seed_zone,
         "version": "1",
