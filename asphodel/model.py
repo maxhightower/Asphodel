@@ -89,6 +89,12 @@ class Simulation:
             pop = config.model.graph.population_per_zone
             self.N0 = np.full(Z, pop, dtype=float)      # uniform population
         self.S = self.N0.copy()
+        # Safe denominator for per-zone rates: zones with zero population (common
+        # when zones come from real OSM geography -- water, parks, rural edges)
+        # would otherwise produce 0/0 NaNs that propagate through belief
+        # contagion. For populated zones this equals N0, so dynamics are
+        # unchanged; empty zones divide by 1.0 and stay inert.
+        self.N0_safe = np.where(self.N0 > 0, self.N0, 1.0)
         self.E = np.zeros(Z)
         self.Ia = np.zeros(Z)                          # infectious, not visible
         self.Is = np.zeros(Z)                          # visibly symptomatic
@@ -153,7 +159,11 @@ class Simulation:
         if infra.enabled:
             # Workforce present = living, not visibly sick, not sheltering.
             available = np.clip(living - self.Is, 0.0, None) * (1.0 - shelter)
-            self.staffing = np.clip(available / self.N0, 0.0, 1.0)
+            # Empty zones have no workforce *and* no infrastructure to fail, so
+            # treat them as fully staffed (1.0) rather than 0/0 -> a false alarm.
+            self.staffing = np.where(
+                self.N0 > 0, np.clip(available / self.N0_safe, 0.0, 1.0), 1.0
+            )
             self.power_ok = self.staffing >= infra.power_staffing_threshold
             # Water depends on staffing *and* power being up.
             self.water_ok = self.power_ok & (self.staffing >= infra.water_staffing_threshold)
@@ -303,7 +313,7 @@ class Simulation:
         # Channel 1: direct observation of *visible* burden (saturating).
         # Cumulative deaths are weighted separately so they can be made to
         # "ratchet" belief (weight 1) or be forgotten (weight 0 -> oscillation).
-        visible_frac = (self.Is + bp.obs_deaths_weight * self.D) / self.N0
+        visible_frac = (self.Is + bp.obs_deaths_weight * self.D) / self.N0_safe
         obs = visible_frac / (visible_frac + bp.obs_half_saturation)
 
         # Channel 2: social contagion -- mobility-weighted neighbour belief.
@@ -357,7 +367,7 @@ class Simulation:
         # Incident rate is superlinear in simultaneous outflow (panic-congestion
         # placeholder); operator incapacitation scales with the infected
         # fraction among those fleeing (infection directly causing incidents).
-        outflow_frac = outflow / self.N0
+        outflow_frac = outflow / self.N0_safe
         congestion = ev.incident_coeff * np.sum(outflow_frac ** 2)
         living = self.living()
         infected_frac_present = (self.Ia + self.Is) / np.where(living > 0, living, 1.0)

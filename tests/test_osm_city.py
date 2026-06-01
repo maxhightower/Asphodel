@@ -173,6 +173,19 @@ def test_run_scenario_with_heterogeneous_population():
     assert result.belief_history.shape == (cfg.n_ticks + 1, 4)
 
 
+def test_zero_population_zone_keeps_belief_finite():
+    # Real OSM grids contain empty cells (population 0: water, parks, rural
+    # edges). The sim must stay NaN-free -- an empty zone is inert, not a 0/0
+    # that propagates through belief contagion and poisons the whole grid.
+    pops = [5000.0, 0.0, 0.0, 0.0]
+    cfg = ScenarioConfig(
+        model=ModelParams(graph=GraphParams(grid_rows=2, grid_cols=2, population=pops)),
+        n_days=10.0, seed_zone=0,
+    )
+    result = run_scenario(cfg)
+    assert np.isfinite(result.belief_history).all()
+
+
 # Nominatim returns boundingbox as [south, north, west, east] strings.
 _NOMINATIM_FIXTURE = _json.dumps([
     {"boundingbox": ["41.6", "42.0", "-87.9", "-87.5"], "display_name": "Chicago"}
@@ -324,3 +337,18 @@ def test_build_bundle_is_byte_deterministic(tmp_path):
                           out_dir=str(out), grid=4, total_pop=20000.0, seed=0, n_days=10.0)
     for name in ("meta.json", "zones.json", "roads.json", "timeline.json"):
         assert (a / name).read_bytes() == (b / name).read_bytes()
+
+
+def test_build_bundle_timeline_is_finite(tmp_path):
+    # End-to-end guard: the fixture's bbox has mostly empty cells, so this would
+    # be all-NaN if zero-population zones weren't handled. Every value must be
+    # a finite belief in [0, 1].
+    buildings, roads = ov.parse_osm(_OVERPASS_FIXTURE)
+    out = tmp_path / "city"
+    pipe.build_bundle(query="Toytown", bbox=(40.0, -73.01, 40.01, -73.0),
+                      buildings=buildings, roads=roads, out_dir=str(out),
+                      grid=4, total_pop=20000.0, seed=0, n_days=10.0)
+    timeline = _json.loads((out / "timeline.json").read_text())
+    data = np.array(timeline["data"], dtype=float)
+    assert np.isfinite(data).all()
+    assert (data >= 0.0).all() and (data <= 1.0).all()
