@@ -68,6 +68,10 @@ class GraphParams:
     mobility: float = 0.15             # fraction of within-zone contact that is
     #                                    actually with neighbouring zones
     #                                    (carries infection along the graph)
+    # Optional explicit per-zone population (length grid_rows*grid_cols, ordered
+    # row*cols+col). When set, overrides the uniform population_per_zone -- this
+    # is how the OSM pipeline feeds real building-density populations.
+    population: Optional[list] = None
 
 
 @dataclass

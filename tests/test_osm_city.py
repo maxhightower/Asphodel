@@ -4,6 +4,10 @@ from __future__ import annotations
 import math
 import random
 
+import numpy as np
+
+from asphodel.config import ScenarioConfig, GraphParams, ModelParams
+from asphodel.runner import run_scenario
 from asphodel.osm_city import geometry as geo
 
 
@@ -127,3 +131,35 @@ def test_levels_weight_population():
     pops = sorted(z["population"] for z in t.zones if z["population"] > 0)
     assert len(pops) == 2
     assert abs(pops[1] / pops[0] - 3.0) < 0.2
+
+
+def test_per_zone_population_sets_N0():
+    pops = [100.0, 200.0, 300.0, 400.0]
+    cfg = ScenarioConfig(
+        model=ModelParams(graph=GraphParams(grid_rows=2, grid_cols=2, population=pops)),
+        n_days=1.0,
+    )
+    from asphodel.model import Simulation
+    sim = Simulation(cfg)
+    assert np.allclose(sim.N0, np.array(pops))
+
+
+def test_default_population_unchanged_when_vector_absent():
+    cfg = ScenarioConfig(
+        model=ModelParams(graph=GraphParams(grid_rows=2, grid_cols=2,
+                                            population_per_zone=777.0)),
+        n_days=1.0,
+    )
+    from asphodel.model import Simulation
+    sim = Simulation(cfg)
+    assert np.allclose(sim.N0, np.full(4, 777.0))
+
+
+def test_run_scenario_with_heterogeneous_population():
+    pops = [5000.0, 1000.0, 1000.0, 1000.0]
+    cfg = ScenarioConfig(
+        model=ModelParams(graph=GraphParams(grid_rows=2, grid_cols=2, population=pops)),
+        n_days=5.0, seed_zone=0,
+    )
+    result = run_scenario(cfg)
+    assert result.belief_history.shape == (cfg.n_ticks + 1, 4)

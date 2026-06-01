@@ -78,9 +78,17 @@ class Simulation:
         self.dt = config.dt
 
         # --- Infection compartments (people) -------------------------------
-        pop = config.model.graph.population_per_zone
-        self.N0 = np.full(Z, pop, dtype=float)        # original population
-        self.S = np.full(Z, pop, dtype=float)
+        pop_vec = config.model.graph.population
+        if pop_vec is not None:
+            if len(pop_vec) != Z:
+                raise ValueError(
+                    f"graph.population has {len(pop_vec)} entries but grid has {Z} zones"
+                )
+            self.N0 = np.asarray(pop_vec, dtype=float)  # per-zone population
+        else:
+            pop = config.model.graph.population_per_zone
+            self.N0 = np.full(Z, pop, dtype=float)      # uniform population
+        self.S = self.N0.copy()
         self.E = np.zeros(Z)
         self.Ia = np.zeros(Z)                          # infectious, not visible
         self.Is = np.zeros(Z)                          # visibly symptomatic
