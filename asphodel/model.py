@@ -78,9 +78,10 @@ class Simulation:
         self.dt = config.dt
 
         # --- Infection compartments (people) -------------------------------
-        pop = config.model.graph.population_per_zone
-        self.N0 = np.full(Z, pop, dtype=float)        # original population
-        self.S = np.full(Z, pop, dtype=float)
+        # Per-zone populations come from the graph (uniform for grid; possibly
+        # heterogeneous for the commute topology).
+        self.N0 = self.graph.populations.astype(float).copy()   # original population
+        self.S = self.N0.copy()
         self.E = np.zeros(Z)
         self.Ia = np.zeros(Z)                          # infectious, not visible
         self.Is = np.zeros(Z)                          # visibly symptomatic
@@ -93,6 +94,14 @@ class Simulation:
         self.power_ok = np.ones(Z, dtype=bool)
         self.water_ok = np.ones(Z, dtype=bool)
 
+        # --- Player intervention state (Phase 8) ---------------------------
+        # All default to "no intervention"; the World facade mutates these via
+        # World.intervene(...), and the step loop below reads them each tick.
+        self.cordoned = np.zeros(Z, dtype=bool)        # quarantine: sealed zone
+        self.mandated_shelter = np.zeros(Z)            # shelter-order floor [0,1]
+        self.staffing_support = np.zeros(Z)            # resource bonus [0,1]
+        self.broadcast_signal = 0.0                    # player official channel
+
         # --- Authority state -----------------------------------------------
         self.official_signal = 0.0
         self.authority_perceived = 0.0
@@ -101,14 +110,20 @@ class Simulation:
         # oldest entry, so its view of the world is `lag_ticks` behind.
         self._authority_buffer: deque[float] = deque([0.0] * lag_ticks, maxlen=lag_ticks)
 
-        # --- Seed the outbreak in one zone ---------------------------------
-        seed_zone = config.seed_zone
-        if seed_zone is None:
-            seed_zone = self.graph.center_zone()
-        self.seed_zone = seed_zone
-        injected = min(config.seed_exposed, self.S[seed_zone])
-        self.S[seed_zone] -= injected
-        self.E[seed_zone] += injected
+        # --- Seed the outbreak in one or more zones ------------------------
+        if config.seed_zones:
+            seed_zones = list(config.seed_zones)
+        elif config.seed_zone is not None:
+            seed_zones = [config.seed_zone]
+        else:
+            seed_zones = [self.graph.center_zone()]
+        self.seed_zones = seed_zones
+        self.seed_zone = seed_zones[0]            # kept for back-compat / reporting
+        per_zone = config.seed_exposed / len(seed_zones)
+        for z in seed_zones:
+            injected = min(per_zone, self.S[z])
+            self.S[z] -= injected
+            self.E[z] += injected
 
         self.tick = 0
         self.events_log: list[dict] = []   # exogenous shock log
@@ -121,17 +136,43 @@ class Simulation:
     # -------------------------------------------------------- behaviour fields
     def _shelter_fraction(self) -> np.ndarray:
         b = self.cfg.model.behavior
-        return b.max_shelter * smoothstep(self.belief, b.shelter_belief_low, b.shelter_belief_high)
+        belief_driven = b.max_shelter * smoothstep(
+            self.belief, b.shelter_belief_low, b.shelter_belief_high)
+        # A player shelter order imposes a floor on the sheltering fraction.
+        return np.maximum(belief_driven, self.mandated_shelter)
 
     def _flee_fraction(self) -> np.ndarray:
         b = self.cfg.model.behavior
         return b.max_flee_rate * smoothstep(self.belief, b.flee_belief_low, b.flee_belief_high)
 
     # --------------------------------------------------------------- one tick
-    def step(self) -> TickRecord:
+    def step(self, frozen_internal=None) -> TickRecord:
+        """Advance the whole grid one tick.
+
+        ``frozen_internal`` (an iterable of zone indices, or None) marks zones
+        whose **SEIR internal update is skipped** -- their compartments are not
+        changed by the macro's own infection dynamics this tick.  Everything
+        else still applies to them: they are carried by the fleeing flux, they
+        still act as infection *sources* to their neighbours (their current
+        infectious fraction feeds the mixing term), and their belief /
+        infrastructure still evolve from their (externally-supplied) burden.
+
+        This is the seam the orchestrator uses for *promoted* zones: the agent
+        tier owns their internal dynamics, while the macro still owns inter-zone
+        flux and the coupled belief/infra fields.  With ``frozen_internal=None``
+        the behaviour is identical to the original single-tier step.
+        """
         dt = self.dt
         g = self.cfg.genome
         m = self.cfg.model
+
+        # Per-zone multiplier on the internal SEIR flows: 0 for frozen zones
+        # (agents drive them), 1 otherwise.
+        internal_mask = np.ones(self.Z)
+        if frozen_internal is not None:
+            idx = np.fromiter(frozen_internal, dtype=int)
+            if idx.size:
+                internal_mask[idx] = 0.0
 
         living = self.living()
         safe_living = np.where(living > 0, living, 1.0)  # avoid /0
@@ -145,7 +186,8 @@ class Simulation:
         if infra.enabled:
             # Workforce present = living, not visibly sick, not sheltering.
             available = np.clip(living - self.Is, 0.0, None) * (1.0 - shelter)
-            self.staffing = np.clip(available / self.N0, 0.0, 1.0)
+            # Player resource allocation adds a staffing bonus (props up infra).
+            self.staffing = np.clip(available / self.N0 + self.staffing_support, 0.0, 1.0)
             self.power_ok = self.staffing >= infra.power_staffing_threshold
             # Water depends on staffing *and* power being up.
             self.water_ok = self.power_ok & (self.staffing >= infra.water_staffing_threshold)
@@ -164,11 +206,15 @@ class Simulation:
         beta = g.beta() * (1.0 - m.behavior.shelter_effectiveness * shelter)
 
         # Infectious fraction seen locally, then mixed with neighbours so the
-        # disease is carried along mobility edges.
+        # disease is carried along mobility edges.  Cordoned (quarantined) zones
+        # are sealed: they neither import infection from neighbours (their
+        # mobility is zeroed) nor export it (removed as a source in the product).
         infectious_frac = (self.Ia + self.Is) / safe_living
+        source_frac = np.where(self.cordoned, 0.0, infectious_frac)
+        mob = m.graph.mobility * (~self.cordoned)
         mixed_infectious = (
-            (1.0 - m.graph.mobility) * infectious_frac
-            + m.graph.mobility * (self.graph.mix @ infectious_frac)
+            (1.0 - mob) * infectious_frac
+            + mob * (self.graph.mix @ source_frac)
         )
 
         sigma = 1.0 / g.incubation_period          # E -> I_a
@@ -195,6 +241,18 @@ class Simulation:
         leave_Is = np.minimum(gamma * self.Is * dt, self.Is)   # I_s -> R/D
         Is_death = g.mortality_fraction * leave_Is
         Is_recover = leave_Is - Is_death
+
+        # Freeze the internal SEIR flows of promoted (agent-owned) zones: zero
+        # their flows so the macro changes nothing internally for them, while
+        # they remain infection sources to neighbours (via mixed_infectious,
+        # computed above) and are still moved by the fleeing flux below.
+        new_E = new_E * internal_mask
+        leave_E = leave_E * internal_mask
+        Ia_to_Is = Ia_to_Is * internal_mask
+        Ia_recover = Ia_recover * internal_mask
+        leave_Is = leave_Is * internal_mask
+        Is_death = Is_death * internal_mask
+        Is_recover = Is_recover * internal_mask
 
         # Apply compartment updates (explicit Euler).
         self.S = self.S - new_E
@@ -254,11 +312,14 @@ class Simulation:
         living = self.living()
         outflow = frac_leaving * living
         outflow = np.minimum(outflow, living)
+        outflow = np.where(self.cordoned, 0.0, outflow)   # sealed zones don't emit
         if outflow.sum() <= 0:
             return np.zeros(self.Z)
 
-        # Destination weights: prefer safer (lower-belief) neighbours.
+        # Destination weights: prefer safer (lower-belief) neighbours; cordoned
+        # zones cannot receive fleers (sealed).
         safety = (1.0 - self.belief)[None, :] * (self.graph.weights > 0)
+        safety[:, self.cordoned] = 0.0
         row_sums = safety.sum(axis=1, keepdims=True)
         with np.errstate(invalid="ignore", divide="ignore"):
             dest = np.where(row_sums > 0, safety / row_sums, 0.0)
@@ -301,8 +362,9 @@ class Simulation:
         # Channel 2: social contagion -- mobility-weighted neighbour belief.
         neighbor_belief = self.graph.mix @ self.belief
 
-        # Channel 3: official signal (global broadcast).
-        official = self.official_signal
+        # Channel 3: official signal (global broadcast) -- the louder of the
+        # authority's own signal and any active player broadcast.
+        official = max(self.official_signal, self.broadcast_signal)
 
         # Combine into a target in [0,1].
         target = (

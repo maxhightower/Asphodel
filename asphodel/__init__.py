@@ -28,6 +28,9 @@ from .macro_ref import run_macro_reference, passive_macro_config
 from .calibration import calibrate, agreement_metrics, passes
 from .handoff import promote, demote, round_trip, largest_remainder_counts
 
+# --- Phase 5: orchestrator (the engine facade) -----------------------------
+from .orchestrator import World, WorldTick
+
 __all__ = [
     "ScenarioConfig",
     "PathogenGenome",
@@ -60,4 +63,7 @@ __all__ = [
     "demote",
     "round_trip",
     "largest_remainder_counts",
+    # Phase 5
+    "World",
+    "WorldTick",
 ]

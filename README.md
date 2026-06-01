@@ -116,6 +116,64 @@ the failure modes, and the answer to the research question.
 
 ---
 
+## Phase 5 — The `World` orchestrator (the engine façade)
+
+Phase 5 ties the two tiers into a single **headless engine** a front-end (e.g.
+Godot) would render against, without touching any game engine. `World`
+(`asphodel/orchestrator.py`) runs the whole-map macro simulation and promotes
+zones into agents **at runtime**, exchanging people across the macro↔micro
+boundary (the inter-zone flux that Phase 4a left stubbed). Population is
+conserved exactly; the disease genome, calibration and handoff messages are all
+reused unchanged.
+
+```python
+from asphodel import World, ScenarioConfig, MicroParams
+
+world = World(ScenarioConfig(), micro_params=MicroParams())
+world.set_focus([world.sim.graph.center_zone()])  # player camera → force-promote
+for _ in range(480):
+    tick = world.step()                            # advance one dt
+snap = world.snapshot()                            # everything the renderer needs
+```
+
+The full engine contract, the per-tick orchestration algorithm, the
+conservation guarantee, and the roadmap for the remaining simulation work (then
+Godot last) are documented in **[`ARCHITECTURE.md`](ARCHITECTURE.md)**.
+
+A real-time **budget cap** sizes the live bubble: `World(max_live_zones=…,
+max_live_agents=…)` keeps player-focused zones plus the most-infectious zones
+within budget and leaves the rest as math.
+
+```bash
+python tests/test_orchestrator.py   # or:  python -m pytest tests/test_orchestrator.py -q
+python -m asphodel.bench            # Phase 6: tick-cost benchmark + budget table
+```
+
+**Phase 6** made the agent neighbour search genuinely O(n) (a spatial hash, ~600×
+faster at 10k agents, bit-identical to the old pairwise scan) and measured the
+engine budget: a 1000-agent live zone costs <1 ms/tick, so dozens run in real
+time. See **[`FINDINGS_PHASE6.md`](FINDINGS_PHASE6.md)**.
+
+**Phase 7** made the zone graph's topology a swappable dial (`grid` /
+`small_world` / `commute`, with per-zone populations and multi-seed outbreaks).
+Finding: a commute **hub** graph collapses the cascade's tip ~6× and nearly
+doubles deaths, while mild small-world rewiring barely moves it — concentration,
+not randomness, synchronizes the panic (`FINDINGS.md` §9).
+
+**Phase 8** lets the player act on the world via `world.intervene(...)` —
+`broadcast`, `cordon`, `shelter_order`, `allocate_staffing` — flowing through both
+the macro fields and any live agent zone. Finding: propping up infrastructure can
+*increase* deaths by muting an alarm the population relied on
+(`FINDINGS_PHASE8.md`).
+
+```python
+world.intervene("cordon", zones=[seed_zone])         # quarantine a zone
+world.intervene("shelter_order", zones=None, strength=0.85)  # all zones
+world.intervene("broadcast", level=1.0)              # emergency address
+```
+
+---
+
 ## Phase 4a — Macro↔Micro handoff & calibration
 
 Phase 4a "promotes" a single macro zone into **discrete agents** moving in

@@ -60,7 +60,14 @@ class PathogenGenome:
 # ---------------------------------------------------------------------------
 @dataclass
 class GraphParams:
-    """Zone graph topology and inter-zone mobility."""
+    """Zone graph topology and inter-zone mobility.
+
+    Topology is swappable via ``topology``: the disease + belief fields ride
+    whatever weighted graph this produces, so changing it tests whether the
+    cascade is a slow *diffusion wave* (grid) or a *synchronized tip*
+    (small-world / hub commute).  Grid geometry (rows x cols) is always kept for
+    visualisation; non-grid topologies just add long-range edges on top.
+    """
 
     grid_rows: int = 8
     grid_cols: int = 8
@@ -68,6 +75,15 @@ class GraphParams:
     mobility: float = 0.15             # fraction of within-zone contact that is
     #                                    actually with neighbouring zones
     #                                    (carries infection along the graph)
+
+    # -- topology -----------------------------------------------------------
+    topology: str = "grid"             # "grid" | "small_world" | "commute"
+    rewire_prob: float = 0.1           # small_world: P(rewire each grid edge to
+    #                                    a random distant zone), Watts-Strogatz
+    topology_seed: int = 0             # deterministic RNG for topology building
+    n_hubs: int = 0                    # commute: number of high-population hubs
+    #                                    every zone connects to (hub-and-spoke)
+    hub_pop_multiplier: float = 5.0    # commute: hub population vs base
 
 
 @dataclass
@@ -186,9 +202,12 @@ class ScenarioConfig:
     n_days: float = 120.0              # simulated horizon
     seed: int = 0                      # RNG seed (logged for reproducibility)
 
-    # Outbreak seeding: how many initial exposed, and in which zone.
+    # Outbreak seeding: how many initial exposed, and in which zone(s).
     seed_zone: Optional[int] = None    # None => centre of the grid
-    seed_exposed: float = 50.0         # initial E injected into the seed zone
+    seed_zones: Optional[list] = None  # multi-seed study: list of zone indices.
+    #                                    Overrides seed_zone; seed_exposed is
+    #                                    split evenly across the listed zones.
+    seed_exposed: float = 50.0         # total initial E injected (across seeds)
 
     @property
     def n_ticks(self) -> int:
