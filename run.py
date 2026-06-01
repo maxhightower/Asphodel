@@ -29,7 +29,7 @@ import argparse
 import copy
 import os
 
-from asphodel.config import ScenarioConfig
+from asphodel.config import ScenarioConfig, PathogenGenome
 from asphodel.runner import run_scenario, run_multi_seed
 from asphodel.viz import time_series_plot, belief_snapshots, belief_animation
 
@@ -39,7 +39,12 @@ def build_config(args) -> ScenarioConfig:
         cfg = ScenarioConfig.from_yaml(args.config)
     else:
         cfg = ScenarioConfig()
-    # Command-line overrides (only applied when given).
+    # Command-line overrides (only applied when given).  The archetype is
+    # applied first so the explicit knobs below can still override it.
+    if args.archetype:
+        cfg.genome = PathogenGenome.from_archetype(args.archetype)
+    if args.route:
+        cfg.genome.transmission_route = args.route
     if args.name:
         cfg.name = args.name
     if args.seed is not None:
@@ -74,6 +79,8 @@ def report(res) -> None:
     print(f"  authority alarm day             : {res.authority_alarm_day()}")
     print(f"  peak-infection day              : {res.peak_infection_day():.1f}")
     print(f"  final dead                      : {res.frame['D'].iloc[-1]:.0f}")
+    if res.config.genome.reanimates():
+        print(f"  final undead (risen)            : {res.frame['U'].iloc[-1]:.0f}")
     print(f"  peak water failures             : {int(res.frame['n_water_fail'].max())} zones")
 
 
@@ -87,6 +94,9 @@ def main() -> None:
     p.add_argument("--dt", type=float, help="tick length in days")
     p.add_argument("--incubation", type=float, help="genome incubation period (days)")
     p.add_argument("--r0", type=float, help="genome R0")
+    p.add_argument("--archetype",
+                   help="outbreak archetype (classic_shambler|rage_virus|cordyceps|necro_latent)")
+    p.add_argument("--route", help="transmission route (contact|bite|airborne|fluid)")
     p.add_argument("--w-social", type=float, dest="w_social", help="social-contagion weight")
     p.add_argument("--mobility", type=float, help="inter-zone mobility fraction")
     p.add_argument("--no-infra", action="store_true", help="disable infrastructure cascade")

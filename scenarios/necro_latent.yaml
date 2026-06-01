@@ -1,0 +1,10 @@
+# Walking-Dead latent strain: everyone carries it and turns on death from any
+# cause (turn_on_death), so the undead reservoir only ever grows -- an
+# inexorable creep rather than a burn-out.
+name: necro_latent
+genome:
+  archetype: necro_latent
+dt: 0.25
+n_days: 150.0
+seed: 0
+seed_exposed: 50.0

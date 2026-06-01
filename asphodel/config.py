@@ -15,7 +15,7 @@ Configs round-trip to/from YAML so experiments can be described as files.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field, asdict, replace
 from typing import Optional
 import yaml
 
@@ -27,10 +27,22 @@ import yaml
 class PathogenGenome:
     """The disease, expressed as data.
 
-    All time-valued fields are in *days*.  The compartment structure of the
-    SEIR model is fixed (S, E, I_asymptomatic, I_symptomatic, R, D) but the
+    All time-valued fields are in *days*.  The living compartment structure of
+    the SEIR model is fixed (S, E, I_asymptomatic, I_symptomatic, R, D) but the
     rates between compartments are derived entirely from these numbers, so a
     new "genome" produces qualitatively different dynamics with no code change.
+
+    Zombie strains add one twist on top of the SEIR core: a fraction of the
+    *dead* can **reanimate** into persistent, infectious undead (a U
+    compartment in the engine) instead of staying down.  The undead never
+    recover -- they are a standing source of new exposures -- so a strain that
+    reanimates produces the inexorable creep that an ordinary disease (which
+    burns out as it runs out of susceptibles) never does.  With
+    ``reanimation_fraction = 0`` (the default) the undead pathway is inert and
+    the genome behaves as a classic disease.
+
+    Use :meth:`from_archetype` (or the factory classmethods) for the canonical
+    outbreak types; see :data:`GENOME_ARCHETYPES`.
     """
 
     R0: float = 3.0                    # basic reproduction number
@@ -44,6 +56,35 @@ class PathogenGenome:
     #                                    becoming visibly symptomatic (I_s)
     mortality_fraction: float = 0.02   # fraction of symptomatic cases that die
 
+    # --- Reanimation: the defining zombie mechanic -------------------------
+    # A fraction of the newly dead rise as persistent, infectious undead.
+    reanimation_fraction: float = 0.0  # fraction of deaths that reanimate (vs.
+    #                                    staying permanently dead).  0 => an
+    #                                    ordinary disease; 1 => every corpse rises.
+    reanimation_delay: float = 0.0     # mean days a corpse lies before it rises
+    #                                    ("they're coming back").  0 => the dead
+    #                                    rise the instant they fall.
+    turn_on_death: bool = False        # latent-universal strain: EVERYONE who
+    #                                    dies reanimates regardless of how they
+    #                                    died.  Overrides reanimation_fraction to 1.
+    undead_infectious: float = 1.0     # infectiousness of a risen undead relative
+    #                                    to a living symptomatic case.  The undead
+    #                                    never recover, so they accumulate into a
+    #                                    standing reservoir of transmission.
+    transmission_route: str = "contact"  # "contact" | "bite" | "airborne" |
+    #                                    "fluid".  How the pathogen rides the zone
+    #                                    graph: bite spreads locally (low
+    #                                    inter-zone mixing), airborne travels far,
+    #                                    fluid/contact sit in between.
+
+    # Inter-zone mixing multiplier per transmission route (see route_mixing_*).
+    _ROUTE_MIXING = {
+        "contact": 1.0,
+        "bite": 0.35,      # close-quarters; crosses zones only as people move
+        "fluid": 0.7,      # blood/saliva exchange; mostly local
+        "airborne": 1.8,   # spores/aerosol ride mobility well past the source
+    }
+
     def beta(self) -> float:
         """Transmission rate derived from R0 and the infectious period.
 
@@ -53,6 +94,115 @@ class PathogenGenome:
         generates new exposures in a fully susceptible population.
         """
         return self.R0 / self.infectious_period
+
+    def effective_reanimation_fraction(self) -> float:
+        """Fraction of deaths that rise, clamped to [0, 1].
+
+        ``turn_on_death`` forces this to 1 (the universal-latent strain where
+        anyone who dies comes back regardless of cause).
+        """
+        if self.turn_on_death:
+            return 1.0
+        return max(0.0, min(1.0, self.reanimation_fraction))
+
+    def reanimates(self) -> bool:
+        """Whether this strain produces any undead at all."""
+        return self.effective_reanimation_fraction() > 0.0
+
+    def route_mixing_multiplier(self) -> float:
+        """Multiplier on inter-zone infectious mixing implied by the route."""
+        return self._ROUTE_MIXING.get(self.transmission_route, 1.0)
+
+    # -- Canonical outbreak archetypes --------------------------------------
+    @classmethod
+    def classic_shambler(cls) -> "PathogenGenome":
+        """Romero-style slow zombie: bite-borne, near-total death, most rise.
+
+        Low-ish R0 because it only spreads at close quarters (bite route), a
+        fast turn, and almost everyone who is bitten dies and shortly rises.
+        The horde is the persistent undead, not the brief living-sick phase.
+        """
+        return cls(
+            R0=2.2, incubation_period=1.0, infectious_period=4.0,
+            asymptomatic_fraction=0.05, symptom_onset_delay=0.5,
+            mortality_fraction=0.95,
+            reanimation_fraction=0.9, reanimation_delay=0.25,
+            undead_infectious=1.2, transmission_route="bite",
+        )
+
+    @classmethod
+    def rage_virus(cls) -> "PathogenGenome":
+        """28-Days-Later rage: blood-borne, seconds-to-turn, explosive, burns out.
+
+        Not truly undead -- the infected are the *living* hyper-infectious, who
+        die off (starvation) rather than reanimate.  A useful contrast: extreme
+        R0 with no reanimation pathway, so it spikes hard and then collapses.
+        """
+        return cls(
+            R0=6.5, incubation_period=0.02, infectious_period=14.0,
+            asymptomatic_fraction=0.0, symptom_onset_delay=0.01,
+            mortality_fraction=0.99,
+            reanimation_fraction=0.0, reanimation_delay=0.0,
+            undead_infectious=1.0, transmission_route="fluid",
+        )
+
+    @classmethod
+    def cordyceps(cls) -> "PathogenGenome":
+        """Last-of-Us fungal: long silent incubation, airborne spores, persistent.
+
+        Long incubation and high asymptomatic carriage spread it far before
+        anyone visibly turns ("Day -1" on steroids); the dead sprout into
+        persistent, far-seeding spore bodies (airborne, high undead infectivity).
+        """
+        return cls(
+            R0=2.8, incubation_period=8.0, infectious_period=12.0,
+            asymptomatic_fraction=0.45, symptom_onset_delay=4.0,
+            mortality_fraction=0.98,
+            reanimation_fraction=0.6, reanimation_delay=2.0,
+            undead_infectious=1.5, transmission_route="airborne",
+        )
+
+    @classmethod
+    def necro_latent(cls) -> "PathogenGenome":
+        """Walking-Dead latent strain: everyone carries it, you turn on death.
+
+        ``turn_on_death`` makes every corpse rise regardless of cause, so the
+        undead reservoir only ever grows -- an inexorable creep rather than a
+        burn-out.  Spread is bite-driven on top of the universal latency.
+        """
+        return cls(
+            R0=2.0, incubation_period=2.0, infectious_period=5.0,
+            asymptomatic_fraction=0.1, symptom_onset_delay=1.0,
+            mortality_fraction=0.9,
+            reanimation_fraction=1.0, reanimation_delay=0.5,
+            turn_on_death=True, undead_infectious=1.0,
+            transmission_route="bite",
+        )
+
+    @classmethod
+    def from_archetype(cls, name: str) -> "PathogenGenome":
+        """Build a genome from a named outbreak archetype.
+
+        See :data:`GENOME_ARCHETYPES` for the registry of names.
+        """
+        try:
+            factory = GENOME_ARCHETYPES[name]
+        except KeyError:
+            raise ValueError(
+                f"unknown outbreak archetype {name!r}; "
+                f"choose from {sorted(GENOME_ARCHETYPES)}"
+            )
+        return factory()
+
+
+# Registry of named outbreak archetypes (defined after the class so the
+# classmethods exist).  ``ScenarioConfig`` lets a YAML reference these by name.
+GENOME_ARCHETYPES = {
+    "classic_shambler": PathogenGenome.classic_shambler,
+    "rage_virus": PathogenGenome.rage_virus,
+    "cordyceps": PathogenGenome.cordyceps,
+    "necro_latent": PathogenGenome.necro_latent,
+}
 
 
 # ---------------------------------------------------------------------------
@@ -227,7 +377,7 @@ class ScenarioConfig:
     @classmethod
     def from_dict(cls, data: dict) -> "ScenarioConfig":
         data = dict(data)
-        genome = PathogenGenome(**data.pop("genome", {}))
+        genome = cls._genome_from(data.pop("genome", {}))
         model_d = data.pop("model", {}) or {}
         model = ModelParams(
             graph=GraphParams(**model_d.get("graph", {})),
@@ -238,6 +388,24 @@ class ScenarioConfig:
             events=EventParams(**model_d.get("events", {})),
         )
         return cls(genome=genome, model=model, **data)
+
+    @staticmethod
+    def _genome_from(spec) -> PathogenGenome:
+        """Build a genome from a YAML ``genome:`` entry.
+
+        Accepts three forms so scenarios can be terse:
+          * a bare archetype name, e.g. ``genome: rage_virus``;
+          * a mapping with an ``archetype`` key plus field overrides, e.g.
+            ``{archetype: classic_shambler, R0: 2.5}``;
+          * a plain mapping of explicit fields (the full round-trip form).
+        """
+        if isinstance(spec, str):
+            return PathogenGenome.from_archetype(spec)
+        spec = dict(spec or {})
+        if "archetype" in spec:
+            base = PathogenGenome.from_archetype(spec.pop("archetype"))
+            return replace(base, **spec)
+        return PathogenGenome(**spec)
 
 
 # ===========================================================================

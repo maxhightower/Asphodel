@@ -1,0 +1,10 @@
+# 28-Days-Later rage: blood-borne, seconds-to-turn, explosive then burns out.
+# The infected are the *living* hyper-infectious -- no reanimation pathway -- so
+# this spikes hard and collapses as it runs out of susceptibles.
+name: rage_virus
+genome:
+  archetype: rage_virus
+dt: 0.25
+n_days: 90.0
+seed: 0
+seed_exposed: 50.0

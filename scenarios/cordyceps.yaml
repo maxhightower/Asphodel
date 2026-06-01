@@ -1,0 +1,10 @@
+# Last-of-Us fungal: long silent incubation + airborne spores spread it far
+# before anyone visibly turns; the dead sprout into persistent spore bodies.
+# A "Day -1" effect on steroids.
+name: cordyceps
+genome:
+  archetype: cordyceps
+dt: 0.25
+n_days: 150.0
+seed: 0
+seed_exposed: 50.0

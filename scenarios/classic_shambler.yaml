@@ -1,0 +1,9 @@
+# Romero-style slow zombie: bite-borne, near-total death, most corpses rise.
+# The horde is the persistent undead reservoir, not the brief living-sick phase.
+name: classic_shambler
+genome:
+  archetype: classic_shambler
+dt: 0.25
+n_days: 120.0
+seed: 0
+seed_exposed: 50.0

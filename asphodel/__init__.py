@@ -9,6 +9,7 @@ control it?
 from .config import (
     ScenarioConfig,
     PathogenGenome,
+    GENOME_ARCHETYPES,
     ModelParams,
     GraphParams,
     BeliefParams,
@@ -34,6 +35,7 @@ from .orchestrator import World, WorldTick
 __all__ = [
     "ScenarioConfig",
     "PathogenGenome",
+    "GENOME_ARCHETYPES",
     "ModelParams",
     "GraphParams",
     "BeliefParams",

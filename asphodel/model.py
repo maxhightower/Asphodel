@@ -53,6 +53,8 @@ class TickRecord:
     I_symp: float
     R: float
     D: float
+    U: float                     # risen undead (zombie strains; 0 otherwise)
+    corpses: float               # dead awaiting reanimation (in the rise delay)
     belief_mean: float
     belief_max: float
     n_panic: int                 # zones above the panic threshold
@@ -86,7 +88,10 @@ class Simulation:
         self.Ia = np.zeros(Z)                          # infectious, not visible
         self.Is = np.zeros(Z)                          # visibly symptomatic
         self.R = np.zeros(Z)
-        self.D = np.zeros(Z)
+        self.D = np.zeros(Z)                           # permanently dead
+        # --- Undead pathway (inert unless the genome reanimates) -----------
+        self.U = np.zeros(Z)                           # risen, infectious undead
+        self.C = np.zeros(Z)                           # corpses awaiting the rise
 
         # --- Belief & infrastructure fields --------------------------------
         self.belief = np.full(Z, config.model.belief.floor, dtype=float)
@@ -206,12 +211,18 @@ class Simulation:
         beta = g.beta() * (1.0 - m.behavior.shelter_effectiveness * shelter)
 
         # Infectious fraction seen locally, then mixed with neighbours so the
-        # disease is carried along mobility edges.  Cordoned (quarantined) zones
-        # are sealed: they neither import infection from neighbours (their
-        # mobility is zeroed) nor export it (removed as a source in the product).
-        infectious_frac = (self.Ia + self.Is) / safe_living
+        # disease is carried along mobility edges.  Risen undead are a standing
+        # infectious source too (weighted by ``undead_infectious``).  Cordoned
+        # (quarantined) zones are sealed: they neither import infection from
+        # neighbours (their mobility is zeroed) nor export it (removed as a
+        # source in the product).
+        infectious = self.Ia + self.Is + g.undead_infectious * self.U
+        infectious_frac = infectious / safe_living
         source_frac = np.where(self.cordoned, 0.0, infectious_frac)
-        mob = m.graph.mobility * (~self.cordoned)
+        # The transmission route scales how far infection rides the zone graph:
+        # a bite strain barely crosses zones, an airborne one reaches well past
+        # the source.  Clamp so the local/neighbour split stays in [0, 1].
+        mob = min(m.graph.mobility * g.route_mixing_multiplier(), 1.0) * (~self.cordoned)
         mixed_infectious = (
             (1.0 - mob) * infectious_frac
             + mob * (self.graph.mix @ source_frac)
@@ -225,7 +236,10 @@ class Simulation:
         new_E = beta * self.S * mixed_infectious * dt
         new_E = np.minimum(new_E, self.S)          # cannot expose more than S
 
-        leave_E = sigma * self.E * dt              # E -> I_a
+        leave_E = np.minimum(sigma * self.E * dt, self.E)   # E -> I_a (clamped:
+        #                                    a very short incubation can make the
+        #                                    per-tick rate exceed 1, e.g. the rage
+        #                                    strain -- never drain more than E)
         # Competing exits from I_a: the symptomatic-bound become visible (omega)
         # while the permanently-asymptomatic recover directly (gamma).
         Ia_to_Is = omega * (1.0 - a) * self.Ia * dt
@@ -254,13 +268,33 @@ class Simulation:
         Is_death = Is_death * internal_mask
         Is_recover = Is_recover * internal_mask
 
+        # Reanimation: a fraction of the newly dead rise as undead instead of
+        # staying down.  ``effective_reanimation_fraction`` folds in the
+        # turn-on-death (universal latent) strain.  With fraction 0 this whole
+        # block is a no-op and every death goes to D exactly as before.
+        reanim = g.effective_reanimation_fraction()
+        rising = reanim * Is_death                 # already internal-masked
+        perm_death = Is_death - rising
+        delay = g.reanimation_delay
+        if delay > 0.0:
+            # Bodies lie in C, then drain into U at rate 1/delay (the rise lag).
+            rise_from_corpses = np.minimum(self.C / delay * dt, self.C) * internal_mask
+            to_corpses = rising
+            rise_now = np.zeros(self.Z)
+        else:
+            rise_from_corpses = np.zeros(self.Z)
+            to_corpses = np.zeros(self.Z)
+            rise_now = rising                      # rise the instant they fall
+
         # Apply compartment updates (explicit Euler).
         self.S = self.S - new_E
         self.E = self.E + new_E - leave_E
         self.Ia = self.Ia + leave_E - Ia_to_Is - Ia_recover
         self.Is = self.Is + Ia_to_Is - leave_Is
         self.R = self.R + Ia_recover + Is_recover
-        self.D = self.D + Is_death
+        self.D = self.D + perm_death
+        self.C = self.C + to_corpses - rise_from_corpses
+        self.U = self.U + rise_now + rise_from_corpses
 
         # === 4. Population movement (fleeing) ==============================
         total_flee_rate = np.clip(flee_rate + forced_flee, 0.0, 1.0 / dt)
@@ -287,6 +321,8 @@ class Simulation:
             I_symp=float(self.Is.sum()),
             R=float(self.R.sum()),
             D=float(self.D.sum()),
+            U=float(self.U.sum()),
+            corpses=float(self.C.sum()),
             belief_mean=float(self.belief.mean()),
             belief_max=float(self.belief.max()),
             n_panic=int((self.belief > b.panic_threshold).sum()),
@@ -335,9 +371,10 @@ class Simulation:
 
     def _update_authority(self) -> None:
         auth = self.cfg.model.authority
-        # True visible burden right now (symptomatic + dead) as a fraction.
+        # True visible burden right now (symptomatic + undead + dead) as a
+        # fraction.  Risen undead are as visible as the dead and the sick.
         total_pop = self.N0.sum()
-        visible_now = float((self.Is.sum() + self.D.sum()) / total_pop)
+        visible_now = float((self.Is.sum() + self.U.sum() + self.D.sum()) / total_pop)
         self._authority_buffer.append(visible_now)
         if not auth.enabled:
             self.authority_perceived = 0.0
@@ -356,7 +393,8 @@ class Simulation:
         # Channel 1: direct observation of *visible* burden (saturating).
         # Cumulative deaths are weighted separately so they can be made to
         # "ratchet" belief (weight 1) or be forgotten (weight 0 -> oscillation).
-        visible_frac = (self.Is + bp.obs_deaths_weight * self.D) / self.N0
+        # Risen undead in the streets are maximally visible, so they count too.
+        visible_frac = (self.Is + self.U + bp.obs_deaths_weight * self.D) / self.N0
         obs = visible_frac / (visible_frac + bp.obs_half_saturation)
 
         # Channel 2: social contagion -- mobility-weighted neighbour belief.
