@@ -42,6 +42,11 @@ from typing import Optional
 import numpy as np
 import yaml
 
+from .world import (
+    OSMSource, SynthCitySpec, StreetMap, Building,
+    load_osm, synthesize_city,
+)
+
 
 # ===========================================================================
 # The possibility space (data)
@@ -171,12 +176,21 @@ class CitizenSpawnCatalog:
 
 @dataclass
 class CityProfile:
-    """A city: its district map plus how it biases the agnostic catalog.
+    """A city: how to source its spatial world, plus how it biases the catalog.
 
     The multipliers are the "slightly determined by the city" dial -- they scale
     the catalog's base weights but never invent or hard-delete possibilities.
-    Reachability of an occupation is governed instead by whether any district
-    hosts its workplace category, which is itself just the city's map.
+
+    A city's *world* (streets + buildings) comes from one of two sources:
+
+    * ``osm`` -- an ``OSMSource`` locating a real city in OpenStreetMap; or
+    * ``synth`` -- a ``SynthCitySpec`` for the deterministic procedural fallback.
+
+    ``resolve_world`` turns whichever is set into a ``CityWorld`` (see below).
+    The legacy ``districts`` list is the *map-less* path: when no world is
+    resolved, occupation reachability and locations fall back to abstract
+    districts -- which is why both paths still work.  The heavy ``StreetMap`` is
+    never stored on the profile; the profile only says how to *source* it.
     """
 
     name: str = "generic"
@@ -185,6 +199,10 @@ class CityProfile:
     age_weight_multipliers: dict[str, float] = field(default_factory=dict)
     occupation_weight_multipliers: dict[str, float] = field(default_factory=dict)
     inventory_multiplier: float = 1.0   # scales job starting-inventory counts
+
+    # World source (the connection to the street map + building information).
+    osm: Optional["OSMSource"] = None
+    synth: Optional["SynthCitySpec"] = None
 
     # -- convenience ---------------------------------------------------------
     def workplaces_available(self) -> set[str]:
@@ -213,7 +231,11 @@ class CityProfile:
     def from_dict(cls, data: dict) -> "CityProfile":
         data = dict(data)
         districts = [District(**d) for d in data.pop("districts", [])]
-        return cls(districts=districts, **data)
+        osm_d = data.pop("osm", None)
+        synth_d = data.pop("synth", None)
+        osm = OSMSource(**osm_d) if osm_d else None
+        synth = SynthCitySpec(**synth_d) if synth_d else None
+        return cls(districts=districts, osm=osm, synth=synth, **data)
 
 
 # ===========================================================================
@@ -243,6 +265,15 @@ class CitizenProfile:
     current_location: str
     current_activity: str
     current_task: str
+
+    # Resolved spatial world references (None on the abstract / map-less path).
+    # When the city resolved a StreetMap, home/work are *real buildings* and the
+    # coordinates are local metres in the map frame.
+    home_building_id: Optional[int] = None
+    work_building_id: Optional[int] = None
+    home_xy: Optional[tuple[float, float]] = None
+    work_xy: Optional[tuple[float, float]] = None
+    commute_metres: Optional[float] = None   # street-routed distance home->work
 
     def summary(self) -> str:
         work = self.work_district or "—"
@@ -337,25 +368,23 @@ def _spread_tasks(tasks: list[str], start: float, end: float) -> list[ScheduleEn
     return out
 
 
-def _build_schedule(rng, occ: Occupation, home: District,
-                    work: Optional[District], city: CityProfile,
+def _build_schedule(rng, occ: Occupation, home_n: str,
+                    work_n: Optional[str], errand_loc: str,
                     p: SpawnParams) -> list[ScheduleEntry]:
     """Assemble a believable pre-collapse day for this citizen.
 
     Day workers: sleep -> wake/breakfast -> commute -> work(tasks) -> commute ->
     errand -> evening -> sleep.  Night workers invert it.  Citizens with no
-    external workplace get a gentle home-and-errands day.  Locations are district
-    names; work blocks inherit the workplace district.
+    external workplace get a gentle home-and-errands day.  Locations are plain
+    place-name strings (a district name in the abstract path, a building label in
+    the world path), so this routine is source-agnostic.
     """
-    home_n = home.name
-    work_n = work.name if work else home_n
+    work_present = work_n is not None
+    if not work_present:
+        work_n = home_n
     entries: list[ScheduleEntry] = []
 
-    # An optional midday/evening errand to the nearest commercial district.
-    shops = city.districts_of_kind("commercial")
-    errand_loc = shops[0].name if shops else home_n
-
-    if work is None or occ.shift == "none":
+    if not work_present or occ.shift == "none":
         # Home-anchored day: sleep in, errands midday, leisure, sleep.
         wake = 7.5 + float(rng.uniform(-1.0, 1.5))
         entries.append(ScheduleEntry(0.0, wake, "sleep", home_n))
@@ -467,7 +496,10 @@ def spawn_citizen(city: CityProfile, catalog: CitizenSpawnCatalog,
 
     home = _pick_home(rng, city, temp)
     work = _pick_work(rng, occ, home, city, temp)
-    schedule = _build_schedule(rng, occ, home, work, city, p)
+    shops = city.districts_of_kind("commercial")
+    errand_loc = shops[0].name if shops else home.name
+    schedule = _build_schedule(rng, occ, home.name,
+                               work.name if work else None, errand_loc, p)
     inventory = _roll_inventory(rng, occ, catalog, city)
 
     spawn_hour = p.spawn_hour if p.spawn_hour is not None else float(rng.uniform(0, 24))
@@ -504,6 +536,162 @@ def spawn_population(city: CityProfile, catalog: CitizenSpawnCatalog,
     return [
         spawn_citizen(city, catalog, citizen_id=i,
                       rng=np.random.default_rng(children[i]))
+        for i in range(n)
+    ]
+
+
+# ===========================================================================
+# World-resolved spawn: citizens live and work in REAL buildings
+# ===========================================================================
+@dataclass
+class CityWorld:
+    """A resolved city: its ``CityProfile`` bound to a concrete ``StreetMap``.
+
+    This is what ``choose a city -> world populates`` produces.  Spawning against
+    a ``CityWorld`` places citizens in real building footprints and routes their
+    commute along the street graph; home/work zones are derived from building
+    position so the spawn still drops cleanly onto the macro ``ZoneGraph`` grid.
+    """
+
+    profile: CityProfile
+    street_map: StreetMap
+    grid_rows: int = 8                 # macro-grid resolution for zone mapping
+    grid_cols: int = 8
+
+    def zone_of_xy(self, xy: tuple[float, float]) -> int:
+        """Map a metre coordinate to a macro grid zone index (row*cols+col)."""
+        xmin, ymin, xmax, ymax = self.street_map.bbox
+        fx = 0.0 if xmax == xmin else (xy[0] - xmin) / (xmax - xmin)
+        fy = 0.0 if ymax == ymin else (xy[1] - ymin) / (ymax - ymin)
+        col = min(self.grid_cols - 1, max(0, int(fx * self.grid_cols)))
+        row = min(self.grid_rows - 1, max(0, int(fy * self.grid_rows)))
+        return row * self.grid_cols + col
+
+
+def resolve_world(profile: CityProfile, seed: int = 0,
+                  grid_rows: int = 8, grid_cols: int = 8) -> CityWorld:
+    """Populate a city's world from its source: choose a city -> a real map.
+
+    Precedence: an explicit ``osm`` source (real OpenStreetMap) wins; otherwise a
+    ``synth`` spec (or a default one) builds a deterministic procedural city so
+    the pipeline always has a runnable world.
+    """
+    if profile.osm is not None:
+        street_map = load_osm(profile.osm)         # real-city ingestion seam
+    else:
+        spec = profile.synth or SynthCitySpec()
+        street_map = synthesize_city(spec, seed=seed, name=profile.name)
+    return CityWorld(profile=profile, street_map=street_map,
+                     grid_rows=grid_rows, grid_cols=grid_cols)
+
+
+def _nearest_building(sm: StreetMap, origin_xy: tuple[float, float],
+                      candidates: list[Building]) -> Optional[Building]:
+    """The candidate building closest (Euclidean) to an origin point."""
+    if not candidates:
+        return None
+    ox, oy = origin_xy
+    return min(candidates, key=lambda b: (b.centroid[0] - ox) ** 2
+               + (b.centroid[1] - oy) ** 2)
+
+
+def spawn_citizen_in_world(world: CityWorld, catalog: CitizenSpawnCatalog,
+                           seed: int = 0, citizen_id: int = 0,
+                           rng: Optional[np.random.Generator] = None
+                           ) -> CitizenProfile:
+    """Draw one citizen whose home and work are real buildings on the map.
+
+    The occupation possibility space is still the agnostic catalog, gated now by
+    which building *categories* the map actually contains, and biased by the
+    city's multipliers.  Home/work buildings are weighted by their occupant
+    capacity (bigger buildings hold more people), the commute is street-routed,
+    and the day's schedule uses building labels as locations.
+    """
+    if rng is None:
+        rng = np.random.default_rng(seed)
+    sm = world.street_map
+    city = world.profile
+    p = catalog.params
+    temp = p.weight_temperature
+
+    band = _pick_age(rng, catalog, city)
+    age = int(rng.integers(band.min_age, band.max_age + 1))
+
+    # Reachability is gated by building categories present in the actual map.
+    present = sm.categories_present() | {HOME, ""}
+    occs, weights = [], []
+    occ_mult = city.occupation_weight_multipliers
+    for o in catalog.occupations:
+        if not (o.min_age <= age <= o.max_age):
+            continue
+        if o.workplace not in present:
+            continue
+        occs.append(o)
+        weights.append(o.base_weight * occ_mult.get(o.name, 1.0))
+    occ = (_weighted_choice(rng, occs, weights, temp) if occs
+           else Occupation(name="resident", min_age=0, max_age=120,
+                           workplace=HOME, shift="none"))
+
+    # Home: a residential building weighted by capacity.
+    homes = sm.residential_buildings() or sm.buildings
+    home_b = _weighted_choice(rng, homes, [b.capacity for b in homes], temp)
+
+    # Work: a building hosting the occupation's category, weighted by capacity.
+    work_b: Optional[Building] = None
+    if occ.workplace not in (HOME, ""):
+        hosts = sm.buildings_hosting(occ.workplace)
+        if hosts:
+            work_b = _weighted_choice(rng, hosts, [b.capacity for b in hosts], temp)
+
+    # Errand: the commercial building nearest home (a believable local shop).
+    errand_b = _nearest_building(sm, home_b.centroid, sm.buildings_hosting("commercial"))
+    errand_loc = errand_b.label() if errand_b else home_b.neighborhood
+
+    schedule = _build_schedule(rng, occ, home_b.label(),
+                               work_b.label() if work_b else None, errand_loc, p)
+    inventory = _roll_inventory(rng, occ, catalog, city)
+
+    commute_m = None
+    if work_b is not None:
+        commute_m = sm.route_length(home_b.street_node, work_b.street_node)
+        if not np.isfinite(commute_m):
+            commute_m = None
+
+    spawn_hour = p.spawn_hour if p.spawn_hour is not None else float(rng.uniform(0, 24))
+    block = _current_block(schedule, spawn_hour)
+
+    return CitizenProfile(
+        citizen_id=citizen_id,
+        city=city.name,
+        age=age,
+        age_band=band.name,
+        occupation=occ.name,
+        shift=occ.shift,
+        home_district=home_b.neighborhood,
+        work_district=work_b.neighborhood if work_b else None,
+        home_zone=world.zone_of_xy(home_b.centroid),
+        work_zone=world.zone_of_xy(work_b.centroid) if work_b else None,
+        schedule=schedule,
+        inventory=inventory,
+        spawn_hour=spawn_hour,
+        current_location=block.location if block else home_b.label(),
+        current_activity=block.activity if block else "idle",
+        current_task=block.task if block else "",
+        home_building_id=home_b.id,
+        work_building_id=work_b.id if work_b else None,
+        home_xy=home_b.centroid,
+        work_xy=work_b.centroid if work_b else None,
+        commute_metres=commute_m,
+    )
+
+
+def spawn_population_in_world(world: CityWorld, catalog: CitizenSpawnCatalog,
+                             n: int, seed: int = 0) -> list[CitizenProfile]:
+    """Spawn ``n`` reproducible citizens into a resolved city world."""
+    children = np.random.SeedSequence(seed).spawn(n)
+    return [
+        spawn_citizen_in_world(world, catalog, citizen_id=i,
+                               rng=np.random.default_rng(children[i]))
         for i in range(n)
     ]
 
@@ -618,6 +806,7 @@ def default_cities() -> dict[str, CityProfile]:
             District("Industrial Estate", "industrial", 0.1, ["industrial"], zone=44),
             District("Central Depot", "transit", 0.1, ["transit"], zone=36),
         ],
+        synth=SynthCitySpec(blocks_x=6, blocks_y=6),  # balanced default zoning
     )
 
     # --- Harbor city: industry & transit heavy, has a real port -------------
@@ -641,6 +830,10 @@ def default_cities() -> dict[str, CityProfile]:
         },
         age_weight_multipliers={"young_adult": 1.2, "senior": 0.85},
         inventory_multiplier=1.0,
+        synth=SynthCitySpec(blocks_x=7, blocks_y=6, zoning_weights={
+            "residential": 5.0, "industrial": 2.8, "transit": 1.4,
+            "commercial": 2.0, "medical": 0.4, "education": 0.6, "civic": 0.4,
+        }),
     )
 
     # --- University town: students & teachers everywhere --------------------
@@ -663,6 +856,10 @@ def default_cities() -> dict[str, CityProfile]:
         },
         age_weight_multipliers={"young_adult": 2.0, "teen": 1.3,
                                 "middle_age": 0.7, "senior": 0.6},
+        synth=SynthCitySpec(blocks_x=5, blocks_y=5, zoning_weights={
+            "residential": 5.0, "education": 3.0, "commercial": 2.2,
+            "medical": 0.5, "civic": 0.4, "industrial": 0.2, "transit": 0.5,
+        }),
     )
 
     # --- Capital: administration, services & commerce -----------------------
@@ -685,6 +882,10 @@ def default_cities() -> dict[str, CityProfile]:
         },
         age_weight_multipliers={"adult": 1.2, "middle_age": 1.1},
         inventory_multiplier=1.1,
+        synth=SynthCitySpec(blocks_x=8, blocks_y=8, zoning_weights={
+            "residential": 6.0, "commercial": 3.0, "civic": 1.5,
+            "medical": 0.8, "education": 1.0, "industrial": 0.6, "transit": 0.7,
+        }),
     )
 
     return cities
@@ -704,16 +905,32 @@ def _emit_presets(out_dir: str = "cities") -> None:
     print(f"wrote catalog + {len(default_cities())} cities to {out_dir}/")
 
 
-def _demo(city_name: str = "generic", n: int = 8, seed: int = 0) -> None:
+def _demo(city_name: str = "generic", n: int = 8, seed: int = 0,
+          world: bool = False) -> None:
     catalog = default_catalog()
     cities = default_cities()
     city = cities.get(city_name)
     if city is None:
         raise SystemExit(f"unknown city {city_name!r}; have {list(cities)}")
-    print(f"=== {n} citizens spawned in '{city.name}' (seed {seed}) ===\n")
-    for c in spawn_population(city, catalog, n, seed=seed):
-        print(c.summary())
-        print()
+
+    if world:
+        cw = resolve_world(city, seed=seed)
+        sm = cw.street_map
+        print(f"=== '{city.name}': {sm.source}, {len(sm.buildings)} buildings, "
+              f"{len(sm.nodes)} street nodes ===\n")
+        for c in spawn_population_in_world(cw, catalog, n, seed=seed):
+            print(c.summary())
+            extra = (f"        building #{c.home_building_id} @ "
+                     f"({c.home_xy[0]:.0f},{c.home_xy[1]:.0f})")
+            if c.commute_metres is not None:
+                extra += f"  commute {c.commute_metres:.0f} m"
+            print(extra)
+            print()
+    else:
+        print(f"=== {n} citizens spawned in '{city.name}' (seed {seed}) ===\n")
+        for c in spawn_population(city, catalog, n, seed=seed):
+            print(c.summary())
+            print()
 
 
 if __name__ == "__main__":
@@ -722,6 +939,8 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="Citizen spawn demo / preset emitter")
     ap.add_argument("--emit", action="store_true",
                     help="write catalog + city presets to cities/*.yaml")
+    ap.add_argument("--world", action="store_true",
+                    help="resolve the city's street map + buildings and spawn into them")
     ap.add_argument("--city", default="generic")
     ap.add_argument("--n", type=int, default=8)
     ap.add_argument("--seed", type=int, default=0)
@@ -730,4 +949,4 @@ if __name__ == "__main__":
     if args.emit:
         _emit_presets()
     else:
-        _demo(args.city, args.n, args.seed)
+        _demo(args.city, args.n, args.seed, world=args.world)

@@ -50,3 +50,17 @@ districts:
 age_weight_multipliers: {}
 occupation_weight_multipliers: {}
 inventory_multiplier: 1.0
+osm: null
+synth:
+  blocks_x: 6
+  blocks_y: 6
+  block_size: 120.0
+  buildings_per_block: 6
+  zoning_weights:
+    residential: 6.0
+    commercial: 2.0
+    education: 0.8
+    medical: 0.5
+    civic: 0.5
+    industrial: 0.8
+    transit: 0.4

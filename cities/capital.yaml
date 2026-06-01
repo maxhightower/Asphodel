@@ -58,3 +58,17 @@ occupation_weight_multipliers:
   dock_worker: 0.2
   factory_worker: 0.5
 inventory_multiplier: 1.1
+osm: null
+synth:
+  blocks_x: 8
+  blocks_y: 8
+  block_size: 120.0
+  buildings_per_block: 6
+  zoning_weights:
+    residential: 6.0
+    commercial: 3.0
+    civic: 1.5
+    medical: 0.8
+    education: 1.0
+    industrial: 0.6
+    transit: 0.7

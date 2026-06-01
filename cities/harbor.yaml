@@ -64,3 +64,17 @@ occupation_weight_multipliers:
   office_worker: 0.6
   doctor: 0.7
 inventory_multiplier: 1.0
+osm: null
+synth:
+  blocks_x: 7
+  blocks_y: 6
+  block_size: 120.0
+  buildings_per_block: 6
+  zoning_weights:
+    residential: 5.0
+    industrial: 2.8
+    transit: 1.4
+    commercial: 2.0
+    medical: 0.4
+    education: 0.6
+    civic: 0.4

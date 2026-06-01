@@ -174,6 +174,69 @@ for c in spawn_population(city, default_catalog(), n=5, seed=0):
     print(c.summary())
 ```
 
+### Populating a real spatial world (`asphodel/world.py`)
+
+The end goal is **choose a city → the world populates from OpenStreetMap →
+procedural interiors → NPCs abound**. A `CityProfile` is the entry point to
+that pipeline: alongside its biases it carries *how to source its world*, and
+`resolve_world(profile, seed)` turns that into a `CityWorld` — a **street graph
++ categorised building footprints + procedural interiors** — that citizens spawn
+*into*.
+
+```
+choose a city ──► resolve_world ──► CityWorld(StreetMap)
+   profile.osm   = OSMSource(...)         ├─ nodes + edges     (real walking routes)
+   profile.synth = SynthCitySpec(...)     └─ Building[]        (footprint, levels, category,
+                                                 capacity, neighborhood, street_node, Interior)
+                          │
+   spawn_population_in_world(world, catalog, n, seed)
+                          ▼
+   CitizenProfile.home_building_id / work_building_id / home_xy / work_xy / commute_metres
+```
+
+| Source | What it does |
+|---|---|
+| **`OSMSource`** → `load_osm` | The real-city path: OSM ways become the street graph and building footprints become `Building`s, with **OSM tags mapped to workplace categories** (`amenity=hospital`→medical, `shop=*`→commercial, `landuse=industrial`→industrial …) via `category_from_osm_tags`. This is a lazily-imported adapter seam — it fails *loudly* with guidance if its GIS toolchain/network isn't available, rather than silently. |
+| **`SynthCitySpec`** → `synthesize_city` | The dependency-light fallback: a deterministic gridded street network with zoned building stock (a harbor weights `industrial`/`transit` up, a university `education`). Lets the whole pipeline run and be tested **offline**, and doubles as procedural generation for areas OSM doesn't cover. |
+
+Both sources produce the **identical `StreetMap` / `Building` types**, so
+everything downstream is source-agnostic. With a world resolved, spawn changes
+in three ways that matter:
+
+- **home / work are real buildings**, weighted by occupant capacity (bigger
+  buildings hold more people), not abstract districts;
+- **occupation reachability is gated by the building categories actually on the
+  map** — no hospital footprint, no nurses — which is the truest form of
+  "agnostic, but determined by the city";
+- the **commute is street-routed** (`StreetMap.route_length`, Dijkstra over edge
+  lengths), and home/work **zones derive from building position**, so a spawned
+  crowd still drops cleanly onto the macro `ZoneGraph`.
+
+Building interiors are generated on demand by `generate_interior` (deterministic
+room subdivision per floor) — somewhere for the NPCs to actually be.
+
+```bash
+# Resolve a city's procedural street map + buildings and spawn citizens into them
+python -m asphodel.citizen --world --city harbor --n 6 --seed 1
+
+# Tests for the world layer (synthesis, routing, interiors, world-spawn)
+python tests/test_world.py        # or:  python -m pytest tests/test_world.py -q
+```
+
+```python
+from asphodel import default_catalog, default_cities, resolve_world, spawn_population_in_world
+
+world = resolve_world(default_cities()["harbor"], seed=0)   # synth fallback (offline)
+for c in spawn_population_in_world(world, default_catalog(), n=5, seed=1):
+    print(c.summary(), "| building", c.home_building_id, "| commute", c.commute_metres, "m")
+```
+
+The **OpenStreetMap ingestion is the one remaining seam** (`load_osm`): the
+data model, tag→category mapping, routing, interiors, and NPC placement are all
+in place and tested against the procedural source; wiring a GIS toolchain
+(e.g. `osmnx` + `shapely`, or `pyrosm` for offline `.pbf` extracts) makes the
+*real-city* path live.
+
 ---
 
 ## Phase 4a — Macro↔Micro handoff & calibration

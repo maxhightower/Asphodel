@@ -42,6 +42,26 @@ from .citizen import (
     spawn_population,
     default_catalog,
     default_cities,
+    # World-resolved spawn (real buildings on a real street map)
+    CityWorld,
+    resolve_world,
+    spawn_citizen_in_world,
+    spawn_population_in_world,
+)
+
+# --- The spatial world a city resolves into (streets + buildings + interiors) -
+from .world import (
+    Building,
+    Interior,
+    Room,
+    StreetMap,
+    OSMSource,
+    SynthCitySpec,
+    InteriorParams,
+    load_osm,
+    synthesize_city,
+    generate_interior,
+    category_from_osm_tags,
 )
 
 __all__ = [
@@ -89,4 +109,20 @@ __all__ = [
     "spawn_population",
     "default_catalog",
     "default_cities",
+    "CityWorld",
+    "resolve_world",
+    "spawn_citizen_in_world",
+    "spawn_population_in_world",
+    # World layer
+    "Building",
+    "Interior",
+    "Room",
+    "StreetMap",
+    "OSMSource",
+    "SynthCitySpec",
+    "InteriorParams",
+    "load_osm",
+    "synthesize_city",
+    "generate_interior",
+    "category_from_osm_tags",
 ]
