@@ -304,11 +304,12 @@ print(congestion_report(world, pop))   # commuters, PCU, network_load, max_voc, 
 The single-pass (all-or-nothing) assignment is adequate for a commute snapshot
 or an exodus pulse; iterating to user-equilibrium is the documented next step.
 
-> **Job diversity.** The catalog ships **47 occupations** across medical,
+> **Job diversity.** The catalog ships **51 occupations** across medical,
 > education, civic, commercial, industrial, transit and home categories —
 > including the driving/logistics roles the traffic layer needs (taxi, delivery,
-> truck, courier, postal, bus) and on-site specialists (window washer, train
-> conductor, corrections officer, landscaper). Add more by editing
+> truck, courier, postal, bus), on-site specialists (window washer, train
+> conductor, corrections officer, landscaper) and aircrew (pilot, flight
+> attendant, helicopter pilot, air-traffic controller). Add more by editing
 > `default_catalog()` / `cities/_catalog.yaml`; a job spawns in any city whose
 > map hosts its workplace category.
 
@@ -370,6 +371,18 @@ mid-commute, the event is selected from the **road structure they're actually on
 | bridge | **trapped mid-span**, both ends choking, water below |
 | tunnel | **the tunnel goes dark** — traffic stops, then the lights, then the engines |
 | *(on a bus)* | packed transit, stopped dead | *(on foot/bike)* faster than the jam |
+
+**Crashes from above.** Aircraft don't care what you drive. Anyone caught
+*outdoors* (commuting or on an errand) can, with probability `aerial_prob`, be
+struck instead by a **crash from above** — a light aircraft clipping the
+rooftops, a helicopter spiralling into the street, an airliner coming down across
+the blocks (`default_aerial_events`, `kind="aerial"`). The other side of it —
+being *aboard* — is an occupation **signature**: the catalog includes **pilot**
+(aloft with nowhere to land), **flight_attendant** (a cabin at 35,000 ft),
+**helicopter_pilot** (over the city when the radio dies) and
+**air_traffic_controller** (watching every blip on the scope go dark). So a jet
+falling out of the sky is the same event seen from two ends — the crew's
+signature and the pedestrian's hazard.
 
 ```bash
 # Catch the morning commute (≈07:42) so traffic events fire by road structure

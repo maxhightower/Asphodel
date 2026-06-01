@@ -113,6 +113,46 @@ def default_travel_events() -> list[TravelEvent]:
     ]
 
 
+def default_aerial_events() -> list[TravelEvent]:
+    """Crash-from-above events: aircraft coming down on whoever is outdoors.
+
+    Unlike road events these aren't tied to your vehicle or the segment you're on
+    -- a jet doesn't care that you were walking.  They strike anyone caught in the
+    open (commute or errand) with a small probability, layered over the normal
+    situation; ``ALL`` structures so the selector never filters them out.
+    """
+    ALL = (SURFACE, HIGHWAY, BRIDGE, TUNNEL, RAMP)
+    return [
+        TravelEvent("A light aircraft clips the rooftops", ALL, "any",
+                    "A small plane shears across the rooftops just above you, its engine dead.",
+                    "Get indoors and off the street, or freeze and hope it carries past the block.",
+                    ["a couple of seconds of warning from the silence"],
+                    ["a shower of tile and glass", "spilled aviation fuel"],
+                    ["aerial", "fire"], weight=1.6, severity=4),
+        TravelEvent("A helicopter comes down", ALL, "any",
+                    "A helicopter loses its tail rotor overhead and spirals into the street ahead.",
+                    "Sprint clear of the rotor wash and the fire, or take cover behind something solid.",
+                    ["the engine note warned you a beat early"],
+                    ["whirling rotor debris", "burning fuel", "falling masonry"],
+                    ["aerial", "fire", "trapped"], weight=1.0, severity=5),
+        TravelEvent("An airliner comes down", ALL, "any",
+                    "A wide-body crosses impossibly low and comes down across the blocks ahead in a wall of fire.",
+                    "Run perpendicular to its path, or get something solid between you and the blast.",
+                    ["the shadow gave you seconds"],
+                    ["a wall of flame and debris", "collapsing buildings", "mass casualties"],
+                    ["aerial", "fire", "mass_casualty"], weight=0.6, severity=5),
+    ]
+
+
+def select_aerial_event(rng: np.random.Generator,
+                        events: list[TravelEvent] | None = None) -> TravelEvent:
+    """Pick a crash-from-above event (weighted).  Deterministic given ``rng``."""
+    if events is None:
+        events = default_aerial_events()
+    weights = np.array([e.weight for e in events], dtype=float)
+    return events[int(rng.choice(len(events), p=weights / weights.sum()))]
+
+
 def select_travel_event(rng: np.random.Generator, structure: str, vehicle: str,
                         events: list[TravelEvent] | None = None) -> TravelEvent:
     """Pick a travel event matching the road ``structure`` and ``vehicle`` class.

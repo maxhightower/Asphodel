@@ -67,10 +67,20 @@ AMBULANCE = VehicleSpec("ambulance", 60.0, 1.5, 2, 6.0, emergency=True)
 FIRE_ENGINE = VehicleSpec("fire_engine", 50.0, 2.5, 4, 10.0, emergency=True)
 POLICE_CAR = VehicleSpec("police_car", 60.0, 1.0, 4, 4.8, emergency=True)
 
+# Aircraft: pcu = 0 (they never occupy road capacity); they exist for aircrew
+# signatures and the crash-from-above events, not for road traffic assignment.
+AIRLINER = VehicleSpec("airliner", 850.0, 0.0, 180, 70.0)
+HELICOPTER = VehicleSpec("helicopter", 220.0, 0.0, 6, 15.0)
+LIGHT_AIRCRAFT = VehicleSpec("light_aircraft", 200.0, 0.0, 4, 8.0)
+AIR_AMBULANCE = VehicleSpec("air_ambulance", 240.0, 0.0, 4, 13.0, emergency=True)
+
 VEHICLES: dict[str, VehicleSpec] = {
     v.kind: v for v in (FOOT, BICYCLE, MOTORCYCLE, CAR, VAN, TRUCK, BUS,
-                        AMBULANCE, FIRE_ENGINE, POLICE_CAR)
+                        AMBULANCE, FIRE_ENGINE, POLICE_CAR,
+                        AIRLINER, HELICOPTER, LIGHT_AIRCRAFT, AIR_AMBULANCE)
 }
+
+_AIRCRAFT = {"airliner", "helicopter", "light_aircraft", "air_ambulance"}
 
 # Driving / emergency jobs that come with a work vehicle.  These citizens travel
 # in (and operate) that vehicle; everyone else picks a personal commute mode.
@@ -92,7 +102,9 @@ def work_vehicle_for(occupation: str) -> Optional[str]:
 
 
 def vehicle_class(kind: str) -> str:
-    """Coarse class used to match travel events: nonmotorized / transit / motorized."""
+    """Coarse class used to match events: air / nonmotorized / transit / motorized."""
+    if kind in _AIRCRAFT:
+        return "air"
     if kind in ("foot", "bicycle"):
         return "nonmotorized"
     if kind == "bus":

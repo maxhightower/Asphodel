@@ -48,7 +48,7 @@ from .world import (
 )
 from .vehicles import choose_commute, TrafficParams
 from .signatures import SignatureScenario, default_signatures
-from .travel_events import select_travel_event
+from .travel_events import select_travel_event, select_aerial_event
 
 
 # ===========================================================================
@@ -782,7 +782,8 @@ class CollapseSituation:
 
     def summary(self) -> str:
         badge = {"signature": "★ SIGNATURE", "travel": "▲ TRAFFIC ",
-                 "generic": "· off-duty "}.get(self.kind, "·         ")
+                 "aerial": "✈ CRASH    ", "generic": "· off-duty "}.get(
+                     self.kind, "·         ")
         lines = [f"[{badge}] {self.occupation}: {self.title}"]
         loc = f"   where: {self.location}"
         if self.at and self.at != self.location:
@@ -844,7 +845,8 @@ SURFACE_STR = "surface"
 
 
 def resolve_collapse_situation(profile: CitizenProfile, collapse_hour: float = 14.0,
-                               world: "Optional[CityWorld]" = None) -> CollapseSituation:
+                               world: "Optional[CityWorld]" = None,
+                               aerial_prob: float = 0.06) -> CollapseSituation:
     """Resolve where the collapse finds this citizen and what it means.
 
     ``collapse_hour`` is the in-game hour (0-24) the world tips -- shared by
@@ -852,6 +854,10 @@ def resolve_collapse_situation(profile: CitizenProfile, collapse_hour: float = 1
     is asleep.  Pass the ``world`` the citizen was spawned in to make commute
     travel-events road-aware (which bridge / tunnel / flyover they're caught on);
     without it, a mid-commute citizen still gets a vehicle-appropriate event.
+
+    ``aerial_prob`` is the chance, for anyone caught *outdoors* (commuting or on
+    an errand), that an aircraft comes down on them instead -- a crash-from-above
+    that doesn't care what you do or drive.  Set 0 to disable.
     """
     block = _current_block(profile.schedule, collapse_hour)
     activity = block.activity if block else "idle"
@@ -872,6 +878,19 @@ def resolve_collapse_situation(profile: CitizenProfile, collapse_hour: float = 1
         base.update(kw)
         return CollapseSituation(**base)
 
+    def outdoor_rng():
+        return np.random.default_rng(
+            (profile.citizen_id, int(round(collapse_hour * 100))))
+
+    def aerial(erng, context: str, where: str):
+        """Build an aircraft-crash situation for someone caught in the open."""
+        ev = select_aerial_event(erng)
+        return make(fired=True, kind="aerial", context=context,
+                    title=ev.name, location=where, at=where_at,
+                    narrative=ev.situation, dilemma=ev.dilemma,
+                    assets=with_on_hand(ev.assets), hazards=list(ev.hazards),
+                    tags=list(ev.tags))
+
     # 1) On shift at the workplace, or a home-anchored "anytime" role: the job's
     #    signature scenario, bound to the concrete place and on-hand kit.
     sig_fires = sig is not None and (
@@ -885,7 +904,8 @@ def resolve_collapse_situation(profile: CitizenProfile, collapse_hour: float = 1
                     assets=with_on_hand(sig.assets), hazards=list(sig.hazards),
                     tags=list(sig.tags))
 
-    # 2) Caught mid-commute: a vehicle/traffic event keyed to the road structure.
+    # 2) Caught mid-commute: a vehicle/traffic event keyed to the road structure
+    #    -- unless an aircraft comes down on the road first (crash from above).
     if activity == "commute":
         vehicle = profile.vehicle or "car"
         structure, phrase = SURFACE_STR, "on the road, mid-commute"
@@ -893,8 +913,9 @@ def resolve_collapse_situation(profile: CitizenProfile, collapse_hour: float = 1
                 and profile.work_building_id is not None:
             structure, phrase = _commute_road_structure(
                 profile, collapse_hour, block, world)
-        erng = np.random.default_rng(
-            (profile.citizen_id, int(round(collapse_hour * 100))))
+        erng = outdoor_rng()
+        if erng.random() < aerial_prob:
+            return aerial(erng, "commute", phrase)
         ev = select_travel_event(erng, structure, vehicle)
         return make(fired=True, kind="travel", context="commute",
                     title=ev.name, location=phrase, at=where_at,
@@ -902,8 +923,11 @@ def resolve_collapse_situation(profile: CitizenProfile, collapse_hour: float = 1
                     assets=with_on_hand(ev.assets), hazards=list(ev.hazards),
                     tags=list(ev.tags), structure=structure)
 
-    # 3) Out on an errand: caught in public.
+    # 3) Out on an errand: caught in public -- or under a crash from above.
     if activity == "errand":
+        erng = outdoor_rng()
+        if erng.random() < aerial_prob:
+            return aerial(erng, "errand", f"out at {where_at}")
         return make(fired=False, kind="generic", context="errand",
                     title="Caught out in public", location=where_at, at=where_at,
                     narrative=(f"You're out at {where_at} when the collapse comes "
@@ -1080,6 +1104,19 @@ def default_catalog() -> CitizenSpawnCatalog:
         Occupation("train_conductor", 23, 65, 0.3, "transit", "day",
                    ["board check", "ticket inspection", "between stations", "terminus"],
                    {"keys": 1, "ticket_machine": 1, "id_badge": 1, "radio": 1}),
+        # aircrew / airside (workplace = the airport, modelled as transit)
+        Occupation("pilot", 25, 65, 0.2, "transit", "day",
+                   ["pre-flight", "taxi", "cruise", "approach"],
+                   {"id_badge": 1, "headset": 1, "flight_bag": 1, "sunglasses": 1}),
+        Occupation("flight_attendant", 20, 60, 0.3, "transit", "day",
+                   ["boarding", "cabin service", "cruise", "landing prep"],
+                   {"id_badge": 1, "apron": 1, "first_aid_kit": 1}),
+        Occupation("helicopter_pilot", 25, 62, 0.15, "transit", "day",
+                   ["pre-flight", "traffic watch", "refuel", "patrol"],
+                   {"headset": 1, "keys": 1, "id_badge": 1, "charts": 1}),
+        Occupation("air_traffic_controller", 24, 60, 0.15, "transit", "night",
+                   ["handover", "approach control", "ground control", "handover"],
+                   {"id_badge": 1, "headset": 1, "keys": 1}),
         # roaming / on-site specialists with a signature predicament
         Occupation("window_washer", 19, 60, 0.3, "commercial", "day",
                    ["rig the cradle", "descend the face", "wash", "reset"],

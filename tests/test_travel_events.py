@@ -116,7 +116,7 @@ def test_commute_resolves_to_a_travel_event():
         mid = _commute_midpoint(c.schedule)
         if mid is None:
             continue
-        sit = resolve_collapse_situation(c, collapse_hour=mid, world=cw)
+        sit = resolve_collapse_situation(c, collapse_hour=mid, world=cw, aerial_prob=0.0)
         assert sit.kind == "travel" and sit.context == "commute"
         assert sit.fired and sit.tags
         assert sit.structure in (SURFACE, HIGHWAY, BRIDGE, TUNNEL, RAMP)
@@ -132,8 +132,8 @@ def test_commute_event_is_road_aware_and_deterministic():
     pop = spawn_population_in_world(cw, CATALOG, n=400, seed=0)
     c = next(c for c in pop if _commute_midpoint(c.schedule) is not None)
     mid = _commute_midpoint(c.schedule)
-    a = resolve_collapse_situation(c, mid, world=cw)
-    b = resolve_collapse_situation(c, mid, world=cw)
+    a = resolve_collapse_situation(c, mid, world=cw, aerial_prob=0.0)
+    b = resolve_collapse_situation(c, mid, world=cw, aerial_prob=0.0)
     assert a == b
     # The chosen event must be valid for the structure it reported.
     assert a.structure in a_structures(a)
@@ -151,7 +151,7 @@ def test_commute_without_world_still_gives_travel_event():
     pop = spawn_population_in_world(cw, CATALOG, n=200, seed=1)
     c = next(c for c in pop if _commute_midpoint(c.schedule) is not None)
     mid = _commute_midpoint(c.schedule)
-    sit = resolve_collapse_situation(c, mid, world=None)   # no road awareness
+    sit = resolve_collapse_situation(c, mid, world=None, aerial_prob=0.0)
     assert sit.kind == "travel" and sit.fired
 
 
@@ -162,7 +162,7 @@ def test_workplace_still_signature_and_errand_generic():
     for c in pop:
         for e in c.schedule:
             mid = (e.start_hour + e.end_hour) / 2.0 % 24.0
-            sit = resolve_collapse_situation(c, mid, world=cw)
+            sit = resolve_collapse_situation(c, mid, world=cw, aerial_prob=0.0)
             if e.activity == "work" and sit.kind == "signature":
                 assert sit.context == "workplace"
                 saw_work = True
@@ -170,6 +170,53 @@ def test_workplace_still_signature_and_errand_generic():
                 assert sit.context == "errand" and sit.kind == "generic"
                 saw_errand = True
     assert saw_work and saw_errand
+
+
+# --------------------------------------------------------------------------- #
+# aircraft: aircrew signatures + crash-from-above events
+# --------------------------------------------------------------------------- #
+def test_aerial_events_have_dilemma_and_tags():
+    from asphodel.travel_events import default_aerial_events, select_aerial_event
+    evs = default_aerial_events()
+    assert evs and all(e.situation and e.dilemma and "aerial" in e.tags for e in evs)
+    # selection is deterministic
+    a = select_aerial_event(np.random.default_rng(0))
+    b = select_aerial_event(np.random.default_rng(0))
+    assert a.name == b.name
+
+
+def test_aircraft_vehicle_class():
+    for kind in ("airliner", "helicopter", "light_aircraft", "air_ambulance"):
+        assert vehicle_class(kind) == "air"
+
+
+def test_aircrew_have_aloft_signatures():
+    names = {o.name for o in CATALOG.occupations}
+    assert {"pilot", "flight_attendant", "helicopter_pilot",
+            "air_traffic_controller"} <= names
+    for o in CATALOG.occupations:
+        if o.name in ("pilot", "flight_attendant", "helicopter_pilot",
+                      "air_traffic_controller"):
+            assert o.signature is not None and o.workplace == "transit"
+
+
+def test_crash_from_above_strikes_the_outdoors():
+    """With aerial_prob high, an outdoor citizen gets an aircraft-crash event."""
+    cw = resolve_world(default_cities()["capital"], seed=0)
+    pop = spawn_population_in_world(cw, CATALOG, n=300, seed=0)
+    saw = False
+    for c in pop:
+        mid = _commute_midpoint(c.schedule)
+        if mid is None:
+            continue
+        sit = resolve_collapse_situation(c, mid, world=cw, aerial_prob=1.0)
+        assert sit.kind == "aerial" and "aerial" in sit.tags
+        saw = True
+    assert saw
+    # And with aerial_prob 0 it never fires.
+    c = next(c for c in pop if _commute_midpoint(c.schedule) is not None)
+    mid = _commute_midpoint(c.schedule)
+    assert resolve_collapse_situation(c, mid, world=cw, aerial_prob=0.0).kind != "aerial"
 
 
 if __name__ == "__main__":

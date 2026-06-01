@@ -1289,6 +1289,144 @@ occupations:
     - vehicle_moving
     - crowd
     - trapped
+- name: pilot
+  min_age: 25
+  max_age: 65
+  base_weight: 0.2
+  workplace: transit
+  shift: day
+  tasks:
+  - pre-flight
+  - taxi
+  - cruise
+  - approach
+  inventory:
+    id_badge: 1
+    headset: 1
+    flight_bag: 1
+    sunglasses: 1
+  signature:
+    name: Aloft with nowhere to land
+    trigger: on_shift
+    location: the flight deck of an airliner at cruise
+    situation: At 35,000 feet the tower goes silent and the other frequencies fill
+      with panic.
+    dilemma: Divert to an emptying airport while you can, or ride it down somewhere
+      chosen.
+    assets:
+    - a sealed, fuelled aircraft
+    - hours of altitude and overview
+    - command of the cabin
+    hazards:
+    - fuel that won't last forever
+    - a cabin of passengers
+    - nowhere certain to land
+    tags:
+    - height
+    - trapped
+    - vehicle_moving
+    - crowd
+- name: flight_attendant
+  min_age: 20
+  max_age: 60
+  base_weight: 0.3
+  workplace: transit
+  shift: day
+  tasks:
+  - boarding
+  - cabin service
+  - cruise
+  - landing prep
+  inventory:
+    id_badge: 1
+    apron: 1
+    first_aid_kit: 1
+  signature:
+    name: A cabin at 35,000 feet
+    trigger: on_shift
+    location: the cabin of an airliner at altitude
+    situation: Two hundred strangers in a sealed tube start to unravel, and there's
+      no ground to reach.
+    dilemma: Hold the cabin together for the descent, or look to your own survival.
+    assets:
+    - a sealed cabin
+    - the galley's supplies
+    - crew training and authority
+    hazards:
+    - no control over the aircraft
+    - a crowd with nowhere to go
+    tags:
+    - height
+    - trapped
+    - crowd
+- name: helicopter_pilot
+  min_age: 25
+  max_age: 62
+  base_weight: 0.15
+  workplace: transit
+  shift: day
+  tasks:
+  - pre-flight
+  - traffic watch
+  - refuel
+  - patrol
+  inventory:
+    headset: 1
+    keys: 1
+    id_badge: 1
+    charts: 1
+  signature:
+    name: Over the city when the radio dies
+    trigger: on_shift
+    location: a helicopter above the skyline
+    situation: You're orbiting the city when every channel turns to static at once.
+    dilemma: Set down on any rooftop you choose, or stay up while the fuel lasts and
+      watch.
+    assets:
+    - land almost anywhere
+    - a bird's-eye view of the collapse
+    - a machine everyone will want
+    hazards:
+    - finite fuel
+    - a target on every rooftop you touch
+    tags:
+    - height
+    - vehicle_moving
+    - mobility
+    - information
+- name: air_traffic_controller
+  min_age: 24
+  max_age: 60
+  base_weight: 0.15
+  workplace: transit
+  shift: night
+  tasks:
+  - handover
+  - approach control
+  - ground control
+  - handover
+  inventory:
+    id_badge: 1
+    headset: 1
+    keys: 1
+  signature:
+    name: Every blip going dark
+    trigger: on_shift
+    location: the airport control tower
+    situation: From the tower you watch the radar empty -- and a few inbound aircraft
+      with no one left to guide them.
+    dilemma: Talk down who you can, or abandon a tower that's a beacon and a target.
+    assets:
+    - a commanding view of all airspace
+    - a hardened tower
+    - every comms channel
+    hazards:
+    - aircraft still falling toward you
+    - helpless to stop any of it
+    tags:
+    - information
+    - height
+    - mass_casualty
 - name: window_washer
   min_age: 19
   max_age: 60
