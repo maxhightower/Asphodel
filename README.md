@@ -157,3 +157,49 @@ python tests/test_phase4a.py     # or:  python -m pytest tests/test_phase4a.py -
 
 The micro/handoff parameters are documented as data in
 [`scenarios/phase4a_micro.yaml`](scenarios/phase4a_micro.yaml).
+
+---
+
+## OSM City Pipeline (Phase 1)
+
+Turn a real city into an Asphodel **bundle** — a zone graph + density-weighted
+population + major roads + a precomputed belief-cascade timeline — that the
+Godot frontend (in [`godot/`](godot/)) renders as a low-poly "block city" whose
+zones tint toward panic on playback. The city is divided into a square grid of
+zones; each cell's population comes from the real OSM building density inside
+it, and the existing belief-cascade sim runs on that geography unchanged.
+
+```bash
+# Geocode a city, fetch OSM, run the sim, write a bundle
+python -m asphodel.osm_city "Chicago" --out output/chicago --cache output/osm_cache
+
+# Knobs: grid resolution, total population, sim horizon, RNG seed
+python -m asphodel.osm_city "Boston" --out output/boston --grid 20 --total-pop 650000 --days 90
+```
+
+The pipeline is hybrid by design: Godot invokes this module as a subprocess and
+then loads the bundle it writes. The bundle is four JSON files — `meta.json`,
+`zones.json`, `roads.json`, `timeline.json` — fully specified in
+[`docs/superpowers/specs/2026-06-01-osm-city-scene-design.md`](docs/superpowers/specs/2026-06-01-osm-city-scene-design.md).
+Network responses are cached by bbox (`--cache`), so re-runs are offline and
+every bundle is byte-deterministic from `(city, grid, total-pop, seed)`.
+
+```
+asphodel/osm_city/
+  geocode.py      # city name -> bbox (Nominatim), oversized-bbox capping
+  overpass.py     # bbox -> major roads + building footprints (Overpass), cached
+  tessellate.py   # bbox -> square grid; building footprint area -> per-zone population
+  geometry.py     # equirectangular projection, polygon area, block/road layout
+  bundle.py       # deterministic meta/zones/roads/timeline JSON writer
+  pipeline.py     # build_bundle: tessellate -> run sim -> blocks/roads -> write
+  __main__.py     # the CLI
+```
+
+```bash
+python -m pytest tests/test_osm_city.py -q   # offline: inline fixtures, no network
+```
+
+> **Note:** real geography yields empty cells (water, parks, rural edges) with
+> zero population. The macro sim treats such zones as inert (no infection, no
+> infrastructure alarm) so the baked belief timeline stays finite — see the
+> per-zone-population hook in [`asphodel/model.py`](asphodel/model.py).
