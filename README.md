@@ -116,6 +116,66 @@ the failure modes, and the answer to the research question.
 
 ---
 
+## Citizen spawn — who the player wakes up as
+
+Part of the game is being **randomly spawned as an ordinary citizen** and having
+to live a normal day before the world ends. `asphodel/citizen.py` owns the
+*possibility space* that spawn draws from — occupation, age, where you live,
+where you work, the shape of your workday (job tasks), and what's in your
+pockets — and the deterministic sampler that draws one concrete citizen from it.
+
+The design follows the same "data, not code" rule as the rest of the project,
+with one deliberate twist:
+
+> **Agnostic, but slightly determined by the city.** The `CitizenSpawnCatalog`
+> (age bands, occupations, item kinds, timing knobs) is *shared and
+> city-agnostic*: in principle a citizen of any city can hold any age-eligible
+> job and carry any item. A `CityProfile` only ever **biases** that space — via
+> age / occupation weight multipliers and, crucially, via which **districts**
+> (and therefore which workplaces) exist on its map. A harbor city has a port,
+> so it spawns more dock workers; a university town is thick with students.
+> Nothing is hard-removed, only reweighted or gated by the city's map.
+
+| Piece | What it is |
+|---|---|
+| **`CitizenSpawnCatalog`** | The agnostic catalog: weighted `AgeBand`s, `Occupation`s (age range, base weight, workplace category, shift, ordered job `tasks`, starting `inventory`), the common items everyone might carry, and `SpawnParams` (schedule timing, inventory jitter, weight temperature). |
+| **`CityProfile`** | A city's `District` map (each district has a *kind*, a residential weight, the workplace categories it hosts, and an optional macro-grid `zone`) plus the occupation/age weight multipliers and inventory multiplier that bias the catalog. |
+| **`CitizenProfile`** | The spawn result: age, occupation, home/work district (+ resolved grid zones), a full `ScheduleEntry` day, a rolled inventory, and where the clock found you (`current_location` / `current_activity`). |
+
+Spawn is **deterministic from `(city, catalog, seed)`** — `spawn_population`
+derives independent per-citizen RNGs from one base seed (via `SeedSequence`), so
+a whole crowd is reproducible and order-stable. Districts carry optional
+`ZoneGraph` zone indices, so home/work resolve onto the macro grid and a spawned
+crowd can seed the micro `AgentZone`. A fresh citizen spawns **susceptible** —
+the epidemic tiers own disease state; this layer is purely *who you are and what
+your day looks like*.
+
+```bash
+# Spawn and print a few citizens for a city (generic / harbor / university / capital)
+python -m asphodel.citizen --city harbor --n 8 --seed 1
+
+# Re-emit the catalog + city presets as YAML (config-as-data)
+python -m asphodel.citizen --emit       # -> cities/_catalog.yaml, cities/<city>.yaml
+
+# Tests (determinism, age-eligibility, city biasing, schedule, YAML round-trip)
+python tests/test_citizen.py            # or:  python -m pytest tests/test_citizen.py -q
+```
+
+The committed possibility space lives as data under
+[`cities/`](cities/): the agnostic `cities/_catalog.yaml` plus one YAML per
+city. Edit those (or build a `CityProfile` in code) to add a city — no sampler
+changes needed.
+
+```python
+from asphodel import default_catalog, default_cities, spawn_population
+
+city = default_cities()["university"]
+for c in spawn_population(city, default_catalog(), n=5, seed=0):
+    print(c.summary())
+```
+
+---
+
 ## Phase 4a — Macro↔Micro handoff & calibration
 
 Phase 4a "promotes" a single macro zone into **discrete agents** moving in

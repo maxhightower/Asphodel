@@ -1,0 +1,307 @@
+age_bands:
+- name: child
+  min_age: 0
+  max_age: 12
+  weight: 0.14
+- name: teen
+  min_age: 13
+  max_age: 17
+  weight: 0.07
+- name: young_adult
+  min_age: 18
+  max_age: 29
+  weight: 0.2
+- name: adult
+  min_age: 30
+  max_age: 49
+  weight: 0.28
+- name: middle_age
+  min_age: 50
+  max_age: 64
+  weight: 0.18
+- name: senior
+  min_age: 65
+  max_age: 95
+  weight: 0.13
+occupations:
+- name: child
+  min_age: 0
+  max_age: 12
+  base_weight: 1.0
+  workplace: home
+  shift: none
+  tasks:
+  - play
+  - school run
+  - home
+  inventory:
+    backpack: 1
+    snack: 1
+- name: student
+  min_age: 6
+  max_age: 22
+  base_weight: 1.0
+  workplace: education
+  shift: day
+  tasks:
+  - lectures
+  - library
+  - study group
+  - cafeteria
+  inventory:
+    backpack: 1
+    laptop: 1
+    notebook: 1
+    id_card: 1
+- name: teacher
+  min_age: 24
+  max_age: 65
+  base_weight: 0.8
+  workplace: education
+  shift: day
+  tasks:
+  - homeroom
+  - lessons
+  - grading
+  - office hours
+  inventory:
+    keys: 1
+    laptop: 1
+    id_card: 1
+    marker: 2
+- name: nurse
+  min_age: 21
+  max_age: 63
+  base_weight: 0.9
+  workplace: medical
+  shift: night
+  tasks:
+  - handover
+  - rounds
+  - medication
+  - charting
+  - rounds
+  inventory:
+    id_badge: 1
+    scrubs: 1
+    phone: 1
+    face_mask: 3
+    pen_light: 1
+- name: doctor
+  min_age: 27
+  max_age: 68
+  base_weight: 0.5
+  workplace: medical
+  shift: day
+  tasks:
+  - ward round
+  - clinic
+  - consults
+  - notes
+  inventory:
+    id_badge: 1
+    stethoscope: 1
+    phone: 1
+    face_mask: 3
+- name: paramedic
+  min_age: 22
+  max_age: 60
+  base_weight: 0.4
+  workplace: medical
+  shift: night
+  tasks:
+  - vehicle check
+  - callouts
+  - handover
+  inventory:
+    id_badge: 1
+    radio: 1
+    trauma_kit: 1
+    face_mask: 4
+- name: police_officer
+  min_age: 21
+  max_age: 60
+  base_weight: 0.5
+  workplace: civic
+  shift: night
+  tasks:
+  - briefing
+  - patrol
+  - report writing
+  - patrol
+  inventory:
+    badge: 1
+    radio: 1
+    keys: 1
+    notebook: 1
+- name: firefighter
+  min_age: 21
+  max_age: 58
+  base_weight: 0.3
+  workplace: civic
+  shift: day
+  tasks:
+  - equipment check
+  - drills
+  - standby
+  - callouts
+  inventory:
+    radio: 1
+    keys: 1
+    helmet: 1
+- name: office_worker
+  min_age: 21
+  max_age: 66
+  base_weight: 1.3
+  workplace: commercial
+  shift: day
+  tasks:
+  - email
+  - standup
+  - meetings
+  - spreadsheets
+  - calls
+  inventory:
+    laptop: 1
+    phone: 1
+    id_card: 1
+    keys: 1
+- name: grocery_clerk
+  min_age: 16
+  max_age: 67
+  base_weight: 1.0
+  workplace: commercial
+  shift: day
+  tasks:
+  - open till
+  - restock
+  - checkout
+  - cash up
+  inventory:
+    apron: 1
+    name_tag: 1
+    box_cutter: 1
+- name: chef
+  min_age: 18
+  max_age: 62
+  base_weight: 0.6
+  workplace: commercial
+  shift: day
+  tasks:
+  - prep
+  - service
+  - clean down
+  inventory:
+    knife_roll: 1
+    apron: 1
+    thermometer: 1
+- name: bus_driver
+  min_age: 24
+  max_age: 65
+  base_weight: 0.5
+  workplace: transit
+  shift: day
+  tasks:
+  - vehicle check
+  - morning route
+  - layover
+  - evening route
+  inventory:
+    keys: 1
+    id_badge: 1
+    ticket_machine: 1
+- name: dock_worker
+  min_age: 19
+  max_age: 60
+  base_weight: 0.7
+  workplace: industrial
+  shift: day
+  tasks:
+  - muster
+  - load
+  - unload
+  - secure cargo
+  inventory:
+    hi_vis: 1
+    gloves: 1
+    hard_hat: 1
+    manifest: 1
+- name: factory_worker
+  min_age: 18
+  max_age: 63
+  base_weight: 0.9
+  workplace: industrial
+  shift: night
+  tasks:
+  - line start
+  - run line
+  - qa checks
+  - shutdown
+  inventory:
+    ear_plugs: 1
+    gloves: 1
+    id_badge: 1
+- name: construction_worker
+  min_age: 18
+  max_age: 62
+  base_weight: 0.7
+  workplace: industrial
+  shift: day
+  tasks:
+  - toolbox talk
+  - build
+  - lunch
+  - build
+  inventory:
+    hard_hat: 1
+    gloves: 1
+    tool_belt: 1
+    hi_vis: 1
+- name: retiree
+  min_age: 60
+  max_age: 95
+  base_weight: 1.0
+  workplace: home
+  shift: none
+  tasks:
+  - morning walk
+  - errands
+  - rest
+  inventory:
+    keys: 1
+    reading_glasses: 1
+    medication: 2
+- name: unemployed
+  min_age: 18
+  max_age: 64
+  base_weight: 0.5
+  workplace: home
+  shift: none
+  tasks:
+  - job search
+  - errands
+  - home
+  inventory:
+    keys: 1
+    phone: 1
+common_items:
+  phone: 1
+  wallet: 1
+  keys: 1
+  water_bottle: 1
+  snack: 1
+  cash: 1
+  face_mask: 1
+  transit_pass: 1
+params:
+  weight_temperature: 1.0
+  day_start: 8.0
+  day_end: 16.0
+  night_start: 20.0
+  night_end: 28.0
+  wake_before_work: 1.5
+  commute_hours: 0.5
+  sleep_hours: 7.5
+  common_item_prob: 0.6
+  inventory_jitter: 0.3
+  spawn_hour: null

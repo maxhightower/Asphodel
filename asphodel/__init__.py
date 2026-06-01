@@ -28,6 +28,22 @@ from .macro_ref import run_macro_reference, passive_macro_config
 from .calibration import calibrate, agreement_metrics, passes
 from .handoff import promote, demote, round_trip, largest_remainder_counts
 
+# --- Citizen spawn: the possibility space a player can be dropped into ------
+from .citizen import (
+    AgeBand,
+    Occupation,
+    District,
+    ScheduleEntry,
+    SpawnParams,
+    CitizenSpawnCatalog,
+    CityProfile,
+    CitizenProfile,
+    spawn_citizen,
+    spawn_population,
+    default_catalog,
+    default_cities,
+)
+
 __all__ = [
     "ScenarioConfig",
     "PathogenGenome",
@@ -60,4 +76,17 @@ __all__ = [
     "demote",
     "round_trip",
     "largest_remainder_counts",
+    # Citizen spawn
+    "AgeBand",
+    "Occupation",
+    "District",
+    "ScheduleEntry",
+    "SpawnParams",
+    "CitizenSpawnCatalog",
+    "CityProfile",
+    "CitizenProfile",
+    "spawn_citizen",
+    "spawn_population",
+    "default_catalog",
+    "default_cities",
 ]
