@@ -1,13 +1,17 @@
 """Phase-1 OSM city pipeline tests (offline; inline fixtures, no network)."""
 from __future__ import annotations
 
+import json as _json
 import math
 import random
 
 import numpy as np
+import pytest
 
 from asphodel.config import ScenarioConfig, GraphParams, ModelParams
 from asphodel.runner import run_scenario
+from asphodel.osm_city import geocode as gc
+from asphodel.osm_city import CityNotFound
 from asphodel.osm_city import geometry as geo
 
 
@@ -163,3 +167,41 @@ def test_run_scenario_with_heterogeneous_population():
     )
     result = run_scenario(cfg)
     assert result.belief_history.shape == (cfg.n_ticks + 1, 4)
+
+
+# Nominatim returns boundingbox as [south, north, west, east] strings.
+_NOMINATIM_FIXTURE = _json.dumps([
+    {"boundingbox": ["41.6", "42.0", "-87.9", "-87.5"], "display_name": "Chicago"}
+])
+
+
+def test_geocode_returns_bbox_in_swne_order():
+    bbox = gc.geocode("Chicago", fetch=lambda url: _NOMINATIM_FIXTURE)
+    s, w, n, e = bbox
+    assert (s, w, n, e) == (41.6, -87.9, 42.0, -87.5)
+
+
+def test_geocode_raises_when_empty():
+    with pytest.raises(CityNotFound):
+        gc.geocode("Nowhereville", fetch=lambda url: "[]")
+
+
+def test_geocode_caps_oversized_bbox():
+    huge = _json.dumps([{"boundingbox": ["30.0", "36.0", "-106.0", "-93.0"]}])  # Texas-ish
+    bbox = gc.geocode("Texas", fetch=lambda url: huge, max_span_deg=0.5)
+    s, w, n, e = bbox
+    assert abs((n - s) - 0.5) < 1e-9
+    assert abs((e - w) - 0.5) < 1e-9
+    # Stays centered on the original center.
+    assert abs(((s + n) / 2) - 33.0) < 1e-9
+    assert abs(((w + e) / 2) - (-99.5)) < 1e-9
+
+
+def test_geocode_builds_query_url():
+    captured = {}
+    def fake_fetch(url):
+        captured["url"] = url
+        return _NOMINATIM_FIXTURE
+    gc.geocode("San Francisco", fetch=fake_fetch)
+    assert "q=San+Francisco" in captured["url"]
+    assert "format=json" in captured["url"]
