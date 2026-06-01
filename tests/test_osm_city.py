@@ -70,3 +70,55 @@ def test_project_polyline_maps_each_point():
     line = geo.project_polyline([(40.0, -73.0), (41.0, -73.0)], 40.0, -73.0)
     assert line[0] == [0.0, 0.0]
     assert abs(line[1][1] - 110540.0) < 1.0
+
+
+from asphodel.osm_city import tessellate as tess
+
+
+def _square_building(lat, lon, d=0.0005, levels=1):
+    """A small square building footprint centered at (lat, lon)."""
+    return {
+        "ring": [(lat - d, lon - d), (lat - d, lon + d),
+                 (lat + d, lon + d), (lat + d, lon - d)],
+        "levels": levels,
+    }
+
+
+def test_grid_dims_from_aspect_ratio():
+    # Wide bbox (more lon span than lat span) -> more cols than rows.
+    bbox = (40.0, -74.0, 40.5, -73.0)  # (s, w, n, e): 1.0 lon span, 0.5 lat span
+    t = tess.tessellate(bbox, buildings=[], grid=8, total_pop=1000.0)
+    assert t.cols == 8
+    assert t.rows == 4
+    assert len(t.zones) == 32
+
+
+def test_population_sums_to_total():
+    bbox = (40.0, -73.01, 40.01, -73.0)
+    buildings = [_square_building(40.002, -73.008), _square_building(40.008, -73.002)]
+    t = tess.tessellate(bbox, buildings, grid=4, total_pop=10000.0)
+    assert abs(sum(z["population"] for z in t.zones) - 10000.0) < 1e-6
+
+
+def test_empty_buildings_give_zero_population():
+    bbox = (40.0, -73.01, 40.01, -73.0)
+    t = tess.tessellate(bbox, buildings=[], grid=4, total_pop=10000.0)
+    assert all(z["population"] == 0.0 for z in t.zones)
+
+
+def test_zone_ids_match_row_col_order():
+    bbox = (40.0, -73.01, 40.01, -73.0)
+    t = tess.tessellate(bbox, buildings=[], grid=4, total_pop=1.0)
+    for z in t.zones:
+        assert z["id"] == z["row"] * t.cols + z["col"]
+
+
+def test_levels_weight_population():
+    # Two identical footprints; the 3-storey one gets ~3x the population.
+    bbox = (40.0, -73.02, 40.01, -73.0)
+    tall = _square_building(40.005, -73.015, levels=3)
+    short = _square_building(40.005, -73.005, levels=1)
+    t = tess.tessellate(bbox, [tall, short], grid=2, total_pop=4000.0)
+    pops = sorted(z["population"] for z in t.zones if z["population"] > 0)
+    assert len(pops) == 2
+    assert abs(pops[1] / pops[0] - 3.0) < 0.2
