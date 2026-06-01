@@ -56,6 +56,10 @@ from .travel_events import (
     TravelEvent, default_travel_events, select_travel_event,
     default_aerial_events, select_aerial_event,
 )
+from .environments import (
+    EnvironmentEvent, default_environment_events, select_environment_event,
+    ENVIRONMENTS,
+)
 
 # --- Vehicles & traffic: travel modes, road network, congestion -------------
 from .vehicles import (
@@ -154,6 +158,10 @@ __all__ = [
     "select_travel_event",
     "default_aerial_events",
     "select_aerial_event",
+    "EnvironmentEvent",
+    "default_environment_events",
+    "select_environment_event",
+    "ENVIRONMENTS",
     # Vehicles & traffic
     "VehicleSpec",
     "VEHICLES",

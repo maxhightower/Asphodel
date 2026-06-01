@@ -392,11 +392,50 @@ python -m asphodel.citizen --world --city capital --n 14 --collapse-hour 7.7
 #   [▲ TRAFFIC ] commuter on the bridge: Trapped mid-span ...
 ```
 
-`CollapseSituation` reports `kind` (signature / travel / generic), `context`
-(workplace / commute / errand / home), the road `structure`, and the reusable
-`tags` a game layer switches on (`height`, `trapped`, `fire`, `tunnel`,
-`bridge`, `crowd`, …). Resolution is deterministic in `(citizen, collapse_hour,
-world)`.
+#### Environmental events (`asphodel/environments.py`)
+
+The three families above all answer "where are you and how are you moving". The
+unifying layer is the **environment** — the *place* you're standing — and it can
+produce its own hazards regardless of your job: fire, structural collapse, power
+loss, gas, a crowd crush, and place-specific disasters keyed to an environment
+taxonomy (residential, high-rise, retail, medical, education, civic, industrial,
+transit-hub, street, **waterfront**, **underground**):
+
+| Environment | Sample events |
+|---|---|
+| high-rise | trapped above the fire; the curtain wall lets go |
+| medical | the oxygen system fails; the ward goes dark |
+| industrial | a tank ruptures; the line won't stop; the racking comes down |
+| waterfront | the surge comes over the wall; fuel ablaze on the water |
+| underground | the tunnel floods; smoke fills the dark |
+| street | a facade comes down; a car ploughs the crowd; a riot sweeps through |
+| residential | the neighbours turn; the fire jumps the gap |
+
+`resolve_collapse_situation(..., ambient_prob=0.12)` rolls this layer over the
+base outcome: *usually* your job (signature) or the road defines the moment, but
+sometimes the **building or street itself goes**, whatever your role — so an
+on-shift nurse might face her ward flooding with casualties (signature) or the
+hospital's oxygen system failing (environment). Every situation reports its
+`environment`; adding a new environment or event is one entry in
+`default_environment_events()`.
+
+#### One taxonomy, five outcomes
+
+`CollapseSituation` unifies all of it: `kind` ∈ {`signature`, `travel`,
+`aerial`, `environment`, `generic`}, `context` (workplace / commute / errand /
+home), the `environment`, the road `structure`, and reusable `tags` a game layer
+switches on (`height`, `trapped`, `fire`, `flood`, `hazmat`, `structural`,
+`tunnel`, `bridge`, `crowd`, `children`, `keys_access`, …). The hazard layers
+(`aerial_prob`, `ambient_prob`) stack over the base and each disable to 0;
+resolution is deterministic in `(citizen, collapse_hour, world)`.
+
+```bash
+python -m asphodel.citizen --world --city harbor --n 12 --collapse-hour 7.7
+#   [★ SIGNATURE] nurse: The doors won't stop opening
+#   [▲ TRAFFIC ] office_worker: Trapped mid-span        (on a bridge)
+#   [✦ HAZARD   ] dock_worker: A tank ruptures           (waterfront)
+#   [✈ CRASH    ] student: A helicopter comes down       (caught outdoors)
+```
 
 ---
 

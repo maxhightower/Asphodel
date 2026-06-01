@@ -162,7 +162,8 @@ def test_workplace_still_signature_and_errand_generic():
     for c in pop:
         for e in c.schedule:
             mid = (e.start_hour + e.end_hour) / 2.0 % 24.0
-            sit = resolve_collapse_situation(c, mid, world=cw, aerial_prob=0.0)
+            sit = resolve_collapse_situation(c, mid, world=cw, aerial_prob=0.0,
+                                             ambient_prob=0.0)
             if e.activity == "work" and sit.kind == "signature":
                 assert sit.context == "workplace"
                 saw_work = True

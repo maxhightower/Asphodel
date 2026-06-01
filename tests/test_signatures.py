@@ -66,7 +66,7 @@ def test_signature_fires_when_on_shift():
         work_mid = _block_midpoint(c.schedule, "work")
         if work_mid is None:
             continue
-        sit = resolve_collapse_situation(c, collapse_hour=work_mid)
+        sit = resolve_collapse_situation(c, collapse_hour=work_mid, ambient_prob=0.0)
         assert sit.fired, f"{c.occupation} on shift did not fire"
         assert sit.on_duty and sit.tags
         # On-hand inventory is folded into the assets.
@@ -85,7 +85,7 @@ def test_signature_does_not_fire_off_shift():
         sleep_mid = _block_midpoint(c.schedule, "sleep")
         if sleep_mid is None:
             continue
-        sit = resolve_collapse_situation(c, collapse_hour=sleep_mid)
+        sit = resolve_collapse_situation(c, collapse_hour=sleep_mid, ambient_prob=0.0)
         assert not sit.fired
         assert sit.title == "Off-shift when it hit"
         checked += 1
@@ -99,7 +99,7 @@ def test_home_anchored_signatures_fire_anytime():
         if c.occupation not in HOME_ANCHORED:
             continue
         for hour in (2.0, 9.0, 14.0, 20.0):
-            assert resolve_collapse_situation(c, collapse_hour=hour).fired
+            assert resolve_collapse_situation(c, collapse_hour=hour, ambient_prob=0.0).fired
         seen.add(c.occupation)
     assert seen, "no home-anchored citizens spawned"
 
@@ -111,9 +111,9 @@ def test_collapse_hour_shifts_who_fires():
                  if c.shift == "night" and _block_midpoint(c.schedule, "work") is not None
                  and default_signatures()[c.occupation].trigger != "anytime")
     work_mid = _block_midpoint(night.schedule, "work")
-    assert resolve_collapse_situation(night, collapse_hour=work_mid).fired
+    assert resolve_collapse_situation(night, collapse_hour=work_mid, ambient_prob=0.0).fired
     # 14:00 a night worker is asleep/off -> their signature should not fire.
-    assert not resolve_collapse_situation(night, collapse_hour=14.0).fired
+    assert not resolve_collapse_situation(night, collapse_hour=14.0, ambient_prob=0.0).fired
 
 
 # --------------------------------------------------------------------------- #

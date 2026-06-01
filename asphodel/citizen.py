@@ -49,6 +49,7 @@ from .world import (
 from .vehicles import choose_commute, TrafficParams
 from .signatures import SignatureScenario, default_signatures
 from .travel_events import select_travel_event, select_aerial_event
+from .environments import select_environment_event
 
 
 # ===========================================================================
@@ -742,6 +743,55 @@ def _signatures() -> dict:
     return _SIGNATURES_CACHE
 
 
+_OCC_CACHE: Optional[dict] = None
+
+
+def _occupations() -> dict:
+    global _OCC_CACHE
+    if _OCC_CACHE is None:
+        _OCC_CACHE = {o.name: o for o in default_catalog().occupations}
+    return _OCC_CACHE
+
+
+# Map an occupation's workplace category to a physical environment.
+_CATEGORY_ENV = {
+    "medical": "medical", "education": "education", "civic": "civic",
+    "industrial": "industrial", "transit": "transit_hub", "commercial": "retail",
+}
+
+
+def _environment_of(profile: "CitizenProfile", activity: str, where_at: str,
+                    world: "Optional[CityWorld]") -> str:
+    """Classify the physical environment the citizen is in at collapse.
+
+    Drives which ``environments`` events can strike (and is reported on every
+    situation).  Derived from what they're doing, their workplace category, the
+    building's height, and the city's character (a harbor's docks are waterfront).
+    """
+    city = (profile.city or "").lower()
+    where = (where_at or "").lower()
+    waterfront = ("harbor" in city or "port" in city
+                  or any(w in where for w in ("dock", "port", "harbor", "quay", "fish")))
+
+    if activity in ("sleep", "leisure", "idle"):
+        return "residential"
+    if activity == "errand":
+        return "retail"
+    if activity == "work":
+        occ = _occupations().get(profile.occupation)
+        cat = occ.workplace if occ else ""
+        env = _CATEGORY_ENV.get(cat, "residential")
+        if waterfront and cat in ("industrial", "transit"):
+            return "waterfront"
+        if env in ("retail", "civic") and world is not None \
+                and profile.work_building_id is not None:
+            b = world.street_map.by_id().get(profile.work_building_id)
+            if b is not None and b.levels >= 8:
+                return "high_rise"
+        return env
+    return "street"
+
+
 @dataclass
 class CollapseSituation:
     """The predicament a citizen is actually in when the collapse lands.
@@ -776,14 +826,15 @@ class CollapseSituation:
     assets: list[str]
     hazards: list[str]
     tags: list[str]
-    kind: str = "generic"       # "signature" | "travel" | "generic"
+    kind: str = "generic"       # "signature" | "travel" | "aerial" | "environment" | "generic"
     context: str = "home"       # "workplace" | "commute" | "errand" | "home"
     structure: str = ""         # road structure, when kind == "travel"
+    environment: str = ""       # where you physically are (residential/high_rise/...)
 
     def summary(self) -> str:
         badge = {"signature": "★ SIGNATURE", "travel": "▲ TRAFFIC ",
-                 "aerial": "✈ CRASH    ", "generic": "· off-duty "}.get(
-                     self.kind, "·         ")
+                 "aerial": "✈ CRASH    ", "environment": "✦ HAZARD   ",
+                 "generic": "· off-duty "}.get(self.kind, "·         ")
         lines = [f"[{badge}] {self.occupation}: {self.title}"]
         loc = f"   where: {self.location}"
         if self.at and self.at != self.location:
@@ -846,7 +897,8 @@ SURFACE_STR = "surface"
 
 def resolve_collapse_situation(profile: CitizenProfile, collapse_hour: float = 14.0,
                                world: "Optional[CityWorld]" = None,
-                               aerial_prob: float = 0.06) -> CollapseSituation:
+                               aerial_prob: float = 0.06,
+                               ambient_prob: float = 0.12) -> CollapseSituation:
     """Resolve where the collapse finds this citizen and what it means.
 
     ``collapse_hour`` is the in-game hour (0-24) the world tips -- shared by
@@ -855,9 +907,15 @@ def resolve_collapse_situation(profile: CitizenProfile, collapse_hour: float = 1
     travel-events road-aware (which bridge / tunnel / flyover they're caught on);
     without it, a mid-commute citizen still gets a vehicle-appropriate event.
 
-    ``aerial_prob`` is the chance, for anyone caught *outdoors* (commuting or on
-    an errand), that an aircraft comes down on them instead -- a crash-from-above
-    that doesn't care what you do or drive.  Set 0 to disable.
+    Three optional hazard layers stack over the base (signature / generic)
+    outcome, each disable-able by setting its probability to 0:
+
+    * ``aerial_prob`` -- for anyone caught *outdoors* (commute/errand), the chance
+      an aircraft comes down on them instead;
+    * ``ambient_prob`` -- the chance the *environment itself* asserts a hazard
+      (fire, structural collapse, flood, crowd crush, power loss, ...) keyed to
+      where they physically are -- so usually your job/road defines the moment,
+      but sometimes the building or street does, whatever your role.
     """
     block = _current_block(profile.schedule, collapse_hour)
     activity = block.activity if block else "idle"
@@ -865,6 +923,7 @@ def resolve_collapse_situation(profile: CitizenProfile, collapse_hour: float = 1
     sig = _signatures().get(profile.occupation)
     on_duty = activity == "work"
     on_hand = list(profile.inventory.keys())
+    environment = _environment_of(profile, activity, where_at, world)
 
     def with_on_hand(assets: list[str]) -> list[str]:
         out = list(assets)
@@ -874,7 +933,8 @@ def resolve_collapse_situation(profile: CitizenProfile, collapse_hour: float = 1
 
     def make(**kw) -> CollapseSituation:
         base = dict(citizen_id=profile.citizen_id, occupation=profile.occupation,
-                    collapse_hour=collapse_hour, on_duty=on_duty, activity=activity)
+                    collapse_hour=collapse_hour, on_duty=on_duty, activity=activity,
+                    environment=environment)
         base.update(kw)
         return CollapseSituation(**base)
 
@@ -891,12 +951,32 @@ def resolve_collapse_situation(profile: CitizenProfile, collapse_hour: float = 1
                     assets=with_on_hand(ev.assets), hazards=list(ev.hazards),
                     tags=list(ev.tags))
 
+    def ambient(context: str):
+        """Roll for an environmental hazard true to where the citizen is."""
+        if ambient_prob <= 0:
+            return None
+        arng = np.random.default_rng(
+            (profile.citizen_id, int(round(collapse_hour * 100)), 911))
+        if arng.random() >= ambient_prob:
+            return None
+        ev = select_environment_event(arng, environment)
+        if ev is None:
+            return None
+        return make(fired=True, kind="environment", context=context,
+                    title=ev.name, location=where_at, at=where_at,
+                    narrative=ev.situation, dilemma=ev.dilemma,
+                    assets=with_on_hand(ev.assets), hazards=list(ev.hazards),
+                    tags=list(ev.tags))
+
     # 1) On shift at the workplace, or a home-anchored "anytime" role: the job's
-    #    signature scenario, bound to the concrete place and on-hand kit.
+    #    signature scenario -- unless the place itself goes (ambient hazard).
     sig_fires = sig is not None and (
         sig.trigger == "anytime"
         or (sig.trigger in ("on_shift", "on_site") and on_duty))
     if sig_fires:
+        amb = ambient("workplace" if on_duty else "home")
+        if amb is not None:
+            return amb
         return make(fired=True, kind="signature",
                     context="workplace" if on_duty else "home",
                     title=sig.name, location=sig.location, at=where_at,
@@ -917,17 +997,22 @@ def resolve_collapse_situation(profile: CitizenProfile, collapse_hour: float = 1
         if erng.random() < aerial_prob:
             return aerial(erng, "commute", phrase)
         ev = select_travel_event(erng, structure, vehicle)
+        road_env = "underground" if structure == "tunnel" else "street"
         return make(fired=True, kind="travel", context="commute",
                     title=ev.name, location=phrase, at=where_at,
                     narrative=ev.situation, dilemma=ev.dilemma,
                     assets=with_on_hand(ev.assets), hazards=list(ev.hazards),
-                    tags=list(ev.tags), structure=structure)
+                    tags=list(ev.tags), structure=structure, environment=road_env)
 
-    # 3) Out on an errand: caught in public -- or under a crash from above.
+    # 3) Out on an errand: a crash from above, the place's own hazard, or just
+    #    caught in public.
     if activity == "errand":
         erng = outdoor_rng()
         if erng.random() < aerial_prob:
             return aerial(erng, "errand", f"out at {where_at}")
+        amb = ambient("errand")
+        if amb is not None:
+            return amb
         return make(fired=False, kind="generic", context="errand",
                     title="Caught out in public", location=where_at, at=where_at,
                     narrative=(f"You're out at {where_at} when the collapse comes "
@@ -936,7 +1021,10 @@ def resolve_collapse_situation(profile: CitizenProfile, collapse_hour: float = 1
                     assets=with_on_hand([]), hazards=["exposed, away from home"],
                     tags=["crowd"])
 
-    # 4) Off-duty at home (signature's edge left at work) / generic.
+    # 4) Off-duty at home: the home's own hazard, or a generic off-shift situation.
+    amb = ambient("home")
+    if amb is not None:
+        return amb
     if sig is not None:
         narrative = (f"You're {activity} at {where_at} -- not on shift when the "
                      f"collapse comes. Your {profile.occupation}'s edge is back "
