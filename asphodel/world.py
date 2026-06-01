@@ -60,6 +60,32 @@ TRANSIT = "transit"
 ALL_CATEGORIES = (RESIDENTIAL, COMMERCIAL, MEDICAL, EDUCATION, CIVIC,
                   INDUSTRIAL, TRANSIT)
 
+# Road-structure classes carried per street segment.  They drive both the
+# traffic chokepoints (bridges/tunnels have less capacity, highways more) and
+# the location-aware travel events (caught on a flyover / in a tunnel / ...).
+# Surface is the default for any untagged segment.
+SURFACE = "surface"
+HIGHWAY = "highway"
+BRIDGE = "bridge"
+TUNNEL = "tunnel"
+RAMP = "ramp"
+ROAD_STRUCTURES = (SURFACE, HIGHWAY, BRIDGE, TUNNEL, RAMP)
+
+
+def structure_from_osm_tags(tags: dict) -> str:
+    """Map an OSM way's tags to a road structure (for the real-city loader)."""
+    if tags.get("tunnel") in ("yes", "building_passage") or tags.get("covered") == "yes":
+        return TUNNEL
+    if tags.get("bridge") in ("yes", "viaduct", "aqueduct"):
+        return BRIDGE
+    hw = tags.get("highway", "")
+    if hw in ("motorway_link", "trunk_link", "primary_link", "secondary_link"):
+        return RAMP
+    if hw in ("motorway", "trunk"):
+        return HIGHWAY
+    return SURFACE
+
+
 # Rough usable floor area per occupant, per category (m^2).  Drives capacity,
 # which in turn weights how likely a citizen lives / works in a given building.
 AREA_PER_OCCUPANT = {
@@ -196,6 +222,13 @@ class StreetMap:
     buildings: list[Building]
     bbox: tuple[float, float, float, float]        # (xmin, ymin, xmax, ymax)
     source: str = "synthetic"                      # "osm:<place>" or "synthetic"
+    # Per-segment attributes, keyed by the canonical (min,max) node pair; the
+    # only attribute used today is {"structure": <SURFACE|HIGHWAY|...>}.
+    edge_attrs: dict[tuple[int, int], dict] = field(default_factory=dict)
+
+    def edge_structure(self, u: int, v: int) -> str:
+        key = (u, v) if u <= v else (v, u)
+        return self.edge_attrs.get(key, {}).get("structure", SURFACE)
 
     # -- adjacency (built lazily for routing) --------------------------------
     def _adjacency(self) -> dict[int, list[tuple[int, float]]]:
@@ -409,9 +442,38 @@ def synthesize_city(spec: SynthCitySpec, seed: int = 0,
                     ))
                     bid += 1
 
+    # --- road structures: a ring-road, a river of bridges, a tunnel, ramps ---
+    # Illustrative tagging (OSM supplies the real ones via structure_from_osm_tags)
+    # but enough to drive chokepoint congestion and the location-aware travel
+    # events.  Everything not tagged here stays SURFACE.
+    def ekey(a, b):
+        return (a, b) if a <= b else (b, a)
+
+    edge_attrs: dict[tuple[int, int], dict] = {}
+    # Perimeter ring road -> highway.
+    for i in range(bx):
+        edge_attrs[ekey(node_id(i, 0), node_id(i + 1, 0))] = {"structure": HIGHWAY}
+        edge_attrs[ekey(node_id(i, by), node_id(i + 1, by))] = {"structure": HIGHWAY}
+    for j in range(by):
+        edge_attrs[ekey(node_id(0, j), node_id(0, j + 1))] = {"structure": HIGHWAY}
+        edge_attrs[ekey(node_id(bx, j), node_id(bx, j + 1))] = {"structure": HIGHWAY}
+    # A river along a mid latitude -> the segments crossing it are bridges.
+    jr = by // 2
+    if 0 < jr < by:
+        for i in range(bx + 1):
+            edge_attrs[ekey(node_id(i, jr), node_id(i, jr + 1))] = {"structure": BRIDGE}
+    # A short tunnel run along an interior column.
+    ct = max(1, bx // 3)
+    for j in range(1, min(3, by)):
+        edge_attrs[ekey(node_id(ct, j), node_id(ct, j + 1))] = {"structure": TUNNEL}
+    # Ramps connecting the ring road to the interior near two corners.
+    for (a, b) in (((1, 0), (1, 1)), ((bx - 1, by), (bx - 1, by - 1))):
+        if 0 <= a[0] <= bx and 0 <= b[1] <= by:
+            edge_attrs.setdefault(ekey(node_id(*a), node_id(*b)), {"structure": RAMP})
+
     bbox = (0.0, 0.0, bx * bs, by * bs)
     return StreetMap(nodes=nodes, edges=edges, buildings=buildings,
-                     bbox=bbox, source=f"synthetic:{name}")
+                     bbox=bbox, source=f"synthetic:{name}", edge_attrs=edge_attrs)
 
 
 # ===========================================================================

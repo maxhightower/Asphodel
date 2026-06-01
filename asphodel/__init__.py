@@ -52,6 +52,7 @@ from .citizen import (
     resolve_collapse_situation,
 )
 from .signatures import SignatureScenario, default_signatures
+from .travel_events import TravelEvent, default_travel_events, select_travel_event
 
 # --- Vehicles & traffic: travel modes, road network, congestion -------------
 from .vehicles import (
@@ -145,6 +146,9 @@ __all__ = [
     "default_signatures",
     "CollapseSituation",
     "resolve_collapse_situation",
+    "TravelEvent",
+    "default_travel_events",
+    "select_travel_event",
     # Vehicles & traffic
     "VehicleSpec",
     "VEHICLES",

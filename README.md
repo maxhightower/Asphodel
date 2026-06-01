@@ -336,23 +336,54 @@ A few, to show the range:
 | **construction_worker** | a site full of power tools, generators and materials to barricade with |
 | **mechanic** | a garage of working cars with the keys in the office |
 
-Crucially, the signature **fires through the schedule, not by fiat**:
-`resolve_collapse_situation(citizen, collapse_hour)` checks what the citizen is
-actually doing at the moment the world tips. On shift → the signature fires,
-bound to their concrete building and on-hand inventory. Off shift → it *doesn't*
-— a nurse asleep at home has her edge back at the hospital, not with her. So
-whether you get the dramatic moment depends on your shift versus *when* the
-collapse lands (see `TimeScale.collapse_by_day`), which makes a random spawn
-genuinely re-playable.
+The resolution is **location-aware** — `resolve_collapse_situation(citizen,
+collapse_hour, world)` looks at *where the citizen physically is* at the moment
+the world tips and picks accordingly:
+
+| Where you are | What fires |
+|---|---|
+| **at the workplace** (on shift) | the occupation's **signature scenario**, bound to your concrete building + on-hand kit |
+| **mid-commute** | a **vehicle/traffic event** keyed to the road you're on (below) |
+| **out on an errand** | caught out in public |
+| **at home** (off shift) | off-duty — your job's edge left back at work |
+
+So whether you get the nurse-in-the-flood moment depends on shift vs *when* the
+collapse lands (see `TimeScale.collapse_by_day`) — a nurse asleep at home has her
+edge back at the hospital, not with her — which makes a random spawn genuinely
+re-playable.
+
+#### Travel / traffic events (`asphodel/travel_events.py`)
+
+Being caught *in transit* is its own class of predicament, independent of your
+job. Street segments carry a **structure** — surface / highway / bridge / tunnel
+/ ramp (tagged procedurally, or from OSM `bridge`/`tunnel`/`highway` tags via
+`structure_from_osm_tags`) — which also makes bridges and tunnels traffic
+**chokepoints** (lower capacity) and highways fast. When a citizen is caught
+mid-commute, the event is selected from the **road structure they're actually on**
+(routed home↔work on the network) and their **vehicle**:
+
+| Structure | Event |
+|---|---|
+| surface | total gridlock; junction pile-up |
+| highway | a fuel **tanker goes up**; the motorway concertinas into a pile-up |
+| ramp | **stranded on the flyover**, cars locked solid both ways, a long drop either edge |
+| bridge | **trapped mid-span**, both ends choking, water below |
+| tunnel | **the tunnel goes dark** — traffic stops, then the lights, then the engines |
+| *(on a bus)* | packed transit, stopped dead | *(on foot/bike)* faster than the jam |
 
 ```bash
-# Spawn into a real map and resolve each citizen's collapse predicament at 14:00
-python -m asphodel.citizen --world --city capital --n 4 --collapse-hour 14
-#   [★ SIGNATURE] delivery_driver: A van full of unknowns
-#      where: mid-route in a loaded van  (at Midtown commercial 132)
-#      choice: A van of unknown supplies and a head full of back roads -- use them.
-#   [· off-duty ] nurse: Off-shift when it hit   (her edge is back at the hospital)
+# Catch the morning commute (≈07:42) so traffic events fire by road structure
+python -m asphodel.citizen --world --city capital --n 14 --collapse-hour 7.7
+#   [▲ TRAFFIC ] postal_worker: Motorway folds up   (on the motorway, mid-commute)
+#   [★ SIGNATURE] nurse: The doors won't stop opening   (on shift, at the hospital)
+#   [▲ TRAFFIC ] commuter on the bridge: Trapped mid-span ...
 ```
+
+`CollapseSituation` reports `kind` (signature / travel / generic), `context`
+(workplace / commute / errand / home), the road `structure`, and the reusable
+`tags` a game layer switches on (`height`, `trapped`, `fire`, `tunnel`,
+`bridge`, `crowd`, …). Resolution is deterministic in `(citizen, collapse_hour,
+world)`.
 
 ---
 

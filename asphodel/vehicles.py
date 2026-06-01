@@ -91,6 +91,23 @@ def work_vehicle_for(occupation: str) -> Optional[str]:
     return OCCUPATION_VEHICLE.get(occupation)
 
 
+def vehicle_class(kind: str) -> str:
+    """Coarse class used to match travel events: nonmotorized / transit / motorized."""
+    if kind in ("foot", "bicycle"):
+        return "nonmotorized"
+    if kind == "bus":
+        return "transit"
+    return "motorized"
+
+
+# Per road-structure capacity and free-flow-speed multipliers.  Bridges and
+# tunnels are chokepoints (they jam first under an exodus); highways flow fast.
+STRUCT_CAPACITY = {"surface": 1.0, "highway": 1.6, "bridge": 0.5,
+                   "tunnel": 0.5, "ramp": 0.6}
+STRUCT_SPEED = {"surface": 1.0, "highway": 1.8, "bridge": 0.9,
+                "tunnel": 0.8, "ramp": 0.7}
+
+
 # ===========================================================================
 # Mode choice
 # ===========================================================================
@@ -178,15 +195,17 @@ class RoadNetwork:
 
     @classmethod
     def from_street_map(cls, sm, params: TrafficParams = TrafficParams()) -> "RoadNetwork":
-        speed_mps = params.default_speed_kph * 1000.0 / 3600.0
+        base_mps = params.default_speed_kph * 1000.0 / 3600.0
         adj: dict[int, list] = {n: [] for n in sm.nodes}
         cap: dict[tuple[int, int], float] = {}
         length: dict[tuple[int, int], float] = {}
         fft: dict[tuple[int, int], float] = {}
         for u, v, w in sm.edges:
             key = _edge_key(u, v)
+            structure = sm.edge_structure(u, v)
+            speed_mps = base_mps * STRUCT_SPEED.get(structure, 1.0)
             t = w / speed_mps
-            cap[key] = params.capacity_per_segment
+            cap[key] = params.capacity_per_segment * STRUCT_CAPACITY.get(structure, 1.0)
             length[key] = w
             fft[key] = t
             adj[u].append((v, key, w, t))

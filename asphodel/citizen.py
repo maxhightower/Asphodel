@@ -48,6 +48,7 @@ from .world import (
 )
 from .vehicles import choose_commute, TrafficParams
 from .signatures import SignatureScenario, default_signatures
+from .travel_events import select_travel_event
 
 
 # ===========================================================================
@@ -579,6 +580,15 @@ class CityWorld:
         row = min(self.grid_rows - 1, max(0, int(fy * self.grid_rows)))
         return row * self.grid_cols + col
 
+    def road(self, params: Optional[TrafficParams] = None):
+        """The cached routable RoadNetwork for this world (built on first use)."""
+        r = getattr(self, "_road_cache", None)
+        if r is None:
+            from .vehicles import RoadNetwork
+            r = RoadNetwork.from_street_map(self.street_map, params or TrafficParams())
+            self._road_cache = r
+        return r
+
 
 def resolve_world(profile: CityProfile, seed: int = 0,
                   grid_rows: int = 8, grid_cols: int = 8) -> CityWorld:
@@ -736,20 +746,29 @@ def _signatures() -> dict:
 class CollapseSituation:
     """The predicament a citizen is actually in when the collapse lands.
 
-    Resolved from the citizen's schedule at ``collapse_hour``: an occupation's
-    signature scenario *fires* only if they're on shift then (or, for
-    home-anchored roles, any time) -- so whether you get the nurse-in-the-flood
-    moment or 'asleep at home, off-shift' is itself an emergent, schedule-driven
-    outcome of when in the day the world chose to end.
+    Resolved *location-aware* from the citizen's schedule at ``collapse_hour``:
+    where they physically are decides what happens.
+
+    * **at the workplace** (on shift) -> the occupation's signature scenario;
+    * **mid-commute** -> a vehicle/traffic travel event, chosen from the road
+      structure they're on (gridlock, a tanker fire on the motorway, stranded on
+      a flyover, trapped in a tunnel) and their vehicle;
+    * **on an errand** -> caught out in public;
+    * **at home** (off shift) -> off-duty, their job's edge left at work.
+
+    ``kind`` is one of "signature" / "travel" / "generic"; ``context`` is one of
+    "workplace" / "commute" / "errand" / "home".  ``fired`` means a *scripted*
+    scenario (signature or travel event) triggered, as opposed to a plain
+    generic situation.
     """
 
     citizen_id: int
     occupation: str
     collapse_hour: float
     on_duty: bool
-    fired: bool                 # did the job's signature scenario trigger?
+    fired: bool
     title: str
-    location: str               # evocative signature location (or where you are)
+    location: str               # evocative location of the scenario / where you are
     at: str                     # concrete place from the schedule (building/district)
     activity: str
     narrative: str
@@ -757,10 +776,14 @@ class CollapseSituation:
     assets: list[str]
     hazards: list[str]
     tags: list[str]
+    kind: str = "generic"       # "signature" | "travel" | "generic"
+    context: str = "home"       # "workplace" | "commute" | "errand" | "home"
+    structure: str = ""         # road structure, when kind == "travel"
 
     def summary(self) -> str:
-        flag = "★ SIGNATURE" if self.fired else "· off-duty "
-        lines = [f"[{flag}] {self.occupation}: {self.title}"]
+        badge = {"signature": "★ SIGNATURE", "travel": "▲ TRAFFIC ",
+                 "generic": "· off-duty "}.get(self.kind, "·         ")
+        lines = [f"[{badge}] {self.occupation}: {self.title}"]
         loc = f"   where: {self.location}"
         if self.at and self.at != self.location:
             loc += f"  (at {self.at})"
@@ -775,13 +798,60 @@ class CollapseSituation:
         return "\n".join(lines)
 
 
-def resolve_collapse_situation(profile: CitizenProfile,
-                               collapse_hour: float = 14.0) -> CollapseSituation:
-    """Bind ``profile``'s occupation signature to where the collapse finds them.
+def _commute_road_structure(profile: CitizenProfile, collapse_hour: float,
+                            block, world) -> tuple[str, str]:
+    """The road structure (and a place-phrase) the citizen is on mid-commute.
 
-    ``collapse_hour`` is the in-game hour (0-24) the world tips -- a single
-    moment shared by everyone -- so a day-shift worker is at their post while a
-    night-shift worker is asleep, and their signatures fire accordingly.
+    Routes home<->work on the world's road network and reads the structure of the
+    segment they'd physically be on at this point in the commute block.
+    """
+    fallback = (SURFACE_STR, "on a city street, mid-commute")
+    by_id = world.street_map.by_id()
+    home_b = by_id.get(profile.home_building_id)
+    work_b = by_id.get(profile.work_building_id)
+    if home_b is None or work_b is None:
+        return fallback
+    road = world.road()
+    edges, total = road.shortest_path(home_b.street_node, work_b.street_node)
+    if not edges or not np.isfinite(total) or total <= 0:
+        return fallback
+    # How far along the commute block are we (handle a post-midnight wrap)?
+    ch = collapse_hour
+    if block.end_hour > 24.0 and collapse_hour < block.start_hour:
+        ch = collapse_hour + 24.0
+    dur = block.end_hour - block.start_hour
+    frac = min(1.0, max(0.0, (ch - block.start_hour) / dur)) if dur > 0 else 0.5
+    target = frac * total
+    cum = 0.0
+    key = edges[-1]
+    for k in edges:
+        cum += road.length[k]
+        if cum >= target:
+            key = k
+            break
+    structure = world.street_map.edge_structure(*key)
+    phrase = {
+        "highway": "on the motorway, mid-commute",
+        "bridge": "mid-span on a bridge, mid-commute",
+        "tunnel": "deep in a tunnel, mid-commute",
+        "ramp": "on an overhead ramp, mid-commute",
+        "surface": "on a city street, mid-commute",
+    }.get(structure, "on the road, mid-commute")
+    return structure, phrase
+
+
+SURFACE_STR = "surface"
+
+
+def resolve_collapse_situation(profile: CitizenProfile, collapse_hour: float = 14.0,
+                               world: "Optional[CityWorld]" = None) -> CollapseSituation:
+    """Resolve where the collapse finds this citizen and what it means.
+
+    ``collapse_hour`` is the in-game hour (0-24) the world tips -- shared by
+    everyone -- so a day-shift worker is at their post while a night-shift worker
+    is asleep.  Pass the ``world`` the citizen was spawned in to make commute
+    travel-events road-aware (which bridge / tunnel / flyover they're caught on);
+    without it, a mid-commute citizen still gets a vehicle-appropriate event.
     """
     block = _current_block(profile.schedule, collapse_hour)
     activity = block.activity if block else "idle"
@@ -790,39 +860,73 @@ def resolve_collapse_situation(profile: CitizenProfile,
     on_duty = activity == "work"
     on_hand = list(profile.inventory.keys())
 
-    fires = sig is not None and (
+    def with_on_hand(assets: list[str]) -> list[str]:
+        out = list(assets)
+        if on_hand:
+            out.append("on you: " + ", ".join(on_hand))
+        return out
+
+    def make(**kw) -> CollapseSituation:
+        base = dict(citizen_id=profile.citizen_id, occupation=profile.occupation,
+                    collapse_hour=collapse_hour, on_duty=on_duty, activity=activity)
+        base.update(kw)
+        return CollapseSituation(**base)
+
+    # 1) On shift at the workplace, or a home-anchored "anytime" role: the job's
+    #    signature scenario, bound to the concrete place and on-hand kit.
+    sig_fires = sig is not None and (
         sig.trigger == "anytime"
         or (sig.trigger in ("on_shift", "on_site") and on_duty))
+    if sig_fires:
+        return make(fired=True, kind="signature",
+                    context="workplace" if on_duty else "home",
+                    title=sig.name, location=sig.location, at=where_at,
+                    narrative=sig.situation, dilemma=sig.dilemma,
+                    assets=with_on_hand(sig.assets), hazards=list(sig.hazards),
+                    tags=list(sig.tags))
 
-    if fires:
-        assets = list(sig.assets)
-        if on_hand:
-            assets.append("on you: " + ", ".join(on_hand))
-        return CollapseSituation(
-            citizen_id=profile.citizen_id, occupation=profile.occupation,
-            collapse_hour=collapse_hour, on_duty=on_duty, fired=True,
-            title=sig.name, location=sig.location, at=where_at,
-            activity=activity, narrative=sig.situation, dilemma=sig.dilemma,
-            assets=assets, hazards=list(sig.hazards), tags=list(sig.tags))
+    # 2) Caught mid-commute: a vehicle/traffic event keyed to the road structure.
+    if activity == "commute":
+        vehicle = profile.vehicle or "car"
+        structure, phrase = SURFACE_STR, "on the road, mid-commute"
+        if world is not None and profile.home_building_id is not None \
+                and profile.work_building_id is not None:
+            structure, phrase = _commute_road_structure(
+                profile, collapse_hour, block, world)
+        erng = np.random.default_rng(
+            (profile.citizen_id, int(round(collapse_hour * 100))))
+        ev = select_travel_event(erng, structure, vehicle)
+        return make(fired=True, kind="travel", context="commute",
+                    title=ev.name, location=phrase, at=where_at,
+                    narrative=ev.situation, dilemma=ev.dilemma,
+                    assets=with_on_hand(ev.assets), hazards=list(ev.hazards),
+                    tags=list(ev.tags), structure=structure)
 
-    # Off-duty (or no signature): a generic, schedule-driven situation.
+    # 3) Out on an errand: caught in public.
+    if activity == "errand":
+        return make(fired=False, kind="generic", context="errand",
+                    title="Caught out in public", location=where_at, at=where_at,
+                    narrative=(f"You're out at {where_at} when the collapse comes "
+                               "-- in the open, among strangers."),
+                    dilemma="Make for home, or shelter where you stand.",
+                    assets=with_on_hand([]), hazards=["exposed, away from home"],
+                    tags=["crowd"])
+
+    # 4) Off-duty at home (signature's edge left at work) / generic.
     if sig is not None:
-        narrative = (f"You're {activity} in {where_at} -- not on shift when the "
+        narrative = (f"You're {activity} at {where_at} -- not on shift when the "
                      f"collapse comes. Your {profile.occupation}'s edge is back "
                      f"at {sig.location}.")
         dilemma = "Make for your workplace's resources, or improvise where you are."
         hazards = ["away from your job's resources"]
     else:
-        narrative = f"You're {activity} in {where_at} when the collapse comes."
+        narrative = f"You're {activity} at {where_at} when the collapse comes."
         dilemma = ""
         hazards = []
-    return CollapseSituation(
-        citizen_id=profile.citizen_id, occupation=profile.occupation,
-        collapse_hour=collapse_hour, on_duty=on_duty, fired=False,
-        title="Off-shift when it hit", location=where_at, at=where_at,
-        activity=activity, narrative=narrative, dilemma=dilemma,
-        assets=(["on you: " + ", ".join(on_hand)] if on_hand else []),
-        hazards=hazards, tags=[])
+    return make(fired=False, kind="generic", context="home",
+                title="Off-shift when it hit", location=where_at, at=where_at,
+                narrative=narrative, dilemma=dilemma,
+                assets=with_on_hand([]), hazards=hazards, tags=[])
 
 
 # ===========================================================================
@@ -1162,7 +1266,7 @@ def _demo(city_name: str = "generic", n: int = 8, seed: int = 0,
                 extra += (f"  commute {c.commute_metres:.0f} m "
                           f"by {c.commute_mode} ({c.vehicle})")
             print(extra)
-            print(resolve_collapse_situation(c, collapse_hour).summary())
+            print(resolve_collapse_situation(c, collapse_hour, world=cw).summary())
             print()
         # Whole-population morning commute -> traffic snapshot.
         big = spawn_population_in_world(cw, catalog, max(n, 400), seed=seed)
