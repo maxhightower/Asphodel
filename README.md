@@ -237,6 +237,31 @@ in place and tested against the procedural source; wiring a GIS toolchain
 (e.g. `osmnx` + `shapely`, or `pyrosm` for offline `.pbf` extracts) makes the
 *real-city* path live.
 
+### Game time & pacing (`asphodel/gametime.py`)
+
+`TimeScale` bridges **real player seconds ↔ the in-game clock the schedule runs
+on ↔ the simulation's tick/day axis**, with Project-Zomboid-style defaults:
+
+- **A full 24-hour cycle = 1 real hour** (PZ's default Day Length; tunable via
+  `real_seconds_per_day`). At the default `dt=0.25`, one sim tick = 900 real
+  seconds.
+- **Collapse lands within ~2 in-game days.** The epidemic is a long, calibrated
+  arc, so rather than distort its dynamics, the player clock is *warped*:
+  `collapse_warp` pins the player's day 2 onto the simulation's panic tipping
+  day, so however long the pathogen actually takes, the player reaches collapse
+  on schedule (`plan_session` reports the real-minutes-to-collapse). Near the
+  tip the warp relaxes toward real-time for full tension.
+- **Downtime fast-forwards** — `schedule_playback` compresses sleep/idle blocks
+  (PZ's skip key) so a session is the interesting hours, and turns a citizen's
+  in-game-hour day into a wall-clock timeline a game loop can drive directly.
+
+```python
+from asphodel import default_timescale
+print(default_timescale().summary(sim_panic_day=42.0))
+# day length: 60 real min/in-game day (900s per sim tick)
+# collapse: sim day 42.0 -> player day 2.0 (warp x21.0), ~120 min in
+```
+
 ---
 
 ## Phase 4a — Macro↔Micro handoff & calibration

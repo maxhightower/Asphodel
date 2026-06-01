@@ -49,6 +49,14 @@ from .citizen import (
     spawn_population_in_world,
 )
 
+# --- Game time: real seconds <-> in-game clock <-> sim ticks, PZ-style pacing -
+from .gametime import (
+    TimeScale,
+    default_timescale,
+    schedule_playback,
+    block_real_seconds,
+)
+
 # --- The spatial world a city resolves into (streets + buildings + interiors) -
 from .world import (
     Building,
@@ -113,6 +121,11 @@ __all__ = [
     "resolve_world",
     "spawn_citizen_in_world",
     "spawn_population_in_world",
+    # Game time
+    "TimeScale",
+    "default_timescale",
+    "schedule_playback",
+    "block_real_seconds",
     # World layer
     "Building",
     "Interior",
