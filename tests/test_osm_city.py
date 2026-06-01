@@ -13,6 +13,7 @@ from asphodel.runner import run_scenario
 from asphodel.osm_city import geocode as gc
 from asphodel.osm_city import CityNotFound
 from asphodel.osm_city import geometry as geo
+from asphodel.osm_city import overpass as ov
 
 
 def test_project_origin_is_zero():
@@ -205,3 +206,49 @@ def test_geocode_builds_query_url():
     gc.geocode("San Francisco", fetch=fake_fetch)
     assert "q=San+Francisco" in captured["url"]
     assert "format=json" in captured["url"]
+
+
+# Overpass `out geom;` returns ways with inline node geometry.
+_OVERPASS_FIXTURE = {
+    "elements": [
+        {"type": "way", "tags": {"building": "yes", "building:levels": "3"},
+         "geometry": [{"lat": 40.000, "lon": -73.000}, {"lat": 40.000, "lon": -73.001},
+                      {"lat": 40.001, "lon": -73.001}, {"lat": 40.001, "lon": -73.000}]},
+        {"type": "way", "tags": {"building": "house"},
+         "geometry": [{"lat": 40.002, "lon": -73.002}, {"lat": 40.002, "lon": -73.003},
+                      {"lat": 40.003, "lon": -73.003}]},
+        {"type": "way", "tags": {"highway": "primary", "name": "Main St"},
+         "geometry": [{"lat": 40.000, "lon": -73.000}, {"lat": 40.010, "lon": -73.010}]},
+        {"type": "node", "lat": 40.0, "lon": -73.0},  # ignored
+    ]
+}
+
+
+def test_build_query_contains_bbox_and_filters():
+    q = ov.build_query((40.0, -73.1, 40.1, -73.0))
+    assert "40.0,-73.1,40.1,-73.0" in q
+    assert 'way["building"]' in q
+    assert "highway" in q
+    assert "out geom;" in q
+
+
+def test_parse_osm_splits_buildings_and_roads():
+    buildings, roads = ov.parse_osm(_OVERPASS_FIXTURE)
+    assert len(buildings) == 2
+    assert len(roads) == 1
+    assert buildings[0]["levels"] == 3
+    assert buildings[1]["levels"] == 1          # untagged -> default 1
+    assert roads[0]["class"] == "primary"
+    assert roads[0]["points"][0] == (40.000, -73.000)
+
+
+def test_fetch_osm_uses_cache(tmp_path):
+    calls = {"n": 0}
+    def fake_fetch(query):
+        calls["n"] += 1
+        return _json.dumps(_OVERPASS_FIXTURE)
+    bbox = (40.0, -73.1, 40.1, -73.0)
+    a = ov.fetch_osm(bbox, cache_dir=str(tmp_path), fetch=fake_fetch)
+    b = ov.fetch_osm(bbox, cache_dir=str(tmp_path), fetch=fake_fetch)
+    assert calls["n"] == 1                        # second call served from cache
+    assert a == b
