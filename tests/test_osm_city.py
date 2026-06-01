@@ -1,4 +1,6 @@
 """Phase-1 OSM city pipeline tests (offline; inline fixtures, no network)."""
+from __future__ import annotations
+
 import math
 
 from asphodel.osm_city import geometry as geo
@@ -32,4 +34,6 @@ def test_polygon_area_is_orientation_independent():
 
 
 def test_polygon_area_degenerate_is_zero():
+    assert geo.polygon_area([]) == 0.0
+    assert geo.polygon_area([(0.0, 0.0)]) == 0.0
     assert geo.polygon_area([(0.0, 0.0), (1.0, 1.0)]) == 0.0

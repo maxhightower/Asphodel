@@ -16,7 +16,8 @@ M_PER_DEG_LON = 111320.0
 def project(lat: float, lon: float, lat0: float, lon0: float) -> tuple[float, float]:
     """Equirectangular projection of (lat, lon) to local meters about (lat0, lon0).
 
-    Returns (x, z) where x is east, z is north. Sub-meter accurate at city scale.
+    Returns (x, z) where x is east, z is north. Distortion is under ~0.5% for
+    typical city extents (radius < 50 km) — fine for relative city geometry.
     """
     x = (lon - lon0) * M_PER_DEG_LON * math.cos(math.radians(lat0))
     z = (lat - lat0) * M_PER_DEG_LAT

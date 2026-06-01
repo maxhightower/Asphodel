@@ -4,6 +4,7 @@ Turns a city name into a bundle (zone graph + density-weighted population +
 roads + a precomputed belief-cascade timeline) consumed by the Godot frontend.
 All network I/O is injectable so the pipeline is testable offline.
 """
+from __future__ import annotations
 
 
 class OSMError(Exception):
