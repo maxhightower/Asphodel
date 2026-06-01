@@ -43,11 +43,10 @@ def tessellate(bbox, buildings: list[dict], grid: int, total_pop: float) -> Tess
     width_m = x_max - x_min
     height_m = z_max - z_min
 
-    # Use raw degree spans for the grid aspect ratio so that the cell count
-    # reflects the geographic footprint (e.g. 1° lon x 0.5° lat -> cols:rows = 2:1).
-    lon_span = east - west
-    lat_span = north - south
-    rows, cols = _grid_dims(lon_span, lat_span, grid)
+    # Derive the grid aspect from the PROJECTED METER spans (not raw degrees) so
+    # cells stay ~square: at high latitude a degree of longitude is much shorter
+    # than a degree of latitude, and using meters accounts for that compression.
+    rows, cols = _grid_dims(width_m, height_m, grid)
     cell_w = width_m / cols
     cell_h = height_m / rows
 

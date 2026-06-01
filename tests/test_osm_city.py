@@ -85,12 +85,17 @@ def _square_building(lat, lon, d=0.0005, levels=1):
 
 
 def test_grid_dims_from_aspect_ratio():
-    # Wide bbox (more lon span than lat span) -> more cols than rows.
-    bbox = (40.0, -74.0, 40.5, -73.0)  # (s, w, n, e): 1.0 lon span, 0.5 lat span
+    # Wider in meters than tall -> more cols than rows. The bbox spans 1.0 deg lon
+    # x 0.5 deg lat, but at lat ~40 a deg of lon is ~0.77x a deg of lat, so the
+    # projected meter aspect (~84966 x 55270 m) gives 8 cols and round(8*0.65)=5
+    # rows -> near-square ~10620 x 11054 m cells.
+    bbox = (40.0, -74.0, 40.5, -73.0)  # (s, w, n, e)
     t = tess.tessellate(bbox, buildings=[], grid=8, total_pop=1000.0)
     assert t.cols == 8
-    assert t.rows == 4
-    assert len(t.zones) == 32
+    assert t.rows == 5
+    assert len(t.zones) == 40
+    # Cells are near-square (within 15%) thanks to the meter-based aspect.
+    assert abs(t.cell_w / t.cell_h - 1.0) < 0.15
 
 
 def test_population_sums_to_total():
