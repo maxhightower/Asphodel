@@ -152,8 +152,8 @@ zone holds 800 or 5000 people.
 | 4a | Single-zone micro tier + calibration + handoff | ✅ done |
 | 5 | Orchestrator (`World`) + inter-zone agent flux + runtime promote/demote + player-focus trigger | ✅ done |
 | **6** | **O(n) spatial-hash neighbour search + measured real-time budget + live-bubble budget cap** | ✅ done — see `FINDINGS_PHASE6.md` |
-| 7 | Richer topology (small-world / commute graph) + heterogeneous-genome, multi-seed-zone scenarios | next |
-| 8 | Player interventions (broadcast / shelter order / staffing / cordon) through `world.intervene`; couple agent shelter to live belief | next |
+| **7** | **Swappable topology (grid / small-world / commute-hub) + heterogeneous population + multi-seed outbreaks** | ✅ done — see `FINDINGS.md` §9 |
+| **8** | **Player interventions (broadcast / shelter order / staffing / cordon) through `world.intervene`; agent shelter coupled to live belief** | ✅ done |
 | 9 | Save/load: full deterministic state serialization (macro + agents + RNG) | next |
 | 10 | Godot integration: render `snapshot()`, forward input to `intervene()` — **rendering only** | after the above |
 

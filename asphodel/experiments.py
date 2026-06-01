@@ -200,12 +200,52 @@ def coupling_onoff(base: ScenarioConfig | None = None) -> None:
     print(f"  -> {path}")
 
 
+# --------------------------------------------------------------------------- #
+# 5. Topology comparison -- diffusion wave (grid) vs synchronized tip
+# --------------------------------------------------------------------------- #
+def topology_comparison(base: ScenarioConfig | None = None) -> None:
+    """Does the cascade synchronize when the graph stops being a pure grid?
+
+    Grid contagion can only diffuse to adjacent zones (a wave); small-world
+    shortcuts and commute hubs let belief jump across the map, which should
+    compress the tip (10%->90%) toward a near-simultaneous flip.  Open question
+    from FINDINGS.md s8.
+    """
+    base = base or ScenarioConfig()
+    variants = [
+        ("grid", {"topology": "grid"}),
+        ("small_world p=0.1", {"topology": "small_world", "rewire_prob": 0.1}),
+        ("small_world p=0.3", {"topology": "small_world", "rewire_prob": 0.3}),
+        ("commute (4 hubs)", {"topology": "commute", "n_hubs": 4}),
+    ]
+    fig, ax = plt.subplots(figsize=(9, 5.5))
+    rows = []
+    for label, overrides in variants:
+        cfg = _clone(base)
+        for k, v in overrides.items():
+            setattr(cfg.model.graph, k, v)
+        cfg.name = label
+        res = run_scenario(cfg, record_belief=False)
+        rows.append((label, _summary(res)))
+        ax.plot(res.frame["day"], res.frame["n_panic"], label=label)
+    ax.set_title("Belief cascade by topology: grid wave vs synchronized tip")
+    ax.set_xlabel("day"); ax.set_ylabel("# zones in panic")
+    ax.legend(fontsize=8); ax.grid(alpha=0.3)
+    fig.suptitle("Topology comparison", fontweight="bold"); fig.tight_layout()
+    path = os.path.join(OUTDIR, "exp_topology_comparison.png")
+    os.makedirs(OUTDIR, exist_ok=True)
+    fig.savefig(path, dpi=110); plt.close(fig)
+    _print_table("Topology comparison", rows)
+    print(f"  -> {path}")
+
+
 def run_all() -> None:
     base = ScenarioConfig()
     incubation_sweep(base)
     belief_coupling_sweep(base)
     authority_lag_sweep(base)
     coupling_onoff(base)
+    topology_comparison(base)
 
 
 if __name__ == "__main__":

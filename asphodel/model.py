@@ -78,9 +78,10 @@ class Simulation:
         self.dt = config.dt
 
         # --- Infection compartments (people) -------------------------------
-        pop = config.model.graph.population_per_zone
-        self.N0 = np.full(Z, pop, dtype=float)        # original population
-        self.S = np.full(Z, pop, dtype=float)
+        # Per-zone populations come from the graph (uniform for grid; possibly
+        # heterogeneous for the commute topology).
+        self.N0 = self.graph.populations.astype(float).copy()   # original population
+        self.S = self.N0.copy()
         self.E = np.zeros(Z)
         self.Ia = np.zeros(Z)                          # infectious, not visible
         self.Is = np.zeros(Z)                          # visibly symptomatic
@@ -101,14 +102,20 @@ class Simulation:
         # oldest entry, so its view of the world is `lag_ticks` behind.
         self._authority_buffer: deque[float] = deque([0.0] * lag_ticks, maxlen=lag_ticks)
 
-        # --- Seed the outbreak in one zone ---------------------------------
-        seed_zone = config.seed_zone
-        if seed_zone is None:
-            seed_zone = self.graph.center_zone()
-        self.seed_zone = seed_zone
-        injected = min(config.seed_exposed, self.S[seed_zone])
-        self.S[seed_zone] -= injected
-        self.E[seed_zone] += injected
+        # --- Seed the outbreak in one or more zones ------------------------
+        if config.seed_zones:
+            seed_zones = list(config.seed_zones)
+        elif config.seed_zone is not None:
+            seed_zones = [config.seed_zone]
+        else:
+            seed_zones = [self.graph.center_zone()]
+        self.seed_zones = seed_zones
+        self.seed_zone = seed_zones[0]            # kept for back-compat / reporting
+        per_zone = config.seed_exposed / len(seed_zones)
+        for z in seed_zones:
+            injected = min(per_zone, self.S[z])
+            self.S[z] -= injected
+            self.E[z] += injected
 
         self.tick = 0
         self.events_log: list[dict] = []   # exogenous shock log
