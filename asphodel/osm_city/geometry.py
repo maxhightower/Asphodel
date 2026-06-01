@@ -63,7 +63,8 @@ def place_blocks(
     for _ in range(n):
         bx = cx + (rng.random() - 0.5) * w * 0.8
         bz = cz + (rng.random() - 0.5) * h * 0.8
-        height = min_height + density * (max_height - min_height) * (0.6 + 0.8 * rng.random())
+        # Multiplier in [0.3, 1.0] keeps height varied but never above max_height.
+        height = min_height + density * (max_height - min_height) * (0.3 + 0.7 * rng.random())
         footprint = 4.0 + 6.0 * rng.random()
         blocks.append({"xy": [bx, bz], "height": round(height, 3), "footprint": round(footprint, 3)})
     return blocks

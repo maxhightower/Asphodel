@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import math
+import random
 
 from asphodel.osm_city import geometry as geo
 
@@ -39,9 +40,6 @@ def test_polygon_area_degenerate_is_zero():
     assert geo.polygon_area([(0.0, 0.0), (1.0, 1.0)]) == 0.0
 
 
-import random
-
-
 def test_place_blocks_count_scales_with_density():
     rng = random.Random(0)
     low = geo.place_blocks(0.0, (0.0, 0.0), (100.0, 100.0), rng, max_blocks=8)
@@ -56,9 +54,9 @@ def test_place_blocks_positions_within_cell():
     blocks = geo.place_blocks(1.0, (50.0, -20.0), (100.0, 100.0), rng, max_blocks=8)
     for b in blocks:
         x, z = b["xy"]
-        assert 0.0 <= x <= 100.0   # center 50 +/- 0.4*100
-        assert -70.0 <= z <= 30.0  # center -20 +/- 0.4*100
-        assert b["height"] > 0.0
+        assert 10.0 <= x <= 90.0   # center 50 +/- 0.4*100
+        assert -60.0 <= z <= 20.0  # center -20 +/- 0.4*100
+        assert 0.0 < b["height"] <= 40.0   # max_height is a true ceiling
         assert b["footprint"] > 0.0
 
 
