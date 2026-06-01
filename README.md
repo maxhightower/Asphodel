@@ -304,12 +304,55 @@ print(congestion_report(world, pop))   # commuters, PCU, network_load, max_voc, 
 The single-pass (all-or-nothing) assignment is adequate for a commute snapshot
 or an exodus pulse; iterating to user-equilibrium is the documented next step.
 
-> **Job diversity.** The catalog ships **43 occupations** across medical,
+> **Job diversity.** The catalog ships **47 occupations** across medical,
 > education, civic, commercial, industrial, transit and home categories —
 > including the driving/logistics roles the traffic layer needs (taxi, delivery,
-> truck, courier, postal, bus). Add more by editing `default_catalog()` /
-> `cities/_catalog.yaml`; a job spawns in any city whose map hosts its workplace
-> category.
+> truck, courier, postal, bus) and on-site specialists (window washer, train
+> conductor, corrections officer, landscaper). Add more by editing
+> `default_catalog()` / `cities/_catalog.yaml`; a job spawns in any city whose
+> map hosts its workplace category.
+
+### Signature scenarios (`asphodel/signatures.py`)
+
+Being spawned into a job isn't just a label and an inventory — it drops you into
+**the one predicament that job authors naturally** when the world ends. Every
+occupation owns a `SignatureScenario` (data): a defining location, the situation
+unfolding when collapse hits, the **dilemma** it forces, the **assets** the job
+hands you in that moment, the **hazards** working against you, and reusable
+**tags** (`height`, `trapped`, `vehicle_moving`, `mass_casualty`, `crowd`,
+`children`, `keys_access`, `tools`, `supplies`, `weapons`, …) a game layer can
+switch on.
+
+A few, to show the range:
+
+| Occupation | Signature |
+|---|---|
+| **nurse** | on the ward as the casualties flood in — triage who you can save, or walk out |
+| **window_washer** | stranded in a cradle thirty storeys up when the building's power dies |
+| **train_conductor** | doing 90 between stations with a train full of people you're responsible for |
+| **corrections_officer** | lockdown fails halfway — some cells open, some don't |
+| **childcare_worker** | naptime, a dozen toddlers, and no parents answering |
+| **landscaper** | three lawns from the truck — every house around you a possible shelter |
+| **construction_worker** | a site full of power tools, generators and materials to barricade with |
+| **mechanic** | a garage of working cars with the keys in the office |
+
+Crucially, the signature **fires through the schedule, not by fiat**:
+`resolve_collapse_situation(citizen, collapse_hour)` checks what the citizen is
+actually doing at the moment the world tips. On shift → the signature fires,
+bound to their concrete building and on-hand inventory. Off shift → it *doesn't*
+— a nurse asleep at home has her edge back at the hospital, not with her. So
+whether you get the dramatic moment depends on your shift versus *when* the
+collapse lands (see `TimeScale.collapse_by_day`), which makes a random spawn
+genuinely re-playable.
+
+```bash
+# Spawn into a real map and resolve each citizen's collapse predicament at 14:00
+python -m asphodel.citizen --world --city capital --n 4 --collapse-hour 14
+#   [★ SIGNATURE] delivery_driver: A van full of unknowns
+#      where: mid-route in a loaded van  (at Midtown commercial 132)
+#      choice: A van of unknown supplies and a head full of back roads -- use them.
+#   [· off-duty ] nurse: Off-shift when it hit   (her edge is back at the hospital)
+```
 
 ---
 

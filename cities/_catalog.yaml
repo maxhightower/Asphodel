@@ -37,6 +37,21 @@ occupations:
   inventory:
     backpack: 1
     snack: 1
+  signature:
+    name: Too small to understand
+    trigger: anytime
+    location: at home or the school playground
+    situation: The grown-ups are screaming and no one will explain why.
+    dilemma: Find a familiar adult, or hide where no one thinks to look.
+    assets:
+    - small enough to hide anywhere
+    - knows every shortcut nearby
+    hazards:
+    - dependent on adults
+    - easily overwhelmed
+    tags:
+    - vulnerable
+    - mobility
 - name: student
   min_age: 6
   max_age: 22
@@ -53,6 +68,20 @@ occupations:
     laptop: 1
     notebook: 1
     id_card: 1
+  signature:
+    name: Mid-lecture, all phones at once
+    trigger: on_shift
+    location: a packed lecture hall
+    situation: The lecture cuts off as every phone in the hall lights up.
+    dilemma: Shelter on a campus you know, or join the rush for the doors.
+    assets:
+    - knows the campus layout
+    - a crowd of peers
+    hazards:
+    - a crush forming at the exits
+    tags:
+    - crowd
+    - information
 - name: teacher
   min_age: 24
   max_age: 65
@@ -69,6 +98,22 @@ occupations:
     laptop: 1
     id_card: 1
     marker: 2
+  signature:
+    name: Thirty kids look to you
+    trigger: on_shift
+    location: a classroom of thirty
+    situation: The intercom dies mid-announcement and thirty children turn to you.
+    dilemma: Keep them calm and contained, or release them to parents who may never
+      come.
+    assets:
+    - authority over a room
+    - the register of every child
+    hazards:
+    - responsible for minors
+    - panicking parents at the gate
+    tags:
+    - children
+    - crowd
 - name: nurse
   min_age: 21
   max_age: 63
@@ -87,6 +132,21 @@ occupations:
     phone: 1
     face_mask: 3
     pen_light: 1
+  signature:
+    name: The doors won't stop opening
+    trigger: on_shift
+    location: the hospital floor at shift change
+    situation: The waiting room is already three deep and the ambulances keep coming.
+    dilemma: Triage who you can still save, or walk out while you can.
+    assets:
+    - medical supplies to hand
+    - knows where the drugs are kept
+    hazards:
+    - mass casualties
+    - first in line to be exposed
+    tags:
+    - mass_casualty
+    - medical_supplies
 - name: doctor
   min_age: 27
   max_age: 68
@@ -103,6 +163,21 @@ occupations:
     stethoscope: 1
     phone: 1
     face_mask: 3
+  signature:
+    name: Every monitor alarming at once
+    trigger: on_shift
+    location: a ward or clinic
+    situation: All the alarms go off together and the staff are thinning out.
+    dilemma: Hold the ward together, or grab a kit and go.
+    assets:
+    - clinical authority
+    - keys to the drug cabinet
+    hazards:
+    - overwhelmed by patients
+    tags:
+    - mass_casualty
+    - medical_supplies
+    - keys_access
 - name: paramedic
   min_age: 22
   max_age: 60
@@ -118,6 +193,22 @@ occupations:
     radio: 1
     trauma_kit: 1
     face_mask: 4
+  signature:
+    name: Driving toward the screaming
+    trigger: on_shift
+    location: out on a callout in the ambulance
+    situation: The radio dissolves into overlapping mayday calls.
+    dilemma: Keep answering calls into the chaos, or take the rig somewhere safe.
+    assets:
+    - a fast emergency vehicle
+    - a trauma kit
+    - lights to part traffic
+    hazards:
+    - always sent toward the danger
+    tags:
+    - vehicle_moving
+    - medical_supplies
+    - mobility
 - name: police_officer
   min_age: 21
   max_age: 60
@@ -134,6 +225,22 @@ occupations:
     radio: 1
     keys: 1
     notebook: 1
+  signature:
+    name: Dispatch goes silent
+    trigger: on_shift
+    location: on night patrol
+    situation: Dispatch falls quiet between bursts of coded calls.
+    dilemma: Enforce an order that no longer exists, or shed the uniform.
+    assets:
+    - a sidearm and radio
+    - a marked vehicle
+    - lawful access
+    hazards:
+    - a target for the desperate
+    tags:
+    - weapons
+    - vehicle_moving
+    - keys_access
 - name: firefighter
   min_age: 21
   max_age: 58
@@ -149,6 +256,22 @@ occupations:
     radio: 1
     keys: 1
     helmet: 1
+  signature:
+    name: Three fires, no water
+    trigger: on_shift
+    location: the station or a callout
+    situation: Three structure fires reported and no water pressure left.
+    dilemma: Run toward the smoke, or save your crew.
+    assets:
+    - breathing gear
+    - cutting tools
+    - a fire engine
+    hazards:
+    - called into burning buildings
+    tags:
+    - tools
+    - vehicle_moving
+    - supplies
 - name: office_worker
   min_age: 21
   max_age: 66
@@ -166,6 +289,22 @@ occupations:
     phone: 1
     id_card: 1
     keys: 1
+  signature:
+    name: The lifts just stopped
+    trigger: on_shift
+    location: a high floor of an office tower
+    situation: The lifts die and the stairwell fills with everyone from above.
+    dilemma: Descend with the crush, or wait it out at altitude.
+    assets:
+    - a defensible floor
+    - a kitchen and vending machines
+    hazards:
+    - trapped above ground
+    - no useful tools
+    tags:
+    - height
+    - trapped
+    - crowd
 - name: grocery_clerk
   min_age: 16
   max_age: 67
@@ -181,6 +320,22 @@ occupations:
     apron: 1
     name_tag: 1
     box_cutter: 1
+  signature:
+    name: They've stopped paying
+    trigger: on_shift
+    location: the shop floor of a supermarket
+    situation: The store fills with people who are no longer queuing to pay.
+    dilemma: Defend the stockroom, or melt into the crowd with a full cart.
+    assets:
+    - a building full of food and water
+    - keys to the stockroom
+    hazards:
+    - a mob wants what you're standing on
+    tags:
+    - food
+    - supplies
+    - keys_access
+    - crowd
 - name: chef
   min_age: 18
   max_age: 62
@@ -195,6 +350,23 @@ occupations:
     knife_roll: 1
     apron: 1
     thermometer: 1
+  signature:
+    name: Front of house empties, gas still on
+    trigger: on_shift
+    location: a restaurant kitchen
+    situation: The dining room bolts and the burners are still lit.
+    dilemma: Barricade a kitchen stocked for a week, or take the knives and leave.
+    assets:
+    - a walk-in full of food
+    - knives
+    - gas and running water
+    hazards:
+    - fire risk
+    - a glass-fronted ground floor
+    tags:
+    - food
+    - tools
+    - supplies
 - name: bus_driver
   min_age: 24
   max_age: 65
@@ -210,6 +382,23 @@ occupations:
     keys: 1
     id_badge: 1
     ticket_machine: 1
+  signature:
+    name: A rolling shelter full of strangers
+    trigger: on_shift
+    location: behind the wheel of a full bus
+    situation: Half your passengers want out; half want you to drive faster.
+    dilemma: Empty the bus, or keep a rolling shelter moving.
+    assets:
+    - a large vehicle full of people
+    - a route memorised
+    - fare cash
+    hazards:
+    - responsible for a busload
+    - gridlock ahead
+    tags:
+    - vehicle_moving
+    - crowd
+    - mobility
 - name: dock_worker
   min_age: 19
   max_age: 60
@@ -226,6 +415,23 @@ occupations:
     gloves: 1
     hard_hat: 1
     manifest: 1
+  signature:
+    name: Cranes hang mid-lift
+    trigger: on_shift
+    location: the container port
+    situation: Klaxons, then nothing -- the cranes freeze mid-lift.
+    dilemma: Hole up in a maze of containers, or take a vehicle off the docks.
+    assets:
+    - forklifts and cranes
+    - a maze of steel containers
+    - heavy tools
+    hazards:
+    - dead machinery
+    - exposed waterfront
+    tags:
+    - tools
+    - supplies
+    - isolation
 - name: factory_worker
   min_age: 18
   max_age: 63
@@ -241,6 +447,21 @@ occupations:
     ear_plugs: 1
     gloves: 1
     id_badge: 1
+  signature:
+    name: The line jams
+    trigger: on_shift
+    location: the production floor
+    situation: The line seizes; the lights flicker and catch on backup power.
+    dilemma: Shelter behind locked roller doors, or get out before the backup fails.
+    assets:
+    - heavy machinery
+    - a building on backup power
+    - tools
+    hazards:
+    - dangerous equipment caught mid-cycle
+    tags:
+    - tools
+    - infrastructure
 - name: construction_worker
   min_age: 18
   max_age: 62
@@ -257,6 +478,22 @@ occupations:
     gloves: 1
     tool_belt: 1
     hi_vis: 1
+  signature:
+    name: A site full of tools
+    trigger: on_shift
+    location: a half-built structure
+    situation: The site radio dies and the tower crane sways empty overhead.
+    dilemma: Fortify a site full of materials, or load the tools and roll out.
+    assets:
+    - power tools and generators
+    - raw materials to barricade
+    - a site truck
+    hazards:
+    - an unfinished, unstable structure
+    tags:
+    - tools
+    - supplies
+    - vehicle_moving
 - name: pharmacist
   min_age: 24
   max_age: 66
@@ -272,6 +509,23 @@ occupations:
     id_badge: 1
     white_coat: 1
     face_mask: 2
+  signature:
+    name: A queue that won't take no
+    trigger: on_shift
+    location: behind the pharmacy counter
+    situation: A crowd forms that won't accept 'no prescription'.
+    dilemma: Guard a counter full of medicine, or pocket what matters and slip out
+      back.
+    assets:
+    - controlled drugs
+    - real medical knowledge
+    - a lockable counter
+    hazards:
+    - everyone wants what you're standing on
+    tags:
+    - medical_supplies
+    - keys_access
+    - crowd
 - name: care_worker
   min_age: 19
   max_age: 64
@@ -287,6 +541,20 @@ occupations:
     id_badge: 1
     gloves: 2
     face_mask: 3
+  signature:
+    name: They can't be moved
+    trigger: on_shift
+    location: a care home or a client's house
+    situation: The residents can't move quickly and no relief is coming.
+    dilemma: Stay with people who can't flee, or save yourself.
+    assets:
+    - the trust of vulnerable people
+    - meds and supplies on your round
+    hazards:
+    - responsible for the immobile
+    tags:
+    - vulnerable
+    - medical_supplies
 - name: lab_technician
   min_age: 22
   max_age: 63
@@ -301,6 +569,22 @@ occupations:
     id_badge: 1
     lab_coat: 1
     gloves: 2
+  signature:
+    name: Containment lockdown
+    trigger: on_shift
+    location: a sealed laboratory
+    situation: Containment alarms trip and the building locks down around you.
+    dilemma: Trust the seals and shelter, or break out before the locks engage.
+    assets:
+    - a sealed, stocked building
+    - hazmat gear
+    - knows what's in the freezers
+    hazards:
+    - maybe the safest place, maybe the worst
+    tags:
+    - isolation
+    - hazmat
+    - infrastructure
 - name: professor
   min_age: 30
   max_age: 70
@@ -316,6 +600,20 @@ occupations:
     laptop: 1
     id_card: 1
     notebook: 1
+  signature:
+    name: The hall stops listening to you
+    trigger: on_shift
+    location: a lecture theatre
+    situation: Mid-lecture, the theatre's phones buzz as one.
+    dilemma: Marshal a hall of students, or retreat to a quiet office.
+    assets:
+    - knows every building on campus
+    - a room that defers to you
+    hazards:
+    - a crowd wanting answers you don't have
+    tags:
+    - crowd
+    - information
 - name: childcare_worker
   min_age: 19
   max_age: 60
@@ -331,6 +629,23 @@ occupations:
     id_card: 1
     apron: 1
     first_aid_kit: 1
+  signature:
+    name: Naptime, no parents answering
+    trigger: on_shift
+    location: a preschool room of toddlers
+    situation: It's naptime and suddenly no parent is picking up.
+    dilemma: Keep a dozen tiny children together through the end of the world, or
+      wait for guardians who may not come.
+    assets:
+    - a room built to keep children safe
+    - snacks, cots, supplies
+    hazards:
+    - a dozen helpless toddlers
+    - impossible to move fast
+    tags:
+    - children
+    - vulnerable
+    - supplies
 - name: soldier
   min_age: 18
   max_age: 50
@@ -346,6 +661,21 @@ occupations:
     id_tag: 1
     boots: 1
     rations: 1
+  signature:
+    name: The chain of command fractures
+    trigger: on_shift
+    location: on base or on duty
+    situation: Orders over the radio start contradicting each other.
+    dilemma: Hold the post, or take your training and gear into the open.
+    assets:
+    - weapons and training
+    - body armour
+    - unit cohesion, for now
+    hazards:
+    - orders that may be suicidal
+    tags:
+    - weapons
+    - supplies
 - name: sanitation_worker
   min_age: 20
   max_age: 62
@@ -360,6 +690,20 @@ occupations:
     hi_vis: 1
     gloves: 2
     keys: 1
+  signature:
+    name: The only thing still moving
+    trigger: on_shift
+    location: the streets, mid-collection round
+    situation: Your truck is the only thing moving on a street already snarling up.
+    dilemma: Abandon the round, or use a heavy truck to shove through.
+    assets:
+    - a heavy truck that clears obstacles
+    - knows every back alley
+    hazards:
+    - a slow, conspicuous vehicle
+    tags:
+    - vehicle_moving
+    - mobility
 - name: social_worker
   min_age: 24
   max_age: 64
@@ -374,6 +718,20 @@ occupations:
     laptop: 1
     id_card: 1
     phone: 1
+  signature:
+    name: In a stranger's living room
+    trigger: on_shift
+    location: out on home visits
+    situation: You're in someone else's living room when the sirens start.
+    dilemma: Help the household you're with, or leave to reach your own.
+    assets:
+    - trusted access to homes
+    - a list of who's vulnerable where
+    hazards:
+    - far from your own people
+    tags:
+    - information
+    - mobility
 - name: lawyer
   min_age: 26
   max_age: 68
@@ -389,6 +747,21 @@ occupations:
     laptop: 1
     id_card: 1
     documents: 3
+  signature:
+    name: Court adjourns into chaos
+    trigger: on_shift
+    location: a courthouse or office
+    situation: Proceedings dissolve and the building empties around you.
+    dilemma: Hold a secure building of records and people, or take the road.
+    assets:
+    - a defensible building
+    - persuasion
+    - knows who holds the power
+    hazards:
+    - soft skills, no hard ones
+    tags:
+    - information
+    - keys_access
 - name: waiter
   min_age: 17
   max_age: 60
@@ -404,6 +777,20 @@ occupations:
     apron: 1
     order_pad: 1
     name_tag: 1
+  signature:
+    name: The dinner rush bolts
+    trigger: on_shift
+    location: a busy restaurant floor
+    situation: Mid-service the whole room stands up and leaves.
+    dilemma: Loot the kitchen and stay, or vanish in the exodus.
+    assets:
+    - a building full of food
+    - knows every back exit
+    hazards:
+    - glass-fronted, ground floor
+    tags:
+    - food
+    - supplies
 - name: barista
   min_age: 16
   max_age: 55
@@ -418,6 +805,20 @@ occupations:
   inventory:
     apron: 1
     name_tag: 1
+  signature:
+    name: Cups still steaming
+    trigger: on_shift
+    location: "a caf\xE9"
+    situation: The morning queue scatters, drinks abandoned on the counter.
+    dilemma: "Hold a small stocked caf\xE9, or grab supplies and walk."
+    assets:
+    - food and water
+    - a small lockable space
+    hazards:
+    - minimal defences
+    tags:
+    - food
+    - supplies
 - name: accountant
   min_age: 23
   max_age: 67
@@ -433,6 +834,19 @@ occupations:
     laptop: 1
     id_card: 1
     calculator: 1
+  signature:
+    name: The spreadsheets freeze
+    trigger: on_shift
+    location: an office
+    situation: The screens lock up and the floor empties around your desk.
+    dilemma: Wait it out in a safe building, or commit to the roads.
+    assets:
+    - a quiet, defensible floor
+    hazards:
+    - no practical skills for this
+    - stranded in an office park
+    tags:
+    - trapped
 - name: it_support
   min_age: 20
   max_age: 63
@@ -449,6 +863,21 @@ occupations:
     id_card: 1
     phone: 1
     usb_drive: 1
+  signature:
+    name: Everything falls over at once
+    trigger: on_shift
+    location: a server room
+    situation: Every system you maintain crashes together -- then the lights go.
+    dilemma: Keep comms alive a little longer, or pull the plug and run.
+    assets:
+    - server-room UPS power
+    - knows the building's systems
+    - comms gear
+    hazards:
+    - chained to failing infrastructure
+    tags:
+    - infrastructure
+    - information
 - name: security_guard
   min_age: 21
   max_age: 67
@@ -465,6 +894,23 @@ occupations:
     torch: 1
     id_badge: 1
     keys: 1
+  signature:
+    name: You hold the keys
+    trigger: on_shift
+    location: a locked commercial building
+    situation: Your cameras show the streets turning while your doors are already
+      locked.
+    dilemma: Hold a building you control, or open it to the crowd outside.
+    assets:
+    - keys to everything
+    - CCTV over the area
+    - a lockable fortress
+    hazards:
+    - crowds will want in
+    tags:
+    - keys_access
+    - information
+    - crowd
 - name: cleaner
   min_age: 18
   max_age: 68
@@ -480,6 +926,22 @@ occupations:
     gloves: 2
     keys: 1
     id_badge: 1
+  signature:
+    name: Alone with a master key
+    trigger: on_shift
+    location: an empty office building at night
+    situation: Emergency lights snap on while you're alone with the master key.
+    dilemma: A whole empty building to yourself, or get out before others arrive.
+    assets:
+    - a master key to every floor
+    - an empty, stocked building
+    - the quiet corners
+    hazards:
+    - alone if it goes wrong
+    tags:
+    - keys_access
+    - isolation
+    - supplies
 - name: warehouse_worker
   min_age: 18
   max_age: 62
@@ -495,6 +957,22 @@ occupations:
     hi_vis: 1
     gloves: 1
     scanner: 1
+  signature:
+    name: Pallets of everything
+    trigger: on_shift
+    location: a distribution warehouse
+    situation: The conveyors stop with pallets of everything sitting ready.
+    dilemma: Barricade a warehouse of goods, or load a pallet onto a truck.
+    assets:
+    - aisles of supplies
+    - forklifts
+    - loading-dock vehicles
+    hazards:
+    - a prize others will come for
+    tags:
+    - supplies
+    - tools
+    - vehicle_moving
 - name: electrician
   min_age: 20
   max_age: 64
@@ -510,6 +988,22 @@ occupations:
     tool_belt: 1
     multimeter: 1
     gloves: 1
+  signature:
+    name: Hands in the panel as the grid dies
+    trigger: on_shift
+    location: wiring a building or substation
+    situation: The grid browns out while your hands are still in the panel.
+    dilemma: You read the dying grid better than anyone -- use it or flee it.
+    assets:
+    - tools
+    - understands the power network
+    - a work van
+    hazards:
+    - live, failing electrics
+    tags:
+    - tools
+    - infrastructure
+    - vehicle_moving
 - name: plumber
   min_age: 20
   max_age: 64
@@ -525,6 +1019,22 @@ occupations:
     tool_bag: 1
     wrench: 2
     gloves: 1
+  signature:
+    name: You can still find water
+    trigger: on_shift
+    location: under a sink or in a basement
+    situation: Water hammers through the pipes as the mains begin to fail.
+    dilemma: You can find water when no one else can -- stay useful, or go.
+    assets:
+    - tools
+    - knows where water flows
+    - a stocked van
+    hazards:
+    - stuck in someone else's basement
+    tags:
+    - tools
+    - infrastructure
+    - vehicle_moving
 - name: mechanic
   min_age: 18
   max_age: 64
@@ -540,6 +1050,22 @@ occupations:
     tool_box: 1
     rag: 1
     overalls: 1
+  signature:
+    name: A garage full of working cars
+    trigger: on_shift
+    location: a garage full of vehicles
+    situation: The forecourt empties; a dozen cars sit with keys in the office.
+    dilemma: A garage of working vehicles and tools -- take your pick.
+    assets:
+    - vehicles to choose from
+    - tools and fuel
+    - can fix what breaks
+    hazards:
+    - a target for anyone wanting wheels
+    tags:
+    - vehicle_moving
+    - tools
+    - fuel
 - name: welder
   min_age: 20
   max_age: 60
@@ -555,6 +1081,21 @@ occupations:
     welding_mask: 1
     gloves: 1
     overalls: 1
+  signature:
+    name: Seal yourself in steel
+    trigger: on_shift
+    location: a fabrication shop
+    situation: The sparks die as power cuts to the shop.
+    dilemma: Weld yourself in behind steel, or carry a cutting torch out.
+    assets:
+    - a cutting torch
+    - steel to barricade with
+    - heavy tools
+    hazards:
+    - fire and gas hazards
+    tags:
+    - tools
+    - supplies
 - name: taxi_driver
   min_age: 21
   max_age: 68
@@ -571,6 +1112,22 @@ occupations:
     phone: 1
     id_badge: 1
     cash: 1
+  signature:
+    name: A fare screaming to drive
+    trigger: on_shift
+    location: in the cab with a fare aboard
+    situation: Your passenger is screaming at you to drive as the streets seize.
+    dilemma: Keep driving for strangers, or take the cab and disappear.
+    assets:
+    - a car and the fastest routes
+    - cash
+    - local knowledge
+    hazards:
+    - a panicking passenger
+    - gridlock
+    tags:
+    - vehicle_moving
+    - mobility
 - name: delivery_driver
   min_age: 19
   max_age: 64
@@ -587,6 +1144,22 @@ occupations:
     scanner: 1
     hi_vis: 1
     phone: 1
+  signature:
+    name: A van full of unknowns
+    trigger: on_shift
+    location: mid-route in a loaded van
+    situation: Your van is full of other people's parcels on a street going still.
+    dilemma: A van of unknown supplies and a head full of back roads -- use them.
+    assets:
+    - a van full of goods
+    - knows every shortcut
+    - a vehicle
+    hazards:
+    - no idea what's in the boxes
+    tags:
+    - vehicle_moving
+    - supplies
+    - mobility
 - name: truck_driver
   min_age: 23
   max_age: 65
@@ -603,6 +1176,23 @@ occupations:
     logbook: 1
     hi_vis: 1
     thermos: 1
+  signature:
+    name: Forty tonnes in motion
+    trigger: on_shift
+    location: on the highway with a full trailer
+    situation: You're doing motorway speed with a full trailer when the radio fills
+      with panic.
+    dilemma: Press on in a rolling fortress, or abandon the rig for something nimble.
+    assets:
+    - a huge, hard-to-stop vehicle
+    - a trailer that might hold anything
+    - fuel and a sleeper cab
+    hazards:
+    - can't manoeuvre in tight streets
+    tags:
+    - vehicle_moving
+    - supplies
+    - fuel
 - name: courier
   min_age: 16
   max_age: 55
@@ -619,6 +1209,21 @@ occupations:
     phone: 1
     scanner: 1
     lock: 1
+  signature:
+    name: Faster than the panic
+    trigger: on_shift
+    location: weaving through traffic on a bike
+    situation: You're the only thing moving faster than the panic itself.
+    dilemma: Outrun the gridlock everyone else is trapped in.
+    assets:
+    - a bike that ignores traffic
+    - knows every alley
+    - light and fast
+    hazards:
+    - exposed, carries little
+    tags:
+    - mobility
+    - vehicle_moving
 - name: postal_worker
   min_age: 18
   max_age: 65
@@ -634,6 +1239,157 @@ occupations:
     hi_vis: 1
     keys: 1
     scanner: 1
+  signature:
+    name: You know which houses are empty
+    trigger: on_shift
+    location: mid-round in a residential street
+    situation: Halfway down a street of identical doors when it hits.
+    dilemma: You know which houses are empty -- pick one and shelter.
+    assets:
+    - knows which homes are vacant
+    - a van
+    - access to yards and letterboxes
+    hazards:
+    - out in the open on foot
+    tags:
+    - information
+    - mobility
+    - supplies
+- name: train_conductor
+  min_age: 23
+  max_age: 65
+  base_weight: 0.3
+  workplace: transit
+  shift: day
+  tasks:
+  - board check
+  - ticket inspection
+  - between stations
+  - terminus
+  inventory:
+    keys: 1
+    ticket_machine: 1
+    id_badge: 1
+    radio: 1
+  signature:
+    name: Ninety miles an hour between stations
+    trigger: on_shift
+    location: aboard a moving commuter train
+    situation: The train is doing 90 between stations when every passenger's phone
+      screams at once.
+    dilemma: Stop in open country, or push on to a station packed with the panicking.
+    assets:
+    - a sealed, moving shelter
+    - authority over the carriages
+    - knows the line and the depots
+    hazards:
+    - a train full of people you're responsible for
+    - can only stop on the rails
+    tags:
+    - vehicle_moving
+    - crowd
+    - trapped
+- name: window_washer
+  min_age: 19
+  max_age: 60
+  base_weight: 0.3
+  workplace: commercial
+  shift: day
+  tasks:
+  - rig the cradle
+  - descend the face
+  - wash
+  - reset
+  inventory:
+    harness: 1
+    squeegee: 1
+    rope: 1
+    bucket: 1
+  signature:
+    name: Stranded on the sky-lift
+    trigger: on_shift
+    location: a cradle on the side of a glass tower, thirty storeys up
+    situation: The building's power stutters and the platform lurches to a dead halt.
+    dilemma: Climb in through a window into a tower of strangers, or trust a dead
+      winch.
+    assets:
+    - a high vantage over the whole district
+    - rope, harness and tools
+    hazards:
+    - stranded at lethal height
+    - at the mercy of the building's power
+    tags:
+    - height
+    - trapped
+    - information
+- name: landscaper
+  min_age: 17
+  max_age: 64
+  base_weight: 0.5
+  workplace: commercial
+  shift: day
+  tasks:
+  - load the truck
+  - first property
+  - next property
+  - haul cuttings
+  inventory:
+    keys: 1
+    work_gloves: 1
+    shears: 1
+    fuel_can: 1
+  signature:
+    name: Three lawns from the truck
+    trigger: on_shift
+    location: mowing a garden in a residential neighbourhood
+    situation: You're three lawns from your truck when the street erupts.
+    dilemma: Every house around you is a possible shelter -- pick the right door.
+    assets:
+    - roams homes across the whole city
+    - a truck of fuel and bladed tools
+    - reads which houses are empty
+    hazards:
+    - caught out in the open, on foot
+    tags:
+    - mobility
+    - tools
+    - information
+    - supplies
+- name: corrections_officer
+  min_age: 21
+  max_age: 60
+  base_weight: 0.3
+  workplace: civic
+  shift: night
+  tasks:
+  - briefing
+  - cell checks
+  - yard watch
+  - lockdown
+  inventory:
+    keys: 1
+    radio: 1
+    baton: 1
+    id_badge: 1
+  signature:
+    name: Some doors open, some don't
+    trigger: on_shift
+    location: the cell block of a jail
+    situation: Lockdown protocols fail halfway; some cells unlock, some stay sealed.
+    dilemma: Free people who might help or harm, or leave them locked as the world
+      ends.
+    assets:
+    - keys and control of the block
+    - restraints and weapons
+    - a hardened building
+    hazards:
+    - a block full of desperate prisoners
+    - an impossible moral call
+    tags:
+    - keys_access
+    - weapons
+    - crowd
+    - trapped
 - name: homemaker
   min_age: 20
   max_age: 75
@@ -648,6 +1404,20 @@ occupations:
     keys: 1
     phone: 1
     shopping_bag: 1
+  signature:
+    name: The house is yours
+    trigger: anytime
+    location: at home, mid-chore
+    situation: The home is yours and you know exactly what's in every cupboard.
+    dilemma: Fortify a familiar, stocked house, or gather the household and run.
+    assets:
+    - a known, fully-stocked home
+    - trusted by the neighbours
+    hazards:
+    - tied to dependents
+    tags:
+    - supplies
+    - children
 - name: retiree
   min_age: 60
   max_age: 95
@@ -662,6 +1432,21 @@ occupations:
     keys: 1
     reading_glasses: 1
     medication: 2
+  signature:
+    name: Forty years on this street
+    trigger: anytime
+    location: at home or out on a morning walk
+    situation: The street you've known for decades turns strange in minutes.
+    dilemma: Stay put among neighbours, or accept a stranger's offer to leave.
+    assets:
+    - a paid-off, well-stocked home
+    - decades of local knowledge
+    hazards:
+    - slower on your feet
+    - dependent on medication
+    tags:
+    - supplies
+    - vulnerable
 - name: unemployed
   min_age: 18
   max_age: 64
@@ -675,6 +1460,19 @@ occupations:
   inventory:
     keys: 1
     phone: 1
+  signature:
+    name: No shift to miss
+    trigger: anytime
+    location: at home or out on errands
+    situation: There's no workplace expecting you -- you're just here when it breaks.
+    dilemma: Move early and light, before the roads choke.
+    assets:
+    - nothing tying you to a schedule
+    - street-smart
+    hazards:
+    - few resources to fall back on
+    tags:
+    - mobility
 common_items:
   phone: 1
   wallet: 1

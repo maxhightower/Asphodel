@@ -47,6 +47,7 @@ from .world import (
     load_osm, synthesize_city,
 )
 from .vehicles import choose_commute, TrafficParams
+from .signatures import SignatureScenario, default_signatures
 
 
 # ===========================================================================
@@ -87,6 +88,8 @@ class Occupation:
     shift: str = "day"                 # "day" | "night" | "none"
     tasks: list[str] = field(default_factory=list)
     inventory: dict[str, int] = field(default_factory=dict)
+    # The defining collapse-moment predicament this job authors (see signatures).
+    signature: Optional[SignatureScenario] = None
 
 
 @dataclass
@@ -167,9 +170,15 @@ class CitizenSpawnCatalog:
     @classmethod
     def from_dict(cls, data: dict) -> "CitizenSpawnCatalog":
         data = dict(data)
+
+        def _occ(o: dict) -> Occupation:
+            o = dict(o)
+            sig = o.pop("signature", None)
+            return Occupation(signature=SignatureScenario(**sig) if sig else None, **o)
+
         return cls(
             age_bands=[AgeBand(**b) for b in data.get("age_bands", [])],
-            occupations=[Occupation(**o) for o in data.get("occupations", [])],
+            occupations=[_occ(o) for o in data.get("occupations", [])],
             common_items=dict(data.get("common_items", {})),
             params=SpawnParams(**(data.get("params") or {})),
         )
@@ -711,6 +720,112 @@ def spawn_population_in_world(world: CityWorld, catalog: CitizenSpawnCatalog,
 
 
 # ===========================================================================
+# Signature scenario resolution: what the collapse means for THIS citizen
+# ===========================================================================
+_SIGNATURES_CACHE: Optional[dict] = None
+
+
+def _signatures() -> dict:
+    global _SIGNATURES_CACHE
+    if _SIGNATURES_CACHE is None:
+        _SIGNATURES_CACHE = default_signatures()
+    return _SIGNATURES_CACHE
+
+
+@dataclass
+class CollapseSituation:
+    """The predicament a citizen is actually in when the collapse lands.
+
+    Resolved from the citizen's schedule at ``collapse_hour``: an occupation's
+    signature scenario *fires* only if they're on shift then (or, for
+    home-anchored roles, any time) -- so whether you get the nurse-in-the-flood
+    moment or 'asleep at home, off-shift' is itself an emergent, schedule-driven
+    outcome of when in the day the world chose to end.
+    """
+
+    citizen_id: int
+    occupation: str
+    collapse_hour: float
+    on_duty: bool
+    fired: bool                 # did the job's signature scenario trigger?
+    title: str
+    location: str               # evocative signature location (or where you are)
+    at: str                     # concrete place from the schedule (building/district)
+    activity: str
+    narrative: str
+    dilemma: str
+    assets: list[str]
+    hazards: list[str]
+    tags: list[str]
+
+    def summary(self) -> str:
+        flag = "★ SIGNATURE" if self.fired else "· off-duty "
+        lines = [f"[{flag}] {self.occupation}: {self.title}"]
+        loc = f"   where: {self.location}"
+        if self.at and self.at != self.location:
+            loc += f"  (at {self.at})"
+        lines.append(loc)
+        lines.append(f"   {self.narrative}")
+        if self.dilemma:
+            lines.append(f"   choice: {self.dilemma}")
+        if self.assets:
+            lines.append("   assets: " + "; ".join(self.assets))
+        if self.hazards:
+            lines.append("   hazards: " + "; ".join(self.hazards))
+        return "\n".join(lines)
+
+
+def resolve_collapse_situation(profile: CitizenProfile,
+                               collapse_hour: float = 14.0) -> CollapseSituation:
+    """Bind ``profile``'s occupation signature to where the collapse finds them.
+
+    ``collapse_hour`` is the in-game hour (0-24) the world tips -- a single
+    moment shared by everyone -- so a day-shift worker is at their post while a
+    night-shift worker is asleep, and their signatures fire accordingly.
+    """
+    block = _current_block(profile.schedule, collapse_hour)
+    activity = block.activity if block else "idle"
+    where_at = block.location if block else profile.home_district
+    sig = _signatures().get(profile.occupation)
+    on_duty = activity == "work"
+    on_hand = list(profile.inventory.keys())
+
+    fires = sig is not None and (
+        sig.trigger == "anytime"
+        or (sig.trigger in ("on_shift", "on_site") and on_duty))
+
+    if fires:
+        assets = list(sig.assets)
+        if on_hand:
+            assets.append("on you: " + ", ".join(on_hand))
+        return CollapseSituation(
+            citizen_id=profile.citizen_id, occupation=profile.occupation,
+            collapse_hour=collapse_hour, on_duty=on_duty, fired=True,
+            title=sig.name, location=sig.location, at=where_at,
+            activity=activity, narrative=sig.situation, dilemma=sig.dilemma,
+            assets=assets, hazards=list(sig.hazards), tags=list(sig.tags))
+
+    # Off-duty (or no signature): a generic, schedule-driven situation.
+    if sig is not None:
+        narrative = (f"You're {activity} in {where_at} -- not on shift when the "
+                     f"collapse comes. Your {profile.occupation}'s edge is back "
+                     f"at {sig.location}.")
+        dilemma = "Make for your workplace's resources, or improvise where you are."
+        hazards = ["away from your job's resources"]
+    else:
+        narrative = f"You're {activity} in {where_at} when the collapse comes."
+        dilemma = ""
+        hazards = []
+    return CollapseSituation(
+        citizen_id=profile.citizen_id, occupation=profile.occupation,
+        collapse_hour=collapse_hour, on_duty=on_duty, fired=False,
+        title="Off-shift when it hit", location=where_at, at=where_at,
+        activity=activity, narrative=narrative, dilemma=dilemma,
+        assets=(["on you: " + ", ".join(on_hand)] if on_hand else []),
+        hazards=hazards, tags=[])
+
+
+# ===========================================================================
 # Default agnostic catalog + a handful of flavoured cities
 # ===========================================================================
 def default_catalog() -> CitizenSpawnCatalog:
@@ -858,6 +973,19 @@ def default_catalog() -> CitizenSpawnCatalog:
         Occupation("postal_worker", 18, 65, 0.6, "transit", "day",
                    ["sort", "load round", "deliver", "return"],
                    {"hi_vis": 1, "keys": 1, "scanner": 1}),
+        Occupation("train_conductor", 23, 65, 0.3, "transit", "day",
+                   ["board check", "ticket inspection", "between stations", "terminus"],
+                   {"keys": 1, "ticket_machine": 1, "id_badge": 1, "radio": 1}),
+        # roaming / on-site specialists with a signature predicament
+        Occupation("window_washer", 19, 60, 0.3, "commercial", "day",
+                   ["rig the cradle", "descend the face", "wash", "reset"],
+                   {"harness": 1, "squeegee": 1, "rope": 1, "bucket": 1}),
+        Occupation("landscaper", 17, 64, 0.5, "commercial", "day",
+                   ["load the truck", "first property", "next property", "haul cuttings"],
+                   {"keys": 1, "work_gloves": 1, "shears": 1, "fuel_can": 1}),
+        Occupation("corrections_officer", 21, 60, 0.3, "civic", "night",
+                   ["briefing", "cell checks", "yard watch", "lockdown"],
+                   {"keys": 1, "radio": 1, "baton": 1, "id_badge": 1}),
         # home-anchored
         Occupation("homemaker", 20, 75, 0.7, HOME, "none",
                    ["household", "errands", "childcare"],
@@ -874,6 +1002,12 @@ def default_catalog() -> CitizenSpawnCatalog:
         "phone": 1, "wallet": 1, "keys": 1, "water_bottle": 1,
         "snack": 1, "cash": 1, "face_mask": 1, "transit_pass": 1,
     }
+
+    # Bind each occupation's signature collapse-scenario (data lives in
+    # signatures.py; matched by name).  Occupations without one keep None.
+    sigs = default_signatures()
+    for o in occupations:
+        o.signature = sigs.get(o.name)
 
     return CitizenSpawnCatalog(age_bands=age_bands, occupations=occupations,
                                common_items=common_items, params=SpawnParams())
@@ -1006,7 +1140,7 @@ def _emit_presets(out_dir: str = "cities") -> None:
 
 
 def _demo(city_name: str = "generic", n: int = 8, seed: int = 0,
-          world: bool = False) -> None:
+          world: bool = False, collapse_hour: float = 14.0) -> None:
     catalog = default_catalog()
     cities = default_cities()
     city = cities.get(city_name)
@@ -1028,6 +1162,7 @@ def _demo(city_name: str = "generic", n: int = 8, seed: int = 0,
                 extra += (f"  commute {c.commute_metres:.0f} m "
                           f"by {c.commute_mode} ({c.vehicle})")
             print(extra)
+            print(resolve_collapse_situation(c, collapse_hour).summary())
             print()
         # Whole-population morning commute -> traffic snapshot.
         big = spawn_population_in_world(cw, catalog, max(n, 400), seed=seed)
@@ -1041,6 +1176,7 @@ def _demo(city_name: str = "generic", n: int = 8, seed: int = 0,
         print(f"=== {n} citizens spawned in '{city.name}' (seed {seed}) ===\n")
         for c in spawn_population(city, catalog, n, seed=seed):
             print(c.summary())
+            print(resolve_collapse_situation(c, collapse_hour).summary())
             print()
 
 
@@ -1055,9 +1191,13 @@ if __name__ == "__main__":
     ap.add_argument("--city", default="generic")
     ap.add_argument("--n", type=int, default=8)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--collapse-hour", type=float, default=14.0,
+                    help="in-game hour (0-24) the collapse lands; shifts which "
+                         "citizens are on-shift and fire their signature scenario")
     args = ap.parse_args()
 
     if args.emit:
         _emit_presets()
     else:
-        _demo(args.city, args.n, args.seed, world=args.world)
+        _demo(args.city, args.n, args.seed, world=args.world,
+              collapse_hour=args.collapse_hour)

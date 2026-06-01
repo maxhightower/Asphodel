@@ -47,7 +47,11 @@ from .citizen import (
     resolve_world,
     spawn_citizen_in_world,
     spawn_population_in_world,
+    # Signature scenarios (the collapse-moment predicament per occupation)
+    CollapseSituation,
+    resolve_collapse_situation,
 )
+from .signatures import SignatureScenario, default_signatures
 
 # --- Vehicles & traffic: travel modes, road network, congestion -------------
 from .vehicles import (
@@ -136,6 +140,11 @@ __all__ = [
     "resolve_world",
     "spawn_citizen_in_world",
     "spawn_population_in_world",
+    # Signature scenarios
+    "SignatureScenario",
+    "default_signatures",
+    "CollapseSituation",
+    "resolve_collapse_situation",
     # Vehicles & traffic
     "VehicleSpec",
     "VEHICLES",
