@@ -131,6 +131,77 @@ class AgentZone:
     def living_count(self) -> int:
         return int(self.n - np.count_nonzero(self.state == D))
 
+    # ------------------------------------------------------- inter-zone flux
+    def add_agents(self, counts: dict[str, int]) -> None:
+        """Spawn arriving agents (inter-zone flux in).
+
+        ``counts`` gives how many agents to add per compartment.  Arrivals are
+        placed at uniform-random torus positions and inherit the optional
+        shelter flag with the configured probability, so density stays uniform.
+        """
+        new_states = []
+        for code, name in enumerate(STATE_NAMES):
+            new_states.extend([code] * int(counts.get(name, 0)))
+        if not new_states:
+            return
+        k = len(new_states)
+        new_state = np.array(new_states, dtype=np.int8)
+        new_pos = self.rng.uniform(0.0, self.L, size=(k, 2))
+        new_shelter = np.zeros(k, dtype=bool)
+        if self.params.shelter_fraction > 0:
+            new_shelter = self.rng.random(k) < self.params.shelter_fraction
+        self.state = np.concatenate([self.state, new_state])
+        self.pos = np.concatenate([self.pos, new_pos])
+        self.sheltered = np.concatenate([self.sheltered, new_shelter])
+        self.n += k
+
+    def remove_agents(self, counts: dict[str, int]) -> None:
+        """Despawn departing agents (inter-zone flux out).
+
+        Removes up to ``counts[name]`` randomly-chosen agents from each
+        compartment (clamped to those present).  Returns nothing; the caller
+        tracks the macro-side ledger.
+        """
+        drop = np.zeros(self.n, dtype=bool)
+        for code, name in enumerate(STATE_NAMES):
+            want = int(counts.get(name, 0))
+            if want <= 0:
+                continue
+            members = np.where(self.state == code)[0]
+            if members.size == 0:
+                continue
+            k = min(want, members.size)
+            chosen = self.rng.choice(members, size=k, replace=False)
+            drop[chosen] = True
+        if not drop.any():
+            return
+        keep = ~drop
+        self.state = self.state[keep]
+        self.pos = self.pos[keep]
+        self.sheltered = self.sheltered[keep]
+        self.n = int(self.state.size)
+
+    def reconcile_to_counts(self, target: dict[str, int]) -> None:
+        """Add/remove agents so each compartment matches ``target`` exactly.
+
+        Used by the orchestrator to realise a promoted zone's post-tick counts
+        (internal agent dynamics + inter-zone flux) on the agent population, so
+        next tick the agents remain a faithful realisation of the macro ledger.
+        """
+        cur = self.counts()
+        add: dict[str, int] = {}
+        rem: dict[str, int] = {}
+        for name in STATE_NAMES:
+            diff = int(target.get(name, 0)) - cur[name]
+            if diff > 0:
+                add[name] = diff
+            elif diff < 0:
+                rem[name] = -diff
+        if rem:
+            self.remove_agents(rem)
+        if add:
+            self.add_agents(add)
+
     def seed_infection(self, n_exposed: int) -> None:
         """Inject ``n_exposed`` initial E among the susceptibles (outbreak seed)."""
         sus = np.where(self.state == S)[0]

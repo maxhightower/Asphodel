@@ -116,6 +116,36 @@ the failure modes, and the answer to the research question.
 
 ---
 
+## Phase 5 — The `World` orchestrator (the engine façade)
+
+Phase 5 ties the two tiers into a single **headless engine** a front-end (e.g.
+Godot) would render against, without touching any game engine. `World`
+(`asphodel/orchestrator.py`) runs the whole-map macro simulation and promotes
+zones into agents **at runtime**, exchanging people across the macro↔micro
+boundary (the inter-zone flux that Phase 4a left stubbed). Population is
+conserved exactly; the disease genome, calibration and handoff messages are all
+reused unchanged.
+
+```python
+from asphodel import World, ScenarioConfig, MicroParams
+
+world = World(ScenarioConfig(), micro_params=MicroParams())
+world.set_focus([world.sim.graph.center_zone()])  # player camera → force-promote
+for _ in range(480):
+    tick = world.step()                            # advance one dt
+snap = world.snapshot()                            # everything the renderer needs
+```
+
+The full engine contract, the per-tick orchestration algorithm, the
+conservation guarantee, and the roadmap for the remaining simulation work (then
+Godot last) are documented in **[`ARCHITECTURE.md`](ARCHITECTURE.md)**.
+
+```bash
+python tests/test_orchestrator.py   # or:  python -m pytest tests/test_orchestrator.py -q
+```
+
+---
+
 ## Phase 4a — Macro↔Micro handoff & calibration
 
 Phase 4a "promotes" a single macro zone into **discrete agents** moving in

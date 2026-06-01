@@ -128,10 +128,33 @@ class Simulation:
         return b.max_flee_rate * smoothstep(self.belief, b.flee_belief_low, b.flee_belief_high)
 
     # --------------------------------------------------------------- one tick
-    def step(self) -> TickRecord:
+    def step(self, frozen_internal=None) -> TickRecord:
+        """Advance the whole grid one tick.
+
+        ``frozen_internal`` (an iterable of zone indices, or None) marks zones
+        whose **SEIR internal update is skipped** -- their compartments are not
+        changed by the macro's own infection dynamics this tick.  Everything
+        else still applies to them: they are carried by the fleeing flux, they
+        still act as infection *sources* to their neighbours (their current
+        infectious fraction feeds the mixing term), and their belief /
+        infrastructure still evolve from their (externally-supplied) burden.
+
+        This is the seam the orchestrator uses for *promoted* zones: the agent
+        tier owns their internal dynamics, while the macro still owns inter-zone
+        flux and the coupled belief/infra fields.  With ``frozen_internal=None``
+        the behaviour is identical to the original single-tier step.
+        """
         dt = self.dt
         g = self.cfg.genome
         m = self.cfg.model
+
+        # Per-zone multiplier on the internal SEIR flows: 0 for frozen zones
+        # (agents drive them), 1 otherwise.
+        internal_mask = np.ones(self.Z)
+        if frozen_internal is not None:
+            idx = np.fromiter(frozen_internal, dtype=int)
+            if idx.size:
+                internal_mask[idx] = 0.0
 
         living = self.living()
         safe_living = np.where(living > 0, living, 1.0)  # avoid /0
@@ -195,6 +218,18 @@ class Simulation:
         leave_Is = np.minimum(gamma * self.Is * dt, self.Is)   # I_s -> R/D
         Is_death = g.mortality_fraction * leave_Is
         Is_recover = leave_Is - Is_death
+
+        # Freeze the internal SEIR flows of promoted (agent-owned) zones: zero
+        # their flows so the macro changes nothing internally for them, while
+        # they remain infection sources to neighbours (via mixed_infectious,
+        # computed above) and are still moved by the fleeing flux below.
+        new_E = new_E * internal_mask
+        leave_E = leave_E * internal_mask
+        Ia_to_Is = Ia_to_Is * internal_mask
+        Ia_recover = Ia_recover * internal_mask
+        leave_Is = leave_Is * internal_mask
+        Is_death = Is_death * internal_mask
+        Is_recover = Is_recover * internal_mask
 
         # Apply compartment updates (explicit Euler).
         self.S = self.S - new_E
