@@ -585,3 +585,9 @@ python -m pytest tests/test_osm_city.py -q   # offline: inline fixtures, no netw
 > [`asphodel/model.py`](asphodel/model.py). (They still participate in social
 > contagion; that's a deferred modelling question, and since empty cells render
 > no blocks it has no visual effect.)
+
+On **Load City** the game picks a random pre-baked citizen (from the bundle's
+`citizens.json`, spawned across the generic/capital/harbor/university profile
+archetypes via `asphodel/osm_city/citizens.py`) and shows an ARK-style character
+screen — name, age, occupation, the occupation's signature predicament, and
+inventory — before entering the city.

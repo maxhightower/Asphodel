@@ -32,3 +32,13 @@ static func load_bundle(dir_path: String) -> Dictionary:
 		push_error("Bundle meta.json missing 'version' — not an Asphodel bundle?")
 		return {}
 	return bundle
+
+
+static func load_citizens(dir_path: String) -> Array:
+	## Returns the bundle's citizen list, or [] if absent/invalid.
+	var path := dir_path.path_join("citizens.json")
+	if not FileAccess.file_exists(path):
+		push_warning("No citizens.json in %s" % dir_path)
+		return []
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	return parsed if parsed is Array else []

@@ -62,8 +62,16 @@ func _make_button(text: String, handler: Callable) -> Button:
 
 
 func _on_load() -> void:
-	Session.bundle_dir = CITIES[_option.selected]["dir"]
-	get_tree().change_scene_to_file("res://CityScene.tscn")
+	var dir: String = CITIES[_option.selected]["dir"]
+	Session.bundle_dir = dir
+	var pool := BundleLoader.load_citizens(dir)
+	if pool.is_empty():
+		push_error("No citizens in bundle %s — cannot start." % dir)
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	Session.citizen = pool[rng.randi_range(0, pool.size() - 1)]
+	get_tree().change_scene_to_file("res://CharacterScreen.tscn")
 
 
 func _on_back() -> void:

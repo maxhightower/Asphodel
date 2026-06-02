@@ -6,3 +6,4 @@ extends Node
 ## default" (the checked-in sample bundle).
 
 var bundle_dir: String = ""
+var citizen: Dictionary = {}   # the citizen the player was spawned as
