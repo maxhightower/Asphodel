@@ -1,0 +1,34 @@
+{
+  "bbox": [
+    29.42860975,
+    -98.54809470000001,
+    29.488609750000002,
+    -98.4880947
+  ],
+  "center": [
+    29.45860975,
+    -98.5180947
+  ],
+  "dt": 0.25,
+  "genome": {
+    "R0": 3.0,
+    "asymptomatic_fraction": 0.4,
+    "incubation_period": 5.0,
+    "infectious_period": 7.0,
+    "mortality_fraction": 0.02,
+    "symptom_onset_delay": 2.0
+  },
+  "grid": {
+    "cell_m": 414.964,
+    "cols": 14,
+    "rows": 16
+  },
+  "n_days": 90.0,
+  "n_ticks": 360,
+  "name": "San Antonio, Texas",
+  "projection": "equirectangular",
+  "query": "San Antonio, Texas",
+  "seed": 0,
+  "seed_zone": 13,
+  "version": "1"
+}

@@ -9,3 +9,6 @@ venv/
 # (PNG/GIF + one baseline CSV) are kept for the handoff under output/.
 output/*_aggregate.csv
 !output/baseline_aggregate.csv
+
+# Raw OSM response cache (large; regenerated on demand by asphodel.osm_city).
+output/osm_cache/

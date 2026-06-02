@@ -1,7 +1,18 @@
 extends Control
 
-## City-select stub. For now it just loads the checked-in sample city. Phase 3
-## will add a text field + "fetch a real city" (runs the Python pipeline) here.
+## City-select screen: pick one of the bundled real cities from a dropdown and
+## load it. The chosen bundle dir is stashed in the Session autoload so CityScene
+## knows which city to render. (Phase 3 will add free-text entry that runs the
+## Python pipeline to fetch any city on demand.)
+
+const CITIES := [
+	{"name": "Houston", "dir": "res://bundles/houston"},
+	{"name": "San Antonio", "dir": "res://bundles/san_antonio"},
+	{"name": "Austin", "dir": "res://bundles/austin"},
+]
+
+var _option: OptionButton
+
 
 func _ready() -> void:
 	var bg := ColorRect.new()
@@ -25,31 +36,33 @@ func _ready() -> void:
 	title.add_theme_font_size_override("font_size", 40)
 	vb.add_child(title)
 
-	var note := Label.new()
-	note.text = "Phase 3 will let you type a real city here."
-	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	note.add_theme_font_size_override("font_size", 16)
-	note.modulate = Color(0.7, 0.75, 0.8)
-	vb.add_child(note)
+	_option = OptionButton.new()
+	_option.custom_minimum_size = Vector2(300, 44)
+	_option.add_theme_font_size_override("font_size", 22)
+	for city in CITIES:
+		_option.add_item(city["name"])
+	_option.selected = 0
+	vb.add_child(_option)
 
 	var gap := Control.new()
 	gap.custom_minimum_size = Vector2(0, 20)
 	vb.add_child(gap)
 
-	vb.add_child(_make_button("Load sample city", _on_load_sample))
+	vb.add_child(_make_button("Load City", _on_load))
 	vb.add_child(_make_button("Back", _on_back))
 
 
 func _make_button(text: String, handler: Callable) -> Button:
 	var b := Button.new()
 	b.text = text
-	b.custom_minimum_size = Vector2(280, 48)
+	b.custom_minimum_size = Vector2(300, 48)
 	b.add_theme_font_size_override("font_size", 22)
 	b.pressed.connect(handler)
 	return b
 
 
-func _on_load_sample() -> void:
+func _on_load() -> void:
+	Session.bundle_dir = CITIES[_option.selected]["dir"]
 	get_tree().change_scene_to_file("res://CityScene.tscn")
 
 

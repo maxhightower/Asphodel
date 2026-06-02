@@ -14,3 +14,7 @@ config/name="Asphodel"
 run/main_scene="res://MainMenu.tscn"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+Session="*res://scripts/session.gd"

@@ -19,9 +19,14 @@ var _zones: Array
 
 
 func _ready() -> void:
-	var bundle := BundleLoader.load_bundle(bundle_dir)
+	# The city-select screen sets Session.bundle_dir; fall back to this scene's
+	# exported default (the sample bundle) when launched directly.
+	var dir := bundle_dir
+	if Session.bundle_dir != "":
+		dir = Session.bundle_dir
+	var bundle := BundleLoader.load_bundle(dir)
 	if bundle.is_empty():
-		push_error("city_builder: failed to load bundle at %s — see errors above." % bundle_dir)
+		push_error("city_builder: failed to load bundle at %s — see errors above." % dir)
 		return
 	_meta = bundle["meta"]
 	_zones = bundle["zones"]
