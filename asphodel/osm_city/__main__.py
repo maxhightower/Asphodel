@@ -23,6 +23,9 @@ def main(argv=None) -> int:
     p.add_argument("--days", type=float, default=120.0)
     p.add_argument("--cache", default=None, help="OSM response cache directory")
     p.add_argument("--max-span-deg", type=float, default=0.5)
+    p.add_argument("--cities-dir", default="cities", help="Dir of city-profile YAMLs")
+    p.add_argument("--citizens-per-profile", type=int, default=15)
+    p.add_argument("--no-citizens", action="store_true", help="Skip citizen baking")
     args = p.parse_args(argv)
 
     try:
@@ -40,6 +43,12 @@ def main(argv=None) -> int:
 
     print(f"Wrote bundle to {args.out} "
           f"({len(buildings)} buildings, {len(roads)} roads)")
+
+    if not args.no_citizens:
+        from .citizens import write_citizens
+        n = write_citizens(args.out, cities_dir=args.cities_dir,
+                           n_per_profile=args.citizens_per_profile, seed=args.seed)
+        print(f"Baked {n} citizens into {args.out}")
     return 0
 
 
