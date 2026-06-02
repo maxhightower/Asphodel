@@ -172,6 +172,327 @@ world.intervene("shelter_order", zones=None, strength=0.85)  # all zones
 world.intervene("broadcast", level=1.0)              # emergency address
 ```
 
+## Citizen spawn — who the player wakes up as
+
+Part of the game is being **randomly spawned as an ordinary citizen** and having
+to live a normal day before the world ends. `asphodel/citizen.py` owns the
+*possibility space* that spawn draws from — occupation, age, where you live,
+where you work, the shape of your workday (job tasks), and what's in your
+pockets — and the deterministic sampler that draws one concrete citizen from it.
+
+The design follows the same "data, not code" rule as the rest of the project,
+with one deliberate twist:
+
+> **Agnostic, but slightly determined by the city.** The `CitizenSpawnCatalog`
+> (age bands, occupations, item kinds, timing knobs) is *shared and
+> city-agnostic*: in principle a citizen of any city can hold any age-eligible
+> job and carry any item. A `CityProfile` only ever **biases** that space — via
+> age / occupation weight multipliers and, crucially, via which **districts**
+> (and therefore which workplaces) exist on its map. A harbor city has a port,
+> so it spawns more dock workers; a university town is thick with students.
+> Nothing is hard-removed, only reweighted or gated by the city's map.
+
+| Piece | What it is |
+|---|---|
+| **`CitizenSpawnCatalog`** | The agnostic catalog: weighted `AgeBand`s, `Occupation`s (age range, base weight, workplace category, shift, ordered job `tasks`, starting `inventory`), the common items everyone might carry, and `SpawnParams` (schedule timing, inventory jitter, weight temperature). |
+| **`CityProfile`** | A city's `District` map (each district has a *kind*, a residential weight, the workplace categories it hosts, and an optional macro-grid `zone`) plus the occupation/age weight multipliers and inventory multiplier that bias the catalog. |
+| **`CitizenProfile`** | The spawn result: age, occupation, home/work district (+ resolved grid zones), a full `ScheduleEntry` day, a rolled inventory, and where the clock found you (`current_location` / `current_activity`). |
+
+Spawn is **deterministic from `(city, catalog, seed)`** — `spawn_population`
+derives independent per-citizen RNGs from one base seed (via `SeedSequence`), so
+a whole crowd is reproducible and order-stable. Districts carry optional
+`ZoneGraph` zone indices, so home/work resolve onto the macro grid and a spawned
+crowd can seed the micro `AgentZone`. A fresh citizen spawns **susceptible** —
+the epidemic tiers own disease state; this layer is purely *who you are and what
+your day looks like*.
+
+```bash
+# Spawn and print a few citizens for a city (generic / harbor / university / capital)
+python -m asphodel.citizen --city harbor --n 8 --seed 1
+
+# Re-emit the catalog + city presets as YAML (config-as-data)
+python -m asphodel.citizen --emit       # -> cities/_catalog.yaml, cities/<city>.yaml
+
+# Tests (determinism, age-eligibility, city biasing, schedule, YAML round-trip)
+python tests/test_citizen.py            # or:  python -m pytest tests/test_citizen.py -q
+```
+
+The committed possibility space lives as data under
+[`cities/`](cities/): the agnostic `cities/_catalog.yaml` plus one YAML per
+city. Edit those (or build a `CityProfile` in code) to add a city — no sampler
+changes needed.
+
+```python
+from asphodel import default_catalog, default_cities, spawn_population
+
+city = default_cities()["university"]
+for c in spawn_population(city, default_catalog(), n=5, seed=0):
+    print(c.summary())
+```
+
+### Populating a real spatial world (`asphodel/world.py`)
+
+The end goal is **choose a city → the world populates from OpenStreetMap →
+procedural interiors → NPCs abound**. A `CityProfile` is the entry point to
+that pipeline: alongside its biases it carries *how to source its world*, and
+`resolve_world(profile, seed)` turns that into a `CityWorld` — a **street graph
++ categorised building footprints + procedural interiors** — that citizens spawn
+*into*.
+
+```
+choose a city ──► resolve_world ──► CityWorld(StreetMap)
+   profile.osm   = OSMSource(...)         ├─ nodes + edges     (real walking routes)
+   profile.synth = SynthCitySpec(...)     └─ Building[]        (footprint, levels, category,
+                                                 capacity, neighborhood, street_node, Interior)
+                          │
+   spawn_population_in_world(world, catalog, n, seed)
+                          ▼
+   CitizenProfile.home_building_id / work_building_id / home_xy / work_xy / commute_metres
+```
+
+| Source | What it does |
+|---|---|
+| **`OSMSource`** → `load_osm` | The real-city path: OSM ways become the street graph and building footprints become `Building`s, with **OSM tags mapped to workplace categories** (`amenity=hospital`→medical, `shop=*`→commercial, `landuse=industrial`→industrial …) via `category_from_osm_tags`. This is a lazily-imported adapter seam — it fails *loudly* with guidance if its GIS toolchain/network isn't available, rather than silently. |
+| **`SynthCitySpec`** → `synthesize_city` | The dependency-light fallback: a deterministic gridded street network with zoned building stock (a harbor weights `industrial`/`transit` up, a university `education`). Lets the whole pipeline run and be tested **offline**, and doubles as procedural generation for areas OSM doesn't cover. |
+
+Both sources produce the **identical `StreetMap` / `Building` types**, so
+everything downstream is source-agnostic. With a world resolved, spawn changes
+in three ways that matter:
+
+- **home / work are real buildings**, weighted by occupant capacity (bigger
+  buildings hold more people), not abstract districts;
+- **occupation reachability is gated by the building categories actually on the
+  map** — no hospital footprint, no nurses — which is the truest form of
+  "agnostic, but determined by the city";
+- the **commute is street-routed** (`StreetMap.route_length`, Dijkstra over edge
+  lengths), and home/work **zones derive from building position**, so a spawned
+  crowd still drops cleanly onto the macro `ZoneGraph`.
+
+Building interiors are generated on demand by `generate_interior` (deterministic
+room subdivision per floor) — somewhere for the NPCs to actually be.
+
+```bash
+# Resolve a city's procedural street map + buildings and spawn citizens into them
+python -m asphodel.citizen --world --city harbor --n 6 --seed 1
+
+# Tests for the world layer (synthesis, routing, interiors, world-spawn)
+python tests/test_world.py        # or:  python -m pytest tests/test_world.py -q
+```
+
+```python
+from asphodel import default_catalog, default_cities, resolve_world, spawn_population_in_world
+
+world = resolve_world(default_cities()["harbor"], seed=0)   # synth fallback (offline)
+for c in spawn_population_in_world(world, default_catalog(), n=5, seed=1):
+    print(c.summary(), "| building", c.home_building_id, "| commute", c.commute_metres, "m")
+```
+
+The **OpenStreetMap ingestion is the one remaining seam** (`load_osm`): the
+data model, tag→category mapping, routing, interiors, and NPC placement are all
+in place and tested against the procedural source; wiring a GIS toolchain
+(e.g. `osmnx` + `shapely`, or `pyrosm` for offline `.pbf` extracts) makes the
+*real-city* path live.
+
+### Game time & pacing (`asphodel/gametime.py`)
+
+`TimeScale` bridges **real player seconds ↔ the in-game clock the schedule runs
+on ↔ the simulation's tick/day axis**, with Project-Zomboid-style defaults:
+
+- **A full 24-hour cycle = 1 real hour** (PZ's default Day Length; tunable via
+  `real_seconds_per_day`). At the default `dt=0.25`, one sim tick = 900 real
+  seconds.
+- **Collapse lands within ~2 in-game days.** The epidemic is a long, calibrated
+  arc, so rather than distort its dynamics, the player clock is *warped*:
+  `collapse_warp` pins the player's day 2 onto the simulation's panic tipping
+  day, so however long the pathogen actually takes, the player reaches collapse
+  on schedule (`plan_session` reports the real-minutes-to-collapse). Near the
+  tip the warp relaxes toward real-time for full tension.
+- **Downtime fast-forwards** — `schedule_playback` compresses sleep/idle blocks
+  (PZ's skip key) so a session is the interesting hours, and turns a citizen's
+  in-game-hour day into a wall-clock timeline a game loop can drive directly.
+
+```python
+from asphodel import default_timescale
+print(default_timescale().summary(sim_panic_day=42.0))
+# day length: 60 real min/in-game day (900s per sim tick)
+# collapse: sim day 42.0 -> player day 2.0 (warp x21.0), ~120 min in
+```
+
+### Vehicles & traffic (`asphodel/vehicles.py`)
+
+Citizens don't teleport — they **move across the street map**, and when they all
+move at once the roads **jam**. This closes the citizens → buildings → streets
+loop:
+
+- **Travel mode per commuter.** Driving/emergency jobs come with a **work
+  vehicle** (`bus_driver`→bus, `truck_driver`→truck, `delivery_driver`→van,
+  `paramedic`→ambulance, `police_officer`→police car …); everyone else picks
+  walk / bike / car / motorcycle / transit by trip distance and age (short hops
+  cycle, long hops drive, under-17s never drive, transit only where the city has
+  it). Each `VehicleSpec` carries a free-flow speed and a **PCU** road-space
+  weight (foot/bike = 0 — they don't jam).
+- **Road network + congestion.** `RoadNetwork.from_street_map` gives every
+  street segment a speed and capacity; `assign_traffic` routes a trip set and
+  applies the standard **BPR volume-delay** relation
+  `t = t₀·(1 + α·(V/C)^β)`, so a morning commute — or a panicked mass exodus —
+  produces real travel times and bottlenecks, not instant movement.
+- **Hook into the cascade.** `congestion_report` assigns a whole spawned
+  population's commute and reports the network load (mean/worst V/C). This is the
+  micro-tier origin of the macro model's *emergent transport hazard*
+  (`EventParams`: panic-congestion ~ outflow², operator incapacitation ~ infected
+  fraction of fleers) — a fleeing crowd drives these sharply up.
+
+```bash
+# Spawn into a real map AND print a morning-commute traffic snapshot
+python -m asphodel.citizen --world --city harbor --n 6 --seed 2
+#   ... 301 commuters, 133 motorized, 1018 PCU on 91 segments
+#       network load 0.02 (mean V/C), worst 0.07, mean commute 2.9 min
+```
+
+```python
+from asphodel import (default_catalog, default_cities, resolve_world,
+                      spawn_population_in_world, congestion_report)
+world = resolve_world(default_cities()["capital"], seed=0)
+pop = spawn_population_in_world(world, default_catalog(), n=800, seed=0)
+print(congestion_report(world, pop))   # commuters, PCU, network_load, max_voc, mean_commute_min
+```
+
+The single-pass (all-or-nothing) assignment is adequate for a commute snapshot
+or an exodus pulse; iterating to user-equilibrium is the documented next step.
+
+> **Job diversity.** The catalog ships **51 occupations** across medical,
+> education, civic, commercial, industrial, transit and home categories —
+> including the driving/logistics roles the traffic layer needs (taxi, delivery,
+> truck, courier, postal, bus), on-site specialists (window washer, train
+> conductor, corrections officer, landscaper) and aircrew (pilot, flight
+> attendant, helicopter pilot, air-traffic controller). Add more by editing
+> `default_catalog()` / `cities/_catalog.yaml`; a job spawns in any city whose
+> map hosts its workplace category.
+
+### Signature scenarios (`asphodel/signatures.py`)
+
+Being spawned into a job isn't just a label and an inventory — it drops you into
+**the one predicament that job authors naturally** when the world ends. Every
+occupation owns a `SignatureScenario` (data): a defining location, the situation
+unfolding when collapse hits, the **dilemma** it forces, the **assets** the job
+hands you in that moment, the **hazards** working against you, and reusable
+**tags** (`height`, `trapped`, `vehicle_moving`, `mass_casualty`, `crowd`,
+`children`, `keys_access`, `tools`, `supplies`, `weapons`, …) a game layer can
+switch on.
+
+A few, to show the range:
+
+| Occupation | Signature |
+|---|---|
+| **nurse** | on the ward as the casualties flood in — triage who you can save, or walk out |
+| **window_washer** | stranded in a cradle thirty storeys up when the building's power dies |
+| **train_conductor** | doing 90 between stations with a train full of people you're responsible for |
+| **corrections_officer** | lockdown fails halfway — some cells open, some don't |
+| **childcare_worker** | naptime, a dozen toddlers, and no parents answering |
+| **landscaper** | three lawns from the truck — every house around you a possible shelter |
+| **construction_worker** | a site full of power tools, generators and materials to barricade with |
+| **mechanic** | a garage of working cars with the keys in the office |
+
+The resolution is **location-aware** — `resolve_collapse_situation(citizen,
+collapse_hour, world)` looks at *where the citizen physically is* at the moment
+the world tips and picks accordingly:
+
+| Where you are | What fires |
+|---|---|
+| **at the workplace** (on shift) | the occupation's **signature scenario**, bound to your concrete building + on-hand kit |
+| **mid-commute** | a **vehicle/traffic event** keyed to the road you're on (below) |
+| **out on an errand** | caught out in public |
+| **at home** (off shift) | off-duty — your job's edge left back at work |
+
+So whether you get the nurse-in-the-flood moment depends on shift vs *when* the
+collapse lands (see `TimeScale.collapse_by_day`) — a nurse asleep at home has her
+edge back at the hospital, not with her — which makes a random spawn genuinely
+re-playable.
+
+#### Travel / traffic events (`asphodel/travel_events.py`)
+
+Being caught *in transit* is its own class of predicament, independent of your
+job. Street segments carry a **structure** — surface / highway / bridge / tunnel
+/ ramp (tagged procedurally, or from OSM `bridge`/`tunnel`/`highway` tags via
+`structure_from_osm_tags`) — which also makes bridges and tunnels traffic
+**chokepoints** (lower capacity) and highways fast. When a citizen is caught
+mid-commute, the event is selected from the **road structure they're actually on**
+(routed home↔work on the network) and their **vehicle**:
+
+| Structure | Event |
+|---|---|
+| surface | total gridlock; junction pile-up |
+| highway | a fuel **tanker goes up**; the motorway concertinas into a pile-up |
+| ramp | **stranded on the flyover**, cars locked solid both ways, a long drop either edge |
+| bridge | **trapped mid-span**, both ends choking, water below |
+| tunnel | **the tunnel goes dark** — traffic stops, then the lights, then the engines |
+| *(on a bus)* | packed transit, stopped dead | *(on foot/bike)* faster than the jam |
+
+**Crashes from above.** Aircraft don't care what you drive. Anyone caught
+*outdoors* (commuting or on an errand) can, with probability `aerial_prob`, be
+struck instead by a **crash from above** — a light aircraft clipping the
+rooftops, a helicopter spiralling into the street, an airliner coming down across
+the blocks (`default_aerial_events`, `kind="aerial"`). The other side of it —
+being *aboard* — is an occupation **signature**: the catalog includes **pilot**
+(aloft with nowhere to land), **flight_attendant** (a cabin at 35,000 ft),
+**helicopter_pilot** (over the city when the radio dies) and
+**air_traffic_controller** (watching every blip on the scope go dark). So a jet
+falling out of the sky is the same event seen from two ends — the crew's
+signature and the pedestrian's hazard.
+
+```bash
+# Catch the morning commute (≈07:42) so traffic events fire by road structure
+python -m asphodel.citizen --world --city capital --n 14 --collapse-hour 7.7
+#   [▲ TRAFFIC ] postal_worker: Motorway folds up   (on the motorway, mid-commute)
+#   [★ SIGNATURE] nurse: The doors won't stop opening   (on shift, at the hospital)
+#   [▲ TRAFFIC ] commuter on the bridge: Trapped mid-span ...
+```
+
+#### Environmental events (`asphodel/environments.py`)
+
+The three families above all answer "where are you and how are you moving". The
+unifying layer is the **environment** — the *place* you're standing — and it can
+produce its own hazards regardless of your job: fire, structural collapse, power
+loss, gas, a crowd crush, and place-specific disasters keyed to an environment
+taxonomy (residential, high-rise, retail, medical, education, civic, industrial,
+transit-hub, street, **waterfront**, **underground**):
+
+| Environment | Sample events |
+|---|---|
+| high-rise | trapped above the fire; the curtain wall lets go |
+| medical | the oxygen system fails; the ward goes dark |
+| industrial | a tank ruptures; the line won't stop; the racking comes down |
+| waterfront | the surge comes over the wall; fuel ablaze on the water |
+| underground | the tunnel floods; smoke fills the dark |
+| street | a facade comes down; a car ploughs the crowd; a riot sweeps through |
+| residential | the neighbours turn; the fire jumps the gap |
+
+`resolve_collapse_situation(..., ambient_prob=0.12)` rolls this layer over the
+base outcome: *usually* your job (signature) or the road defines the moment, but
+sometimes the **building or street itself goes**, whatever your role — so an
+on-shift nurse might face her ward flooding with casualties (signature) or the
+hospital's oxygen system failing (environment). Every situation reports its
+`environment`; adding a new environment or event is one entry in
+`default_environment_events()`.
+
+#### One taxonomy, five outcomes
+
+`CollapseSituation` unifies all of it: `kind` ∈ {`signature`, `travel`,
+`aerial`, `environment`, `generic`}, `context` (workplace / commute / errand /
+home), the `environment`, the road `structure`, and reusable `tags` a game layer
+switches on (`height`, `trapped`, `fire`, `flood`, `hazmat`, `structural`,
+`tunnel`, `bridge`, `crowd`, `children`, `keys_access`, …). The hazard layers
+(`aerial_prob`, `ambient_prob`) stack over the base and each disable to 0;
+resolution is deterministic in `(citizen, collapse_hour, world)`.
+
+```bash
+python -m asphodel.citizen --world --city harbor --n 12 --collapse-hour 7.7
+#   [★ SIGNATURE] nurse: The doors won't stop opening
+#   [▲ TRAFFIC ] office_worker: Trapped mid-span        (on a bridge)
+#   [✦ HAZARD   ] dock_worker: A tank ruptures           (waterfront)
+#   [✈ CRASH    ] student: A helicopter comes down       (caught outdoors)
+```
+
 ---
 
 ## Phase 4a — Macro↔Micro handoff & calibration

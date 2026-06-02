@@ -1,0 +1,66 @@
+name: generic
+population: 40000
+districts:
+- name: Old Town
+  kind: residential
+  residential_weight: 1.2
+  workplaces: []
+  zone: 18
+- name: Suburbs
+  kind: residential
+  residential_weight: 1.5
+  workplaces: []
+  zone: 9
+- name: Market
+  kind: commercial
+  residential_weight: 0.4
+  workplaces:
+  - commercial
+  zone: 27
+- name: General Hospital
+  kind: medical
+  residential_weight: 0.1
+  workplaces:
+  - medical
+  zone: 20
+- name: University
+  kind: education
+  residential_weight: 0.3
+  workplaces:
+  - education
+  zone: 35
+- name: Civic Center
+  kind: civic
+  residential_weight: 0.2
+  workplaces:
+  - civic
+  zone: 28
+- name: Industrial Estate
+  kind: industrial
+  residential_weight: 0.1
+  workplaces:
+  - industrial
+  zone: 44
+- name: Central Depot
+  kind: transit
+  residential_weight: 0.1
+  workplaces:
+  - transit
+  zone: 36
+age_weight_multipliers: {}
+occupation_weight_multipliers: {}
+inventory_multiplier: 1.0
+osm: null
+synth:
+  blocks_x: 6
+  blocks_y: 6
+  block_size: 120.0
+  buildings_per_block: 6
+  zoning_weights:
+    residential: 6.0
+    commercial: 2.0
+    education: 0.8
+    medical: 0.5
+    civic: 0.5
+    industrial: 0.8
+    transit: 0.4

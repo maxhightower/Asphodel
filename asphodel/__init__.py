@@ -31,6 +31,77 @@ from .handoff import promote, demote, round_trip, largest_remainder_counts
 # --- Phase 5: orchestrator (the engine facade) -----------------------------
 from .orchestrator import World, WorldTick
 
+# --- Citizen spawn: the possibility space a player can be dropped into ------
+from .citizen import (
+    AgeBand,
+    Occupation,
+    District,
+    ScheduleEntry,
+    SpawnParams,
+    CitizenSpawnCatalog,
+    CityProfile,
+    CitizenProfile,
+    spawn_citizen,
+    spawn_population,
+    default_catalog,
+    default_cities,
+    # World-resolved spawn (real buildings on a real street map)
+    CityWorld,
+    resolve_world,
+    spawn_citizen_in_world,
+    spawn_population_in_world,
+    # Signature scenarios (the collapse-moment predicament per occupation)
+    CollapseSituation,
+    resolve_collapse_situation,
+)
+from .signatures import SignatureScenario, default_signatures
+from .travel_events import (
+    TravelEvent, default_travel_events, select_travel_event,
+    default_aerial_events, select_aerial_event,
+)
+from .environments import (
+    EnvironmentEvent, default_environment_events, select_environment_event,
+    ENVIRONMENTS,
+)
+
+# --- Vehicles & traffic: travel modes, road network, congestion -------------
+from .vehicles import (
+    VehicleSpec,
+    VEHICLES,
+    TrafficParams,
+    Trip,
+    RoadNetwork,
+    TrafficResult,
+    choose_commute,
+    work_vehicle_for,
+    assign_traffic,
+    build_commute_trips,
+    congestion_report,
+)
+
+# --- Game time: real seconds <-> in-game clock <-> sim ticks, PZ-style pacing -
+from .gametime import (
+    TimeScale,
+    default_timescale,
+    schedule_playback,
+    block_real_seconds,
+)
+
+# --- The spatial world a city resolves into (streets + buildings + interiors) -
+from .world import (
+    Building,
+    Interior,
+    Room,
+    StreetMap,
+    OSMSource,
+    SynthCitySpec,
+    InteriorParams,
+    load_osm,
+    synthesize_city,
+    generate_interior,
+    category_from_osm_tags,
+)
+
 __all__ = [
     "ScenarioConfig",
     "PathogenGenome",
@@ -66,4 +137,64 @@ __all__ = [
     # Phase 5
     "World",
     "WorldTick",
+    # Citizen spawn
+    "AgeBand",
+    "Occupation",
+    "District",
+    "ScheduleEntry",
+    "SpawnParams",
+    "CitizenSpawnCatalog",
+    "CityProfile",
+    "CitizenProfile",
+    "spawn_citizen",
+    "spawn_population",
+    "default_catalog",
+    "default_cities",
+    "CityWorld",
+    "resolve_world",
+    "spawn_citizen_in_world",
+    "spawn_population_in_world",
+    # Signature scenarios
+    "SignatureScenario",
+    "default_signatures",
+    "CollapseSituation",
+    "resolve_collapse_situation",
+    "TravelEvent",
+    "default_travel_events",
+    "select_travel_event",
+    "default_aerial_events",
+    "select_aerial_event",
+    "EnvironmentEvent",
+    "default_environment_events",
+    "select_environment_event",
+    "ENVIRONMENTS",
+    # Vehicles & traffic
+    "VehicleSpec",
+    "VEHICLES",
+    "TrafficParams",
+    "Trip",
+    "RoadNetwork",
+    "TrafficResult",
+    "choose_commute",
+    "work_vehicle_for",
+    "assign_traffic",
+    "build_commute_trips",
+    "congestion_report",
+    # Game time
+    "TimeScale",
+    "default_timescale",
+    "schedule_playback",
+    "block_real_seconds",
+    # World layer
+    "Building",
+    "Interior",
+    "Room",
+    "StreetMap",
+    "OSMSource",
+    "SynthCitySpec",
+    "InteriorParams",
+    "load_osm",
+    "synthesize_city",
+    "generate_interior",
+    "category_from_osm_tags",
 ]

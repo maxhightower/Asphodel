@@ -1,0 +1,76 @@
+name: university
+population: 30000
+districts:
+- name: Student Halls
+  kind: residential
+  residential_weight: 1.8
+  workplaces: []
+  zone: 26
+- name: Faculty Row
+  kind: residential
+  residential_weight: 0.9
+  workplaces: []
+  zone: 17
+- name: Main Campus
+  kind: education
+  residential_weight: 0.2
+  workplaces:
+  - education
+  zone: 27
+- name: Science Quad
+  kind: education
+  residential_weight: 0.1
+  workplaces:
+  - education
+  zone: 35
+- name: High Street
+  kind: commercial
+  residential_weight: 0.5
+  workplaces:
+  - commercial
+  zone: 18
+- name: Student Health
+  kind: medical
+  residential_weight: 0.1
+  workplaces:
+  - medical
+  zone: 28
+- name: Town Hall
+  kind: civic
+  residential_weight: 0.1
+  workplaces:
+  - civic
+  zone: 19
+- name: Bus Interchange
+  kind: transit
+  residential_weight: 0.1
+  workplaces:
+  - transit
+  zone: 34
+age_weight_multipliers:
+  young_adult: 2.0
+  teen: 1.3
+  middle_age: 0.7
+  senior: 0.6
+occupation_weight_multipliers:
+  student: 4.0
+  teacher: 2.2
+  office_worker: 0.7
+  dock_worker: 0.1
+  factory_worker: 0.2
+  chef: 1.3
+inventory_multiplier: 1.0
+osm: null
+synth:
+  blocks_x: 5
+  blocks_y: 5
+  block_size: 120.0
+  buildings_per_block: 6
+  zoning_weights:
+    residential: 5.0
+    education: 3.0
+    commercial: 2.2
+    medical: 0.5
+    civic: 0.4
+    industrial: 0.2
+    transit: 0.5
