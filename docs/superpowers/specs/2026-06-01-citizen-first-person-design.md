@@ -83,18 +83,38 @@ bundles already work).
 
 ## 6. First-person street scene (Sub-project 3)
 
-- **`Continue`** on the character screen loads a new scene `StreetScene.tscn`
-  (a `Node3D` + `street_builder.gd`), reading the chosen citizen from `Session`.
-- **Procedural-generic block:** a flat ground + sidewalk strips + a grid of
-  building "shells" (boxes with `StaticBody3D` collision) lining a street, sized
-  to human scale (3–4 m storeys, ~8–12 m road width), themed by the citizen's
-  home **district kind** (residential vs commercial palette/heights). Not derived
-  from OSM footprints.
-- **Controller:** `CharacterBody3D` first-person — mouse-look (mouse captured on
-  enter, **Esc** releases/back to menu), **WASD** walk, **Shift** sprint, gravity
-  + simple ground collision, a capsule collider, and a `Camera3D` at eye height.
-- Input actions (`move_forward/back/left/right`, `sprint`) are registered in
-  `project.godot` so the controller is data-driven.
+**Revised (2026-06-01): the full loaded city is walkable**, not a small
+procedural block. `Continue` drops the player into the *actual OSM city
+geometry* (the same blocks + roads the bundle already carries) at its real metre
+scale, made walkable.
+
+- **`Continue`** loads a new scene `StreetScene.tscn` (`Node3D` + `street_world.gd`),
+  reading the chosen citizen from `Session`. The bird's-eye `CityScene` stays as a
+  now-vestigial map view.
+- **Geometry:** the bundle's density-scaled blocks (visual `MultiMeshInstance3D`)
+  and major-road line-strips, at real scale — kept self-contained in
+  `street_world.gd` rather than refactoring the proven `city_builder.gd` (which
+  can't be re-verified without a Godot CLI here).
+- **Collision:** one ground `StaticBody3D` (a thin box whose top is at y=0) plus
+  one buildings `StaticBody3D` holding a `BoxShape3D` per block at the *same*
+  transform as its visual instance (single body, many shapes — efficient). So the
+  player walks the ground and is blocked by buildings.
+- **Controller (`first_person.gd` on a `CharacterBody3D`):** capsule collider +
+  eye-height `Camera3D` (both built in code), gravity, **WASD** walk, **Shift**
+  sprint, mouse-look (mouse captured). First-person only. Movement/look are gated
+  on `mouse_mode == CAPTURED`, so the pause overlay naturally freezes the player.
+- **Spawn:** at the first major-road point (on a street, not inside a building),
+  a few metres up so it settles onto the ground.
+- **Esc → pause overlay** (`Resume` / `Back to Menu`), releasing the mouse;
+  Resume re-captures. **HUD:** a small "{name} · {occupation}" label + a controls
+  hint; **no** signature text in-world.
+- Input actions (`move_forward/back/left/right`, `sprint`, physical WASD/Shift)
+  are registered at runtime via `InputMap` (idempotent), avoiding fragile
+  `project.godot` `[input]` hand-editing.
+- **Scale caveat:** the city is abstract km-scale blocks (no detailed
+  streets/sidewalks/interiors); first-person is a large, sparse, explorable
+  expanse with the road network as ground lines. Per-block collision is
+  hundreds–~1.8k box shapes for the bundled cities (acceptable; flagged).
 
 ## 7. Character screen (Sub-project 2)
 

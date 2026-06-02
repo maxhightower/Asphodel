@@ -55,7 +55,7 @@ func _ready() -> void:
 		vb.add_child(_paragraph(", ".join(items)))
 
 	vb.add_child(_gap(20))
-	vb.add_child(_button("Continue", func(): get_tree().change_scene_to_file("res://CityScene.tscn")))
+	vb.add_child(_button("Continue", func(): get_tree().change_scene_to_file("res://StreetScene.tscn")))
 	vb.add_child(_button("Back", func(): get_tree().change_scene_to_file("res://CitySelect.tscn")))
 
 
