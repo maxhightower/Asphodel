@@ -1,0 +1,34 @@
+{
+  "bbox": [
+    30.9333723,
+    -95.9306953,
+    30.9771434,
+    -95.8774128
+  ],
+  "center": [
+    30.95525785,
+    -95.90405405
+  ],
+  "dt": 0.25,
+  "genome": {
+    "R0": 3.0,
+    "asymptomatic_fraction": 0.4,
+    "incubation_period": 5.0,
+    "infectious_period": 7.0,
+    "mortality_fraction": 0.02,
+    "symptom_onset_delay": 2.0
+  },
+  "grid": {
+    "cell_m": 496.253,
+    "cols": 10,
+    "rows": 10
+  },
+  "n_days": 60.0,
+  "n_ticks": 240,
+  "name": "Madisonville, Texas",
+  "projection": "equirectangular",
+  "query": "Madisonville, Texas",
+  "seed": 0,
+  "seed_zone": 33,
+  "version": "1"
+}

@@ -6,6 +6,7 @@ extends Control
 ## Python pipeline to fetch any city on demand.)
 
 const CITIES := [
+	{"name": "Madisonville, TX", "dir": "res://bundles/madisonville_tx"},
 	{"name": "Houston", "dir": "res://bundles/houston"},
 	{"name": "San Antonio", "dir": "res://bundles/san_antonio"},
 	{"name": "Austin", "dir": "res://bundles/austin"},
