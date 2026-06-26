@@ -4,16 +4,19 @@
 Asphodel, against shipped precedent. Companion to
 [`PROJECT_ZOMBOID_LESSONS.md`](PROJECT_ZOMBOID_LESSONS.md).*
 
-> **Provenance note.** The claims below split into two buckets, kept deliberately
+> **Provenance note.** The claims below split into three buckets, kept deliberately
 > separate:
 > - **[VERIFIED]** — survived a multi-source, adversarial fact-check (3-vote, kill on
->   2/3 refute). Only four precedents produced verified claims: **Cities: Skylines II,
+>   2/3 refute). Four precedents produced verified claims: **Cities: Skylines II,
 >   Factorio, Oblivion/Radiant AI, GTA V**. Sources are cited inline.
-> - **[DOMAIN]** — well-known architecture from the games industry used to fill gaps the
->   fact-check did **not** cover (The Sims' SmartObjects, Shadow of Mordor's Nemesis,
->   Crusader Kings pops, Watch Dogs: Legion, Dwarf Fortress, RimWorld). Treat these as
->   informed context, not independently re-verified here. The honest coverage gap is
->   itself a finding — see §4.
+> - **[SEARCH-CORROBORATED]** — multiple independent search results return a *consistent*
+>   architectural description attributable to named sources, but the primary/technical
+>   source could **not** be deep-fetched for adversarial verification because this
+>   session's egress policy blocked the content domains (see §4). Applies to **The Sims'
+>   SmartObjects, Shadow of Mordor's Nemesis, Dwarf Fortress off-site sim, Watch Dogs:
+>   Legion's Census**. Stronger than memory, weaker than [VERIFIED].
+> - **[DOMAIN]** — well-known industry architecture used to fill remaining gaps
+>   (Crusader Kings pops, RimWorld). Informed context, not independently re-checked here.
 
 ---
 
@@ -25,11 +28,11 @@ Asphodel, against shipped precedent. Companion to
 | **Factorio** *[VERIFIED]* | Hard **deterministic lockstep** ("must remain fully deterministic or a desync happens"). Cuts per-entity cost by **faking smooth motion and only updating periodically**. Interdependent entities must be updated together on one thread. | #5, #1/#2 |
 | **Oblivion "Radiant AI"** *[VERIFIED]* | Gave NPCs autonomous goal/need-seeking. Unconstrained, it **broke designed content** (addict NPCs drank the dealer's whole supply, then killed the quest-critical dealer). Bethesda deliberately **toned it down** pre-release. | #3 (cautionary), #4 |
 | **GTA V** *[VERIFIED]* | Living-crowd feel is an **engineered illusion**: spatially-weighted spawning (archetypes by zone) + ambient dialogue pools + soundscaping. Ambient peds **despawn** by proximity — they are not persistently simulated. | #4 (the anonymous-crowd half) |
-| **The Sims** *[DOMAIN]* | **SmartObjects**: each Sim has a handful of need axes; *objects advertise* weighted "I can satisfy need X by Y" utilities, and the Sim picks the highest-scoring advertisement. Utility AI, data-driven by the environment. | #3 — the canonical precedent |
-| **Shadow of Mordor — Nemesis** *[DOMAIN]* | A **bounded roster** of persistent, named, individually-tracked orcs (rivalries, promotions, memory of you) layered over an otherwise anonymous, disposable crowd. | #4 — the canonical precedent |
+| **The Sims** *[SEARCH-CORROBORATED]* | **SmartObjects**: each Sim has ~six need axes; *objects advertise* weighted "I can change need X by Y" utilities (a bed advertises +energy, a toilet +bladder); the Sim scores advertisements × its current motive levels and picks **one of the top scorers at random** (not strict max — avoids robotic predictability). Behavior data lives in the *objects*. | #3 — the canonical precedent |
+| **Shadow of Mordor — Nemesis** *[SEARCH-CORROBORATED]* | A **bounded roster** of persistent, named captains (memory, fears, scars, rivalries, hierarchy) over an otherwise **disposable, generic** orc crowd. Promotion into the roster is **event-driven** — the orc that lands the killing blow on the player gets named/promoted. | #4 — the canonical precedent |
+| **Watch Dogs: Legion** *[SEARCH-CORROBORATED]* | A relational database (**"Census"**) procedurally generates each citizen's identity, schedule, and relationships on demand. NPCs **"uprez"** from background fodder when they matter and are **deleted once you pass them by and move far enough away** — persistence is reserved for the few you engage. | #1, #2, #4 |
+| **Dwarf Fortress** *[SEARCH-CORROBORATED]* | The world is generated as you explore and **vanishes as you leave** — *except* historical figures and artifacts, whose **identity persists** off-site as abstracted bookkeeping. Fortress citizens become historical figures and are tracked even after they leave the site. | #1 — the canonical promote/demote precedent |
 | **Crusader Kings / Paradox** *[DOMAIN]* | **Named characters as rich data** simulated alongside abstract **"pops"** (homogeneous population blocks). Two explicit tiers: individuals where it matters, statistics everywhere else. | #1, #4 |
-| **Watch Dogs: Legion** *[DOMAIN]* | A **census** system procedurally fabricates a schedule/identity for every citizen on demand from a relational backbone, rather than storing millions of full agents. | #2, #4 |
-| **Dwarf Fortress** *[DOMAIN]* | The world runs as **abstracted "world-activation" math** (historical figures, populations) until you embark, where a region is promoted to **full tile-and-creature simulation** — then demoted back to math when you leave. | #1 — the canonical promote/demote precedent |
 | **RimWorld** *[DOMAIN]* | Deliberately **caps the colony small** (full-fidelity needs/mood AI per colonist) and pushes drama through an **AI Storyteller** that pAces events, rather than scaling agent count. | #1 (the cap), #3 |
 
 ---
@@ -41,8 +44,12 @@ Asphodel, against shipped precedent. Companion to
 explicitly different fidelities of attention *[VERIFIED]*; Factorio's "fake smooth motion,
 update periodically" is literally behavioral LOD on cheap entities *[VERIFIED]*; Dwarf
 Fortress's embark = promote-to-full / leave = demote-to-math is the exact macro↔micro
-pattern Asphodel already implements for epidemiology *[DOMAIN]*; Crusader Kings' named
-characters + abstract pops is the same two-tier split *[DOMAIN]*.
+pattern Asphodel already implements for epidemiology, and DF's rule that the world "vanishes
+as you leave — *except* historical figures, whose identity persists" is exactly the
+identity-across-the-boundary guarantee our promote/demote needs *[SEARCH-CORROBORATED]*;
+Watch Dogs: Legion does the same with "uprezzing" (promote on demand) + proximity-deletion
+*[SEARCH-CORROBORATED]*; Crusader Kings' named characters + abstract pops is the same
+two-tier split *[DOMAIN]*.
 **Risk flagged:** CS2 shipped to criticism that some of its "simulated" behavior was buggy
 or more abstracted in practice than marketed. Lesson: *advertise the tier honestly.* "Every
 citizen is an agent" is defensible; "every citizen is full-fidelity every tick" is a trap.
@@ -51,7 +58,7 @@ citizen is an agent" is defensible; "every citizen is full-fidelity every tick" 
 ### #2 — Schedule-driven agents as the cheap default
 **Validated.** CS2's activity menu (work/school/shop/sleep) is exactly "follow a daily
 timetable, deflected by state" *[VERIFIED]*. Watch Dogs: Legion fabricates a per-citizen
-schedule as the backbone of a believable populace *[DOMAIN]*. The schedule-driven NPC lineage
+schedule as the backbone of a believable populace *[SEARCH-CORROBORATED]*. The schedule-driven NPC lineage
 (Ultima VII → Gothic → Radiant AI) proves daily routines are what *read* as "alive"
 *[DOMAIN]*.
 **Risk flagged:** the same lineage shows routines break at seams — an NPC's schedule sends
@@ -61,9 +68,11 @@ mitigation is built-in: the **belief field overrides the schedule** (shelter/fle
 **→ Keep. This is the single highest believability-per-line-of-code lever.**
 
 ### #3 — Small utility/needs menu, deliberately avoiding behavior trees / GOAP
-**Validated *with one concrete refinement.*** The Sims is the canonical proof that a tiny
-utility/needs model produces convincing autonomous life *[DOMAIN]*, and CS2's need/state
-action selection is a shipped modern instance *[VERIFIED]*. Oblivion is the **load-bearing
+**Validated *with two refinements.*** The Sims is the canonical proof that a tiny
+utility/needs model produces convincing autonomous life: each Sim has ~six need axes, objects
+*advertise* weighted utilities, and the Sim scores them × current motive levels
+*[SEARCH-CORROBORATED]*. CS2's need/state action selection is a shipped modern instance
+*[VERIFIED]*. Oblivion is the **load-bearing
 cautionary tale** *[VERIFIED]*: a *powerful, unconstrained* autonomous AI layered over
 designed content is a known failure mode — it broke quests and had to be reined in. That is
 direct evidence **for** keeping our reactive layer small, bounded, and subordinate to
@@ -80,21 +89,35 @@ structure, and **against** reaching for GOAP/behavior-tree generality.
 > (c) means adding a new hazard or refuge is one data entry, not an agent-code change. This
 > is the most actionable new idea the research surfaced.
 
-**→ Keep, but build it as advertised affordances, not an agent-internal switch. Cap its
-authority — it never overrides a designed signature moment, it only fills the gaps.**
+> **Second refinement — pick randomly among the top scorers, not the strict max.** The Sims
+> deliberately selects *one of the top-scoring* advertisements at random rather than always
+> the single best, because pure argmax makes agents read as robotic and identical
+> *[SEARCH-CORROBORATED]*. For Asphodel this is a free believability win **and** it composes
+> with determinism (#5): the "random" pick is drawn from the agent's seeded RNG, so a crowd
+> looks varied yet stays exactly reproducible. Use a softmax/top-k draw over advertised
+> utilities, seeded per agent.
+
+**→ Keep, but build it as advertised affordances with a seeded top-k pick, not an
+agent-internal argmax switch. Cap its authority — it never overrides a designed signature
+moment, it only fills the gaps.**
 
 ### #4 — Bounded persistent named roster + anonymous statistical crowd
-**Validated, though on substitute evidence.** GTA V proves the anonymous half directly: a
-convincing crowd needs **no** persistent per-individual simulation — spawn + despawn +
-archetype texture is enough *[VERIFIED]*. The persistent-named half rests on *[DOMAIN]*
-precedent (Shadow of Mordor's Nemesis roster; Crusader Kings' named-characters-vs-pops;
-Watch Dogs' census), which the fact-check did **not** independently confirm — flagged
-honestly as a gap (§4). Oblivion adds indirect support: bounding the set of fully-autonomous
+**Validated — and the substitute-evidence gap is now largely closed.** GTA V proves the
+anonymous half directly: a convincing crowd needs **no** persistent per-individual
+simulation — spawn + despawn + archetype texture is enough *[VERIFIED]*. The persistent-named
+half is now corroborated by both canonical precedents: **Nemesis** keeps a bounded roster of
+named captains (memory, fears, scars, hierarchy) over a *disposable, generic* orc crowd, with
+promotion **event-driven** (the orc that kills you gets named) *[SEARCH-CORROBORATED]*; and
+**Watch Dogs: Legion's Census** "uprezzes" an NPC from background fodder only when it matters
+and **deletes it once you move far enough away** — persistence reserved for the few you engage
+*[SEARCH-CORROBORATED]*. Oblivion adds indirect support: bounding the set of fully-autonomous
 agents bounds the surface area for emergent content-breakage *[VERIFIED]*.
-**Risk flagged:** the hard problem is *promotion churn* — who gets "named" and does that
-choice stay reproducible as the player moves and zones promote/demote? Tie roster
-membership to deterministic, stable criteria (player proximity + interaction history),
-never to spawn order or wall-clock.
+**Risk flagged — and Nemesis/Census show the answer:** the hard problem is *promotion churn* —
+who gets "named" and does that choice stay reproducible as the player moves and zones
+promote/demote? Both precedents make promotion **event-driven and interaction-keyed** (you
+killed it / you engaged it), not spawn-order- or timer-based. Mirror that: tie roster
+membership to deterministic, stable criteria (player proximity + interaction history), never
+to spawn order or wall-clock.
 **→ Keep. It is the principled cap that stops us re-entering PZ's "simulate everyone" swamp.**
 
 ### #5 — Strict determinism (per-agent RNG keyed by citizen id; behavior pure in (id, state, tick))
@@ -149,27 +172,41 @@ from the start — both are cheap to design in now and expensive to retrofit.
 
 ## 4. Honest caveats on this research
 
-1. **Coverage is uneven.** Only 4 of 12 requested precedents produced *verified* claims
-   (CS2, Factorio, Oblivion, GTA V). The purpose-built precedents for our approaches —
-   **The Sims' SmartObjects (#3)**, **Nemesis / CK pops / Watch Dogs census (#4)**, and
-   **Dwarf Fortress's promote/demote (#1)** — appeared in search but their best sources were
-   rated low-reliability or dropped on budget, so they are cited here as *[DOMAIN]* context,
-   not settled findings. The conclusions for #3 and #4 therefore lean partly on substitute
-   evidence (CS2/Oblivion for #3; GTA V for #4). A focused second pass on those four
-   primary sources (the Sims GMTK/Forrester talks, the Nemesis GDC talk, the DF "Simulation
-   Principles" chapter, the WD:Legion "Census" GDC talk) would convert them from *[DOMAIN]*
-   to *[VERIFIED]*.
-2. **CS2 marketing vs. reality.** The strongest CS2 evidence is a developer feature page;
+1. **The second pass was blocked by egress policy — corroborated, not adversarially
+   verified.** A focused second research pass aimed at the four primary sources (Sims
+   SmartObjects, Nemesis, Dwarf Fortress "Simulation Principles" PDF, WD:Legion "Census")
+   **failed to fetch a single source**: this session's egress proxy returned `403 to CONNECT`
+   ("destination host not allowed by organization egress policy") for every content domain —
+   `robert.zubek.net`, `gameaipro.com`, `gamedeveloper.com`, `patentarcade.com`,
+   `en.wikipedia.org`, etc. Per the proxy README, policy denials must be reported, not routed
+   around. `WebSearch` (a separate sanctioned path) still works, so the four precedents were
+   instead **upgraded from [DOMAIN] to [SEARCH-CORROBORATED]**: multiple independent search
+   results returned consistent, source-attributed architectural descriptions. This is a real
+   evidence upgrade, but it did **not** pass the 3-vote adversarial fact-check the [VERIFIED]
+   tier requires (no primary text could be fetched to verify against). To reach [VERIFIED],
+   re-run when the egress policy permits those domains, or supply the PDFs/transcripts
+   directly into the session.
+2. **Still genuinely thin:** the exact *bounded-roster size* and promotion economics
+   (how many named characters, how aggressively demoted) are not pinned down from primary
+   sources for any precedent — treat the roster cap as a tuning parameter to be set
+   empirically, not inherited.
+3. **CS2 marketing vs. reality.** The strongest CS2 evidence is a developer feature page;
    well-corroborated for "citizens are individual agents," weaker for "full-fidelity per
    tick" — which is exactly the line Asphodel should not over-claim either.
-3. **Secondary sources.** The Oblivion and GTA V findings rest on games-journalism/blog
+4. **Secondary sources.** The Oblivion and GTA V findings rest on games-journalism/blog
    sources (multiply corroborated, developer-attributed, but not primary).
-4. **Three claims were refuted** and are excluded: a universal "memory-bandwidth-bound"
+5. **Three claims were refuted** and are excluded: a universal "memory-bandwidth-bound"
    generalization, Radiant AI as a clean utility/satisfaction architecture, and GTA
    archetypes implying a templated non-persistent crowd.
 
-### Sources (verified-claim corpus)
+### Sources — verified-claim corpus (adversarially fact-checked)
 - [Cities: Skylines II — Citizen Simulation & Lifepath (Paradox)](https://www.paradoxinteractive.com/games/cities-skylines-ii/features/citizen-simulation-lifepath)
 - [Factorio FFF-421 — optimization & determinism (factorio.com)](https://www.factorio.com/blog/post/fff-421)
 - [Oblivion's NPCs nearly killed it — Radiant AI (The Escapist)](https://www.escapistmagazine.com/oblivion-npcs-brought-their-world-to-life-then-they-nearly-killed-it/)
 - [Breaking down GTA V's pedestrian dialogue system (Game Developer)](https://www.gamedeveloper.com/design/breaking-down-gta-v-s-pedestrian-dialogue-system-an-analysis-with-speculative-examples)
+
+### Sources — search-corroborated (consistent across multiple results; primary text egress-blocked this session)
+- The Sims SmartObjects / needs-based AI — [Gaslamp Games "Smart Objects"](https://archive-gaslamp.dredmor.com/2015/04/15/smart-objects-or-everything-i-know-about-ai-i-stole-from-the-sims/), [GMTK "The Genius AI Behind The Sims"](https://gmtk.substack.com/p/the-genius-ai-behind-the-sims)
+- Shadow of Mordor Nemesis — [GamesRadar "how it works"](https://www.gamesradar.com/shadow-mordor-nemesis-system-amazing-how-works/), [Shadow of War Wiki — Nemesis](https://shadowofwar.fandom.com/wiki/Nemesis)
+- Watch Dogs: Legion Census — [Game Developer "how the play-as-anyone simulation works"](https://www.gamedeveloper.com/design/how-watch-dogs-legion-s-play-as-anyone-simulation-works), [PlayStation Lifestyle "Census relational database"](https://www.playstationlifestyle.net/2019/06/28/watch-dogs-legion-npcs/)
+- Dwarf Fortress off-site simulation / identity persistence — [DF Wiki — Historical figure](https://dwarffortresswiki.org/index.php/DF2014:Historical_figure), [Dwarf Fortress — Wikipedia](https://en.wikipedia.org/wiki/Dwarf_Fortress)
