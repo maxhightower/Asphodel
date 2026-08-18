@@ -43,6 +43,51 @@ def test_collapse_warp_pins_panic_to_player_day_two():
     assert ts.collapse_warp(None) == 1.0
 
 
+def test_warp_is_eased_not_constant():
+    # The design promise: time is compressed hardest early and relaxes toward
+    # real-time at the panic tip. Assert the mapping is NOT a constant linear
+    # warp (which the previous implementation was).
+    ts = TimeScale(collapse_by_day=2.0)
+    panic = 48.0                                        # warp average = 24x
+    D = ts.collapse_by_day
+    # Endpoints pinned: origin and the tip.
+    assert abs(ts.player_day_to_sim_day(0.0, panic)) < 1e-9
+    assert abs(ts.player_day_to_sim_day(D, panic) - panic) < 1e-9
+    # Instantaneous warp eases from fast (2*avg - 1 = 47x) to real-time (1x).
+    assert abs(ts.warp_at(0.0, panic) - 47.0) < 1e-6
+    assert abs(ts.warp_at(D, panic) - 1.0) < 1e-6
+    # Strictly a curve, not a line: the midpoint sits above the straight chord.
+    mid = ts.player_day_to_sim_day(D / 2.0, panic)
+    chord = panic / 2.0                                 # a linear warp's midpoint
+    assert mid > chord + 1.0, (mid, chord)
+
+
+def test_warp_is_monotonic_and_relaxes_at_tip():
+    ts = TimeScale(collapse_by_day=2.0)
+    panic = 40.0
+    prev = -1.0
+    last_slope = None
+    for k in range(0, 21):
+        p = k / 10.0                                    # 0.0 .. 2.0
+        sim_day = ts.player_day_to_sim_day(p, panic)
+        assert sim_day >= prev, "mapping must be monotonic non-decreasing"
+        prev = sim_day
+        slope = ts.warp_at(p, panic)
+        if last_slope is not None:
+            assert slope <= last_slope + 1e-9, "warp must not speed up"
+        last_slope = slope
+    # Relaxed to real-time at the tip.
+    assert abs(ts.warp_at(2.0, panic) - 1.0) < 1e-6
+
+
+def test_no_warp_is_real_time_identity():
+    # A scenario that never tips (or tips before collapse_by_day) plays 1:1.
+    ts = TimeScale(collapse_by_day=2.0)
+    for p in (0.0, 0.5, 1.0, 2.0, 2.5):
+        assert abs(ts.player_day_to_sim_day(p, None) - p) < 1e-9
+        assert abs(ts.warp_at(p, None) - 1.0) < 1e-9
+
+
 def test_plan_session_reports_minutes_to_collapse():
     ts = default_timescale()                            # 1 hr/day, collapse day 2
     plan = ts.plan_session(sim_panic_day=40.0)

@@ -72,12 +72,16 @@ class TimeScale:
 
     # ---- the collapse warp (sim time vs player time) -------------------------
     def collapse_warp(self, sim_panic_day: float | None) -> float:
-        """Sim-days advanced per player-day so the sim's panic tipping point
-        lands on the player's ``collapse_by_day``.
+        """*Average* sim-days advanced per player-day over the run-up to collapse,
+        so the sim's panic tipping point lands on the player's ``collapse_by_day``.
 
         ``>1`` means sim time runs faster than the player clock -- compressing a
         long silent-incubation stretch into the playable window. ``None`` panic
         day (the sim never tips) falls back to 1.0 (no warp).
+
+        This is the *mean* slope of ``player_day_to_sim_day`` over ``[0,
+        collapse_by_day]``; the instantaneous slope is eased (see ``warp_at``):
+        fast during the silent incubation and relaxing to real-time at the tip.
         """
         if not sim_panic_day or self.collapse_by_day <= 0:
             return 1.0
@@ -85,8 +89,48 @@ class TimeScale:
 
     def player_day_to_sim_day(self, player_day: float,
                               sim_panic_day: float | None) -> float:
-        """Map a player-experienced day onto a simulation day under the warp."""
-        return player_day * self.collapse_warp(sim_panic_day)
+        """Map a player-experienced day onto a simulation day under an *eased*
+        warp.
+
+        The design promise (see the module docstring) is that time is compressed
+        hardest early -- through the long silent incubation -- and **relaxes
+        toward real-time as the panic tip approaches**, so the collapse itself
+        plays at full minute-to-minute tension. A constant linear warp would run
+        the tip in fast-forward too; instead the mapping is the quadratic that
+
+            * passes through the origin,             f(0)   = 0
+            * hits the panic day at collapse_by_day, f(D)   = sim_panic_day
+            * arrives at real-time speed there,      f'(D)  = 1
+
+        which forces the early slope to ``2*warp - 1`` and eases it monotonically
+        down to 1.0 at the tip. Past ``collapse_by_day`` (the aftermath) time
+        continues at real-time (slope 1).
+        """
+        D = self.collapse_by_day
+        warp = self.collapse_warp(sim_panic_day)
+        if warp <= 1.0 or D <= 0:
+            return player_day                        # no compression: real-time
+        P = D * warp                                 # sim day at collapse
+        if player_day <= D:
+            a = (D - P) / (D * D)                    # concave: slope decreasing
+            b = 2.0 * P / D - 1.0                    # early slope = 2*warp - 1
+            return a * player_day * player_day + b * player_day
+        return P + (player_day - D)                  # real-time aftermath tail
+
+    def warp_at(self, player_day: float, sim_panic_day: float | None) -> float:
+        """Instantaneous warp (sim-days advanced per player-day) at ``player_day``.
+
+        Eases from ``2*collapse_warp - 1`` at day 0 down to ~1.0 at the tip, then
+        stays at 1.0 through the aftermath.
+        """
+        D = self.collapse_by_day
+        warp = self.collapse_warp(sim_panic_day)
+        if warp <= 1.0 or D <= 0 or player_day >= D:
+            return 1.0
+        P = D * warp
+        a = (D - P) / (D * D)
+        b = 2.0 * P / D - 1.0
+        return 2.0 * a * player_day + b               # f'(player_day)
 
     def sim_tick_of_player_day(self, player_day: float,
                                sim_panic_day: float | None) -> int:
