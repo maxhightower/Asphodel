@@ -30,6 +30,9 @@ func _ready() -> void:
 	add_child(_camera)
 	_camera.current = true
 
+	# PAUSABLE so an authoritative pause (get_tree().paused via GameClock) freezes
+	# our physics; the spawner sets this too, but be explicit for safety.
+	process_mode = Node.PROCESS_MODE_PAUSABLE
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 

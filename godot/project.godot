@@ -18,3 +18,4 @@ config/icon="res://icon.svg"
 [autoload]
 
 Session="*res://scripts/session.gd"
+GameClock="*res://scripts/game_clock.gd"

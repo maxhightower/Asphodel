@@ -1,19 +1,34 @@
 extends Node3D
 
-## Walkable first-person view of the *full* loaded city: builds the bundle's
-## density blocks + major roads at real metre scale, with ground + per-block
-## collision, spawns a first-person player on a road, and provides a HUD + Esc
-## pause overlay. Self-contained (does not touch the bird's-eye CityScene).
+## Walkable first-person view of the loaded city. Unlike the earlier version this
+## scene is a *client of the authoritative world*: it spawns the selected citizen
+## at their real coordinate, drives the GameClock (which advances the outbreak),
+## renders blocks at their true footprint, freezes everything on an authoritative
+## pause, and recovers the player if they leave the ground.
+##
+## process_mode is ALWAYS so this node keeps handling Esc while the tree is
+## paused; the player and GameClock are PAUSABLE, so they freeze when paused.
 
-const FOOTPRINT_FRAC := 0.16   # must match city_builder so blocks line up
 const HEIGHT_SCALE := 3.0
 const LOW := Color(0.35, 0.45, 0.55)
 const HIGH := Color(0.95, 0.85, 0.55)
+const PLAYER_RADIUS := 0.5
+const FALL_KILL_Y := -40.0          # below this, the player is out of bounds
 
 var _pause_layer: CanvasLayer
+var _player: CharacterBody3D
+var _spawn_pos: Vector3
+var _bounds: Rect2
+var _block_boxes: Array = []        # [Vector3(x, z, half_extent), ...]
+var _env: Environment
+var _sun: DirectionalLight3D
+var _time_label: Label
+var _outbreak_label: Label
 
 
 func _ready() -> void:
+	# Keep processing input while paused so Esc can resume.
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_ensure_input()
 	var dir: String = Session.bundle_dir if Session.bundle_dir != "" else "res://sample_bundle"
 	var bundle := BundleLoader.load_bundle(dir)
@@ -23,13 +38,24 @@ func _ready() -> void:
 	var meta: Dictionary = bundle["meta"]
 	var zones: Array = bundle["zones"]
 	_add_environment_and_light()
-	var bounds := _world_bounds(zones)
-	_build_ground(bounds)
+	_bounds = _world_bounds(zones)
+	_build_ground(_bounds)
 	_build_blocks(meta, zones)
 	_build_roads(bundle["roads"])
-	_spawn_player(bounds, bundle["roads"])
+	_spawn_player(_bounds, bundle["roads"])
 	_build_hud()
 	_build_pause_overlay()
+
+	# Authoritative clock: start at the citizen's spawn hour; it advances the
+	# outbreak while unpaused.
+	var start_hour := 8.0
+	var c: Dictionary = Session.citizen
+	if c.has("spawn_hour"):
+		start_hour = float(c["spawn_hour"])
+	GameClock.reset()
+	GameClock.configure(meta, bundle["timeline"], start_hour)
+	GameClock.ticked.connect(_on_clock_ticked)
+	_on_clock_ticked(GameClock.game_day, GameClock.hour, GameClock.outbreak_belief())
 
 
 # ----------------------------------------------------------------- input setup
@@ -94,7 +120,6 @@ func _build_blocks(meta: Dictionary, zones: Array) -> void:
 		total += (z.get("blocks", []) as Array).size()
 	if total == 0:
 		return
-	var side: float = float(meta.get("grid", {}).get("cell_m", 100.0)) * FOOTPRINT_FRAC
 
 	var box := BoxMesh.new()
 	box.size = Vector3.ONE
@@ -118,6 +143,10 @@ func _build_blocks(meta: Dictionary, zones: Array) -> void:
 		var col := LOW.lerp(HIGH, clampf(density, 0.0, 1.0))
 		for blk in (z.get("blocks", []) as Array):
 			var bxy: Array = blk["xy"]
+			# Use the block's OWN stored footprint so the visual box and its
+			# collision box agree and match the bundle's geometry -- no more
+			# constant giant width that punched through roads.
+			var side := float(blk.get("footprint", 6.0))
 			var h := float(blk["height"]) * HEIGHT_SCALE
 			var origin := Vector3(float(bxy[0]), h * 0.5, float(bxy[1]))
 			mm.set_instance_transform(i, Transform3D(Basis().scaled(Vector3(side, h, side)), origin))
@@ -128,6 +157,8 @@ func _build_blocks(meta: Dictionary, zones: Array) -> void:
 			cs.shape = shape
 			cs.position = origin
 			body.add_child(cs)
+			# Remember the XZ footprint for collision-safe player placement.
+			_block_boxes.append(Vector3(float(bxy[0]), float(bxy[1]), side * 0.5))
 			i += 1
 
 	var mmi := MultiMeshInstance3D.new()
@@ -157,41 +188,82 @@ func _build_roads(roads: Dictionary) -> void:
 
 
 func _add_environment_and_light() -> void:
-	var env := Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.5, 0.6, 0.72)   # daytime sky-ish
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.6, 0.64, 0.7)
-	env.ambient_light_energy = 0.6
-	env.fog_enabled = true
-	env.fog_light_color = Color(0.5, 0.6, 0.72)
-	env.fog_density = 0.0006
+	_env = Environment.new()
+	_env.background_mode = Environment.BG_COLOR
+	_env.background_color = Color(0.5, 0.6, 0.72)
+	_env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	_env.ambient_light_color = Color(0.6, 0.64, 0.7)
+	_env.ambient_light_energy = 0.6
+	_env.fog_enabled = true
+	_env.fog_light_color = Color(0.5, 0.6, 0.72)
+	_env.fog_density = 0.0006
 	var we := WorldEnvironment.new()
-	we.environment = env
+	we.environment = _env
 	add_child(we)
 
-	var sun := DirectionalLight3D.new()
-	sun.rotation_degrees = Vector3(-50.0, -50.0, 0.0)
-	sun.light_energy = 1.1
-	sun.shadow_enabled = true
-	add_child(sun)
+	_sun = DirectionalLight3D.new()
+	_sun.rotation_degrees = Vector3(-50.0, -50.0, 0.0)
+	_sun.light_energy = 1.1
+	_sun.shadow_enabled = true
+	add_child(_sun)
 
 
 # ----------------------------------------------------------------------- player
 func _spawn_player(b: Rect2, roads: Dictionary) -> void:
-	var pos := Vector3(b.position.x + b.size.x * 0.5, 3.0, b.position.y + b.size.y * 0.5)
-	var polylines: Array = roads.get("polylines", [])
-	if polylines.size() > 0:
-		var pts: Array = polylines[0].get("points", [])
-		if pts.size() > 0:
-			pos = Vector3(float(pts[0][0]), 3.0, float(pts[0][1]))
-	var player := CharacterBody3D.new()
-	player.set_script(load("res://scripts/first_person.gd"))
-	player.position = pos
-	add_child(player)
+	# Authoritative spawn: the selected citizen's own coordinate for their state
+	# (home when asleep, workplace on shift, a route point mid-commute). Fall
+	# back to a road point, then the city centre, only as a documented fail-safe.
+	var desired := Vector2(b.position.x + b.size.x * 0.5, b.position.y + b.size.y * 0.5)
+	var have_citizen := false
+	var c: Dictionary = Session.citizen
+	if c.has("spawn_xy") and c["spawn_xy"] != null:
+		var sp: Array = c["spawn_xy"]
+		if sp.size() >= 2:
+			desired = Vector2(float(sp[0]), float(sp[1]))
+			have_citizen = true
+	if not have_citizen:
+		var polylines: Array = roads.get("polylines", [])
+		if polylines.size() > 0:
+			var pts: Array = polylines[0].get("points", [])
+			if pts.size() > 0:
+				desired = Vector2(float(pts[0][0]), float(pts[0][1]))
+
+	var clear := _find_clear_spawn(desired)
+	_spawn_pos = Vector3(clear.x, 3.0, clear.y)   # a little above ground; falls to floor
+
+	_player = CharacterBody3D.new()
+	_player.set_script(load("res://scripts/first_person.gd"))
+	_player.position = _spawn_pos
+	# PAUSABLE so player physics freezes when the world is paused.
+	_player.process_mode = Node.PROCESS_MODE_PAUSABLE
+	add_child(_player)
 
 
-# -------------------------------------------------------------------------- HUD
+func _find_clear_spawn(desired: Vector2) -> Vector2:
+	## Return a point not inside any building footprint. Tries the desired point,
+	## then a widening ring of candidates around it, then gives up on the desired
+	## point (still above ground, never inside a wall).
+	if not _inside_block(desired):
+		return desired
+	for ring in range(1, 16):
+		var r := float(ring) * 4.0
+		for k in range(8):
+			var a := TAU * float(k) / 8.0
+			var cand := desired + Vector2(cos(a), sin(a)) * r
+			if not _inside_block(cand):
+				return cand
+	return desired
+
+
+func _inside_block(p: Vector2) -> bool:
+	for bb in _block_boxes:
+		var half: float = bb.z + PLAYER_RADIUS
+		if abs(p.x - bb.x) <= half and abs(p.y - bb.y) <= half:
+			return true
+	return false
+
+
+# -------------------------------------------------------------------- HUD
 func _build_hud() -> void:
 	var layer := CanvasLayer.new()
 	add_child(layer)
@@ -201,18 +273,70 @@ func _build_hud() -> void:
 	who.position = Vector2(16, 12)
 	who.add_theme_font_size_override("font_size", 18)
 	layer.add_child(who)
+
+	_time_label = Label.new()
+	_time_label.position = Vector2(16, 38)
+	_time_label.add_theme_font_size_override("font_size", 16)
+	_time_label.modulate = Color(0.85, 0.9, 0.95)
+	layer.add_child(_time_label)
+
+	_outbreak_label = Label.new()
+	_outbreak_label.position = Vector2(16, 60)
+	_outbreak_label.add_theme_font_size_override("font_size", 16)
+	layer.add_child(_outbreak_label)
+
 	var hint := Label.new()
 	hint.text = "WASD move · Shift sprint · mouse look · Esc menu"
-	hint.position = Vector2(16, 38)
+	hint.position = Vector2(16, 86)
 	hint.add_theme_font_size_override("font_size", 13)
 	hint.modulate = Color(0.7, 0.75, 0.8)
 	layer.add_child(hint)
+
+
+func _on_clock_ticked(_day: int, _hour: float, outbreak: float) -> void:
+	if _time_label != null:
+		_time_label.text = GameClock.time_string()
+	if _outbreak_label != null:
+		_outbreak_label.text = "Outbreak: %d%%" % int(round(outbreak * 100.0))
+		_outbreak_label.modulate = Color(0.6, 0.7, 0.8).lerp(Color(1.0, 0.3, 0.25), outbreak)
+	_apply_time_and_outbreak(outbreak)
+
+
+func _apply_time_and_outbreak(outbreak: float) -> void:
+	# Day/night from the clock hour + an ominous reddening as the outbreak grows,
+	# so standing still and watching time pass visibly changes the world.
+	if _env == null or _sun == null:
+		return
+	var day := GameClock.is_daytime()
+	var day_sky := Color(0.5, 0.6, 0.72)
+	var night_sky := Color(0.04, 0.05, 0.09)
+	var base_sky := day_sky if day else night_sky
+	var panic_sky := Color(0.35, 0.08, 0.08)
+	_env.background_color = base_sky.lerp(panic_sky, outbreak * 0.7)
+	_env.fog_light_color = _env.background_color
+	_env.fog_density = 0.0006 + outbreak * 0.0025
+	_sun.light_energy = (1.1 if day else 0.15) * (1.0 - 0.4 * outbreak)
+
+
+# ------------------------------------------------------------------ per-frame
+func _physics_process(_delta: float) -> void:
+	# Out-of-bounds recovery: if the player falls off the finite ground, put them
+	# back at a safe spawn instead of falling forever.
+	if _player != null and _player.position.y < FALL_KILL_Y:
+		_recover_player()
+
+
+func _recover_player() -> void:
+	_player.velocity = Vector3.ZERO
+	_player.position = _spawn_pos + Vector3(0.0, 2.0, 0.0)
 
 
 # ------------------------------------------------------------------ pause / Esc
 func _build_pause_overlay() -> void:
 	_pause_layer = CanvasLayer.new()
 	_pause_layer.visible = false
+	# The pause UI must keep working while the tree is paused.
+	_pause_layer.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(_pause_layer)
 	var dim := ColorRect.new()
 	dim.color = Color(0.0, 0.0, 0.0, 0.6)
@@ -242,12 +366,21 @@ func _overlay_button(text: String, handler: Callable) -> Button:
 	return b
 
 
+func _pause() -> void:
+	_pause_layer.visible = true
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	GameClock.set_paused(true)          # authoritative: freezes clock + outbreak + player
+
+
 func _resume() -> void:
 	_pause_layer.visible = false
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	GameClock.set_paused(false)
 
 
 func _to_menu() -> void:
+	GameClock.set_paused(false)
+	GameClock.reset()
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	get_tree().change_scene_to_file("res://MainMenu.tscn")
 
@@ -257,5 +390,4 @@ func _unhandled_input(event: InputEvent) -> void:
 		if _pause_layer != null and _pause_layer.visible:
 			_resume()
 		elif _pause_layer != null:
-			_pause_layer.visible = true
-			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+			_pause()

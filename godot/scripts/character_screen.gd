@@ -31,6 +31,15 @@ func _ready() -> void:
 	vb.add_child(_line("%d-year-old %s  ·  lives in %s" % [
 		int(c.get("age", 0)), str(c.get("occupation", "?")), str(c.get("home_district", "?"))]))
 
+	# What the citizen is actually doing right now, so the screen, the signature
+	# and the first-person spawn all describe the same moment.
+	var activity: String = c.get("current_activity", "")
+	var where: String = c.get("current_location", "")
+	if activity != "":
+		var hour: float = float(c.get("spawn_hour", 0.0))
+		vb.add_child(_line("%02d:%02d  ·  %s at %s" % [
+			int(hour), int((hour - int(hour)) * 60.0), activity, where]))
+
 	var sig_title: String = c.get("signature_title", "")
 	if sig_title != "":
 		vb.add_child(_gap(10))
