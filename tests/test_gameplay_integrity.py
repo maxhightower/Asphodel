@@ -184,6 +184,41 @@ def test_uniform_population_belief_matches_plain_mix():
     assert np.allclose(g.mix, g.belief_mix)
 
 
+# --------------------------------------------------------------------------- #
+# 4. geometry clearance: rendered block footprints can't blanket the streets
+# --------------------------------------------------------------------------- #
+def test_block_footprints_are_small_relative_to_cell():
+    # Godot renders each block at its stored `footprint` (side, metres). If a
+    # footprint approached the cell size, blocks would blanket the cell and punch
+    # through roads. Assert footprints stay a small fraction of the cell so the
+    # visual/collision boxes leave streets clear.
+    import json as _json
+    import os as _os
+    import random
+    from asphodel.osm_city import geometry as geo
+
+    cell = 420.0
+    rng = random.Random(0)
+    blocks = geo.place_blocks(1.0, (0.0, 0.0), (cell, cell), rng, max_blocks=8)
+    assert blocks, "dense cell should place blocks"
+    for b in blocks:
+        assert 0.0 < b["footprint"] < cell * 0.1, b["footprint"]  # << cell
+        x, z = b["xy"]
+        # Placed within the cell (jittered within 80% of the extent).
+        assert abs(x) <= cell * 0.5 and abs(z) <= cell * 0.5
+
+    # And against a real committed bundle: every block footprint is tiny vs the
+    # mean cell side, so no block can systematically cover the road network.
+    bundle = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))),
+                           "godot", "bundles", "houston")
+    meta = _json.load(open(_os.path.join(bundle, "meta.json")))
+    zones = _json.load(open(_os.path.join(bundle, "zones.json")))
+    cell_m = float(meta["grid"]["cell_m"])
+    for z in zones:
+        for blk in z.get("blocks", []):
+            assert 0.0 < float(blk["footprint"]) < cell_m * 0.25
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for fn in fns:
