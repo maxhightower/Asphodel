@@ -235,9 +235,15 @@ class World:
             })
         agents = {}
         for z, zone in self.promoted.items():
+            # Renderer-facing state must be JSON-serializable: convert the numpy
+            # position/state arrays to plain nested lists here so json.dumps(
+            # world.snapshot()) succeeds regardless of how many zones are
+            # promoted. (A binary protocol may later replace this, but the
+            # serialization contract -- snapshot() is always json.dumps-able --
+            # must hold.)
             agents[z] = {
-                "positions": zone.pos.copy(),
-                "state": zone.state.copy(),
+                "positions": zone.pos.tolist(),
+                "state": zone.state.tolist(),
                 "area_size": zone.L,
             }
         return {
@@ -278,9 +284,17 @@ class World:
     def _apply_budget(self, desired: set[int], frac: np.ndarray) -> set[int]:
         """Trim ``desired`` to the live-bubble caps, keeping the most important.
 
-        Player-focused zones are always kept (the camera is non-negotiable);
-        the remaining budget is filled by descending infectious fraction.  A
-        zone's agent cost is its current macro living count.
+        Player-focused zones are always kept (the camera is non-negotiable) and
+        may push the live agent count *over* ``max_live_agents`` -- that is an
+        intentional, design-required exception. Every *non-focused* automatic
+        promotion, however, is a hard cap: it is admitted only if it fits wholly
+        within the remaining budget. A single non-focused candidate that alone
+        exceeds ``max_live_agents`` is therefore never promoted, and once forced
+        focus zones have consumed the budget no automatic zone is added.
+
+        A zone's agent cost is its current macro living count. The remaining
+        budget after focus is filled by descending infectious fraction (the
+        zones where agent resolution matters most).
         """
         if self.max_live_zones is None and self.max_live_agents is None:
             return desired
@@ -297,8 +311,10 @@ class World:
             if self.max_live_zones is not None and len(kept) >= self.max_live_zones:
                 break
             cost = float(living[z])
+            # Hard non-focus cap: no escape hatch for the first candidate. If a
+            # single zone would blow the agent budget, it stays macro.
             if (self.max_live_agents is not None
-                    and agents + cost > self.max_live_agents and kept):
+                    and agents + cost > self.max_live_agents):
                 continue
             kept.append(z)
             agents += cost

@@ -64,6 +64,21 @@ class ZoneGraph:
         with np.errstate(invalid="ignore", divide="ignore"):
             self.mix = np.where(row_sums > 0, W / row_sums, 0.0)
 
+        # Population-weighted mixing for *social belief contagion*. Belief is a
+        # human phenomenon: an empty cell (water, a park, a rural edge -- common
+        # when zones come from real OSM geography) holds no people to believe or
+        # relay panic, so it must not launder belief between its populated
+        # neighbours as though it were a crowd. Weighting each neighbour j by its
+        # population zeroes an empty cell's contribution (weight ~ pop[j] = 0)
+        # and, symmetrically, makes an empty cell's own belief inert (no
+        # populated neighbour ever reads it). For a uniform-population grid this
+        # is identical to ``mix``, so abstract scenarios are unchanged; only
+        # heterogeneous/empty OSM grids differ. See test_empty_cell_belief.
+        Wp = W * self.populations[None, :]
+        pop_row_sums = Wp.sum(axis=1, keepdims=True)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            self.belief_mix = np.where(pop_row_sums > 0, Wp / pop_row_sums, 0.0)
+
     # ------------------------------------------------------------ topologies
     def _grid_weights(self) -> np.ndarray:
         """Uniform weights between 4-connected grid neighbours."""

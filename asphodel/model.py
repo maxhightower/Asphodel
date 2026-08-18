@@ -92,6 +92,10 @@ class Simulation:
         # still participate in social-contagion mixing -- whether an unpopulated
         # cell should relay panic at all is a deferred modelling question.
         self.N0_safe = np.where(self.N0 > 0, self.N0, 1.0)
+        # Populated mask: which zones hold any people at all. Empty zones (water,
+        # parks, rural edges in real OSM geography) carry no crowd to hold or
+        # relay belief, so their belief field is pinned inert at the floor.
+        self.populated = self.N0 > 0
         self.E = np.zeros(Z)
         self.Ia = np.zeros(Z)                          # infectious, not visible
         self.Is = np.zeros(Z)                          # visibly symptomatic
@@ -375,8 +379,12 @@ class Simulation:
         visible_frac = (self.Is + bp.obs_deaths_weight * self.D) / self.N0_safe
         obs = visible_frac / (visible_frac + bp.obs_half_saturation)
 
-        # Channel 2: social contagion -- mobility-weighted neighbour belief.
-        neighbor_belief = self.graph.mix @ self.belief
+        # Channel 2: social contagion -- mobility-AND-population-weighted
+        # neighbour belief. Population weighting means empty cells (zero-pop
+        # water/parks/rural edges) neither generate nor relay human belief:
+        # they carry no crowd to panic. On a uniform-population grid this is
+        # exactly the plain mobility mix, so classic scenarios are unchanged.
+        neighbor_belief = self.graph.belief_mix @ self.belief
 
         # Channel 3: official signal (global broadcast) -- the louder of the
         # authority's own signal and any active player broadcast.
@@ -397,6 +405,11 @@ class Simulation:
         step = rate * delta * self.dt
         step = np.clip(step, -bp.max_step, bp.max_step)   # propagation-speed cap
         self.belief = np.clip(self.belief + step, bp.floor, 1.0)
+        # Empty zones have no population to hold belief: pin them to the floor so
+        # they neither accumulate an independent panic value nor relay one (an
+        # empty cell must not act like a crowd). Populated dynamics are untouched.
+        if not self.populated.all():
+            self.belief = np.where(self.populated, self.belief, bp.floor)
 
     def _apply_events(self, outflow: np.ndarray) -> tuple[int, float]:
         ev = self.cfg.model.events
