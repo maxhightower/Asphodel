@@ -277,6 +277,23 @@ class StreetMap:
     def categories_present(self) -> set[str]:
         return {b.category for b in self.buildings}
 
+    def category_capacity(self) -> dict[str, float]:
+        """Total occupant capacity per building category (cached).
+
+        This is the city's real *building-stock composition*: a downtown thick
+        with offices has a large ``commercial`` capacity, an industrial port a
+        large ``industrial`` one. The citizen spawner weights occupation
+        prevalence by it, so different cities yield materially different
+        populations rather than one generic mix.
+        """
+        cache = getattr(self, "_cat_cap_cache", None)
+        if cache is None:
+            cache = {}
+            for b in self.buildings:
+                cache[b.category] = cache.get(b.category, 0.0) + float(b.capacity)
+            self._cat_cap_cache = cache
+        return cache
+
     def by_id(self) -> dict[int, Building]:
         return {b.id: b for b in self.buildings}
 

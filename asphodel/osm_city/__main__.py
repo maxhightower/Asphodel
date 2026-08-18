@@ -23,8 +23,8 @@ def main(argv=None) -> int:
     p.add_argument("--days", type=float, default=120.0)
     p.add_argument("--cache", default=None, help="OSM response cache directory")
     p.add_argument("--max-span-deg", type=float, default=0.5)
-    p.add_argument("--cities-dir", default="cities", help="Dir of city-profile YAMLs")
-    p.add_argument("--citizens-per-profile", type=int, default=15)
+    p.add_argument("--citizens", type=int, default=60,
+                   help="Number of spawnable citizens to bake from this city")
     p.add_argument("--no-citizens", action="store_true", help="Skip citizen baking")
     args = p.parse_args(argv)
 
@@ -36,6 +36,7 @@ def main(argv=None) -> int:
             query=args.city, bbox=bbox, buildings=buildings, roads=roads,
             out_dir=args.out, grid=args.grid, total_pop=args.total_pop,
             seed=args.seed, n_days=args.days,
+            bake_citizens=not args.no_citizens, n_citizens=args.citizens,
         )
     except OSMError as exc:
         print(f"error: {exc}", file=sys.stderr)
@@ -43,12 +44,8 @@ def main(argv=None) -> int:
 
     print(f"Wrote bundle to {args.out} "
           f"({len(buildings)} buildings, {len(roads)} roads)")
-
     if not args.no_citizens:
-        from .citizens import write_citizens
-        n = write_citizens(args.out, cities_dir=args.cities_dir,
-                           n_per_profile=args.citizens_per_profile, seed=args.seed)
-        print(f"Baked {n} citizens into {args.out}")
+        print(f"Baked {args.citizens} real-city citizens into {args.out}")
     return 0
 
 

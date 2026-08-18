@@ -26,7 +26,7 @@ def _densest_populated_zone(zones: list[dict]) -> int:
 
 def build_bundle(query, bbox, buildings, roads, out_dir, grid=16,
                  total_pop=500000.0, seed=0, n_days=120.0, dt=0.25,
-                 genome=None) -> None:
+                 genome=None, bake_citizens=True, n_citizens=60) -> None:
     genome = genome or PathogenGenome()
     south, west, north, east = bbox
     lat0, lon0 = (south + north) / 2.0, (west + east) / 2.0
@@ -75,3 +75,12 @@ def build_bundle(query, bbox, buildings, roads, out_dir, grid=16,
     }
     timeline = bnd.build_timeline(result.belief_history)
     bnd.write_bundle(out_dir, meta, t.zones, road_out, timeline)
+
+    # 6. Bake a spawnable citizen population from the SAME resolved city -- real
+    #    buildings, real streets, real population geography -- so the playable
+    #    citizens are materially derived from this city, not a generic profile.
+    if bake_citizens:
+        from .citizens import build_population_from_osm, _write
+        pop = build_population_from_osm(bbox, buildings, roads, city_name=query,
+                                        n=n_citizens, seed=seed)
+        _write(out_dir, pop)

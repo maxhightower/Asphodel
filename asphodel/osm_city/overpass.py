@@ -84,9 +84,17 @@ def _parse_levels(tags: dict) -> int:
 def parse_osm(data: dict):
     """Split Overpass elements into (buildings, roads).
 
-    buildings: [{"ring": [(lat,lon),...], "levels": int}]
+    buildings: [{"ring": [(lat,lon),...], "levels": int, "category": str}]
     roads:     [{"class": str, "points": [(lat,lon),...]}]
+
+    Each building's OSM tags are resolved to one of Asphodel's building
+    categories (residential / commercial / medical / ...), so downstream
+    citizen generation can populate the *actual* city's building stock rather
+    than an abstract profile. The category is kept as a short string (not the
+    raw tag dict) to keep the parsed payload small and deterministic.
     """
+    from ..world import category_from_osm_tags, RESIDENTIAL
+
     buildings, roads = [], []
     for el in data.get("elements", []):
         if el.get("type") != "way":
@@ -97,7 +105,11 @@ def parse_osm(data: dict):
         pts = [(g["lat"], g["lon"]) for g in geom]
         tags = el.get("tags", {})
         if "building" in tags:
-            buildings.append({"ring": pts, "levels": _parse_levels(tags)})
+            buildings.append({
+                "ring": pts,
+                "levels": _parse_levels(tags),
+                "category": category_from_osm_tags(tags) or RESIDENTIAL,
+            })
         elif "highway" in tags:
             roads.append({"class": tags["highway"], "points": pts})
     return buildings, roads

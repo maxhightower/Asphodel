@@ -640,8 +640,27 @@ def spawn_citizen_in_world(world: CityWorld, catalog: CitizenSpawnCatalog,
     band = _pick_age(rng, catalog, city)
     age = int(rng.integers(band.min_age, band.max_age + 1))
 
-    # Reachability is gated by building categories present in the actual map.
+    # Reachability is gated by building categories present in the actual map,
+    # and occupation prevalence is weighted by the city's real building-stock
+    # composition (a category with more workplace capacity draws more workers).
+    # This is what makes an industrial port spawn dockers and a downtown spawn
+    # office workers -- the population is materially the selected city's, not a
+    # generic mix. Home-anchored roles scale with the housing (residential) stock.
     present = sm.categories_present() | {HOME, ""}
+    cap = sm.category_capacity()
+    # Normalise abundance among *workplace* categories only, so weighting the
+    # mix by the city's building stock does not distort the overall home-vs-work
+    # balance (home-anchored roles stay neutral at 1.0). Among the jobs, a
+    # category the city has a lot of draws proportionally more workers.
+    wp_caps = [v for k, v in cap.items() if k not in ("residential",)]
+    max_wp = max(wp_caps) if wp_caps else 1.0
+
+    def _abundance(workplace: str) -> float:
+        if workplace in (HOME, ""):
+            return 1.0                                # home-anchored: neutral
+        share = cap.get(workplace, 0.0) / max_wp if max_wp > 0 else 0.0
+        return 0.25 + share                           # in [0.25, 1.25]
+
     occs, weights = [], []
     occ_mult = city.occupation_weight_multipliers
     for o in catalog.occupations:
@@ -650,7 +669,8 @@ def spawn_citizen_in_world(world: CityWorld, catalog: CitizenSpawnCatalog,
         if o.workplace not in present:
             continue
         occs.append(o)
-        weights.append(o.base_weight * occ_mult.get(o.name, 1.0))
+        weights.append(o.base_weight * occ_mult.get(o.name, 1.0)
+                       * _abundance(o.workplace))
     occ = (_weighted_choice(rng, occs, weights, temp) if occs
            else Occupation(name="resident", min_age=0, max_age=120,
                            workplace=HOME, shift="none"))
