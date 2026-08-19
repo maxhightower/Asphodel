@@ -25,10 +25,19 @@ def _write_json(path: str, obj) -> None:
         f.write("\n")
 
 
-def write_bundle(out_dir: str, meta: dict, zones: list, roads: dict, timeline: dict) -> None:
-    """Write the four bundle files into `out_dir` (created if absent)."""
+def write_bundle(out_dir: str, meta: dict, zones: list, roads: dict, timeline: dict,
+                 mobility: dict | None = None) -> None:
+    """Write the bundle files into `out_dir` (created if absent).
+
+    The four core files (meta/zones/roads/timeline) are always written. When a
+    ``mobility`` payload is given (the road-derived zone-mobility graph used for
+    the simulation), it is persisted as ``mobility.json`` so the real-city run is
+    reproducible without re-deriving from OSM.
+    """
     os.makedirs(out_dir, exist_ok=True)
     _write_json(os.path.join(out_dir, "meta.json"), meta)
     _write_json(os.path.join(out_dir, "zones.json"), zones)
     _write_json(os.path.join(out_dir, "roads.json"), roads)
     _write_json(os.path.join(out_dir, "timeline.json"), timeline)
+    if mobility is not None:
+        _write_json(os.path.join(out_dir, "mobility.json"), mobility)

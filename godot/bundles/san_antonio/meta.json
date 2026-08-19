@@ -23,6 +23,12 @@
     "cols": 14,
     "rows": 16
   },
+  "mobility": {
+    "connected_components": 24,
+    "local_floor": 0.1,
+    "n_edges": 320,
+    "source": "roads"
+  },
   "n_days": 90.0,
   "n_ticks": 360,
   "name": "San Antonio, Texas",

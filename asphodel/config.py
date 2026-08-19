@@ -80,6 +80,16 @@ class GraphParams:
     # is how the OSM pipeline feeds real building-density populations.
     population: Optional[list] = None
 
+    # -- explicit weighted mobility graph -----------------------------------
+    # An optional sparse, undirected edge list [[a, b, weight], ...] over zone
+    # indices. When set it REPLACES the topology-derived adjacency: the disease
+    # and belief fields ride exactly these weighted edges. This is the generic
+    # seam the OSM pipeline uses to feed a *road-derived* zone-mobility graph
+    # (a real city's transport skeleton) into the engine -- the engine consumes
+    # generic non-negative weights and knows nothing about OSM. None => use the
+    # grid/small-world/commute topology below (full backward compatibility).
+    mobility_edges: Optional[list] = None
+
     # -- topology -----------------------------------------------------------
     topology: str = "grid"             # "grid" | "small_world" | "commute"
     rewire_prob: float = 0.1           # small_world: P(rewire each grid edge to

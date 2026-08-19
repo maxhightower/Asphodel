@@ -105,6 +105,11 @@ func _test_bundle_validation() -> void:
 	b["timeline"].erase("data")
 	_check(BundleLoader.validate(b) != "", "timeline without data is rejected")
 
+	# The persisted road-mobility graph (optional) loads and is well-formed.
+	var mob := BundleLoader.load_mobility("res://bundles/houston")
+	_check(mob.has("edges") and mob["edges"] is Array and mob["edges"].size() > 0,
+		"houston bundle persists a non-empty road-mobility edge list")
+
 
 func _test_game_clock() -> void:
 	print("- GameClock")

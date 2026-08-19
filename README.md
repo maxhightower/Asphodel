@@ -546,7 +546,12 @@ population + major roads + a precomputed belief-cascade timeline — that the
 Godot frontend (in [`godot/`](godot/)) renders as a low-poly "block city" whose
 zones tint toward panic on playback. The city is divided into a square grid of
 zones; each cell's population comes from the real OSM building density inside
-it, and the existing belief-cascade sim runs on that geography unchanged.
+it. The belief-cascade sim then runs on that geography **over a road-derived
+zone-mobility graph**: two zones exchange infection/belief in proportion to the
+real roads that cross between them (a `mobility.json` edge list persisted in the
+bundle), not by mere grid adjacency — so a city's highways, rivers and
+chokepoints shape the outbreak. Cities with no roads fall back to grid mobility.
+See [`FINDINGS_ROAD_MOBILITY.md`](FINDINGS_ROAD_MOBILITY.md).
 
 ```bash
 # Geocode a city, fetch OSM, run the sim, write a bundle
@@ -557,8 +562,9 @@ python -m asphodel.osm_city "Boston" --out output/boston --grid 20 --total-pop 6
 ```
 
 The pipeline is hybrid by design: Godot invokes this module as a subprocess and
-then loads the bundle it writes. The bundle is four JSON files — `meta.json`,
-`zones.json`, `roads.json`, `timeline.json` — fully specified in
+then loads the bundle it writes. The bundle is JSON files — `meta.json`,
+`zones.json`, `roads.json`, `timeline.json`, `mobility.json` (the road-derived
+zone graph), and `citizens.json` — fully specified in
 [`docs/superpowers/specs/2026-06-01-osm-city-scene-design.md`](docs/superpowers/specs/2026-06-01-osm-city-scene-design.md).
 Network responses are cached by bbox (`--cache`), so re-runs are offline and
 every bundle is byte-deterministic from `(city, grid, total-pop, seed)`.
@@ -569,8 +575,11 @@ asphodel/osm_city/
   overpass.py     # bbox -> major roads + building footprints (Overpass), cached
   tessellate.py   # bbox -> square grid; building footprint area -> per-zone population
   geometry.py     # equirectangular projection, polygon area, block/road layout
-  bundle.py       # deterministic meta/zones/roads/timeline JSON writer
-  pipeline.py     # build_bundle: tessellate -> run sim -> blocks/roads -> write
+  mobility.py     # roads -> generic weighted zone-mobility graph (edge list)
+  world_from_osm.py # roads+buildings -> canonical StreetMap for citizen spawn
+  citizens.py     # bake a real-city spawnable citizen population
+  bundle.py       # deterministic meta/zones/roads/timeline/mobility JSON writer
+  pipeline.py     # build_bundle: tessellate -> roads -> mobility -> sim -> write
   __main__.py     # the CLI
 ```
 

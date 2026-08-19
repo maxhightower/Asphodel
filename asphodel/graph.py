@@ -48,15 +48,23 @@ class ZoneGraph:
         else:
             self.populations = np.full(self.n_zones, params.population_per_zone, dtype=float)
 
-        topo = getattr(params, "topology", "grid")
-        if topo == "grid":
-            W = self._grid_weights()
-        elif topo == "small_world":
-            W = self._small_world_weights(params.rewire_prob)
-        elif topo == "commute":
-            W = self._commute_weights(params.n_hubs, params.hub_pop_multiplier)
+        edges = getattr(params, "mobility_edges", None)
+        if edges is not None:
+            # Explicit weighted mobility graph (e.g. road-derived) replaces the
+            # topology. Grid geometry (rows/cols) is still kept for reporting.
+            W = self._explicit_weights(edges)
+            self.topology_kind = "explicit"
         else:
-            raise ValueError(f"unknown topology {topo!r}")
+            topo = getattr(params, "topology", "grid")
+            if topo == "grid":
+                W = self._grid_weights()
+            elif topo == "small_world":
+                W = self._small_world_weights(params.rewire_prob)
+            elif topo == "commute":
+                W = self._commute_weights(params.n_hubs, params.hub_pop_multiplier)
+            else:
+                raise ValueError(f"unknown topology {topo!r}")
+            self.topology_kind = topo
         self.weights = W
 
         # Row-normalised mixing matrix (rows with no neighbours stay all-zero).
@@ -80,6 +88,26 @@ class ZoneGraph:
             self.belief_mix = np.where(pop_row_sums > 0, Wp / pop_row_sums, 0.0)
 
     # ------------------------------------------------------------ topologies
+    def _explicit_weights(self, edges) -> np.ndarray:
+        """Build a symmetric weight matrix from a sparse [[a, b, w], ...] list.
+
+        Undirected: each edge sets W[a,b] = W[b,a] = max(existing, w) so repeated
+        or reciprocal entries aggregate to the stronger weight (the derivation
+        already sums parallel roads into one weight per pair). Self-edges and
+        out-of-range indices are ignored; negative weights are rejected.
+        """
+        Z = self.n_zones
+        W = np.zeros((Z, Z), dtype=float)
+        for e in edges:
+            a, b, w = int(e[0]), int(e[1]), float(e[2])
+            if a == b or not (0 <= a < Z and 0 <= b < Z):
+                continue
+            if w < 0.0:
+                raise ValueError(f"mobility edge weight must be >= 0, got {w}")
+            W[a, b] = max(W[a, b], w)
+            W[b, a] = max(W[b, a], w)
+        return W
+
     def _grid_weights(self) -> np.ndarray:
         """Uniform weights between 4-connected grid neighbours."""
         W = np.zeros((self.n_zones, self.n_zones), dtype=float)

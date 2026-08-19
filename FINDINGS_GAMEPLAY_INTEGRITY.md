@@ -48,7 +48,12 @@ the citizen, their coordinates, the geometry, the clock and the outbreak.
   bridge lands later, GameClock becomes a client of `World.snapshot()` without
   changing the scene contract.
 
-## P2 — documented causal disconnect (not fully closed this milestone)
+## P2 — the road-topology causal disconnect (CLOSED in the follow-up milestone)
+
+> **Update:** this disconnect is now closed. The epidemic rides a road-derived
+> zone-mobility graph persisted in the bundle (`mobility.json`); see
+> [`FINDINGS_ROAD_MOBILITY.md`](FINDINGS_ROAD_MOBILITY.md). The original
+> writeup is kept below for context.
 
 **Road topology is visually real but the epidemic runs on a square grid.** The
 OSM pipeline runs the belief cascade on the tessellated grid (`ZoneGraph`, grid

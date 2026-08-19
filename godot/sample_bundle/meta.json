@@ -23,6 +23,12 @@
     "cols": 8,
     "rows": 7
   },
+  "mobility": {
+    "connected_components": 9,
+    "local_floor": 0.1,
+    "n_edges": 75,
+    "source": "roads"
+  },
   "n_days": 80.0,
   "n_ticks": 320,
   "name": "Sampleton",

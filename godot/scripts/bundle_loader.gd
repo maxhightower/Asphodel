@@ -80,6 +80,21 @@ static func validate(bundle: Dictionary) -> String:
 	return ""
 
 
+static func load_mobility(dir_path: String) -> Dictionary:
+	## The road-derived zone-mobility graph the Python sim used (optional; older
+	## bundles omit it). The renderer plays the baked timeline and does not infer
+	## its own graph, so this is exposed for tooling/inspection, not simulation.
+	## Returns {} if absent or malformed.
+	var path := dir_path.path_join("mobility.json")
+	if not FileAccess.file_exists(path):
+		return {}
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if not (parsed is Dictionary) or not (parsed.get("edges") is Array):
+		push_error("mobility.json malformed: %s" % path)
+		return {}
+	return parsed
+
+
 static func load_citizens(dir_path: String) -> Array:
 	## Returns the bundle's citizen list, or [] if absent/invalid. Each entry is
 	## validated to carry the fields the character screen + spawn depend on.

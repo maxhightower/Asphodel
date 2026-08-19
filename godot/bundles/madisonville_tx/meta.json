@@ -23,6 +23,12 @@
     "cols": 10,
     "rows": 10
   },
+  "mobility": {
+    "connected_components": 16,
+    "local_floor": 0.1,
+    "n_edges": 141,
+    "source": "roads"
+  },
   "n_days": 60.0,
   "n_ticks": 240,
   "name": "Madisonville, Texas",
