@@ -20,6 +20,10 @@ signal paused_changed(is_paused: bool)
 const REAL_SECONDS_PER_DAY := 3600.0
 const HOURS_PER_DAY := 24.0
 
+# Multiplier on how fast in-game time flows vs wall-clock (1.0 = the default
+# PZ pacing). Raise it to fast-forward (used by the headless smoke test to make
+# outbreak progression observable within a few real frames).
+var time_scale: float = 1.0
 var configured: bool = false
 var game_day: int = 1
 var hour: float = 8.0                      # in-game hour [0, 24)
@@ -66,8 +70,11 @@ func set_paused(p: bool) -> void:
 		return
 	_is_paused = p
 	# The single pause authority: freezes player physics AND this clock (hence
-	# the outbreak/timeline), since both are PAUSABLE nodes.
-	get_tree().paused = p
+	# the outbreak/timeline), since both are PAUSABLE nodes. Guard get_tree() so
+	# this is safe to call before the node is in the scene tree.
+	var tree := get_tree()
+	if tree != null:
+		tree.paused = p
 	paused_changed.emit(p)
 
 
@@ -84,7 +91,7 @@ func _process(delta: float) -> void:
 	if not configured:
 		return
 	var real_seconds_per_hour := REAL_SECONDS_PER_DAY / HOURS_PER_DAY
-	var d_hours := delta / real_seconds_per_hour
+	var d_hours := (delta * time_scale) / real_seconds_per_hour
 	_advance(d_hours)
 
 

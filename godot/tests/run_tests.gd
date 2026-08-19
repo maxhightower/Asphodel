@@ -1,14 +1,15 @@
-extends SceneTree
+extends Node
 
 ## Headless Godot test harness for the gameplay-integrity contracts.
 ##
-## Run with:
-##     godot --headless --path godot --script res://tests/run_tests.gd
+## Run as a SCENE (so the Session/GameClock autoloads are loaded — `--script`
+## mode does not register autoloads):
+##     godot --headless --path godot res://tests/TestRunner.tscn
 ##
-## Exits with code 0 if all checks pass, 1 otherwise. Covers the parts that are
+## Quits with code 0 if all checks pass, 1 otherwise. Covers the parts that are
 ## deterministic without a rendering/physics frame: bundle validation and the
 ## GameClock time/outbreak/pause logic. The full first-person spawn/collision
-## smoke test (test_street_scene.gd) needs a running SceneTree with physics and
+## smoke test (test_street_scene.gd / StreetSmoke.tscn) needs physics frames and
 ## is launched separately (see tests/README.md).
 
 var _failures: int = 0
@@ -27,12 +28,44 @@ func _check(cond: bool, msg: String) -> void:
 		_fail(msg)
 
 
-func _initialize() -> void:
+func _ready() -> void:
 	print("== gameplay-integrity headless checks ==")
 	_test_bundle_validation()
 	_test_game_clock()
+	await _test_menu_flow_scenes_boot()
 	print("== done: %d failure(s) ==" % _failures)
-	quit(1 if _failures > 0 else 0)
+	get_tree().quit(1 if _failures > 0 else 0)
+
+
+func _test_menu_flow_scenes_boot() -> void:
+	# The pre-StreetScene half of the flow (StreetScene itself is covered by the
+	# StreetSmoke runtime test): every scene must instance and build its UI in
+	# _ready without a script error, and the CitySelect -> CharacterScreen data
+	# handoff (Session.bundle_dir + Session.citizen) must survive.
+	print("- menu flow scenes boot")
+	for scene_path in ["res://MainMenu.tscn", "res://CitySelect.tscn",
+			"res://Settings.tscn"]:
+		var inst: Node = load(scene_path).instantiate()
+		add_child(inst)
+		await get_tree().process_frame
+		_check(inst.get_child_count() > 0, "%s builds its UI on _ready" % scene_path)
+		inst.queue_free()
+		await get_tree().process_frame
+
+	# CitySelect's load step: choose a bundled city, pick a citizen (as _on_load).
+	var pool := BundleLoader.load_citizens("res://bundles/houston")
+	_check(pool.size() > 0, "CitySelect can load a bundled city's citizens")
+	if not pool.is_empty():
+		Session.bundle_dir = "res://bundles/houston"
+		Session.citizen = pool[0]
+		var cs: Node = load("res://CharacterScreen.tscn").instantiate()
+		add_child(cs)
+		await get_tree().process_frame
+		_check(cs.get_child_count() > 0, "CharacterScreen renders the selected citizen")
+		_check(Session.citizen.has("spawn_xy"),
+			"selected citizen carries an authoritative spawn_xy into the flow")
+		cs.queue_free()
+		await get_tree().process_frame
 
 
 # --------------------------------------------------------------------------- #
@@ -75,35 +108,26 @@ func _test_bundle_validation() -> void:
 
 func _test_game_clock() -> void:
 	print("- GameClock")
-	var gc = load("res://scripts/game_clock.gd").new()
-	get_root().add_child(gc)
 	var bundle := _good_bundle()
-	gc.configure(bundle["meta"], bundle["timeline"], 8.0)
+	GameClock.reset()
+	GameClock.configure(bundle["meta"], bundle["timeline"], 8.0)
 
-	_check(gc.configured, "clock configures from a bundle")
-	_check(abs(gc.hour - 8.0) < 1e-6, "starts at the citizen's spawn hour")
-	_check(gc.outbreak_belief() >= 0.0, "reports an initial outbreak value")
+	_check(GameClock.configured, "clock configures from a bundle")
+	_check(abs(GameClock.hour - 8.0) < 1e-6, "starts at the citizen's spawn hour")
+	_check(GameClock.outbreak_belief() >= 0.0, "reports an initial outbreak value")
 
 	# Advancing in-game hours rolls the clock and the sim tick forward.
-	var before := gc.outbreak_belief()
-	gc._advance(24.0)                         # a full in-game day
-	_check(gc.game_day == 2, "a full day rolls the day counter")
-	_check(gc.sim_tick > 0, "sim tick advances with time")
-	_check(gc.outbreak_belief() >= before, "outbreak progresses as time passes")
+	var before: float = GameClock.outbreak_belief()
+	GameClock._advance(24.0)                    # a full in-game day
+	_check(GameClock.game_day == 2, "a full day rolls the day counter")
+	_check(GameClock.sim_tick > 0, "sim tick advances with time")
+	_check(GameClock.outbreak_belief() >= before, "outbreak progresses as time passes")
 
-	# Pause is authoritative: it stops the tree, and _process is a no-op while
-	# paused (PROCESS_MODE_PAUSABLE). We assert the state contract here.
-	gc.set_paused(true)
-	_check(gc.is_paused(), "set_paused(true) records the paused state")
-	_check(get_root().get_tree().paused, "pause freezes the whole tree (authoritative)")
-	var frozen_tick := gc.sim_tick
-	gc._process(1000.0)                        # PAUSABLE: the real loop wouldn't call this
-	# _process has no internal pause guard (the tree gates it), so we assert the
-	# tree-level contract: paused == true means the loop won't tick it.
-	_check(get_root().get_tree().paused, "still paused")
-
-	gc.set_paused(false)
-	_check(not get_root().get_tree().paused, "resume unfreezes the tree")
-	gc.reset()
-	_check(not gc.configured, "reset clears configuration")
-	gc.queue_free()
+	# Pause is authoritative: set_paused flips SceneTree.paused.
+	GameClock.set_paused(true)
+	_check(GameClock.is_paused(), "set_paused(true) records the paused state")
+	_check(get_tree().paused, "pause freezes the whole tree (authoritative)")
+	GameClock.set_paused(false)
+	_check(not get_tree().paused, "resume unfreezes the tree")
+	GameClock.reset()
+	_check(not GameClock.configured, "reset clears configuration")

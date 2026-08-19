@@ -1,12 +1,12 @@
-extends SceneTree
+extends Node
 
 ## Runtime smoke test for the first-person spawn + pause + outbreak contract.
-## Needs a running SceneTree WITH physics (a real frame loop), so unlike
-## run_tests.gd it is launched on its own:
+## Needs a running SceneTree WITH physics + the autoloads, so it runs as a SCENE
+## (not --script):
 ##
-##     godot --headless --path godot --script res://tests/test_street_scene.gd
+##     godot --headless --path godot res://tests/StreetSmoke.tscn
 ##
-## It drives the actual MainMenu -> ... -> StreetScene flow's end state by
+## It drives the actual end state of the MainMenu -> ... -> StreetScene flow by
 ## loading a bundle, selecting a citizen, instancing StreetScene, letting a few
 ## physics frames run, then asserting the gameplay-integrity invariants:
 ##   * the selected bundle + citizen survive into the scene,
@@ -15,7 +15,7 @@ extends SceneTree
 ##   * pause stops the clock/outbreak; resume lets it advance again,
 ##   * walking off the world recovers the player (no infinite fall).
 ##
-## Exit code 0 = pass, 1 = fail.
+## Quits with code 0 = pass, 1 = fail.
 
 var _failures := 0
 const BUNDLE := "res://bundles/madisonville_tx"
@@ -29,9 +29,8 @@ func _check(cond: bool, msg: String) -> void:
 		print("  FAIL: %s" % msg)
 
 
-func _initialize() -> void:
-	root.call_deferred("set", "name", "root")
-	_run.call_deferred()
+func _ready() -> void:
+	_run()
 
 
 func _run() -> void:
@@ -47,14 +46,14 @@ func _run() -> void:
 
 	# 2. Instance StreetScene (what Continue does).
 	var scene: Node = load("res://StreetScene.tscn").instantiate()
-	root.add_child(scene)
+	add_child(scene)
 
-	# Let a handful of physics frames run so the player settles on the ground.
-	for i in range(20):
-		await process_frame
-	await create_timer(0.2).timeout
+	# Let physics frames run so the player settles on the ground.
+	for i in range(30):
+		await get_tree().physics_frame
+	await get_tree().create_timer(0.2).timeout
 
-	var player: Node = _find_player(scene)
+	var player: CharacterBody3D = _find_player(scene)
 	_check(player != null, "a first-person player was spawned")
 	if player == null:
 		return _finish()
@@ -70,35 +69,51 @@ func _run() -> void:
 	_check(player.position.y > -5.0 and player.position.y < 10.0,
 		"player rests on/near ground (y=%.2f)" % player.position.y)
 
-	# 5. Outbreak advances while unpaused.
+	# 5. Outbreak advances while unpaused. Fast-forward so a real tick change is
+	#    observable within a few frames (proves the clock genuinely drives the
+	#    baked timeline, not just that the hour float wiggles).
+	GameClock.time_scale = 4000.0
+	var h0: float = GameClock.hour
 	var t0: int = GameClock.sim_tick
-	await create_timer(0.3).timeout
-	var t1: int = GameClock.sim_tick
-	_check(t1 >= t0, "outbreak/clock advances while unpaused")
+	var ob0: float = GameClock.outbreak_belief()
+	await get_tree().create_timer(0.5).timeout
+	_check(GameClock.hour != h0, "clock hour advances while unpaused")
+	_check(GameClock.sim_tick > t0, "outbreak sim tick advances while unpaused (%d -> %d)"
+		% [t0, GameClock.sim_tick])
+	_check(GameClock.outbreak_belief() >= ob0, "outbreak intensity progresses while unpaused")
 
 	# 6. Pause freezes the clock; resume lets it advance again.
 	GameClock.set_paused(true)
+	_check(get_tree().paused, "pause freezes the tree")
+	var hp: float = GameClock.hour
 	var tp: int = GameClock.sim_tick
-	await create_timer(0.3).timeout
-	_check(GameClock.sim_tick == tp, "clock/outbreak frozen while paused")
+	await get_tree().create_timer(0.4).timeout
+	_check(GameClock.hour == hp, "clock hour frozen while paused")
+	_check(GameClock.sim_tick == tp, "outbreak sim tick frozen while paused")
+	# Player physics also frozen: a still player doesn't move while paused.
+	var py := player.position.y
+	await get_tree().create_timer(0.2).timeout
+	_check(abs(player.position.y - py) < 0.001, "player physics frozen while paused")
 	GameClock.set_paused(false)
-	await create_timer(0.3).timeout
-	_check(GameClock.sim_tick >= tp, "clock resumes after unpause")
+	_check(not get_tree().paused, "resume unfreezes the tree")
+	await get_tree().create_timer(0.3).timeout
+	_check(GameClock.sim_tick > tp, "outbreak sim tick resumes after unpause")
+	GameClock.time_scale = 1.0
 
 	# 7. Out-of-bounds recovery.
 	player.position.y = -100.0
-	for i in range(10):
-		await process_frame
+	for i in range(20):
+		await get_tree().physics_frame
 	_check(player.position.y > -50.0, "player recovered from out-of-bounds fall")
 
 	_finish()
 
 
-func _find_player(node: Node) -> Node:
+func _find_player(node: Node) -> CharacterBody3D:
 	if node is CharacterBody3D:
 		return node
 	for child in node.get_children():
-		var f := _find_player(child)
+		var f: CharacterBody3D = _find_player(child)
 		if f != null:
 			return f
 	return null
@@ -106,4 +121,4 @@ func _find_player(node: Node) -> Node:
 
 func _finish() -> void:
 	print("== done: %d failure(s) ==" % _failures)
-	quit(1 if _failures > 0 else 0)
+	get_tree().quit(1 if _failures > 0 else 0)
