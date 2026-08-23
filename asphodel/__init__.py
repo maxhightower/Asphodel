@@ -43,6 +43,8 @@ from .roster import Roster, RosterRecord
 # --- Phase 11 / M5: deterministic save/load ---------------------------------
 from . import save as save_module
 from .save import save_world, load_world, load_world_file, world_state, SaveError, SAVE_VERSION
+# --- BW1: real-bundle citizen ingestion -------------------------------------
+from .bundle_population import load_bundle_population, zone_of_xy, reconstruct_schedule
 
 # --- Citizen spawn: the possibility space a player can be dropped into ------
 from .citizen import (

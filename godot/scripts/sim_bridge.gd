@@ -183,3 +183,6 @@ func _read_reply() -> Dictionary:
 					return {"ok": false, "error": {"code": "bad_reply", "message": text}}
 		else:
 			OS.delay_msec(1)
+	# Unreachable (the loop only exits via return), but GDScript's static analyser
+	# requires every code path to return a Dictionary.
+	return {"ok": false, "error": {"code": "unreachable", "message": ""}}

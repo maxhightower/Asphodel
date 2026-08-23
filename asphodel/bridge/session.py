@@ -99,13 +99,41 @@ class WorldSession:
         max_live_agents = _opt_int(msg.get("max_live_agents"), "max_live_agents")
         micro = _micro_from(msg.get("micro"))
         focus = msg.get("focus")
-        player_citizen = _opt_int(msg.get("player_citizen"), "player_citizen")
+        # Accept both `player_citizen` and the client's `player_citizen_id`.
+        player_citizen = _opt_int(
+            msg.get("player_citizen", msg.get("player_citizen_id")), "player_citizen")
+        # Real bundles populate World with their own citizens by default; pass
+        # citizens:false for a bare epidemiological world (e.g. protocol tests).
+        want_citizens = msg.get("citizens", True)
 
         world = world_from_bundle(
             bundle, seed=seed, micro_params=micro,
             max_live_zones=max_live_zones, max_live_agents=max_live_agents)
+
+        n_citizens = 0
+        player_home_zone = None
+        if want_citizens:
+            from ..bundle_population import load_bundle_population
+            from .worldfactory import resolve_bundle_dir
+            population = load_bundle_population(resolve_bundle_dir(bundle))
+            world.set_citizens(population)
+            n_citizens = len(population)
+            if player_citizen is not None:
+                for c in population:
+                    if c.citizen_id == player_citizen:
+                        player_home_zone = c.home_zone
+                        break
+                if player_home_zone is None:
+                    raise _BadArg(
+                        f"player_citizen {player_citizen} not in bundle population "
+                        f"(0..{n_citizens - 1})")
+
+        # Focus: explicit request wins; otherwise the player's home zone so their
+        # neighbourhood resolves to agents on entry.
         if focus is not None:
             world.set_focus(_zone_list(focus))
+        elif player_home_zone is not None:
+            world.set_focus([player_home_zone])
 
         self.world = world
         self.paused = False
@@ -116,6 +144,8 @@ class WorldSession:
                           bundle=bundle_summary(bundle),
                           seed=self.seed,
                           player_citizen=player_citizen,
+                          player_home_zone=player_home_zone,
+                          n_citizens=n_citizens,
                           **self._summary())
 
     def _cmd_set_focus(self, msg, rid) -> dict:

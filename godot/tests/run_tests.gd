@@ -115,7 +115,7 @@ func _test_bundle_validation() -> void:
 # calls on a bound bridge, returning a monotonically rising authoritative belief.
 # This lets the engine-only test certify the M1 contract (the clock reads outbreak
 # truth from the live World over the bridge) without a running Python process.
-class MockBridge:
+class MockBridge extends Node:
 	var calls := 0
 	var last_delta := 0
 	func is_connected_to_sim() -> bool:
@@ -168,3 +168,5 @@ func _test_game_clock() -> void:
 	_check(not get_tree().paused, "resume unfreezes the tree")
 	GameClock.reset()
 	_check(not GameClock.configured, "reset clears configuration")
+	GameClock.bind_bridge(null)                 # unbind before freeing the mock
+	mock.free()                                 # avoid an ObjectDB leak at exit
