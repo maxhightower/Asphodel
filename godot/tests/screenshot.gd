@@ -10,6 +10,7 @@ extends Node
 var _bundle := "houston"
 var _out := "/tmp/asph_shot.png"
 var _overhead := false
+var _street := false
 
 
 func _ready() -> void:
@@ -21,6 +22,8 @@ func _ready() -> void:
 			_out = args[i + 1]
 		elif args[i] == "--overhead":
 			_overhead = true
+		elif args[i] == "--street":
+			_street = true
 	_run()
 
 
@@ -65,7 +68,10 @@ func _run() -> void:
 	if rc != null:
 		print("RENDER instances=%d focus_zone=%d" % [rc.last_instance_count, fz])
 
-	if _overhead:
+	if _street:
+		_add_street_camera(scene)
+		await get_tree().create_timer(0.3).timeout
+	elif _overhead:
 		_add_overhead_camera(scene)
 		await get_tree().create_timer(0.3).timeout
 
@@ -79,6 +85,51 @@ func _run() -> void:
 		_out, err, img.get_width(), img.get_height(),
 		str(SimBridge.is_connected_to_sim())])
 	get_tree().quit(0 if err == OK else 1)
+
+
+func _add_street_camera(scene: Node) -> void:
+	## Place the camera low, ON a road near the player's zone, looking ALONG it —
+	## so the extruded roadway, curbs/sidewalks, flanking buildings and the traffic
+	## all read up close.
+	var fz := int(scene.get("_current_focus_zone"))
+	var centre: Vector3 = scene._zone_center(fz) if fz >= 0 else Vector3.ZERO
+	var bundle := BundleLoader.load_bundle("res://bundles/" + _bundle)
+	var polylines: Array = bundle.get("roads", {}).get("polylines", [])
+	# Pick the road segment (prefer wide surface roads) whose midpoint is nearest
+	# the zone centre and which is long enough to look down.
+	var best_a := Vector2.ZERO
+	var best_b := Vector2.ZERO
+	var best_d := INF
+	var found := false
+	for pl in polylines:
+		var cls := String(pl.get("class", ""))
+		if cls == "motorway":
+			continue                                   # elevated; use a surface road
+		var pts: Array = pl.get("points", [])
+		for k in range(pts.size() - 1):
+			var a := Vector2(float(pts[k][0]), float(pts[k][1]))
+			var b := Vector2(float(pts[k + 1][0]), float(pts[k + 1][1]))
+			if a.distance_to(b) < 40.0:
+				continue
+			var mid := (a + b) * 0.5
+			var d := mid.distance_to(Vector2(centre.x, centre.z))
+			if d < best_d:
+				best_d = d; best_a = a; best_b = b; found = true
+	var cam := Camera3D.new()
+	cam.fov = 68.0
+	cam.far = 20000.0
+	if found:
+		var dir := (best_b - best_a).normalized()
+		var eye := best_a - dir * 12.0                 # a little behind the segment start
+		cam.position = Vector3(eye.x, 6.0, eye.y)
+		cam.current = true
+		add_child(cam)
+		var look := best_b
+		cam.look_at(Vector3(look.x, 1.5, look.y), Vector3.UP)
+	else:
+		cam.position = centre + Vector3(0, 6, 0)
+		cam.current = true
+		add_child(cam)
 
 
 func _add_overhead_camera(scene: Node) -> void:
