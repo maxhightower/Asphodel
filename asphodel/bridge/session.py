@@ -145,6 +145,7 @@ class WorldSession:
                           seed=self.seed,
                           player_citizen=player_citizen,
                           player_home_zone=player_home_zone,
+                          seed_zone=int(world.cfg.seed_zone),
                           n_citizens=n_citizens,
                           **self._summary())
 
@@ -185,6 +186,16 @@ class WorldSession:
             raise _BadArg(str(e))
         return P.response(Command.INTERVENE, id=rid, action=action,
                           zones=(sorted(zsel) if zsel is not None else None))
+
+    def _cmd_interact_with(self, msg, rid) -> dict:
+        self._require_world(Command.INTERACT_WITH)
+        cid = msg.get("citizen_id")
+        if not isinstance(cid, int) or isinstance(cid, bool):
+            raise _BadArg("INTERACT_WITH requires an integer 'citizen_id'")
+        added = self.world.interact_with(cid)
+        return P.response(Command.INTERACT_WITH, id=rid, citizen_id=cid,
+                          added=bool(added),
+                          in_roster=self.world.roster.contains(cid))
 
     def _cmd_pause(self, msg, rid) -> dict:
         self._require_world(Command.PAUSE)

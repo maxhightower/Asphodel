@@ -32,9 +32,62 @@ func _ready() -> void:
 	print("== gameplay-integrity headless checks ==")
 	_test_bundle_validation()
 	_test_game_clock()
+	_test_zone_map()
+	_test_citizen_render()
 	await _test_menu_flow_scenes_boot()
 	print("== done: %d failure(s) ==" % _failures)
 	get_tree().quit(1 if _failures > 0 else 0)
+
+
+func _test_zone_map() -> void:
+	# ZoneMap resolves a position to the nearest zone centre (ties -> lowest id),
+	# matching Python's asphodel.bundle_population.zone_of_xy.
+	print("- ZoneMap")
+	var zmap := ZoneMap.new()
+	zmap.load_from_zones([
+		{"id": 0, "center_xy": [0.0, 0.0]},
+		{"id": 1, "center_xy": [100.0, 0.0]},
+		{"id": 2, "center_xy": [0.0, 100.0]},
+	])
+	_check(zmap.zone_count() == 3, "loads all zones")
+	_check(zmap.zone_of_xy(2.0, 3.0) == 0, "nearest-centre picks the containing zone")
+	_check(zmap.zone_of_xy(98.0, 1.0) == 1, "resolves a second zone")
+	_check(zmap.zone_of_xy(50.0, 0.0) == 0, "a boundary midpoint breaks the tie to the lowest id")
+	_check(zmap.zone_of_xy(1e9, 1e9) >= 0, "out-of-bounds clamps to a real zone")
+
+
+func _test_citizen_render() -> void:
+	# CitizenRender draws a snapshot's agents into a MultiMesh (scalable), colours
+	# by state, scales/nameplates named roster members, and leaves no stale
+	# nameplate after the crowd shrinks.
+	print("- CitizenRender")
+	var CitizenRender = load("res://scripts/citizen_render.gd")
+	var r = CitizenRender.new()
+	add_child(r)
+	# snapshot with 4 agents, one of them named (roster) citizen 5
+	var snap := {"agents": {"7": {
+		"positions": [[10, 10], [20, 20], [30, 30], [40, 40]],
+		"state": [0, 1, 3, 4],
+		"citizen_id": [-1, -1, 5, -1],
+		"named": [false, false, true, false],
+		"area_size": 100.0,
+	}}}
+	var n: int = r.render_snapshot(snap, 7)
+	_check(n == 4, "renders every agent in the focused zone (%d)" % n)
+	_check(r.last_instance_count == 4, "MultiMesh instance_count matches agent count")
+	# shrink the crowd: the named agent leaves -> its nameplate must hide
+	var snap2 := {"agents": {"7": {
+		"positions": [[10, 10]],
+		"state": [0], "citizen_id": [-1], "named": [false], "area_size": 100.0,
+	}}}
+	var n2: int = r.render_snapshot(snap2, 7)
+	_check(n2 == 1, "re-render shrinks the crowd without leftover instances")
+	var visible_labels := 0
+	for c in r.get_children():
+		if c is Label3D and c.visible:
+			visible_labels += 1
+	_check(visible_labels == 0, "no stale nameplate remains after the named agent leaves")
+	r.queue_free()
 
 
 func _test_menu_flow_scenes_boot() -> void:

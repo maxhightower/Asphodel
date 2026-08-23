@@ -106,6 +106,11 @@ func intervene(action: String, zones = null, params: Dictionary = {}) -> Diction
 	return _send("INTERVENE", fields)
 
 
+func interact_with(citizen_id: int) -> Dictionary:
+	## The player engaged a citizen -> authoritative roster promotion.
+	return _send("INTERACT_WITH", {"citizen_id": citizen_id})
+
+
 func pause() -> Dictionary:
 	return _send("PAUSE", {})
 
@@ -118,6 +123,22 @@ func snapshot() -> Dictionary:
 	var r := _send("SNAPSHOT", {})
 	if _ok(r) and r.has("world"):
 		last_world = r["world"]
+	return r
+
+
+func save(path: String) -> Dictionary:
+	## Ask Python to persist the authoritative world to a path (Python serializes).
+	var r := _send("SAVE", {"path": path})
+	if _ok(r):
+		last_summary = r
+	return r
+
+
+func load(path: String) -> Dictionary:
+	## Replace the authoritative world from a saved path (Python deserializes).
+	var r := _send("LOAD", {"path": path})
+	if _ok(r):
+		last_summary = r
 	return r
 
 

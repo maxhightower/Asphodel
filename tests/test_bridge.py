@@ -247,6 +247,24 @@ def test_cordon_changes_future_authoritative_state():
 # --------------------------------------------------------------------------- #
 # malformed input never crashes the session
 # --------------------------------------------------------------------------- #
+def test_interact_with_routes_to_roster():
+    s = _started(bundle=CITY, seed=1)
+    s.handle({"cmd": Command.SET_FOCUS, "zones": [33]})
+    s.handle({"cmd": Command.ADVANCE, "ticks": 2})
+    # with a bare (citizen-less) world nothing is embodied, but the command must
+    # still route cleanly; use a citizens-enabled start to actually roster someone.
+    s2 = WorldSession()
+    s2.handle({"cmd": Command.HELLO, "protocol_version": PROTOCOL_VERSION})
+    s2.handle({"cmd": Command.START_WORLD, "bundle": CITY, "seed": 1,
+               "player_citizen_id": 0})
+    r = s2.handle({"cmd": Command.INTERACT_WITH, "citizen_id": 0})
+    assert r["ok"] and r["in_roster"] is True
+    bad = s2.handle({"cmd": Command.INTERACT_WITH})
+    assert not bad["ok"] and bad["error"]["code"] == ErrorCode.BAD_ARGUMENT
+    before = s.handle({"cmd": Command.INTERACT_WITH, "citizen_id": 999999999})
+    assert before["ok"]  # unknown id still rosters the record (idempotent, bounded)
+
+
 def test_malformed_inputs_rejected_cleanly():
     s = _started()
     assert s.handle(42)["error"]["code"] == ErrorCode.MALFORMED

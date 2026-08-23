@@ -81,6 +81,9 @@ class BridgeClient:
             extra["zones"] = list(zones) if not isinstance(zones, int) else zones
         return self.send(Command.INTERVENE, action=action, **extra)
 
+    def interact_with(self, citizen_id: int) -> dict:
+        return self.send(Command.INTERACT_WITH, citizen_id=int(citizen_id))
+
     def pause(self) -> dict:
         return self.send(Command.PAUSE)
 

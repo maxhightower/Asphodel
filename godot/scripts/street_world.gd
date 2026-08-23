@@ -25,6 +25,13 @@ var _sun: DirectionalLight3D
 var _time_label: Label
 var _outbreak_label: Label
 
+# Live citizen rendering (M6/BW4) + player-position focus (BW3).
+var _zones: Array = []
+var _zone_map: ZoneMap
+var _citizen_render: Node3D
+var _current_focus_zone: int = -1
+var _last_render_tick: int = -1
+
 
 func _ready() -> void:
 	# Keep processing input while paused so Esc can resume.
@@ -37,6 +44,7 @@ func _ready() -> void:
 		return
 	var meta: Dictionary = bundle["meta"]
 	var zones: Array = bundle["zones"]
+	_zones = zones
 	_add_environment_and_light()
 	_bounds = _world_bounds(zones)
 	_build_ground(_bounds)
@@ -75,13 +83,24 @@ func _connect_live_world(dir: String, meta: Dictionary) -> void:
 		push_warning("street_world: START_WORLD failed: %s" % str(started))
 		SimBridge.disconnect_from_sim()
 		return
-	# Focus the outbreak seed zone so the player's neighbourhood resolves to agents.
-	SimBridge.set_focus([int(meta.get("seed_zone", 0))])
 	GameClock.bind_bridge(SimBridge)
+	# BW3: resolve the player's world position -> zone via the SAME frame the
+	# bundle uses, and focus it so the neighbourhood the player stands in resolves
+	# to live agents.
+	_zone_map = ZoneMap.new()
+	_zone_map.load_from_zones(_zones)
+	_current_focus_zone = _zone_map.zone_of_xy(_player.position.x, _player.position.z)
+	SimBridge.set_focus([_current_focus_zone])
+	# BW4: a MultiMesh renderer that draws the promoted bubble from live snapshots.
+	_citizen_render = load("res://scripts/citizen_render.gd").new()
+	_citizen_render.process_mode = Node.PROCESS_MODE_PAUSABLE
+	add_child(_citizen_render)
 	# Prime the initial outbreak from an authoritative snapshot.
 	var snap: Dictionary = SimBridge.snapshot()
 	if snap.get("ok", false):
 		GameClock.apply_outbreak(SimBridge._mean_belief_from(snap))
+		SimBridge.last_world = snap.get("world", {})
+		_render_live()
 
 
 # ----------------------------------------------------------------- input setup
@@ -89,6 +108,7 @@ func _ensure_input() -> void:
 	var binds := {
 		"move_forward": KEY_W, "move_back": KEY_S,
 		"move_left": KEY_A, "move_right": KEY_D, "sprint": KEY_SHIFT,
+		"interact": KEY_E,
 	}
 	for action in binds:
 		if InputMap.has_action(action):
@@ -350,6 +370,35 @@ func _physics_process(_delta: float) -> void:
 	# back at a safe spawn instead of falling forever.
 	if _player != null and _player.position.y < FALL_KILL_Y:
 		_recover_player()
+	_update_live_bubble()
+
+
+func _update_live_bubble() -> void:
+	## BW3: as the player crosses a zone boundary, move the authoritative focus so
+	## the promoted micro bubble follows them. BW4: re-render when a new snapshot
+	## (a new authoritative tick) has arrived. Guarded so an offline scene no-ops.
+	if _zone_map == null or _player == null or not SimBridge.is_connected_to_sim():
+		return
+	var z := _zone_map.zone_of_xy(_player.position.x, _player.position.z)
+	if z != _current_focus_zone and z >= 0:
+		_current_focus_zone = z
+		SimBridge.set_focus([z])
+	var world: Dictionary = SimBridge.last_world
+	var tick := int(world.get("tick", -1)) if not world.is_empty() else -1
+	if tick != _last_render_tick:
+		_last_render_tick = tick
+		_render_live()
+
+
+func _render_live() -> void:
+	if _citizen_render == null or _current_focus_zone < 0:
+		return
+	var world: Dictionary = SimBridge.last_world
+	if world.is_empty():
+		return
+	# Place the promoted zone's torus at the zone's real world centre.
+	_citizen_render.render_snapshot(world, _current_focus_zone,
+		_zone_center(_current_focus_zone))
 
 
 func _recover_player() -> void:
@@ -420,3 +469,43 @@ func _unhandled_input(event: InputEvent) -> void:
 			_resume()
 		elif _pause_layer != null:
 			_pause()
+	elif event.is_action_pressed("interact"):
+		_try_interact()
+
+
+func _try_interact() -> void:
+	## BW5: engage the nearest identified citizen -> authoritative roster. Resolves
+	## a citizen_id from the live snapshot and sends INTERACT_WITH; the citizen
+	## becomes persistent (named) and is recognisable on return.
+	if not SimBridge.is_connected_to_sim() or _current_focus_zone < 0:
+		return
+	var world: Dictionary = SimBridge.last_world
+	var a: Dictionary = world.get("agents", {}).get(str(_current_focus_zone), {})
+	var ids: Array = a.get("citizen_id", [])
+	var pos: Array = a.get("positions", [])
+	var area: float = float(a.get("area_size", 100.0))
+	var half := area * 0.5
+	var offset := _zone_center(_current_focus_zone)
+	var best := -1
+	var best_d := INF
+	for i in range(ids.size()):
+		if int(ids[i]) < 0:
+			continue
+		var p: Array = pos[i]
+		var wp := offset + Vector3(float(p[0]) - half, 0.0, float(p[1]) - half)
+		var d := wp.distance_squared_to(_player.position)
+		if d < best_d:
+			best_d = d
+			best = int(ids[i])
+	if best >= 0:
+		var r: Dictionary = SimBridge.interact_with(best)
+		if r.get("ok", false) and _outbreak_label != null:
+			_outbreak_label.text = "Met Citizen %d (now in your roster)" % best
+
+
+func _zone_center(zid: int) -> Vector3:
+	for zz in _zones:
+		if int(zz["id"]) == zid:
+			var c: Array = zz["center_xy"]
+			return Vector3(float(c[0]), 0.0, float(c[1]))
+	return Vector3.ZERO

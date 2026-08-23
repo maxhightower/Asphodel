@@ -38,6 +38,7 @@ class Command:
     SET_FOCUS = "SET_FOCUS"    # zones under player attention -> World.set_focus
     ADVANCE = "ADVANCE"        # advance the world by an exact tick count
     INTERVENE = "INTERVENE"    # World.intervene(...)
+    INTERACT_WITH = "INTERACT_WITH"  # player engaged a citizen -> World.interact_with
     PAUSE = "PAUSE"            # freeze advancement
     RESUME = "RESUME"          # unfreeze
     SNAPSHOT = "SNAPSHOT"      # World.snapshot() without advancing
@@ -46,7 +47,7 @@ class Command:
     SHUTDOWN = "SHUTDOWN"      # end the session/process cleanly
 
     ALL = frozenset({
-        HELLO, START_WORLD, SET_FOCUS, ADVANCE, INTERVENE,
+        HELLO, START_WORLD, SET_FOCUS, ADVANCE, INTERVENE, INTERACT_WITH,
         PAUSE, RESUME, SNAPSHOT, SAVE, LOAD, SHUTDOWN,
     })
 
