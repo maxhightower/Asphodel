@@ -298,6 +298,13 @@ const BARRIER_Y := 1.2
 const DECK_Y := 7.0
 const DECK_T := 0.7
 
+# White dashed lane markings painted on the roadway top.
+const LANE_COL := Color(0.92, 0.92, 0.86)
+const LANE_DASH := 4.0        # painted dash length (m)
+const LANE_GAP := 5.0         # unpainted gap between dashes (m)
+const LANE_W := 0.30          # stripe width (m)
+const LANE_Y := ROAD_Y + 0.02 # float just above the asphalt to avoid z-fighting
+
 
 func _build_roads(roads: Dictionary) -> void:
 	## Extruded road network: raised asphalt roadways with concrete curbs/
@@ -349,8 +356,18 @@ func _build_traffic(roads: Dictionary) -> void:
 func _build_surface_road(st: SurfaceTool, pts: Array, roadway: float,
 		sidewalk: float, barriers: bool) -> void:
 	# Raised asphalt roadway + a concrete sidewalk slab down each side; optional
-	# low barriers along a major surface road.
+	# low barriers along a major surface road; white dashed lane lines on top.
 	var rh := roadway * 0.5
+	# Lane-divider offsets across the roadway: a centre line always; wide (primary)
+	# roads get quarter lines too, so the lanes read on a multi-lane street.
+	var lane_offsets: Array = [0.0]
+	if roadway >= 11.0:
+		lane_offsets = [-roadway * 0.25, 0.0, roadway * 0.25]
+	# Carry each stripe's cumulative distance so the dash pattern is continuous
+	# across the polyline's segment joints instead of restarting at every vertex.
+	var lane_dist: Array = []
+	for _lo in lane_offsets:
+		lane_dist.append(0.0)
 	for k in range(pts.size() - 1):
 		var a: Vector2 = pts[k]
 		var b: Vector2 = pts[k + 1]
@@ -364,6 +381,8 @@ func _build_surface_road(st: SurfaceTool, pts: Array, roadway: float,
 		if barriers:
 			_slab(st, a, b, n, rh + sidewalk - 0.3, rh + sidewalk, CURB_Y, BARRIER_Y, BARRIER_COL)
 			_slab(st, a, b, n, -rh - sidewalk, -rh - sidewalk + 0.3, CURB_Y, BARRIER_Y, BARRIER_COL)
+		for li in range(lane_offsets.size()):
+			lane_dist[li] = _lane_dashes(st, a, b, n, float(lane_offsets[li]), float(lane_dist[li]))
 
 
 func _build_elevated(st: SurfaceTool, pts: Array, deck_w: float) -> void:
@@ -388,6 +407,41 @@ func _build_elevated(st: SurfaceTool, pts: Array, deck_w: float) -> void:
 			var t := (float(s) + 0.5) / float(steps)
 			var c := a.lerp(b, t)
 			_pillar(st, c, 3.0, DECK_Y - DECK_T)
+
+
+func _lane_dashes(st: SurfaceTool, a: Vector2, b: Vector2, n: Vector2,
+		off: float, dist0: float) -> float:
+	# Paint the dashed white lane stripe along a->b at perpendicular offset `off`,
+	# using `dist0` as the cumulative distance already covered so the dash/gap
+	# rhythm carries across segment joins. Returns the new cumulative distance.
+	var d := b - a
+	var seglen := d.length()
+	if seglen < 0.001:
+		return dist0
+	var dir := d / seglen
+	var half_w := LANE_W * 0.5
+	var period := LANE_DASH + LANE_GAP
+	st.set_color(LANE_COL)
+	# Walk the dash indices whose painted span overlaps [dist0, dist0 + seglen].
+	var idx := floori(dist0 / period)
+	while true:
+		var dash_start := float(idx) * period
+		idx += 1
+		if dash_start > dist0 + seglen:
+			break
+		var s := maxf(dash_start, dist0)
+		var e := minf(dash_start + LANE_DASH, dist0 + seglen)
+		if e <= s:
+			continue
+		var pa := a + dir * (s - dist0) + n * off
+		var pb := a + dir * (e - dist0) + n * off
+		var p0 := pa - n * half_w
+		var p1 := pb - n * half_w
+		var p2 := pb + n * half_w
+		var p3 := pa + n * half_w
+		_tri(st, Vector3(p0.x, LANE_Y, p0.y), Vector3(p1.x, LANE_Y, p1.y), Vector3(p2.x, LANE_Y, p2.y), Vector3.UP)
+		_tri(st, Vector3(p0.x, LANE_Y, p0.y), Vector3(p2.x, LANE_Y, p2.y), Vector3(p3.x, LANE_Y, p3.y), Vector3.UP)
+	return dist0 + seglen
 
 
 func _slab(st: SurfaceTool, a: Vector2, b: Vector2, n: Vector2,
