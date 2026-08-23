@@ -1,6 +1,7 @@
 # Initiative — Authoritative Playable World (M0 → M6)
 
-**Status:** in progress
+**Status:** M0–M5 PASS, M6 PARTIAL (Godot rendering written but not engine-executed).
+See `FINDINGS_M<N>_*.md` and `FINDINGS_INITIATIVE_SUMMARY.md`.
 **Canonical branch:** `claude/asphodel-authoritative-world-55z0qw`
 **Baseline:** descendant of `claude/asphodel-gameplay-integrity-de72g6` (real-road mobility head)
 plus the Phase 11 NPC design/research/plan documents carried forward from
