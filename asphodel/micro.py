@@ -105,6 +105,15 @@ class AgentZone:
             idx = self.rng.choice(n, size=k, replace=False)
             self.sheltered[idx] = True
 
+        # --- Phase 11 / M2: citizen identity (aligned with pos/state) ----------
+        # citizen_id == -1 marks an anonymous statistical fill agent. activity is
+        # an int8 code (see asphodel.npc). Both are pure labels: they are carried
+        # through every array operation but never consume AgentZone.rng and never
+        # touch pos/state, so the epidemiology is bit-identical whether or not
+        # identities are assigned.
+        self.citizen_id = np.full(n, -1, dtype=np.int64)
+        self.activity = np.zeros(n, dtype=np.int8)
+
         self.tick = 0
 
     # ----------------------------------------------------------- spawn / counts
@@ -138,6 +147,10 @@ class AgentZone:
             k = int(round(params.shelter_fraction * n))
             idx = zone.rng.choice(n, size=k, replace=False)
             zone.sheltered[idx] = True
+        # Identity arrays (all anonymous until the orchestrator assigns citizens).
+        # Initialised after the permutation, so no draw is spent on them.
+        zone.citizen_id = np.full(n, -1, dtype=np.int64)
+        zone.activity = np.zeros(n, dtype=np.int8)
         zone.tick = 0
         return zone
 
@@ -171,6 +184,12 @@ class AgentZone:
         self.state = np.concatenate([self.state, new_state])
         self.pos = np.concatenate([self.pos, new_pos])
         self.sheltered = np.concatenate([self.sheltered, new_shelter])
+        # Arrivals are anonymous statistical fill by default (citizen_id == -1);
+        # the orchestrator may re-identify them (e.g. roster restore) afterwards.
+        self.citizen_id = np.concatenate(
+            [self.citizen_id, np.full(k, -1, dtype=np.int64)])
+        self.activity = np.concatenate(
+            [self.activity, np.zeros(k, dtype=np.int8)])
         self.n += k
 
     def remove_agents(self, counts: dict[str, int]) -> None:
@@ -197,6 +216,8 @@ class AgentZone:
         self.state = self.state[keep]
         self.pos = self.pos[keep]
         self.sheltered = self.sheltered[keep]
+        self.citizen_id = self.citizen_id[keep]
+        self.activity = self.activity[keep]
         self.n = int(self.state.size)
 
     def reconcile_to_counts(self, target: dict[str, int]) -> None:
@@ -219,6 +240,28 @@ class AgentZone:
             self.remove_agents(rem)
         if add:
             self.add_agents(add)
+
+    # ------------------------------------------------------- citizen identity
+    def assign_identities(self, slots, ids) -> None:
+        """Stamp ``citizen_id`` onto the given agent ``slots`` (pure writes).
+
+        Consumes **zero** draws from ``self.rng`` and touches neither ``pos`` nor
+        ``state``, so assigning identities cannot perturb the epidemic. ``slots``
+        and ``ids`` are equal-length index/value arrays.
+        """
+        slots = np.asarray(slots, dtype=np.int64)
+        ids = np.asarray(ids, dtype=np.int64)
+        if slots.size == 0:
+            return
+        self.citizen_id[slots] = ids
+
+    def set_activity(self, activity_codes) -> None:
+        """Overwrite the whole ``activity`` array (pure writes, zero rng)."""
+        self.activity[:] = np.asarray(activity_codes, dtype=np.int8)
+
+    def identified_slots(self) -> np.ndarray:
+        """Indices of agents that currently carry a real citizen identity."""
+        return np.where(self.citizen_id >= 0)[0]
 
     def set_shelter_fraction(self, frac: float) -> None:
         """Set the fraction of agents sheltering and re-pick the sheltered subset.

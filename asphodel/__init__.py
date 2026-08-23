@@ -31,6 +31,10 @@ from .handoff import promote, demote, round_trip, largest_remainder_counts
 # --- Phase 5: orchestrator (the engine facade) -----------------------------
 from .orchestrator import World, WorldTick
 
+# --- Phase 11 / M2: NPC identity + schedule activity -----------------------
+from . import npc
+from .npc import ACTIVITY_NAMES, activity_code, activity_name, activity_at_hour
+
 # --- Citizen spawn: the possibility space a player can be dropped into ------
 from .citizen import (
     AgeBand,

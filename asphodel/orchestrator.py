@@ -30,6 +30,7 @@ from .config import ScenarioConfig, MicroParams, HandoffParams
 from .model import Simulation, TickRecord
 from .micro import AgentZone, STATE_NAMES
 from .handoff import promote, macro_zone_counts, largest_remainder_counts, should_promote, should_demote
+from . import npc
 
 
 # Reference agent density (agents per unit area) at which the micro tier was
@@ -66,6 +67,7 @@ class World:
                  ref_density: float | None = None,
                  max_live_zones: int | None = None,
                  max_live_agents: int | None = None,
+                 start_hour: float = 0.0,
                  seed: int = 0):
         self.cfg = config
 
@@ -94,10 +96,50 @@ class World:
         self.promoted: dict[int, AgentZone] = {}   # zone index -> agent zone
         self.focus: set[int] = set()               # player-forced promotions
 
+        # --- Phase 11 / M2: citizen identity + schedule activity ---------------
+        # The in-game clock the citizen schedule runs on. Purely presentational:
+        # advancing the hour updates activity *labels*, never the epidemic.
+        self.start_hour = float(start_hour)
+        # citizen_id -> CitizenProfile (or dict); zone -> sorted eligible ids.
+        self.citizens: dict[int, object] = {}
+        self._zone_citizens: dict[int, list[int]] = {}
+        self._schedules: dict[int, list] = {}      # citizen_id -> schedule
+
     # ------------------------------------------------------------------ inputs
     def set_focus(self, zones) -> None:
         """Set the player-focus set: these zones are force-promoted (camera)."""
         self.focus = set(int(z) for z in zones)
+
+    def set_citizens(self, citizens) -> None:
+        """Register the citizen population that promoted agents may embody (M2).
+
+        ``citizens`` is an iterable of :class:`~asphodel.citizen.CitizenProfile`
+        (or dicts with the same fields). Each contributes an identity assignable
+        to a promoted agent slot in its ``home_zone``. This is a pure book-keeping
+        step: it registers *who could be embodied where*, and never touches macro
+        compartments, the RNG, or any promoted zone that already exists.
+
+        Assignment itself happens at promotion (deterministically, RNG-free), so
+        a world with citizens registered is epidemiologically identical to one
+        without — the identity layer is calibration-neutral by construction.
+        """
+        self.citizens = {}
+        self._zone_citizens = {}
+        self._schedules = {}
+        for c in citizens:
+            cid, home_zone, schedule = _citizen_fields(c)
+            if cid is None or home_zone is None:
+                continue
+            self.citizens[cid] = c
+            self._schedules[cid] = schedule
+            self._zone_citizens.setdefault(int(home_zone), []).append(cid)
+        # Deterministic assignment order within a zone: ascending citizen id.
+        for z in self._zone_citizens:
+            self._zone_citizens[z].sort()
+
+    def current_hour(self) -> float:
+        """The in-game hour [0,24) at the current authoritative tick."""
+        return npc.hour_of_day(self.sim.tick, self.dt, self.start_hour)
 
     def intervene(self, action: str, zones=None, **params) -> None:
         """Apply a player intervention to the world state.
@@ -196,6 +238,14 @@ class World:
             # Realise the result on the agent population (mainly the flux).
             zone.reconcile_to_counts(largest_remainder_counts(new_float))
 
+        # --- 4b. refresh citizen activity labels for the new in-game hour -----
+        # Pure label update (no RNG, no movement, no compartment change), so it
+        # cannot perturb the epidemic. Done after flux reconciliation so newly
+        # arrived/removed agents are accounted for.
+        if self.citizens:
+            for z, zone in self.promoted.items():
+                self._update_zone_activity(z, zone)
+
         # --- 5. authoritative aggregate (after write-back) -------------------
         totals = {name: float(getattr(self.sim, _attr(name)).sum())
                   for name in STATE_NAMES}
@@ -244,15 +294,44 @@ class World:
             agents[z] = {
                 "positions": zone.pos.tolist(),
                 "state": zone.state.tolist(),
+                # M2: citizen identity + schedule activity, aligned with the
+                # position/state arrays above. citizen_id == -1 is anonymous fill;
+                # activity is an int8 code (see asphodel.npc.ACTIVITY_NAMES).
+                "citizen_id": zone.citizen_id.tolist(),
+                "activity": zone.activity.tolist(),
                 "area_size": zone.L,
             }
-        return {
+        out = {
             "day": sim.tick * self.dt, "tick": sim.tick,
+            "hour": self.current_hour(),
             "rows": sim.graph.rows, "cols": sim.graph.cols,
             "official_signal": float(sim.official_signal),
             "authority_perceived": float(sim.authority_perceived),
             "zones": zones, "agents": agents,
+            "activity_names": list(npc.ACTIVITY_NAMES),
         }
+        if self.citizens:
+            out["activity_occupancy"] = self.activity_occupancy()
+        return out
+
+    def activity_occupancy(self) -> dict:
+        """Per-promoted-zone counts of agents by activity (identity certification).
+
+        ``{zone: {activity_name: count}}`` over identified agents — a measurable
+        notion of whether the city has a plausible daily rhythm before anything is
+        rendered.
+        """
+        occ: dict[int, dict] = {}
+        for z, zone in self.promoted.items():
+            ids = zone.identified_slots()
+            if ids.size == 0:
+                continue
+            counts = {name: 0 for name in npc.ACTIVITY_NAMES}
+            acts = zone.activity[ids]
+            for code in range(npc.N_ACTIVITIES):
+                counts[npc.ACTIVITY_NAMES[code]] = int((acts == code).sum())
+            occ[z] = counts
+        return occ
 
     # ------------------------------------------------------------- internals
     def _update_membership(self) -> None:
@@ -331,7 +410,45 @@ class World:
         params = replace(self.micro_params, area_size=area)
         self._promo_counter += 1
         seed = self._seed * 100003 + z * 101 + self._promo_counter
-        self.promoted[z] = promote(counts, self.cfg.genome, params, self.dt, seed=seed)
+        zone = promote(counts, self.cfg.genome, params, self.dt, seed=seed)
+        self._assign_citizens(z, zone)
+        self._update_zone_activity(z, zone)
+        self.promoted[z] = zone
+
+    def _assign_citizens(self, z: int, zone: AgentZone) -> None:
+        """Deterministically embody eligible citizens on this zone's agent slots.
+
+        RNG-free (uses no ``zone.rng`` draw) and state-free (touches only the
+        citizen_id label array), so promotion with citizens registered produces
+        the identical epidemic to promotion without them. Eligible citizens are
+        this zone's residents in ascending-id order; they fill the first slots,
+        the rest stay anonymous (citizen_id == -1).
+        """
+        eligible = self._zone_citizens.get(z)
+        if not eligible:
+            return
+        k = min(len(eligible), zone.n)
+        if k <= 0:
+            return
+        zone.assign_identities(np.arange(k, dtype=np.int64),
+                               np.asarray(eligible[:k], dtype=np.int64))
+
+    def _update_zone_activity(self, z: int, zone: AgentZone) -> None:
+        """Refresh the zone's activity label array from citizen schedules + hour.
+
+        Pure label update: no RNG, no movement, no compartment change. Anonymous
+        agents stay IDLE. This is the M2 "activity is a logical label, not
+        physical clustering" rule made literal.
+        """
+        ids = zone.identified_slots()
+        if ids.size == 0:
+            return
+        hour = self.current_hour()
+        acts = zone.activity
+        for slot in ids:
+            cid = int(zone.citizen_id[slot])
+            sched = self._schedules.get(cid)
+            acts[slot] = npc.activity_at_hour(sched, hour) if sched else npc.IDLE
 
     def _demote_zone(self, z: int) -> None:
         # The macro ledger already holds this zone's latest agent-derived counts
@@ -347,3 +464,23 @@ class World:
 def _attr(name: str) -> str:
     """Map a STATE_NAMES entry to the Simulation array attribute name."""
     return name  # S,E,Ia,Is,R,D match the Simulation attribute names exactly
+
+
+def _citizen_fields(c):
+    """Extract (citizen_id, home_zone, schedule) from a CitizenProfile or dict.
+
+    Accepts a :class:`~asphodel.citizen.CitizenProfile` (attribute access) or a
+    plain dict (e.g. a row from a baked ``citizens.json``). Returns
+    ``(None, None, [])`` when identity/home cannot be resolved.
+    """
+    if isinstance(c, dict):
+        cid = c.get("citizen_id")
+        home = c.get("home_zone")
+        schedule = c.get("schedule", []) or []
+    else:
+        cid = getattr(c, "citizen_id", None)
+        home = getattr(c, "home_zone", None)
+        schedule = getattr(c, "schedule", []) or []
+    if cid is None:
+        return None, None, []
+    return int(cid), (None if home is None else int(home)), schedule
