@@ -38,6 +38,8 @@ from .npc import ACTIVITY_NAMES, activity_code, activity_name, activity_at_hour
 from .npc import ACTION_NAMES, NEEDS, choose_action, action_code, action_name
 from . import affordances
 from .affordances import advertise
+# --- Phase 11 / M4: bounded named roster ------------------------------------
+from .roster import Roster, RosterRecord
 
 # --- Citizen spawn: the possibility space a player can be dropped into ------
 from .citizen import (

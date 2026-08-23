@@ -270,6 +270,16 @@ class AgentZone:
         """Indices of agents that currently carry a real citizen identity."""
         return np.where(self.citizen_id >= 0)[0]
 
+    def restore_citizen(self, slot: int, record) -> None:
+        """Stamp a restored roster identity onto an existing ``slot`` WITHOUT
+        touching its compartment (the macro ledger already counts that slot), its
+        position, or the RNG. Restores identity + persisted action label; the
+        agent's disease state is whatever the slot was sampled as at promotion
+        (the M4 "macro absorbs offscreen disease" decision). Conservation-safe."""
+        if 0 <= slot < self.n:
+            self.citizen_id[slot] = int(record.citizen_id)
+            self.chosen_action[slot] = int(getattr(record, "chosen_action", 0))
+
     def set_shelter_fraction(self, frac: float) -> None:
         """Set the fraction of agents sheltering and re-pick the sheltered subset.
 

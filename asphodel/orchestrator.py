@@ -32,6 +32,7 @@ from .micro import AgentZone, STATE_NAMES
 from .handoff import promote, macro_zone_counts, largest_remainder_counts, should_promote, should_demote
 from . import npc
 from .affordances import advertise
+from .roster import Roster
 
 
 # Reference agent density (agents per unit area) at which the micro tier was
@@ -69,6 +70,8 @@ class World:
                  max_live_zones: int | None = None,
                  max_live_agents: int | None = None,
                  start_hour: float = 0.0,
+                 max_roster: int = 64,
+                 proximity_ticks: int = 8,
                  seed: int = 0):
         self.cfg = config
 
@@ -116,6 +119,15 @@ class World:
         self._citizen_tags: dict[int, list] = {}
         self._signature_citizens: set[int] = set()
         self.reactions_enabled = True
+
+        # --- M4 / SP3: bounded persistent named roster + uprezzing -------------
+        # The few citizens the player engages persist across promote/demote; the
+        # rest are anonymous fill. Promotion is event-driven (interaction / focus
+        # proximity / signature-in-view); eviction is LRU-by-interaction. The bound
+        # is hard, so persistence cost is independent of city size.
+        self.roster = Roster(max_roster=max_roster)
+        self.proximity_ticks = int(proximity_ticks)
+        self._proximity: dict[int, int] = {}   # citizen_id -> consecutive ticks in focus
 
     # ------------------------------------------------------------------ inputs
     def set_focus(self, zones) -> None:
@@ -272,6 +284,7 @@ class World:
                 self._update_zone_activity(z, zone)
                 if self.reactions_enabled:
                     self._update_zone_reactions(z, zone)
+            self._update_roster_promotion()
 
         # --- 5. authoritative aggregate (after write-back) -------------------
         totals = {name: float(getattr(self.sim, _attr(name)).sum())
@@ -328,6 +341,8 @@ class World:
                 "activity": zone.activity.tolist(),
                 # M3: reactive action label per agent (see npc.ACTION_NAMES).
                 "chosen_action": zone.chosen_action.tolist(),
+                # M4: which agents are persistent named-roster members.
+                "named": [bool(self.roster.contains(int(c))) for c in zone.citizen_id],
                 "area_size": zone.L,
             }
         out = {
@@ -342,6 +357,13 @@ class World:
         }
         if self.citizens:
             out["activity_occupancy"] = self.activity_occupancy()
+        if len(self.roster) > 0:
+            out["roster"] = [
+                {"citizen_id": r.citizen_id,
+                 "last_interaction_tick": r.last_interaction_tick,
+                 "interactions": r.interactions}
+                for r in self.roster.members()
+            ]
         return out
 
     def activity_occupancy(self) -> dict:
@@ -460,6 +482,7 @@ class World:
         seed = self._seed * 100003 + z * 101 + self._promo_counter
         zone = promote(counts, self.cfg.genome, params, self.dt, seed=seed)
         self._assign_citizens(z, zone)
+        self._restore_roster(z, zone)
         self._update_zone_activity(z, zone)
         if self.reactions_enabled:
             self._update_zone_reactions(z, zone)
@@ -477,11 +500,83 @@ class World:
         eligible = self._zone_citizens.get(z)
         if not eligible:
             return
-        k = min(len(eligible), zone.n)
+        # Roster members of this zone are embodied FIRST (they are the ones that
+        # must reappear on re-promote), then other residents. Both sub-lists are
+        # already ascending-id, so the order is fully deterministic.
+        rostered = [c for c in eligible if self.roster.contains(c)]
+        others = [c for c in eligible if not self.roster.contains(c)]
+        ordered = rostered + others
+        k = min(len(ordered), zone.n)
         if k <= 0:
             return
         zone.assign_identities(np.arange(k, dtype=np.int64),
-                               np.asarray(eligible[:k], dtype=np.int64))
+                               np.asarray(ordered[:k], dtype=np.int64))
+
+    def _restore_roster(self, z: int, zone: AgentZone) -> None:
+        """Stamp persisted state onto embodied roster members (uprezzing restore).
+
+        Runs after `_assign_citizens`, so a rostered resident is already on a
+        slot; here we restore its checkpointed action label. Conservation-safe:
+        only labels change, never compartment counts.
+        """
+        if len(self.roster) == 0:
+            return
+        for slot in zone.identified_slots():
+            cid = int(zone.citizen_id[slot])
+            rec = self.roster.get(cid)
+            if rec is not None:
+                zone.restore_citizen(int(slot), rec)
+
+    def _update_roster_promotion(self) -> None:
+        """Event-driven, deterministic roster promotion each tick.
+
+        Two triggers besides the explicit `interact_with`:
+        * **signature-in-view** — a signature citizen embodied in a *focused* zone
+          is promoted at once (the Nemesis "did something memorable" rule);
+        * **sustained focus proximity** — a citizen embodied in a focused zone for
+          `proximity_ticks` consecutive ticks is promoted (simply being among
+          people long enough names some). Counters reset when a citizen leaves
+          focus, so "sustained" means consecutive. Iteration is ascending-id, so
+          promotion order (and thus any eviction) is deterministic.
+        """
+        tick = int(self.sim.tick)
+        # Who is embodied in a focused, promoted zone right now?
+        in_focus: set[int] = set()
+        for z in sorted(self.focus):
+            zone = self.promoted.get(z)
+            if zone is None:
+                continue
+            for cid in sorted(int(c) for c in zone.citizen_id[zone.identified_slots()]):
+                in_focus.add(cid)
+                if cid in self._signature_citizens:
+                    self.roster.promote(cid, self.citizens.get(cid), tick)
+                    continue
+                n = self._proximity.get(cid, 0) + 1
+                self._proximity[cid] = n
+                if n >= self.proximity_ticks:
+                    self.roster.promote(cid, self.citizens.get(cid), tick)
+        # Reset proximity for citizens no longer in focus (consecutive-only).
+        for cid in list(self._proximity):
+            if cid not in in_focus:
+                del self._proximity[cid]
+
+    def interact_with(self, citizen_id: int) -> bool:
+        """Event-driven promotion: the player profiled/talked to this citizen.
+
+        The primary roster trigger (the Nemesis/Census "you engaged it" rule).
+        Returns True if a new roster member was added. If the citizen is currently
+        embodied in a promoted zone, its live action label is captured at once.
+        """
+        cid = int(citizen_id)
+        profile = self.citizens.get(cid)
+        added = self.roster.promote(cid, profile, int(self.sim.tick))
+        for zone in self.promoted.values():
+            hit = np.where(zone.citizen_id == cid)[0]
+            if hit.size:
+                self.roster.set_state(cid,
+                                      chosen_action=int(zone.chosen_action[hit[0]]))
+                break
+        return added
 
     def _update_zone_activity(self, z: int, zone: AgentZone) -> None:
         """Refresh the zone's activity label array from citizen schedules + hour.
@@ -529,9 +624,19 @@ class World:
             act_arr[slot] = npc.action_code(npc.choose_action(ads, needs, rng))
 
     def _demote_zone(self, z: int) -> None:
-        # The macro ledger already holds this zone's latest agent-derived counts
-        # (written every tick), so demotion just stops freezing it -- the macro
-        # resumes its own internal integration next tick.  No merge needed.
+        # M4 uprezzing: before dropping the agent zone, checkpoint any rostered
+        # members' live action label so re-promote restores them faithfully. The
+        # macro ledger already holds this zone's latest agent-derived counts, so
+        # demotion otherwise just stops freezing it -- no population merge needed,
+        # and the checkpoint changes no compartment count (conservation holds).
+        zone = self.promoted.get(z)
+        if zone is not None and len(self.roster) > 0:
+            for slot in zone.identified_slots():
+                cid = int(zone.citizen_id[slot])
+                if self.roster.contains(cid):
+                    # tick=None: leaving is not an interaction (LRU stays honest).
+                    self.roster.set_state(
+                        cid, chosen_action=int(zone.chosen_action[slot]), tick=None)
         self.promoted.pop(z, None)
 
     def _write_zone(self, z: int, counts: dict[str, float]) -> None:
