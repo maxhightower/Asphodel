@@ -7,12 +7,21 @@ extends Node
 ##
 ## Time model (mirrors asphodel/gametime.py): a full 24h in-game day defaults to
 ## one real hour (Project-Zomboid pacing). The player's hour advances in real
-## time; each in-game moment maps onto a tick of the bundle's baked belief
-## timeline, so standing still visibly advances the outbreak.
+## time; each in-game moment maps onto a simulation tick.
+##
+## M1 change — the clock is NO LONGER the outbreak authority. It used to read a
+## baked per-tick belief timeline (timeline.json) and compute the visible outbreak
+## from it. Now the authoritative Python World owns the outbreak: as in-game time
+## crosses a tick boundary this clock asks SimBridge to ADVANCE the live world by
+## that many ticks and reads the authoritative mean belief back. The baked
+## timeline is retained only as an offline/preview fixture, never as game truth.
+## When no live bridge is connected the clock still keeps time; the outbreak value
+## simply holds (no baked truth is substituted).
 ##
 ## Pause authority: pause() sets get_tree().paused. This node and the player are
-## PAUSABLE, so both this clock (hence the outbreak) and the player's physics
-## freeze together; the pause UI runs in a WHEN_PAUSED layer so it still responds.
+## PAUSABLE, so both this clock and the player's physics freeze together; while
+## paused no ADVANCE is sent, so the authoritative world is frozen too. The pause
+## UI runs in a WHEN_PAUSED layer so it still responds.
 
 signal ticked(game_day: int, hour: float, outbreak: float)
 signal paused_changed(is_paused: bool)
@@ -27,13 +36,18 @@ var time_scale: float = 1.0
 var configured: bool = false
 var game_day: int = 1
 var hour: float = 8.0                      # in-game hour [0, 24)
-var sim_tick: int = 0                      # index into the belief timeline
+var sim_tick: int = 0                      # authoritative tick of the live World
 var _dt_days: float = 0.25
 var _n_ticks: int = 0
-var _timeline: Array = []                  # per-tick rows of per-zone belief
-var _rows: int = 0
 var _elapsed_ingame_hours: float = 0.0     # since spawn, for tick mapping
 var _is_paused: bool = false
+
+# Authoritative outbreak intensity (mean zone belief in [0,1]), fed by the live
+# World via SimBridge. Held between ticks; NOT derived from any baked timeline.
+var _outbreak: float = 0.0
+# Optional bound live bridge (SimBridge autoload). When present + connected, tick
+# crossings drive World.advance and refresh _outbreak from the authoritative reply.
+var _bridge: Node = null
 
 
 func _ready() -> void:
@@ -42,21 +56,32 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_PAUSABLE
 
 
-func configure(meta: Dictionary, timeline: Dictionary, start_hour: float) -> void:
-	## Wire the clock to a loaded bundle + the selected citizen's spawn hour.
+func configure(meta: Dictionary, start_hour: float) -> void:
+	## Wire the clock to a loaded bundle's time axis + the citizen's spawn hour.
+	## Outbreak truth comes from the bound bridge (bind_bridge), not from `meta`.
 	_dt_days = float(meta.get("dt", 0.25))
 	_n_ticks = int(meta.get("n_ticks", 0))
-	_timeline = timeline.get("data", []) as Array
-	var shape: Array = timeline.get("shape", [0, 0])
-	_rows = int(shape[0]) if shape.size() > 0 else _timeline.size()
 	hour = clampf(start_hour, 0.0, 23.999)
 	game_day = 1
 	sim_tick = 0
 	_elapsed_ingame_hours = 0.0
 	_is_paused = false
+	_outbreak = 0.0
 	configured = true
 	# Emit an initial state so listeners paint the correct starting time at once.
 	ticked.emit(game_day, hour, outbreak_belief())
+
+
+func bind_bridge(bridge: Node) -> void:
+	## Bind the authoritative live World client. When connected, tick crossings
+	## drive World.advance and refresh the outbreak from the authoritative reply.
+	_bridge = bridge
+
+
+func apply_outbreak(value: float) -> void:
+	## Externally set the authoritative outbreak intensity (e.g. from an initial
+	## SNAPSHOT before the first tick crossing).
+	_outbreak = clampf(value, 0.0, 1.0)
 
 
 func reset() -> void:
@@ -102,27 +127,34 @@ func _advance(d_hours: float) -> void:
 		hour -= HOURS_PER_DAY
 		game_day += 1
 	# Map elapsed in-game time onto the sim's tick axis. One in-game day spans
-	# 1/_dt_days ticks; clamp to the baked timeline length.
+	# 1/_dt_days ticks. When we cross into new ticks, drive the AUTHORITATIVE
+	# world forward by exactly that many ticks and read the outbreak back.
 	var ticks_per_hour := (1.0 / _dt_days) / HOURS_PER_DAY
-	var t := int(floor(_elapsed_ingame_hours * ticks_per_hour))
-	if _rows > 0:
-		t = clampi(t, 0, _rows - 1)
-	sim_tick = t
+	var target := int(floor(_elapsed_ingame_hours * ticks_per_hour))
+	if target > sim_tick:
+		_advance_world(target - sim_tick)
+		sim_tick = target
 	ticked.emit(game_day, hour, outbreak_belief())
 
 
+func _advance_world(delta_ticks: int) -> void:
+	## Ask the live World to advance by delta_ticks and refresh the authoritative
+	## outbreak. No live bridge -> the outbreak simply holds (no baked substitute).
+	if delta_ticks <= 0:
+		return
+	if _bridge == null or not _bridge.is_connected_to_sim():
+		return
+	var reply: Dictionary = _bridge.advance(delta_ticks, true)
+	if reply.get("ok", false) == true:
+		# SimBridge computes the authoritative mean belief and exposes it via the
+		# `advanced` signal; read it straight from the world snapshot here.
+		_outbreak = _bridge._mean_belief_from(reply)
+
+
 func outbreak_belief() -> float:
-	## Mean belief across zones at the current sim tick, in [0, 1]. This is the
-	## outbreak's visible intensity; it advances as the clock runs (unless paused).
-	if _timeline.is_empty() or sim_tick < 0 or sim_tick >= _timeline.size():
-		return 0.0
-	var row: Array = _timeline[sim_tick]
-	if row.is_empty():
-		return 0.0
-	var s := 0.0
-	for v in row:
-		s += float(v)
-	return clampf(s / row.size(), 0.0, 1.0)
+	## Authoritative outbreak intensity (mean zone belief, [0,1]) from the live
+	## World. Held between tick crossings; never derived from a baked timeline.
+	return _outbreak
 
 
 func is_daytime() -> bool:

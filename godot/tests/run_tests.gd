@@ -111,22 +111,54 @@ func _test_bundle_validation() -> void:
 		"houston bundle persists a non-empty road-mobility edge list")
 
 
+# A stand-in for the SimBridge autoload: implements exactly the methods GameClock
+# calls on a bound bridge, returning a monotonically rising authoritative belief.
+# This lets the engine-only test certify the M1 contract (the clock reads outbreak
+# truth from the live World over the bridge) without a running Python process.
+class MockBridge:
+	var calls := 0
+	var last_delta := 0
+	func is_connected_to_sim() -> bool:
+		return true
+	func advance(delta_ticks: int, _want_snapshot: bool = false) -> Dictionary:
+		calls += 1
+		last_delta = delta_ticks
+		var belief: float = clampf(calls * 0.05, 0.0, 1.0)
+		return {"ok": true, "tick": calls, "world": {"zones": [{"belief": belief}]}}
+	func _mean_belief_from(reply: Dictionary) -> float:
+		var world: Dictionary = reply.get("world", {})
+		var zones: Array = world.get("zones", [])
+		if zones.is_empty():
+			return 0.0
+		var s := 0.0
+		for z in zones:
+			s += float(z.get("belief", 0.0))
+		return clampf(s / zones.size(), 0.0, 1.0)
+
+
 func _test_game_clock() -> void:
 	print("- GameClock")
 	var bundle := _good_bundle()
 	GameClock.reset()
-	GameClock.configure(bundle["meta"], bundle["timeline"], 8.0)
+	# M1: configure takes only the time axis + spawn hour; outbreak truth is the
+	# bound live World, not the baked timeline.
+	GameClock.configure(bundle["meta"], 8.0)
 
 	_check(GameClock.configured, "clock configures from a bundle")
 	_check(abs(GameClock.hour - 8.0) < 1e-6, "starts at the citizen's spawn hour")
-	_check(GameClock.outbreak_belief() >= 0.0, "reports an initial outbreak value")
+	_check(GameClock.outbreak_belief() == 0.0, "outbreak holds at 0 with no live world")
 
-	# Advancing in-game hours rolls the clock and the sim tick forward.
+	# Bind a mock authoritative bridge; advancing in-game time must now drive the
+	# world (ADVANCE) and read the outbreak back from its authoritative reply.
+	var mock := MockBridge.new()
+	GameClock.bind_bridge(mock)
 	var before: float = GameClock.outbreak_belief()
-	GameClock._advance(24.0)                    # a full in-game day
+	GameClock._advance(24.0)                    # a full in-game day -> many ticks
 	_check(GameClock.game_day == 2, "a full day rolls the day counter")
 	_check(GameClock.sim_tick > 0, "sim tick advances with time")
-	_check(GameClock.outbreak_belief() >= before, "outbreak progresses as time passes")
+	_check(mock.calls > 0, "tick crossings drive the authoritative World.advance")
+	_check(mock.last_delta == GameClock.sim_tick, "world advanced by exactly the tick delta")
+	_check(GameClock.outbreak_belief() > before, "outbreak comes from the live World, and rose")
 
 	# Pause is authoritative: set_paused flips SceneTree.paused.
 	GameClock.set_paused(true)

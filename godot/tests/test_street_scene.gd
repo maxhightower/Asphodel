@@ -69,18 +69,21 @@ func _run() -> void:
 	_check(player.position.y > -5.0 and player.position.y < 10.0,
 		"player rests on/near ground (y=%.2f)" % player.position.y)
 
-	# 5. Outbreak advances while unpaused. Fast-forward so a real tick change is
-	#    observable within a few frames (proves the clock genuinely drives the
-	#    baked timeline, not just that the hour float wiggles).
+	# 5. Time advances while unpaused. Fast-forward so a real tick change is
+	#    observable within a few frames. Since M1 the OUTBREAK is owned by the
+	#    live Python World (SimBridge); in this headless engine-only test no sim
+	#    process is attached, so the sim tick still advances with time but the
+	#    outbreak value holds (never a baked-timeline substitute). Authoritative
+	#    outbreak progression is certified in Python (tests/test_bridge.py).
 	GameClock.time_scale = 4000.0
 	var h0: float = GameClock.hour
 	var t0: int = GameClock.sim_tick
 	var ob0: float = GameClock.outbreak_belief()
 	await get_tree().create_timer(0.5).timeout
 	_check(GameClock.hour != h0, "clock hour advances while unpaused")
-	_check(GameClock.sim_tick > t0, "outbreak sim tick advances while unpaused (%d -> %d)"
+	_check(GameClock.sim_tick > t0, "sim tick advances with time while unpaused (%d -> %d)"
 		% [t0, GameClock.sim_tick])
-	_check(GameClock.outbreak_belief() >= ob0, "outbreak intensity progresses while unpaused")
+	_check(GameClock.outbreak_belief() >= ob0, "outbreak intensity never regresses")
 
 	# 6. Pause freezes the clock; resume lets it advance again.
 	GameClock.set_paused(true)

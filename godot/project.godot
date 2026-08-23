@@ -18,4 +18,5 @@ config/icon="res://icon.svg"
 [autoload]
 
 Session="*res://scripts/session.gd"
+SimBridge="*res://scripts/sim_bridge.gd"
 GameClock="*res://scripts/game_clock.gd"

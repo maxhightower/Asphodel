@@ -47,15 +47,41 @@ func _ready() -> void:
 	_build_pause_overlay()
 
 	# Authoritative clock: start at the citizen's spawn hour; it advances the
-	# outbreak while unpaused.
+	# outbreak while unpaused. The outbreak itself is owned by the live Python
+	# World, reached through SimBridge (M1) — not by any baked timeline.
 	var start_hour := 8.0
 	var c: Dictionary = Session.citizen
 	if c.has("spawn_hour"):
 		start_hour = float(c["spawn_hour"])
 	GameClock.reset()
-	GameClock.configure(meta, bundle["timeline"], start_hour)
+	GameClock.configure(meta, start_hour)
+	_connect_live_world(dir, meta)
 	GameClock.ticked.connect(_on_clock_ticked)
 	_on_clock_ticked(GameClock.game_day, GameClock.hour, GameClock.outbreak_belief())
+
+
+func _connect_live_world(dir: String, meta: Dictionary) -> void:
+	## Bring up the authoritative Python World for this city and bind it to the
+	## clock. If the sim process isn't reachable the scene still runs (the clock
+	## keeps time; the outbreak simply holds), so play is never hard-blocked.
+	var bundle_name := dir.get_file()          # e.g. res://bundles/houston -> houston
+	if not SimBridge.connect_to_sim():
+		push_warning("street_world: no live World bridge — outbreak will hold. "
+			+ "Start it with: python -m asphodel.bridge.server")
+		return
+	var opts := {"seed": int(meta.get("seed", 0))}
+	var started: Dictionary = SimBridge.start_world(bundle_name, opts)
+	if not started.get("ok", false):
+		push_warning("street_world: START_WORLD failed: %s" % str(started))
+		SimBridge.disconnect_from_sim()
+		return
+	# Focus the outbreak seed zone so the player's neighbourhood resolves to agents.
+	SimBridge.set_focus([int(meta.get("seed_zone", 0))])
+	GameClock.bind_bridge(SimBridge)
+	# Prime the initial outbreak from an authoritative snapshot.
+	var snap: Dictionary = SimBridge.snapshot()
+	if snap.get("ok", false):
+		GameClock.apply_outbreak(SimBridge._mean_belief_from(snap))
 
 
 # ----------------------------------------------------------------- input setup
@@ -381,6 +407,9 @@ func _resume() -> void:
 func _to_menu() -> void:
 	GameClock.set_paused(false)
 	GameClock.reset()
+	# Tear down the authoritative world cleanly (sends SHUTDOWN) before leaving.
+	if SimBridge.is_connected_to_sim():
+		SimBridge.disconnect_from_sim()
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	get_tree().change_scene_to_file("res://MainMenu.tscn")
 

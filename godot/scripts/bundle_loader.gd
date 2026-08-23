@@ -82,9 +82,10 @@ static func validate(bundle: Dictionary) -> String:
 
 static func load_mobility(dir_path: String) -> Dictionary:
 	## The road-derived zone-mobility graph the Python sim used (optional; older
-	## bundles omit it). The renderer plays the baked timeline and does not infer
-	## its own graph, so this is exposed for tooling/inspection, not simulation.
-	## Returns {} if absent or malformed.
+	## bundles omit it). Since M1 the live Python World owns simulation truth and
+	## rides this graph itself; the renderer neither infers its own graph nor
+	## replays the baked timeline for truth, so this is exposed for
+	## tooling/inspection only. Returns {} if absent or malformed.
 	var path := dir_path.path_join("mobility.json")
 	if not FileAccess.file_exists(path):
 		return {}

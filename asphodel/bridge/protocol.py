@@ -1,0 +1,110 @@
+"""The versioned Godot <-> World IPC protocol (M1).
+
+Wire format is **newline-delimited JSON** ("JSON Lines"): one JSON object per
+line, ``\\n``-terminated, requests and responses alike. Rationale over a binary
+protocol: it is trivially debuggable (a human or a test can read the stream),
+deterministic in ordering (the server answers one request before reading the
+next), low-overhead for local single-client development, and Godot speaks it out
+of the box (``StreamPeerTCP`` + ``JSON``). The framing lives in
+:mod:`asphodel.bridge.server`; this module is pure data + validation and imports
+nothing heavy, so both ends can share the vocabulary.
+
+Every message is a flat JSON object. A **request** carries a ``cmd`` (one of
+:class:`Command`) and command-specific fields; an optional integer ``id`` is
+echoed back so a client can match replies. A **response** carries
+``protocol_version``, ``ok`` (bool), the echoed ``cmd``/``id``, and either
+result fields (``ok: true``) or an ``error`` object (``ok: false``).
+
+The protocol layer deliberately does **not** re-interpret world state: where a
+response needs to describe the world it embeds :meth:`World.snapshot` verbatim
+under ``world``. There is one renderer contract, and it lives in the engine.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+
+# Bump on any breaking change to command/response shape. A client HELLO carrying
+# a different major version is rejected (see WorldSession.handle / Command.HELLO).
+PROTOCOL_VERSION = 1
+
+
+class Command:
+    """The command vocabulary (Godot -> simulation)."""
+
+    HELLO = "HELLO"            # handshake + version negotiation
+    START_WORLD = "START_WORLD"  # construct the authoritative World
+    SET_FOCUS = "SET_FOCUS"    # zones under player attention -> World.set_focus
+    ADVANCE = "ADVANCE"        # advance the world by an exact tick count
+    INTERVENE = "INTERVENE"    # World.intervene(...)
+    PAUSE = "PAUSE"            # freeze advancement
+    RESUME = "RESUME"          # unfreeze
+    SNAPSHOT = "SNAPSHOT"      # World.snapshot() without advancing
+    SHUTDOWN = "SHUTDOWN"      # end the session/process cleanly
+
+    ALL = frozenset({
+        HELLO, START_WORLD, SET_FOCUS, ADVANCE, INTERVENE,
+        PAUSE, RESUME, SNAPSHOT, SHUTDOWN,
+    })
+
+
+class ErrorCode:
+    """Stable machine-readable error codes carried in an error response."""
+
+    MALFORMED = "malformed"                # not a JSON object / missing cmd
+    UNKNOWN_COMMAND = "unknown_command"
+    VERSION_MISMATCH = "version_mismatch"
+    NOT_STARTED = "not_started"            # command needs a world; none started
+    ALREADY_STARTED = "already_started"
+    BAD_ARGUMENT = "bad_argument"
+    PAUSED = "paused"                      # ADVANCE refused while paused
+    INTERNAL = "internal"                  # unexpected engine exception
+
+
+class ProtocolError(Exception):
+    """Raised by helpers when a message cannot be formed/validated."""
+
+    def __init__(self, code: str, message: str):
+        super().__init__(f"[{code}] {message}")
+        self.code = code
+        self.message = message
+
+
+def request(cmd: str, id: int | None = None, **fields: Any) -> dict:
+    """Build a request envelope (client side)."""
+    if cmd not in Command.ALL:
+        raise ProtocolError(ErrorCode.UNKNOWN_COMMAND, f"unknown command {cmd!r}")
+    msg: dict = {"cmd": cmd}
+    if id is not None:
+        msg["id"] = int(id)
+    msg.update(fields)
+    return msg
+
+
+def response(cmd: str | None, id: int | None = None, **fields: Any) -> dict:
+    """Build a success response envelope (server side)."""
+    msg: dict = {"protocol_version": PROTOCOL_VERSION, "ok": True, "cmd": cmd}
+    if id is not None:
+        msg["id"] = int(id)
+    msg.update(fields)
+    return msg
+
+
+def error_response(code: str, message: str,
+                   cmd: str | None = None, id: int | None = None) -> dict:
+    """Build an error response envelope (server side)."""
+    msg: dict = {
+        "protocol_version": PROTOCOL_VERSION,
+        "ok": False,
+        "cmd": cmd,
+        "error": {"code": code, "message": message},
+    }
+    if id is not None:
+        msg["id"] = int(id)
+    return msg
+
+
+def is_compatible(client_version: int) -> bool:
+    """Version policy: exact match required for protocol v1."""
+    return int(client_version) == PROTOCOL_VERSION
