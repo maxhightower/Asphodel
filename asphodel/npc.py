@@ -115,6 +115,24 @@ def choose_action(advertisements, needs, rng, top_k: int = 2) -> str:
     return top[-1][1]
 
 
+def visual_seed(citizen_id: int) -> int:
+    """A stable, deterministic per-citizen appearance seed (M6 recognition).
+
+    A named-roster member must look the same each time the player returns, so
+    body/clothing colours are keyed on this seed rather than on anything transient.
+    Kept as a tiny integer splitmix so the GDScript renderer can reproduce the exact
+    same value (``0 <= seed < 2**31``). ``citizen_id == -1`` (anonymous) -> 0.
+    """
+    c = int(citizen_id)
+    if c < 0:
+        return 0
+    x = (c * 0x9E3779B1 + 0x7F4A7C15) & 0xFFFFFFFF
+    x ^= (x >> 16)
+    x = (x * 0x85EBCA6B) & 0xFFFFFFFF
+    x ^= (x >> 13)
+    return x & 0x7FFFFFFF
+
+
 def default_needs(safety: float) -> dict:
     """A citizen's need vector with a live ``safety`` term (from zone belief) and
     modest baseline routine needs. Kept tiny and data-light by design."""
