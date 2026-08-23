@@ -352,3 +352,49 @@ def test_build_bundle_timeline_is_finite(tmp_path):
     data = np.array(timeline["data"], dtype=float)
     assert np.isfinite(data).all()
     assert (data >= 0.0).all() and (data <= 1.0).all()
+
+
+# --------------------------------------------------------------------------- #
+# procedural buildings avoid road corridors
+# --------------------------------------------------------------------------- #
+from asphodel.osm_city import buildings as bld
+
+
+def _zones_one_cell():
+    # A single 400x400 m zone centred at the origin, dense enough to fill.
+    return [{"id": 0, "center_xy": [0.0, 0.0], "extent": [400.0, 400.0],
+             "density": 0.9}]
+
+
+def test_procedural_footprints_deterministic():
+    a = bld.generate_procedural(_zones_one_cell(), seed=7)
+    b = bld.generate_procedural(_zones_one_cell(), seed=7)
+    assert a == b
+
+
+def test_procedural_footprints_clear_road_corridors():
+    # A road slicing straight across the zone: no generated footprint may overlap
+    # its corridor once roads are supplied.
+    zones = _zones_one_cell()
+    roads = [{"class": "primary", "points": [[-200.0, 0.0], [200.0, 0.0]]},
+             {"class": "secondary", "points": [[0.0, -200.0], [0.0, 200.0]]}]
+    fp = bld.generate_procedural(zones, seed=7, roads=roads)
+    assert fp["buildings"], "road-aware fill still produces buildings"
+    corridors = bld._zone_corridors(zones[0], roads, pad=12.0)
+    for b in fp["buildings"]:
+        xs = [p[0] for p in b["poly"]]
+        zs = [p[1] for p in b["poly"]]
+        cx, cz = (min(xs) + max(xs)) / 2.0, (min(zs) + max(zs)) / 2.0
+        hx, hz = (max(xs) - min(xs)) / 2.0, (max(zs) - min(zs)) / 2.0
+        assert not bld._on_street(cx, cz, hx, hz, corridors), \
+            "a procedural footprint clips a road corridor"
+
+
+def test_procedural_road_carving_removes_some_footprints():
+    # With a road through the zone, the carved fill has strictly fewer footprints
+    # than the road-blind fill (the ones that would have clipped the street).
+    zones = _zones_one_cell()
+    roads = [{"class": "primary", "points": [[-200.0, 0.0], [200.0, 0.0]]}]
+    blind = bld.generate_procedural(zones, seed=3)
+    carved = bld.generate_procedural(zones, seed=3, roads=roads)
+    assert len(carved["buildings"]) < len(blind["buildings"])

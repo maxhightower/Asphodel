@@ -83,6 +83,34 @@ def rebake_mobility(bundle_dir: str, local_floor=DEFAULT_LOCAL_FLOOR) -> dict:
     return stats
 
 
+def regenerate_buildings(bundle_dir: str) -> dict:
+    """Offline: rewrite a committed bundle's ``buildings.json`` from its own
+    zones + roads with the road-aware procedural fill, so no footprint clips a
+    street. Uses the bundle's ``meta.seed`` for determinism. Returns the payload.
+    """
+    import json
+    import os
+
+    from . import buildings as bld
+
+    with open(os.path.join(bundle_dir, "zones.json")) as f:
+        zones = json.load(f)
+    if isinstance(zones, dict):
+        zones = zones.get("zones", [])
+    with open(os.path.join(bundle_dir, "roads.json")) as f:
+        roads = json.load(f)
+    polylines = roads.get("polylines", roads) if isinstance(roads, dict) else roads
+    seed = 0
+    meta_path = os.path.join(bundle_dir, "meta.json")
+    if os.path.exists(meta_path):
+        with open(meta_path) as f:
+            seed = int(json.load(f).get("seed", 0))
+
+    footprints = bld.generate_procedural(zones, seed=seed, roads=polylines)
+    bnd._write_json(os.path.join(bundle_dir, "buildings.json"), footprints)
+    return footprints
+
+
 def build_bundle(query, bbox, buildings, roads, out_dir, grid=16,
                  total_pop=500000.0, seed=0, n_days=120.0, dt=0.25,
                  genome=None, bake_citizens=True, n_citizens=60,
@@ -157,7 +185,10 @@ def build_bundle(query, bbox, buildings, roads, out_dir, grid=16,
     if buildings:
         footprints = bld.project_osm_buildings(buildings, lat0, lon0)
     else:
-        footprints = bld.generate_procedural(t.zones, seed=seed)
+        # Pass the projected roads so the procedural fill carves street corridors
+        # and no footprint clips a road (the real footprint map isn't known here).
+        footprints = bld.generate_procedural(
+            t.zones, seed=seed, roads=road_out["polylines"])
     bnd._write_json(os.path.join(out_dir, "buildings.json"), footprints)
 
     # 6. Bake a spawnable citizen population from the SAME resolved city -- real
