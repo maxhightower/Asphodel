@@ -1,9 +1,13 @@
 # Authoritative Playable World — Initiative Summary (M0 → M6)
 
 **Branch:** `claude/asphodel-authoritative-world-55z0qw`
-**Overall verdict:** **PARTIAL** — M0–M5 individually **PASS**; M6 **PARTIAL** (the
-authoritative/simulation half is certified; the Godot rendering is written to the
-tested contract but was not engine-executed, no Godot runtime available here).
+**Overall verdict:** **PASS / CLOSED** — M0–M6 all **PASS**. M6 was promoted from
+PARTIAL to PASS by the follow-on *Bundle-Wired Living City* initiative, which
+executed the Godot 4.4.1 client in-engine (headless) against the live Python server
+and certified the whole living-city loop. See `FINDINGS_BW_LIVING_CITY.md`.
+(Historical note: at the close of the original seven-milestone run M6 was PARTIAL
+because no Godot runtime was available; the table below is preserved from that
+point, with M6's verdict updated.)
 
 ## Milestone table
 
@@ -15,7 +19,7 @@ tested contract but was not engine-executed, no Godot runtime available here).
 | **M3** Reactive affordances (SP2) | PASS | Environment advertises → seeded score-weighted top-k pick; belief spike raises shelter/flee; signature subordination; **reactions on/off bit-identical curve**; zero `AgentZone.rng`. | +11 (219) |
 | **M4** Named roster (SP3) | PASS | Bounded LRU-by-interaction roster; identity persists across demote→re-promote; conservation exact; bound independent of city size; deterministic. | +13 (232) |
 | **M5** Save/load | PASS | Versioned explicit JSON schema; **0→N vs 0→K save/destroy/reload/K→N bit-identical** (final + intermediate trace); corrupt/incompatible fail safely; bridge SAVE/LOAD. | +7 (239) |
-| **M6** Visible living city | PARTIAL | Snapshot rendering contract certified; sim/snapshot/IPC budgets separated & benchmarked; full end-to-end vertical demo passes; Godot renderer + interaction written but not engine-executed. | +2 (241) |
+| **M6** Visible living city | **PASS** | Godot 4.4.1 client executed in-engine vs the live server: real Houston citizens rendered from snapshots (MultiMesh), player position drives focus, interaction→roster, leave/return restores the same person, cordon changes the future, save/destroy/reload bit-identical. TestRunner + StreetSmoke green; render/IPC benchmarked. | +2 (241); +11 BW → 252 |
 
 **Full suite at close: 241 Python tests passing.** Godot's own `TestRunner`/
 `StreetSmoke` suites could not be run (no engine); their `.gd` assets are updated to

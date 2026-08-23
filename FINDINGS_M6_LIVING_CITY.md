@@ -2,7 +2,13 @@
 
 **Milestone:** M6 (Visible living city)
 **Branch:** `claude/asphodel-authoritative-world-55z0qw`
-**Verdict:** **PARTIAL** — the authoritative/simulation half is certified in Python
+**Verdict:** **PASS** — retroactively promoted from PARTIAL by the follow-on
+*Bundle-Wired Living City* initiative, which executed the Godot 4.4.1 client
+in-engine (headless) against the live Python server and certified the whole loop.
+See `FINDINGS_BW_LIVING_CITY.md`. The original PARTIAL text is retained below for
+provenance.
+
+> **PARTIAL (original):** the authoritative/simulation half is certified in Python
 (snapshot rendering contract, separated benchmarks, full end-to-end vertical demo);
 the Godot rendering + interaction is written to that tested contract but **could not
 be engine-executed** here (no Godot runtime in this environment).
