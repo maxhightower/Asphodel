@@ -220,14 +220,20 @@ func _build_roads(roads: Dictionary) -> void:
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.albedo_color = Color(0.85, 0.85, 0.9)
+	# One surface of line SEGMENTS for the whole road network. (One surface per
+	# polyline overflowed the GLES3 MAX_MESH_SURFACES cap on big cities like
+	# Houston, which has hundreds of roads.)
+	im.surface_begin(Mesh.PRIMITIVE_LINES, mat)
 	for pl in polylines:
 		var pts: Array = pl.get("points", [])
 		if pts.size() < 2:
 			continue
-		im.surface_begin(Mesh.PRIMITIVE_LINE_STRIP, mat)
-		for p in pts:
-			im.surface_add_vertex(Vector3(float(p[0]), 0.1, float(p[1])))
-		im.surface_end()
+		for k in range(pts.size() - 1):
+			var a: Array = pts[k]
+			var b: Array = pts[k + 1]
+			im.surface_add_vertex(Vector3(float(a[0]), 0.1, float(a[1])))
+			im.surface_add_vertex(Vector3(float(b[0]), 0.1, float(b[1])))
+	im.surface_end()
 	var mi := MeshInstance3D.new()
 	mi.mesh = im
 	add_child(mi)
