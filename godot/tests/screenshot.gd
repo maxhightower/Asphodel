@@ -95,11 +95,12 @@ func _add_overhead_camera(scene: Node) -> void:
 		if p != null:
 			target = p.position
 	var cam := Camera3D.new()
-	cam.fov = 60.0
+	cam.fov = 62.0
 	cam.far = 20000.0
-	# Steep, near-top-down so the frame fills with city (streets + blocks + crowd)
-	# rather than sky.
-	cam.position = target + Vector3(30, 520, 240)
+	# Low oblique "drone" angle so building sides, the extruded streets between
+	# blocks, and any elevated highway all read (a near-top-down shot flattens the
+	# road extrusion). Aim a little above ground so the horizon sits high.
+	cam.position = target + Vector3(0, 130, 235)
 	cam.current = true
 	add_child(cam)                                  # must be in-tree before look_at
-	cam.look_at(target, Vector3.UP)
+	cam.look_at(target + Vector3(0, 25, 0), Vector3.UP)

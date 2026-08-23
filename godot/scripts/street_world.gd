@@ -56,6 +56,7 @@ func _ready() -> void:
 	else:
 		_build_buildings(footprints)
 	_build_roads(bundle["roads"])
+	_build_traffic(bundle["roads"])
 	_spawn_player(_bounds, bundle["roads"])
 	_build_hud()
 	_build_pause_overlay()
@@ -330,6 +331,17 @@ func _build_roads(roads: Dictionary) -> void:
 	mi.mesh = st.commit()
 	mi.material_override = mat
 	add_child(mi)
+
+
+func _build_traffic(roads: Dictionary) -> void:
+	# Presentation-only vehicles (cars/trucks/bikes) driving the road network.
+	var polylines: Array = roads.get("polylines", [])
+	if polylines.is_empty():
+		return
+	var traffic: Node3D = load("res://scripts/traffic.gd").new()
+	traffic.process_mode = Node.PROCESS_MODE_PAUSABLE   # freezes with pause
+	add_child(traffic)
+	traffic.setup(polylines, 260)
 
 
 func _build_surface_road(st: SurfaceTool, pts: Array, roadway: float,
