@@ -341,7 +341,7 @@ func _build_traffic(roads: Dictionary) -> void:
 	var traffic: Node3D = load("res://scripts/traffic.gd").new()
 	traffic.process_mode = Node.PROCESS_MODE_PAUSABLE   # freezes with pause
 	add_child(traffic)
-	traffic.setup(polylines, 260)
+	traffic.setup(polylines, 900)
 
 
 func _build_surface_road(st: SurfaceTool, pts: Array, roadway: float,
@@ -594,9 +594,18 @@ func _render_live() -> void:
 	var world: Dictionary = SimBridge.last_world
 	if world.is_empty():
 		return
-	# Place the promoted zone's torus at the zone's real world centre.
+	# Place + spread the crowd across the zone's real footprint (not the tiny
+	# transmission torus), centred on the zone's world position.
 	_citizen_render.render_snapshot(world, _current_focus_zone,
-		_zone_center(_current_focus_zone))
+		_zone_center(_current_focus_zone), _zone_extent(_current_focus_zone))
+
+
+func _zone_extent(zid: int) -> Vector2:
+	for zz in _zones:
+		if int(zz["id"]) == zid:
+			var e: Array = zz["extent"]
+			return Vector2(float(e[0]), float(e[1]))
+	return Vector2(400.0, 400.0)
 
 
 func _recover_player() -> void:

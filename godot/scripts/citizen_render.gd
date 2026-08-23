@@ -47,10 +47,23 @@ func _ready() -> void:
 	add_child(_mmi)
 
 
+const MAX_RENDER := 320       # a plausible street crowd, not the whole zone census
+# Population disposition: most people in a zone are INDOORS (inside the building
+# masses) or IN VEHICLES at any moment; only a small fraction are pedestrians on
+# the street. We render that pedestrian fraction as capsules; the rest are assumed
+# inside buildings/vehicles and not drawn as sidewalk crowd.
+const PEDESTRIAN_FRAC := 0.06
+
+
 ## Draw one authoritative snapshot's agents for `focus_zone`. Returns the number
-## of agents rendered.
+## rendered. A promoted zone holds its ENTIRE population (thousands) packed onto a
+## small transmission torus; drawing them all makes a shoulder-to-shoulder pile
+## that is not the city. So we (a) render at most MAX_RENDER agents — always the
+## named ones, plus an even sample of the rest — and (b) SPREAD them across the
+## zone's real `extent` (metres) instead of the tiny torus.
 func render_snapshot(snap: Dictionary, focus_zone: int,
-		world_offset: Vector3 = Vector3.ZERO) -> int:
+		world_offset: Vector3 = Vector3.ZERO,
+		extent: Vector2 = Vector2.ZERO) -> int:
 	var agents: Dictionary = snap.get("agents", {})
 	var a: Dictionary = agents.get(str(focus_zone), {})
 	var pos: Array = a.get("positions", [])
@@ -58,32 +71,53 @@ func render_snapshot(snap: Dictionary, focus_zone: int,
 	var citizen_id: Array = a.get("citizen_id", [])
 	var named: Array = a.get("named", [])
 	var area: float = float(a.get("area_size", 100.0))
-	var half := area * 0.5
 	var n := pos.size()
+	if extent == Vector2.ZERO:
+		extent = Vector2(area, area)
 
-	_mm.instance_count = n
-	var label_i := 0
+	# Choose which agents to draw: every named agent, then an even stride sample of
+	# the rest up to the pedestrian target (the rest are assumed indoors/in
+	# vehicles). Target = PEDESTRIAN_FRAC of the zone, capped at MAX_RENDER.
+	var idx: Array[int] = []
 	for i in range(n):
+		if named.size() > i and bool(named[i]):
+			idx.append(i)
+	var target: int = clampi(int(round(n * PEDESTRIAN_FRAC)), idx.size(), MAX_RENDER)
+	var remaining := target - idx.size()
+	if remaining > 0 and n > 0:
+		var stride: int = max(1, int(ceil(float(n) / float(remaining))))
+		var i := 0
+		while i < n and idx.size() < target:
+			if not (named.size() > i and bool(named[i])):
+				idx.append(i)
+			i += stride
+
+	_mm.instance_count = idx.size()
+	var label_i := 0
+	var slot := 0
+	for i in idx:
 		var p: Array = pos[i]
 		var is_named: bool = named.size() > i and bool(named[i])
 		var s: float = NAMED_SCALE if is_named else CROWD_SCALE
-		# Torus-local position, centred on the zone's world location (offset), so
-		# the promoted bubble renders around the player rather than at the origin.
-		var origin := world_offset + Vector3(float(p[0]) - half, AGENT_H, float(p[1]) - half)
-		var basis := Basis().scaled(Vector3(s, s, s))
-		_mm.set_instance_transform(i, Transform3D(basis, origin))
+		# Map torus-local [0,area] onto the zone's real extent, centred on the
+		# zone's world position, so people are spread across the block.
+		var fx := (float(p[0]) / area - 0.5) * extent.x
+		var fz := (float(p[1]) / area - 0.5) * extent.y
+		var origin := world_offset + Vector3(fx, AGENT_H, fz)
+		_mm.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3(s, s, s)), origin))
 		var cid: int = int(citizen_id[i]) if citizen_id.size() > i else -1
-		_mm.set_instance_color(i, _color(int(state[i]), cid, is_named))
+		_mm.set_instance_color(slot, _color(int(state[i]), cid, is_named))
 		if is_named and cid >= 0:
 			var lbl := _label(label_i)
 			label_i += 1
 			lbl.text = "Citizen %d" % cid
 			lbl.position = origin + Vector3(0, 1.0, 0)
 			lbl.visible = true
+		slot += 1
 	for j in range(label_i, _labels.size()):
 		_labels[j].visible = false               # no stale nameplates after churn
-	last_instance_count = n
-	return n
+	last_instance_count = idx.size()
+	return idx.size()
 
 
 func _color(state: int, cid: int, named: bool) -> Color:

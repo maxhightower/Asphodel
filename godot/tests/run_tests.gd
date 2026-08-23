@@ -64,24 +64,34 @@ func _test_citizen_render() -> void:
 	var CitizenRender = load("res://scripts/citizen_render.gd")
 	var r = CitizenRender.new()
 	add_child(r)
-	# snapshot with 4 agents, one of them named (roster) citizen 5
+	# 200 agents, citizen 5 named at index 100. Only a pedestrian FRACTION is drawn
+	# (the rest are assumed indoors/in vehicles), but a named agent is always shown.
+	var positions := []
+	var states := []
+	var cids := []
+	var namedf := []
+	for i in range(200):
+		positions.append([float(i), float(i)])
+		states.append(i % 5)
+		cids.append(5 if i == 100 else -1)
+		namedf.append(i == 100)
 	var snap := {"agents": {"7": {
-		"positions": [[10, 10], [20, 20], [30, 30], [40, 40]],
-		"state": [0, 1, 3, 4],
-		"citizen_id": [-1, -1, 5, -1],
-		"named": [false, false, true, false],
-		"area_size": 100.0,
-	}}}
+		"positions": positions, "state": states, "citizen_id": cids,
+		"named": namedf, "area_size": 100.0}}}
 	var n: int = r.render_snapshot(snap, 7)
-	_check(n == 4, "renders every agent in the focused zone (%d)" % n)
-	_check(r.last_instance_count == 4, "MultiMesh instance_count matches agent count")
-	# shrink the crowd: the named agent leaves -> its nameplate must hide
+	_check(n >= 1 and n < 200, "renders a pedestrian subset, not the whole zone (%d)" % n)
+	_check(r.last_instance_count == n, "MultiMesh instance_count matches the drawn subset")
+	var named_shown := 0
+	for c in r.get_children():
+		if c is Label3D and c.visible:
+			named_shown += 1
+	_check(named_shown == 1, "the named roster member is always drawn (nameplate shown)")
+	# shrink to a crowd with no named agent -> its nameplate must hide
 	var snap2 := {"agents": {"7": {
-		"positions": [[10, 10]],
-		"state": [0], "citizen_id": [-1], "named": [false], "area_size": 100.0,
-	}}}
-	var n2: int = r.render_snapshot(snap2, 7)
-	_check(n2 == 1, "re-render shrinks the crowd without leftover instances")
+		"positions": [[10, 10], [20, 20]],
+		"state": [0, 1], "citizen_id": [-1, -1], "named": [false, false],
+		"area_size": 100.0}}}
+	r.render_snapshot(snap2, 7)
 	var visible_labels := 0
 	for c in r.get_children():
 		if c is Label3D and c.visible:
