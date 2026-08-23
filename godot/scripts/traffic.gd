@@ -25,6 +25,7 @@ class Vehicle:
 	var along: float        # metres travelled into current segment
 	var speed: float
 	var half_h: float
+	var side: float         # lane offset perpendicular to travel (metres)
 
 var _lanes: Array[Lane] = []
 var _vehicles: Array[Vehicle] = []
@@ -54,14 +55,41 @@ func setup(polylines: Array, count: int = 220, seed: int = 1) -> void:
 	_running = true
 
 
-func _spawn_vehicle() -> void:
-	var lane: Lane = _lanes[_rng.randi() % _lanes.size()]
+func seed_on_polyline(pts_raw: Array, count: int, elevated: bool = false) -> void:
+	## Guarantee traffic on a specific road (used to populate a road that the
+	## camera is looking down). Spawns `count` vehicles spaced along it.
+	var lane := Lane.new()
+	lane.pts = PackedVector2Array()
+	for p in pts_raw:
+		lane.pts.append(Vector2(float(p[0]), float(p[1])))
+	if lane.pts.size() < 2:
+		return
+	lane.elevated = elevated
+	lane.y = (DECK_Y + 0.1) if elevated else (ROAD_Y + 0.05)
+	lane.speed_mult = 2.2 if elevated else 1.0
+	_lanes.append(lane)
+	var total := 0.0
+	for k in range(lane.pts.size() - 1):
+		total += lane.pts[k].distance_to(lane.pts[k + 1])
+	for i in range(count):
+		_spawn_vehicle(lane, (float(i) / float(max(1, count))) * total)
+	_running = true
+
+
+func _spawn_vehicle(force_lane = null, force_dist: float = -1.0) -> void:
+	var lane: Lane = force_lane if force_lane != null else _lanes[_rng.randi() % _lanes.size()]
 	# Elevated freeways carry cars/trucks only; surface streets also carry bikes.
 	var kind := _pick_kind(lane.elevated)
 	var v := Vehicle.new()
 	v.lane = lane
-	v.seg = _rng.randi() % max(1, lane.pts.size() - 1)
-	v.along = 0.0
+	if force_dist < 0.0:
+		v.seg = _rng.randi() % max(1, lane.pts.size() - 1)
+		v.along = 0.0
+	else:
+		v.seg = 0
+		v.along = force_dist       # distance from the start of the whole polyline
+	# Right-hand lane offset so both directions read as separate lanes.
+	v.side = (1.0 if _rng.randf() < 0.5 else -1.0) * (2.4 + 1.2 * _rng.randf())
 	v.node = MeshInstance3D.new()
 	var mesh := BoxMesh.new()
 	var dims: Vector3 = kind[0]
@@ -120,10 +148,12 @@ func _place(v: Vehicle) -> void:
 		if v.along <= seglen or seglen < 0.001:
 			var t := 0.0 if seglen < 0.001 else v.along / seglen
 			var pos := a.lerp(b, t)
-			v.node.position = Vector3(pos.x, lane.y + v.half_h, pos.y)
 			var dir := (b - a)
 			if dir.length() > 0.001:
+				var nrm := dir.orthogonal().normalized() * v.side   # lane offset
+				pos += nrm
 				v.node.rotation.y = atan2(dir.x, dir.y)
+			v.node.position = Vector3(pos.x, lane.y + v.half_h, pos.y)
 			return
 		v.along -= seglen
 		v.seg += 1

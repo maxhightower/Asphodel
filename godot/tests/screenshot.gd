@@ -101,6 +101,7 @@ func _add_street_camera(scene: Node) -> void:
 	var best_b := Vector2.ZERO
 	var best_d := INF
 	var found := false
+	var best_poly: Array = []
 	for pl in polylines:
 		var cls := String(pl.get("class", ""))
 		if cls == "motorway":
@@ -114,7 +115,11 @@ func _add_street_camera(scene: Node) -> void:
 			var mid := (a + b) * 0.5
 			var d := mid.distance_to(Vector2(centre.x, centre.z))
 			if d < best_d:
-				best_d = d; best_a = a; best_b = b; found = true
+				best_d = d; best_a = a; best_b = b; found = true; best_poly = pts
+	# Guarantee cars on the road the camera is looking down.
+	var tr = scene.get("_traffic")
+	if found and tr != null:
+		tr.seed_on_polyline(best_poly, 16, false)
 	var cam := Camera3D.new()
 	cam.fov = 68.0
 	cam.far = 20000.0

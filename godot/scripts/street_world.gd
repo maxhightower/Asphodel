@@ -29,6 +29,7 @@ var _outbreak_label: Label
 var _zones: Array = []
 var _zone_map: ZoneMap
 var _citizen_render: Node3D
+var _traffic: Node3D
 var _current_focus_zone: int = -1
 var _last_render_tick: int = -1
 
@@ -342,6 +343,7 @@ func _build_traffic(roads: Dictionary) -> void:
 	traffic.process_mode = Node.PROCESS_MODE_PAUSABLE   # freezes with pause
 	add_child(traffic)
 	traffic.setup(polylines, 900)
+	_traffic = traffic
 
 
 func _build_surface_road(st: SurfaceTool, pts: Array, roadway: float,
