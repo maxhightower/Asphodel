@@ -90,5 +90,11 @@ class BridgeClient:
     def snapshot(self) -> dict:
         return self.send(Command.SNAPSHOT)
 
+    def save(self, path: str) -> dict:
+        return self.send(Command.SAVE, path=path)
+
+    def load(self, path: str) -> dict:
+        return self.send(Command.LOAD, path=path)
+
     def shutdown(self) -> dict:
         return self.send(Command.SHUTDOWN)

@@ -170,6 +170,29 @@ class WorldSession:
         self._require_world(Command.SNAPSHOT)
         return P.response(Command.SNAPSHOT, id=rid, world=self.world.snapshot())
 
+    def _cmd_save(self, msg, rid) -> dict:
+        self._require_world(Command.SAVE)
+        path = msg.get("path")
+        if not isinstance(path, str) or not path:
+            raise _BadArg("SAVE requires a string 'path'")
+        from ..save import save_world
+        save_world(self.world, path, bundle=self.bundle,
+                   player_citizen=self.player_citizen)
+        return P.response(Command.SAVE, id=rid, path=path, **self._summary())
+
+    def _cmd_load(self, msg, rid) -> dict:
+        path = msg.get("path")
+        if not isinstance(path, str) or not path:
+            raise _BadArg("LOAD requires a string 'path'")
+        from ..save import load_world_file, SaveError
+        try:
+            world = load_world_file(path)
+        except SaveError as e:
+            raise _BadArg(str(e))
+        self.world = world
+        self.paused = False
+        return P.response(Command.LOAD, id=rid, path=path, **self._summary())
+
     def _cmd_shutdown(self, msg, rid) -> dict:
         self.should_stop = True
         return P.response(Command.SHUTDOWN, id=rid, bye=True)

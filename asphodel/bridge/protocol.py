@@ -41,11 +41,13 @@ class Command:
     PAUSE = "PAUSE"            # freeze advancement
     RESUME = "RESUME"          # unfreeze
     SNAPSHOT = "SNAPSHOT"      # World.snapshot() without advancing
+    SAVE = "SAVE"              # persist the authoritative world to a path
+    LOAD = "LOAD"              # replace the world from a saved path
     SHUTDOWN = "SHUTDOWN"      # end the session/process cleanly
 
     ALL = frozenset({
         HELLO, START_WORLD, SET_FOCUS, ADVANCE, INTERVENE,
-        PAUSE, RESUME, SNAPSHOT, SHUTDOWN,
+        PAUSE, RESUME, SNAPSHOT, SAVE, LOAD, SHUTDOWN,
     })
 
 
