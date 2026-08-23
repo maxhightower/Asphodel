@@ -31,6 +31,7 @@ from .model import Simulation, TickRecord
 from .micro import AgentZone, STATE_NAMES
 from .handoff import promote, macro_zone_counts, largest_remainder_counts, should_promote, should_demote
 from . import npc
+from .affordances import advertise
 
 
 # Reference agent density (agents per unit area) at which the micro tier was
@@ -105,6 +106,17 @@ class World:
         self._zone_citizens: dict[int, list[int]] = {}
         self._schedules: dict[int, list] = {}      # citizen_id -> schedule
 
+        # --- M3 / SP2: reactive affordances ------------------------------------
+        # Optional per-citizen environment/hazard tags the affordance layer reads,
+        # and the set of citizens currently inside an authored signature moment
+        # (whose reaction is FORCED to `signature`, the Oblivion guard). Both are
+        # book-keeping only: reactions are pure `chosen_action` labels and never
+        # touch the epidemic (the certified belief-driven shelter channel is
+        # unchanged), so SP2 is bit-identical to SP1.
+        self._citizen_tags: dict[int, list] = {}
+        self._signature_citizens: set[int] = set()
+        self.reactions_enabled = True
+
     # ------------------------------------------------------------------ inputs
     def set_focus(self, zones) -> None:
         """Set the player-focus set: these zones are force-promoted (camera)."""
@@ -140,6 +152,19 @@ class World:
     def current_hour(self) -> float:
         """The in-game hour [0,24) at the current authoritative tick."""
         return npc.hour_of_day(self.sim.tick, self.dt, self.start_hour)
+
+    def set_citizen_tags(self, tags_by_id: dict) -> None:
+        """Register per-citizen environment/hazard tags the affordance layer reads
+        (e.g. ``{cid: ["fire"]}``). Optional; absent -> only the belief-scaled
+        baseline affordances apply."""
+        self._citizen_tags = {int(k): list(v) for k, v in tags_by_id.items()}
+
+    def set_signature_citizens(self, ids) -> None:
+        """Mark citizens currently inside an authored signature moment. Their
+        reaction is forced to ``signature`` and the utility pick is skipped — the
+        designed-content-wins guard. Player interventions win the same way,
+        implicitly, because they drive the belief field the reactions read."""
+        self._signature_citizens = set(int(i) for i in ids)
 
     def intervene(self, action: str, zones=None, **params) -> None:
         """Apply a player intervention to the world state.
@@ -245,6 +270,8 @@ class World:
         if self.citizens:
             for z, zone in self.promoted.items():
                 self._update_zone_activity(z, zone)
+                if self.reactions_enabled:
+                    self._update_zone_reactions(z, zone)
 
         # --- 5. authoritative aggregate (after write-back) -------------------
         totals = {name: float(getattr(self.sim, _attr(name)).sum())
@@ -299,6 +326,8 @@ class World:
                 # activity is an int8 code (see asphodel.npc.ACTIVITY_NAMES).
                 "citizen_id": zone.citizen_id.tolist(),
                 "activity": zone.activity.tolist(),
+                # M3: reactive action label per agent (see npc.ACTION_NAMES).
+                "chosen_action": zone.chosen_action.tolist(),
                 "area_size": zone.L,
             }
         out = {
@@ -309,6 +338,7 @@ class World:
             "authority_perceived": float(sim.authority_perceived),
             "zones": zones, "agents": agents,
             "activity_names": list(npc.ACTIVITY_NAMES),
+            "action_names": list(npc.ACTION_NAMES),
         }
         if self.citizens:
             out["activity_occupancy"] = self.activity_occupancy()
@@ -330,6 +360,24 @@ class World:
             acts = zone.activity[ids]
             for code in range(npc.N_ACTIVITIES):
                 counts[npc.ACTIVITY_NAMES[code]] = int((acts == code).sum())
+            occ[z] = counts
+        return occ
+
+    def reaction_occupancy(self) -> dict:
+        """Per-promoted-zone counts of identified agents by reactive action.
+
+        ``{zone: {action_name: count}}`` — the measurable signal that citizens
+        depart from routine as the world departs from calm.
+        """
+        occ: dict[int, dict] = {}
+        for z, zone in self.promoted.items():
+            ids = zone.identified_slots()
+            if ids.size == 0:
+                continue
+            acts = zone.chosen_action[ids]
+            counts = {name: 0 for name in npc.ACTION_NAMES}
+            for code in range(npc.N_ACTIONS):
+                counts[npc.ACTION_NAMES[code]] = int((acts == code).sum())
             occ[z] = counts
         return occ
 
@@ -413,6 +461,8 @@ class World:
         zone = promote(counts, self.cfg.genome, params, self.dt, seed=seed)
         self._assign_citizens(z, zone)
         self._update_zone_activity(z, zone)
+        if self.reactions_enabled:
+            self._update_zone_reactions(z, zone)
         self.promoted[z] = zone
 
     def _assign_citizens(self, z: int, zone: AgentZone) -> None:
@@ -449,6 +499,34 @@ class World:
             cid = int(zone.citizen_id[slot])
             sched = self._schedules.get(cid)
             acts[slot] = npc.activity_at_hour(sched, hour) if sched else npc.IDLE
+
+    def _update_zone_reactions(self, z: int, zone: AgentZone) -> None:
+        """Compute each identified agent's reactive ``chosen_action`` for the live
+        belief field (M3 / SP2).
+
+        Pure label update: uses a per-citizen seeded RNG (never ``zone.rng``),
+        touches neither ``pos``/``state`` nor the sheltered set, so it cannot
+        perturb the epidemic. Signature citizens are forced to ``signature``
+        (designed content wins). Anonymous agents keep ``continue_schedule``.
+        """
+        ids = zone.identified_slots()
+        if ids.size == 0:
+            return
+        belief_z = float(self.sim.belief[z])
+        needs = npc.default_needs(safety=belief_z)
+        tick = int(self.sim.tick)
+        act_arr = zone.chosen_action
+        for slot in ids:
+            cid = int(zone.citizen_id[slot])
+            if cid in self._signature_citizens:
+                act_arr[slot] = npc.SIGNATURE
+                continue
+            tags = self._citizen_tags.get(cid)
+            ads = advertise(tags, belief_z)
+            # Per-citizen deterministic stream: keyed by (citizen, tick, world
+            # seed); explicitly NOT AgentZone.rng, so the curve stays identical.
+            rng = np.random.default_rng([cid, tick, self._seed])
+            act_arr[slot] = npc.action_code(npc.choose_action(ads, needs, rng))
 
     def _demote_zone(self, z: int) -> None:
         # The macro ledger already holds this zone's latest agent-derived counts

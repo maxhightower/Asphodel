@@ -34,6 +34,10 @@ from .orchestrator import World, WorldTick
 # --- Phase 11 / M2: NPC identity + schedule activity -----------------------
 from . import npc
 from .npc import ACTIVITY_NAMES, activity_code, activity_name, activity_at_hour
+# --- Phase 11 / M3: reactive affordances -----------------------------------
+from .npc import ACTION_NAMES, NEEDS, choose_action, action_code, action_name
+from . import affordances
+from .affordances import advertise
 
 # --- Citizen spawn: the possibility space a player can be dropped into ------
 from .citizen import (

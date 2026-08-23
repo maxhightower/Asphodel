@@ -49,6 +49,78 @@ def hour_of_day(tick: int, dt: float, start_hour: float = 0.0) -> float:
     return (start_hour + tick * dt * 24.0) % 24.0
 
 
+# ===========================================================================
+# M3 / SP2: reactive affordances — need vector + advertised-action chooser
+# ===========================================================================
+# Action codes stored in AgentZone.chosen_action (int8). Stable mapping.
+CONTINUE, SHELTER, FLEE, SEEK, SIGNATURE = 0, 1, 2, 3, 4
+ACTION_NAMES = ("continue_schedule", "shelter", "flee", "seek", "signature")
+ACTION_CODE = {name: i for i, name in enumerate(ACTION_NAMES)}
+N_ACTIONS = len(ACTION_NAMES)
+
+# The need vector an agent scores affordances against.
+NEEDS = ("safety", "fatigue", "hunger", "social")
+
+# Which need each action chiefly satisfies (for scoring).
+_ACTION_NEED = {
+    "continue_schedule": "fatigue",   # routine satisfies low-arousal needs
+    "shelter": "safety",
+    "flee": "safety",
+    "seek": "hunger",
+}
+
+
+def action_code(name: str) -> int:
+    return ACTION_CODE.get(str(name).lower(), CONTINUE)
+
+
+def action_name(code: int) -> str:
+    c = int(code)
+    return ACTION_NAMES[c] if 0 <= c < N_ACTIONS else "continue_schedule"
+
+
+def choose_action(advertisements, needs, rng, top_k: int = 2) -> str:
+    """Score each advertised ``(action, utility)`` by ``utility * the need it
+    serves``, then draw one of the top-k **weighted by score** (The Sims
+    anti-robotic rule: not pure argmax, but the stronger affordance wins more
+    often — so a rising need materially shifts the action mix, while ties stay
+    stochastic).
+
+    Seeded entirely by the caller-supplied per-citizen ``rng`` — deterministic,
+    and never touches ``AgentZone.rng``. Empty advertisements -> keep the
+    schedule. This is the whole "AI": a weighted lookup + a seeded draw, no
+    planner, no behaviour tree.
+    """
+    if not advertisements:
+        return "continue_schedule"
+    scored = sorted(
+        ((float(u) * float(needs.get(_ACTION_NEED.get(a, "safety"), 0.0)), a)
+         for a, u in advertisements),
+        key=lambda t: t[0], reverse=True,
+    )
+    k = min(top_k, len(scored))
+    top = scored[:k]
+    weights = [max(s, 0.0) for s, _ in top]
+    total = sum(weights)
+    if total <= 0.0:
+        # all-zero scores: uniform among the top-k (deterministic via rng)
+        return top[int(rng.integers(k))][1]
+    # Weighted draw: cumulative-threshold on a single uniform sample.
+    u = float(rng.random()) * total
+    acc = 0.0
+    for w, (_, action) in zip(weights, top):
+        acc += w
+        if u < acc:
+            return action
+    return top[-1][1]
+
+
+def default_needs(safety: float) -> dict:
+    """A citizen's need vector with a live ``safety`` term (from zone belief) and
+    modest baseline routine needs. Kept tiny and data-light by design."""
+    return {"safety": float(safety), "fatigue": 0.3, "hunger": 0.2, "social": 0.2}
+
+
 def activity_at_hour(schedule: list[ScheduleEntry], hour: float) -> int:
     """The activity code a citizen's schedule prescribes at ``hour``.
 

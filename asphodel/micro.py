@@ -113,6 +113,9 @@ class AgentZone:
         # identities are assigned.
         self.citizen_id = np.full(n, -1, dtype=np.int64)
         self.activity = np.zeros(n, dtype=np.int8)
+        # M3: reactive action label (0 = continue_schedule). Pure presentation;
+        # never affects transmission (the certified shelter channel is unchanged).
+        self.chosen_action = np.zeros(n, dtype=np.int8)
 
         self.tick = 0
 
@@ -151,6 +154,7 @@ class AgentZone:
         # Initialised after the permutation, so no draw is spent on them.
         zone.citizen_id = np.full(n, -1, dtype=np.int64)
         zone.activity = np.zeros(n, dtype=np.int8)
+        zone.chosen_action = np.zeros(n, dtype=np.int8)
         zone.tick = 0
         return zone
 
@@ -190,6 +194,8 @@ class AgentZone:
             [self.citizen_id, np.full(k, -1, dtype=np.int64)])
         self.activity = np.concatenate(
             [self.activity, np.zeros(k, dtype=np.int8)])
+        self.chosen_action = np.concatenate(
+            [self.chosen_action, np.zeros(k, dtype=np.int8)])
         self.n += k
 
     def remove_agents(self, counts: dict[str, int]) -> None:
@@ -218,6 +224,7 @@ class AgentZone:
         self.sheltered = self.sheltered[keep]
         self.citizen_id = self.citizen_id[keep]
         self.activity = self.activity[keep]
+        self.chosen_action = self.chosen_action[keep]
         self.n = int(self.state.size)
 
     def reconcile_to_counts(self, target: dict[str, int]) -> None:
