@@ -282,54 +282,141 @@ func _build_blocks(meta: Dictionary, zones: Array) -> void:
 	add_child(mmi)
 
 
+# Road surface colours.
+const ASPHALT := Color(0.20, 0.20, 0.23)
+const CONCRETE := Color(0.60, 0.60, 0.58)
+const BARRIER_COL := Color(0.72, 0.70, 0.62)
+const DECK_COL := Color(0.32, 0.32, 0.35)
+const PILLAR_COL := Color(0.42, 0.42, 0.45)
+
+# Curb / sidewalk / barrier / elevated-deck heights (metres).
+const ROAD_Y := 0.28
+const CURB_Y := 0.55
+const BARRIER_Y := 1.2
+const DECK_Y := 7.0
+const DECK_T := 0.7
+
+
 func _build_roads(roads: Dictionary) -> void:
+	## Extruded road network: raised asphalt roadways with concrete curbs/
+	## sidewalks; barriers along major roads; and highways (motorway class) carried
+	## on an ELEVATED deck on pillars — Houston's elevated freeways. (Bridge/layer
+	## data isn't in the bundle, so highway elevation is a class heuristic, not a
+	## per-road OSM fact.)
 	var polylines: Array = roads.get("polylines", [])
 	if polylines.is_empty():
 		return
-	# Roads render as flat ground RIBBONS (not hairline segments) so the street
-	# network actually reads as streets, from the ground and from above. Every
-	# segment becomes a width-quad; the whole network is one ArrayMesh surface
-	# (one surface per polyline overflowed the GLES3 MAX_MESH_SURFACES cap on big
-	# cities, and 1px lines were invisible).
-	var st := SurfaceTool.new()
+	var st := SurfaceTool.new()      # all opaque road/structure geometry, batched
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	st.set_color(Color(0.34, 0.35, 0.40))
 	for pl in polylines:
-		var pts: Array = pl.get("points", [])
-		if pts.size() < 2:
+		var pts_raw: Array = pl.get("points", [])
+		if pts_raw.size() < 2:
 			continue
-		var w := _road_width(String(pl.get("class", "")))
-		for k in range(pts.size() - 1):
-			var a := Vector2(float(pts[k][0]), float(pts[k][1]))
-			var b := Vector2(float(pts[k + 1][0]), float(pts[k + 1][1]))
-			var dir := (b - a)
-			if dir.length() < 0.001:
-				continue
-			var n := dir.orthogonal().normalized() * (w * 0.5)
-			var y := 0.15
-			var p0 := Vector3(a.x - n.x, y, a.y - n.y)
-			var p1 := Vector3(a.x + n.x, y, a.y + n.y)
-			var p2 := Vector3(b.x + n.x, y, b.y + n.y)
-			var p3 := Vector3(b.x - n.x, y, b.y - n.y)
-			for v in [p0, p1, p2, p0, p2, p3]:
-				st.set_normal(Vector3.UP)
-				st.add_vertex(v)
+		var pts: Array = []
+		for p in pts_raw:
+			pts.append(Vector2(float(p[0]), float(p[1])))
+		var cls := String(pl.get("class", ""))
+		if cls == "motorway" or cls == "trunk":
+			_build_elevated(st, pts, 16.0)          # elevated freeway on pillars
+		else:
+			var rw := 12.0 if cls == "primary" else 8.0
+			var sw := 3.0 if cls == "primary" else 2.2
+			_build_surface_road(st, pts, rw, sw, cls == "primary")
 	var mat := StandardMaterial3D.new()
 	mat.vertex_color_use_as_albedo = true
-	mat.roughness = 1.0
+	mat.roughness = 0.95
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	var mi := MeshInstance3D.new()
 	mi.mesh = st.commit()
 	mi.material_override = mat
 	add_child(mi)
 
 
-func _road_width(cls: String) -> float:
-	match cls:
-		"motorway", "trunk": return 22.0
-		"primary": return 16.0
-		"secondary": return 12.0
-		"tertiary": return 9.0
-		_: return 7.0
+func _build_surface_road(st: SurfaceTool, pts: Array, roadway: float,
+		sidewalk: float, barriers: bool) -> void:
+	# Raised asphalt roadway + a concrete sidewalk slab down each side; optional
+	# low barriers along a major surface road.
+	var rh := roadway * 0.5
+	for k in range(pts.size() - 1):
+		var a: Vector2 = pts[k]
+		var b: Vector2 = pts[k + 1]
+		var d := b - a
+		if d.length() < 0.001:
+			continue
+		var n := d.orthogonal().normalized()
+		_slab(st, a, b, n, -rh, rh, 0.0, ROAD_Y, ASPHALT)                     # roadway
+		_slab(st, a, b, n, rh, rh + sidewalk, 0.0, CURB_Y, CONCRETE)         # sidewalk L
+		_slab(st, a, b, n, -rh - sidewalk, -rh, 0.0, CURB_Y, CONCRETE)       # sidewalk R
+		if barriers:
+			_slab(st, a, b, n, rh + sidewalk - 0.3, rh + sidewalk, CURB_Y, BARRIER_Y, BARRIER_COL)
+			_slab(st, a, b, n, -rh - sidewalk, -rh - sidewalk + 0.3, CURB_Y, BARRIER_Y, BARRIER_COL)
+
+
+func _build_elevated(st: SurfaceTool, pts: Array, deck_w: float) -> void:
+	# An elevated highway: a deck slab held up by pillars, with edge barriers.
+	var hw := deck_w * 0.5
+	for k in range(pts.size() - 1):
+		var a: Vector2 = pts[k]
+		var b: Vector2 = pts[k + 1]
+		var d := b - a
+		var seglen := d.length()
+		if seglen < 0.001:
+			continue
+		var n := d.orthogonal().normalized()
+		# Deck slab.
+		_slab(st, a, b, n, -hw, hw, DECK_Y - DECK_T, DECK_Y, DECK_COL)
+		# Edge barriers along the deck.
+		_slab(st, a, b, n, hw - 0.4, hw, DECK_Y, DECK_Y + 1.0, BARRIER_COL)
+		_slab(st, a, b, n, -hw, -hw + 0.4, DECK_Y, DECK_Y + 1.0, BARRIER_COL)
+		# Support pillars every ~45 m under the deck.
+		var steps: int = max(1, floori(seglen / 45.0))
+		for s in range(steps):
+			var t := (float(s) + 0.5) / float(steps)
+			var c := a.lerp(b, t)
+			_pillar(st, c, 3.0, DECK_Y - DECK_T)
+
+
+func _slab(st: SurfaceTool, a: Vector2, b: Vector2, n: Vector2,
+		off0: float, off1: float, y0: float, y1: float, color: Color) -> void:
+	# A raised rectangular slab between a->b, spanning perpendicular offsets
+	# off0..off1 and heights y0..y1: top face + the two long side faces.
+	st.set_color(color)
+	var a0 := a + n * off0
+	var a1 := a + n * off1
+	var b0 := b + n * off0
+	var b1 := b + n * off1
+	# top
+	_tri(st, Vector3(a0.x, y1, a0.y), Vector3(a1.x, y1, a1.y), Vector3(b1.x, y1, b1.y), Vector3.UP)
+	_tri(st, Vector3(a0.x, y1, a0.y), Vector3(b1.x, y1, b1.y), Vector3(b0.x, y1, b0.y), Vector3.UP)
+	# side along off1
+	var s1 := Vector3(n.x, 0, n.y)
+	_quad(st, Vector3(a1.x, y0, a1.y), Vector3(b1.x, y0, b1.y), Vector3(b1.x, y1, b1.y), Vector3(a1.x, y1, a1.y), s1)
+	# side along off0
+	_quad(st, Vector3(b0.x, y0, b0.y), Vector3(a0.x, y0, a0.y), Vector3(a0.x, y1, a0.y), Vector3(b0.x, y1, b0.y), -s1)
+
+
+func _pillar(st: SurfaceTool, c: Vector2, side: float, top: float) -> void:
+	st.set_color(PILLAR_COL)
+	var h := side * 0.5
+	var corners: Array[Vector2] = [Vector2(-h, -h), Vector2(h, -h), Vector2(h, h), Vector2(-h, h)]
+	for i in range(4):
+		var p: Vector2 = c + corners[i]
+		var q: Vector2 = c + corners[(i + 1) % 4]
+		_quad(st, Vector3(p.x, 0, p.y), Vector3(q.x, 0, q.y),
+			Vector3(q.x, top, q.y), Vector3(p.x, top, p.y),
+			Vector3(q.x - p.x, 0, q.y - p.y).cross(Vector3.UP).normalized())
+
+
+func _tri(st: SurfaceTool, p0: Vector3, p1: Vector3, p2: Vector3, nrm: Vector3) -> void:
+	for v in [p0, p1, p2]:
+		st.set_normal(nrm)
+		st.add_vertex(v)
+
+
+func _quad(st: SurfaceTool, p0: Vector3, p1: Vector3, p2: Vector3, p3: Vector3, nrm: Vector3) -> void:
+	for v in [p0, p1, p2, p0, p2, p3]:
+		st.set_normal(nrm)
+		st.add_vertex(v)
 
 
 func _add_environment_and_light() -> void:

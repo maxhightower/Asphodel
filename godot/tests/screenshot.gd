@@ -99,7 +99,7 @@ func _add_overhead_camera(scene: Node) -> void:
 	cam.far = 20000.0
 	# Steep, near-top-down so the frame fills with city (streets + blocks + crowd)
 	# rather than sky.
-	cam.position = target + Vector3(30, 560, 150)
-	cam.look_at(target, Vector3.UP)
+	cam.position = target + Vector3(30, 520, 240)
 	cam.current = true
-	add_child(cam)
+	add_child(cam)                                  # must be in-tree before look_at
+	cam.look_at(target, Vector3.UP)
