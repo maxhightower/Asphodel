@@ -23,6 +23,8 @@ def main(argv=None) -> int:
     p.add_argument("--days", type=float, default=120.0)
     p.add_argument("--cache", default=None, help="OSM response cache directory")
     p.add_argument("--max-span-deg", type=float, default=0.5)
+    p.add_argument("--max-buildings", type=int, default=30000,
+                   help="Cap on baked footprints (nearest to center kept)")
     p.add_argument("--cities-dir", default="cities", help="Dir of city-profile YAMLs")
     p.add_argument("--citizens-per-profile", type=int, default=15)
     p.add_argument("--no-citizens", action="store_true", help="Skip citizen baking")
@@ -35,7 +37,7 @@ def main(argv=None) -> int:
         build_bundle(
             query=args.city, bbox=bbox, buildings=buildings, roads=roads,
             out_dir=args.out, grid=args.grid, total_pop=args.total_pop,
-            seed=args.seed, n_days=args.days,
+            seed=args.seed, n_days=args.days, max_buildings=args.max_buildings,
         )
     except OSMError as exc:
         print(f"error: {exc}", file=sys.stderr)

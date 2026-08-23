@@ -352,3 +352,100 @@ def test_build_bundle_timeline_is_finite(tmp_path):
     data = np.array(timeline["data"], dtype=float)
     assert np.isfinite(data).all()
     assert (data >= 0.0).all() and (data <= 1.0).all()
+
+
+# ---------------------------------------------------------------- buildings.json
+
+def test_parse_osm_classifies_and_extracts_height():
+    data = {"elements": [
+        {"type": "way", "tags": {"building": "retail", "height": "12 m", "name": "Corner Shop"},
+         "geometry": [{"lat": 40.000, "lon": -73.000}, {"lat": 40.000, "lon": -73.001},
+                      {"lat": 40.001, "lon": -73.001}]},
+        {"type": "way", "tags": {"building": "yes", "amenity": "pharmacy"},
+         "geometry": [{"lat": 40.002, "lon": -73.002}, {"lat": 40.002, "lon": -73.003},
+                      {"lat": 40.003, "lon": -73.003}]},
+    ]}
+    buildings, _ = ov.parse_osm(data)
+    assert buildings[0]["kind"] == "shop"
+    assert buildings[0]["height_m"] == 12.0
+    assert buildings[0]["name"] == "Corner Shop"
+    assert buildings[1]["kind"] == "pharmacy"
+    assert buildings[1]["height_m"] is None
+
+
+def test_build_query_includes_minor_streets():
+    q = ov.build_query((40.0, -73.1, 40.1, -73.0))
+    assert "residential" in q
+    assert "service" in q
+    assert "tertiary" in q
+
+
+def test_bake_footprints_projects_and_defaults_height():
+    buildings, _ = ov.parse_osm(_OVERPASS_FIXTURE)
+    baked = pipe.bake_footprints(buildings, lat0=40.0005, lon0=-73.0005)
+    assert len(baked) == 2
+    b0 = baked[0]
+    assert b0["levels"] == 3
+    assert abs(b0["height"] - 3 * 3.2) < 1e-6      # levels * storey height
+    assert len(b0["footprint"]) == 4
+    assert all(len(p) == 2 for p in b0["footprint"])
+    assert b0["area_m2"] > 1000.0                  # ~111m x ~85m block
+
+
+def test_bake_footprints_drops_closing_duplicate_and_tiny_rings():
+    ring = [(40.0, -73.0), (40.0, -73.001), (40.001, -73.001), (40.0, -73.0)]
+    tiny = [(40.0, -73.0), (40.0, -73.0000001), (40.0000001, -73.0000001)]
+    baked = pipe.bake_footprints(
+        [{"ring": ring, "levels": 1}, {"ring": tiny, "levels": 1}], 40.0, -73.0)
+    assert len(baked) == 1
+    assert len(baked[0]["footprint"]) == 3          # closing point removed
+
+
+def test_bake_footprints_caps_to_nearest_center():
+    def sq(off_lat):
+        return {"ring": [(off_lat, 0.0), (off_lat, 0.001),
+                         (off_lat + 0.001, 0.001), (off_lat + 0.001, 0.0)],
+                "levels": 1}
+    buildings = [sq(i * 0.01) for i in range(10)]
+    baked = pipe.bake_footprints(buildings, 0.0, 0.0, max_buildings=3)
+    assert len(baked) == 3
+    # nearest-to-center survive: those with the smallest |offset|
+    assert all(abs(b["center_xy"][1]) < 2500.0 for b in baked)
+
+
+def test_build_bundle_writes_buildings_json(tmp_path):
+    buildings, roads = ov.parse_osm(_OVERPASS_FIXTURE)
+    out = tmp_path / "city"
+    pipe.build_bundle(query="Toytown", bbox=(40.0, -73.01, 40.01, -73.0),
+                      buildings=buildings, roads=roads, out_dir=str(out),
+                      grid=4, total_pop=20000.0, seed=0, n_days=10.0)
+    baked = _json.loads((out / "buildings.json").read_text())
+    meta = _json.loads((out / "meta.json").read_text())
+    assert len(baked) == 2
+    assert meta["n_buildings"] == 2
+    assert baked[0]["kind"] in ("generic", "house")
+    for b in baked:
+        assert len(b["footprint"]) >= 3
+
+
+# ------------------------------------------------------------- synth fallback
+
+def test_synth_buildings_are_deterministic_and_clear_of_roads():
+    from asphodel.osm_city import synth
+    roads = {"polylines": [
+        {"class": "primary", "points": [[0.0, 0.0], [400.0, 0.0]]},
+        {"class": "residential", "points": [[0.0, 0.0], [0.0, 400.0]]},
+    ]}
+    zones = [{"center_xy": [200.0, 200.0], "extent": [600.0, 600.0],
+              "density": 1.0, "population": 1000.0}]
+    a = synth.synthesize(roads, zones, seed=7)
+    b = synth.synthesize(roads, zones, seed=7)
+    assert a == b
+    assert len(a) > 5
+    for bld in a:
+        assert bld["synthetic"] is True
+        assert len(bld["footprint"]) == 4
+        # every corner stays off the primary carriageway (halfwidth 7.5m)
+        for x, z in bld["footprint"]:
+            if 0.0 <= x <= 400.0:
+                assert abs(z) > 7.5

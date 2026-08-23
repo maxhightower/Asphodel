@@ -25,10 +25,17 @@ def _write_json(path: str, obj) -> None:
         f.write("\n")
 
 
-def write_bundle(out_dir: str, meta: dict, zones: list, roads: dict, timeline: dict) -> None:
-    """Write the four bundle files into `out_dir` (created if absent)."""
+def write_bundle(out_dir: str, meta: dict, zones: list, roads: dict, timeline: dict,
+                 buildings: list | None = None) -> None:
+    """Write the bundle files into `out_dir` (created if absent).
+
+    `buildings` (real OSM footprints in local meters) is optional so older
+    callers/tests keep working; when given it becomes buildings.json.
+    """
     os.makedirs(out_dir, exist_ok=True)
     _write_json(os.path.join(out_dir, "meta.json"), meta)
     _write_json(os.path.join(out_dir, "zones.json"), zones)
     _write_json(os.path.join(out_dir, "roads.json"), roads)
     _write_json(os.path.join(out_dir, "timeline.json"), timeline)
+    if buildings is not None:
+        _write_json(os.path.join(out_dir, "buildings.json"), buildings)

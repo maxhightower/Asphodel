@@ -18,18 +18,24 @@ from . import OSMError
 OVERPASS_URL = "https://overpass-api.de/api/interpreter"
 USER_AGENT = "Asphodel/0.1 (research prototype; https://github.com/maxhightower/Asphodel)"
 
-_MAJOR_HIGHWAYS = "motorway|trunk|primary|secondary"
+# Every drivable/walkable street class we bake into the bundle. Streets are the
+# skeleton of the playable world, so residential + service roads matter as much
+# as motorways.
+_HIGHWAYS = (
+    "motorway|trunk|primary|secondary|tertiary|unclassified|residential|"
+    "living_street|service|pedestrian"
+)
 
 
 def build_query(bbox) -> str:
-    """Overpass QL for major roads + building footprints inside `bbox` (s,w,n,e)."""
+    """Overpass QL for streets + building footprints inside `bbox` (s,w,n,e)."""
     s, w, n, e = bbox
     box = f"{s},{w},{n},{e}"
     return (
-        "[out:json][timeout:60];"
+        "[out:json][timeout:120];"
         "("
         f'way["building"]({box});'
-        f'way["highway"~"^({_MAJOR_HIGHWAYS})$"]({box});'
+        f'way["highway"~"^({_HIGHWAYS})$"]({box});'
         ");"
         "out geom;"
     )
@@ -81,10 +87,60 @@ def _parse_levels(tags: dict) -> int:
         return 1
 
 
+def _parse_height_m(tags: dict):
+    """Explicit building height in meters, or None (strips a trailing ' m')."""
+    raw = tags.get("height", tags.get("building:height"))
+    if raw is None:
+        return None
+    try:
+        return max(2.5, float(str(raw).strip().removesuffix("m").strip()))
+    except (TypeError, ValueError):
+        return None
+
+
+# building=* values mapped to the gameplay "kind" the interior generator keys
+# off of. Anything unlisted falls through to amenity/shop or "generic".
+_BUILDING_KINDS = {
+    "house": "house", "detached": "house", "semidetached_house": "house",
+    "bungalow": "house", "cabin": "house", "residential": "house",
+    "apartments": "apartments", "dormitory": "apartments", "terrace": "apartments",
+    "retail": "shop", "supermarket": "shop", "kiosk": "shop",
+    "commercial": "commercial", "office": "office",
+    "industrial": "industrial", "warehouse": "industrial",
+    "school": "school", "university": "school", "kindergarten": "school",
+    "hospital": "hospital",
+    "church": "civic", "chapel": "civic", "cathedral": "civic",
+    "civic": "civic", "public": "civic", "government": "civic",
+    "garage": "garage", "garages": "garage", "carport": "garage",
+    "shed": "garage", "barn": "garage", "hut": "garage",
+    "hotel": "hotel",
+}
+
+_AMENITY_KINDS = {
+    "restaurant": "restaurant", "fast_food": "restaurant", "cafe": "restaurant",
+    "bar": "restaurant", "pub": "restaurant",
+    "pharmacy": "pharmacy", "hospital": "hospital", "clinic": "hospital",
+    "doctors": "hospital",
+    "school": "school", "library": "civic", "townhall": "civic",
+    "police": "civic", "fire_station": "civic", "place_of_worship": "civic",
+    "bank": "office", "fuel": "shop",
+}
+
+
+def classify_building(tags: dict) -> str:
+    """Gameplay kind for a building way, from its OSM tags."""
+    if tags.get("amenity") in _AMENITY_KINDS:
+        return _AMENITY_KINDS[tags["amenity"]]
+    if "shop" in tags:
+        return "shop"
+    return _BUILDING_KINDS.get(tags.get("building", ""), "generic")
+
+
 def parse_osm(data: dict):
     """Split Overpass elements into (buildings, roads).
 
-    buildings: [{"ring": [(lat,lon),...], "levels": int}]
+    buildings: [{"ring": [(lat,lon),...], "levels": int, "kind": str,
+                 "height_m": float|None, "name": str}]
     roads:     [{"class": str, "points": [(lat,lon),...]}]
     """
     buildings, roads = [], []
@@ -97,7 +153,13 @@ def parse_osm(data: dict):
         pts = [(g["lat"], g["lon"]) for g in geom]
         tags = el.get("tags", {})
         if "building" in tags:
-            buildings.append({"ring": pts, "levels": _parse_levels(tags)})
+            buildings.append({
+                "ring": pts,
+                "levels": _parse_levels(tags),
+                "kind": classify_building(tags),
+                "height_m": _parse_height_m(tags),
+                "name": tags.get("name", ""),
+            })
         elif "highway" in tags:
             roads.append({"class": tags["highway"], "points": pts})
     return buildings, roads

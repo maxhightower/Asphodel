@@ -557,9 +557,20 @@ python -m asphodel.osm_city "Boston" --out output/boston --grid 20 --total-pop 6
 ```
 
 The pipeline is hybrid by design: Godot invokes this module as a subprocess and
-then loads the bundle it writes. The bundle is four JSON files — `meta.json`,
-`zones.json`, `roads.json`, `timeline.json` — fully specified in
+then loads the bundle it writes. The bundle is five JSON files — `meta.json`,
+`zones.json`, `roads.json`, `timeline.json`, `buildings.json` — the first four
+fully specified in
 [`docs/superpowers/specs/2026-06-01-osm-city-scene-design.md`](docs/superpowers/specs/2026-06-01-osm-city-scene-design.md).
+`buildings.json` carries every OSM building's real footprint outline projected
+to local meters, plus its gameplay `kind` (house / shop / office / …, classified
+from OSM tags), storey count and height — the street-level world extrudes these
+outlines directly, so buildings match their real shapes. `roads.json` now
+includes ALL street classes (residential, service, tertiary …), not just major
+highways. For bundles baked before `buildings.json` existed (or baked offline
+where Overpass is unreachable), `python -m asphodel.osm_city.synth <bundle_dir>`
+synthesizes deterministic street-aligned footprints from the bundle's real road
+polylines + zone densities, marked `"synthetic": true`; re-baking the bundle
+with network access replaces them with real outlines.
 Network responses are cached by bbox (`--cache`), so re-runs are offline and
 every bundle is byte-deterministic from `(city, grid, total-pop, seed)`.
 
@@ -569,8 +580,9 @@ asphodel/osm_city/
   overpass.py     # bbox -> major roads + building footprints (Overpass), cached
   tessellate.py   # bbox -> square grid; building footprint area -> per-zone population
   geometry.py     # equirectangular projection, polygon area, block/road layout
-  bundle.py       # deterministic meta/zones/roads/timeline JSON writer
-  pipeline.py     # build_bundle: tessellate -> run sim -> blocks/roads -> write
+  bundle.py       # deterministic meta/zones/roads/timeline/buildings JSON writer
+  pipeline.py     # build_bundle: tessellate -> run sim -> footprints/roads -> write
+  synth.py        # offline fallback: street-aligned synthetic footprints
   __main__.py     # the CLI
 ```
 
@@ -591,3 +603,32 @@ On **Load City** the game picks a random pre-baked citizen (from the bundle's
 archetypes via `asphodel/osm_city/citizens.py`) and shows an ARK-style character
 screen — name, age, occupation, the occupation's signature predicament, and
 inventory — before entering the city.
+
+### Street-level world (Godot)
+
+Entering the city drops you first-person onto the real street grid at metre
+scale (`godot/scripts/street_world.gd`):
+
+- **Streets** follow the bundle's actual OSM road polylines, rendered at
+  per-class widths (motorway → service road) with dashed centre markings on
+  major roads (`road_builder.gd`).
+- **Buildings** are extruded from their `buildings.json` footprint outlines with
+  per-city colour palettes keyed off the city name (`city_style.gd`,
+  `building_builder.gd`). Spawn is on the street in the densest part of town.
+- **Interiors**: the ~28 buildings nearest the spawn are enterable — a hinged
+  door on the street-facing wall, procedurally partitioned rooms, and furniture
+  chosen by the building's OSM kind (beds and fridges in houses, shelves and
+  counters in shops, desks in offices…) via `interior_generator.gd` +
+  `furniture_factory.gd`.
+- **Looting**: aim at a door or container and press **E** — shelves, fridges,
+  crates, desks and cabinets yield food / water / meds / materials / valuables
+  into a HUD inventory (`lootable.gd`, `door_interactable.gd`,
+  `first_person.gd`).
+
+Headless smoke test (verifies doors + stocked loot exist in the generated
+world; set `ASPHODEL_SHOT=/path.png` for a screenshot under `xvfb-run`):
+
+```bash
+ASPHODEL_SMOKE=1 ASPHODEL_BUNDLE=res://bundles/madisonville_tx \
+  godot --headless --path godot res://StreetScene.tscn --quit-after 60
+```
