@@ -57,6 +57,7 @@ func _ready() -> void:
 	else:
 		_build_buildings(footprints)
 	_build_roads(bundle["roads"])
+	_build_site_detail(footprints, bundle["roads"], int(meta.get("seed", 0)))
 	_build_traffic(bundle["roads"])
 	_spawn_player(_bounds, bundle["roads"])
 	_build_hud()
@@ -169,16 +170,28 @@ func _build_ground(b: Rect2) -> void:
 	add_child(body)
 
 
+# Building palette + detail metrics.
+const BLDG_LOW := Color(0.62, 0.64, 0.68)
+const BLDG_HIGH := Color(0.86, 0.87, 0.9)
+const PLINTH_DARKEN := 0.62         # ground-floor band tint (walls fade to this at y=0)
+const ROOF_COL := Color(0.34, 0.35, 0.39)
+const PARAPET_COL := Color(0.28, 0.29, 0.33)
+const ROOFUNIT_COL := Color(0.40, 0.41, 0.44)
+const PARAPET_H := 0.9              # roof-edge lip height (m)
+
+
 func _build_buildings(footprints: Array) -> void:
 	## Extrude each footprint polygon (real OSM or procedural) into a solid mass:
-	## a triangulated flat roof at `height` plus vertical walls down to the ground.
-	## The whole city is one batched ArrayMesh; collision is one box per building.
+	## a triangulated roof (its own grey), walls with a darker ground-floor plinth
+	## gradient, a parapet lip around the roof edge, and rooftop units on taller
+	## buildings. The whole city is one batched ArrayMesh; collision is one box per
+	## building. Detail is deterministic from a fixed seed so it's stable per city.
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var body := StaticBody3D.new()
 	add_child(body)
-	var low := Color(0.62, 0.64, 0.68)
-	var high := Color(0.86, 0.87, 0.9)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 0x5EED * 65537 + footprints.size()
 	for b in footprints:
 		var poly_xy: Array = b.get("poly", [])
 		if poly_xy.size() < 3:
@@ -191,30 +204,50 @@ func _build_buildings(footprints: Array) -> void:
 			ring.append(v)
 			min_x = min(min_x, v.x); max_x = max(max_x, v.x)
 			min_z = min(min_z, v.y); max_z = max(max_z, v.y)
-		var col := low.lerp(high, clampf(h / (60.0 * HEIGHT_SCALE), 0.0, 1.0))
-		st.set_color(col)
-		# Roof (triangulated at y = h).
+		var col := BLDG_LOW.lerp(BLDG_HIGH, clampf(h / (60.0 * HEIGHT_SCALE), 0.0, 1.0))
+		var plinth := col.darkened(1.0 - PLINTH_DARKEN)
+		# Roof (triangulated at y = h) in its own grey so it reads as a roof.
+		st.set_color(ROOF_COL)
 		var tris := Geometry2D.triangulate_polygon(ring)
 		for i in range(0, tris.size(), 3):
 			for k in [tris[i], tris[i + 1], tris[i + 2]]:
 				st.set_normal(Vector3.UP)
 				st.add_vertex(Vector3(ring[k].x, h, ring[k].y))
-		# Walls (a quad per edge). Cull is disabled on the material so winding
-		# does not matter for these placeholder masses.
+		# Walls: a vertical gradient from the darker plinth at the base to the wall
+		# colour up top, plus a parapet lip standing above the roof line. Cull is
+		# disabled so winding doesn't matter for these placeholder masses.
 		var n := ring.size()
 		for i in range(n):
 			var a := ring[i]
 			var c := ring[(i + 1) % n]
+			var nrm := Vector3((c.y - a.y), 0.0, -(c.x - a.x)).normalized()
 			var a0 := Vector3(a.x, 0.0, a.y)
 			var a1 := Vector3(a.x, h, a.y)
 			var c0 := Vector3(c.x, 0.0, c.y)
 			var c1 := Vector3(c.x, h, c.y)
-			for v in [a0, c0, c1, a0, c1, a1]:
-				st.set_normal(Vector3((c.y - a.y), 0.0, -(c.x - a.x)).normalized())
+			# gradient wall: bottom verts plinth, top verts col
+			_vc(st, a0, plinth, nrm); _vc(st, c0, plinth, nrm); _vc(st, c1, col, nrm)
+			_vc(st, a0, plinth, nrm); _vc(st, c1, col, nrm); _vc(st, a1, col, nrm)
+			# parapet lip (h -> h + PARAPET_H) around the edge
+			var a2 := Vector3(a.x, h + PARAPET_H, a.y)
+			var c2 := Vector3(c.x, h + PARAPET_H, c.y)
+			st.set_color(PARAPET_COL)
+			for v in [a1, c1, c2, a1, c2, a2]:
+				st.set_normal(nrm)
 				st.add_vertex(v)
-		# Collision: a box spanning the footprint bounds.
+		# Rooftop units on tall-enough, wide-enough buildings — a couple of small
+		# boxes so roofs aren't bare planes when seen from above / from a tower.
 		var bw := max_x - min_x
 		var bd := max_z - min_z
+		if h > 15.0 and bw > 10.0 and bd > 10.0:
+			var units := 1 + (rng.randi() % 2)
+			for _u in range(units):
+				var ux := lerpf(min_x + 2.0, max_x - 2.0, rng.randf())
+				var uz := lerpf(min_z + 2.0, max_z - 2.0, rng.randf())
+				var us := 1.5 + 1.5 * rng.randf()
+				var uh := 1.2 + 1.6 * rng.randf()
+				_roof_box(st, Vector3(ux, h, uz), us, uh, ROOFUNIT_COL)
+		# Collision: a box spanning the footprint bounds.
 		if bw > 0.1 and bd > 0.1:
 			var cs := CollisionShape3D.new()
 			var shape := BoxShape3D.new()
@@ -230,6 +263,39 @@ func _build_buildings(footprints: Array) -> void:
 	mi.mesh = st.commit()
 	mi.material_override = mat
 	add_child(mi)
+
+
+func _vc(st: SurfaceTool, v: Vector3, col: Color, nrm: Vector3) -> void:
+	# One coloured, normalled vertex (gradient walls need per-vertex colour).
+	st.set_color(col)
+	st.set_normal(nrm)
+	st.add_vertex(v)
+
+
+func _roof_box(st: SurfaceTool, base: Vector3, half: float, height: float, col: Color) -> void:
+	# A small axis-aligned box sitting on the roof at `base` (its bottom face).
+	st.set_color(col)
+	var y0 := base.y
+	var y1 := base.y + height
+	var xs := [base.x - half, base.x + half]
+	var zs := [base.z - half, base.z + half]
+	# top
+	_tri(st, Vector3(xs[0], y1, zs[0]), Vector3(xs[1], y1, zs[0]), Vector3(xs[1], y1, zs[1]), Vector3.UP)
+	_tri(st, Vector3(xs[0], y1, zs[0]), Vector3(xs[1], y1, zs[1]), Vector3(xs[0], y1, zs[1]), Vector3.UP)
+	# four sides
+	var rings := [
+		[Vector2(xs[0], zs[0]), Vector2(xs[1], zs[0])],
+		[Vector2(xs[1], zs[0]), Vector2(xs[1], zs[1])],
+		[Vector2(xs[1], zs[1]), Vector2(xs[0], zs[1])],
+		[Vector2(xs[0], zs[1]), Vector2(xs[0], zs[0])]]
+	for e in rings:
+		var a: Vector2 = e[0]
+		var c: Vector2 = e[1]
+		var nrm := Vector3((c.y - a.y), 0.0, -(c.x - a.x)).normalized()
+		for v in [Vector3(a.x, y0, a.y), Vector3(c.x, y0, c.y), Vector3(c.x, y1, c.y),
+				Vector3(a.x, y0, a.y), Vector3(c.x, y1, c.y), Vector3(a.x, y1, a.y)]:
+			st.set_normal(nrm)
+			st.add_vertex(v)
 
 
 func _build_blocks(meta: Dictionary, zones: Array) -> void:
@@ -339,6 +405,17 @@ func _build_roads(roads: Dictionary) -> void:
 	mi.mesh = st.commit()
 	mi.material_override = mat
 	add_child(mi)
+
+
+func _build_site_detail(footprints: Array, roads: Dictionary, seed: int) -> void:
+	# Presentation-only "stuff between the buildings": parking lots, trees, bushes,
+	# fences, and ground-cover patches, placed against an occupancy grid so nothing
+	# lands in a wall or on a street. No-op for bundles without real footprints.
+	if footprints.is_empty():
+		return
+	var detail: Node3D = load("res://scripts/site_detail.gd").new()
+	add_child(detail)
+	detail.build(_bounds, footprints, roads, seed)
 
 
 func _build_traffic(roads: Dictionary) -> void:
