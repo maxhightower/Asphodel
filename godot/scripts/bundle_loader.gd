@@ -96,6 +96,19 @@ static func load_mobility(dir_path: String) -> Dictionary:
 	return parsed
 
 
+static func load_buildings(dir_path: String) -> Array:
+	## Real (or procedural) building footprints to extrude. Each entry is
+	## {"poly": [[x,z],...], "height": float}. Returns [] if absent/malformed
+	## (older bundles) so the renderer can fall back to the density blocks.
+	var path := dir_path.path_join("buildings.json")
+	if not FileAccess.file_exists(path):
+		return []
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if parsed is Dictionary and parsed.get("buildings") is Array:
+		return parsed["buildings"]
+	return []
+
+
 static func load_citizens(dir_path: String) -> Array:
 	## Returns the bundle's citizen list, or [] if absent/invalid. Each entry is
 	## validated to carry the fields the character screen + spawn depend on.

@@ -42,12 +42,28 @@ func _run() -> void:
 	GameClock.time_scale = 3.0
 	for i in range(20):
 		await get_tree().physics_frame
-	# Force a fresh authoritative snapshot + render so the crowd is populated.
-	if SimBridge.is_connected_to_sim():
+	# Explicitly drive the authoritative world so the player's zone is promoted and
+	# populated, then render it — instead of depending on per-frame timing.
+	var fz := int(scene.get("_current_focus_zone"))
+	if SimBridge.is_connected_to_sim() and fz >= 0:
+		SimBridge.set_focus([fz])
+		SimBridge.advance(4, true)                 # promote + populate the crowd
 		var snap: Dictionary = SimBridge.snapshot()
 		if snap.get("ok", false):
 			SimBridge.last_world = snap.get("world", {})
+		scene._render_live()
+	# Force DAYLIGHT + clear the haze (the citizen may spawn asleep at night, which
+	# the day/night system renders near-black; fog washes out an aerial view).
+	# Pure presentation — does not touch the sim.
+	GameClock.hour = 13.0
+	GameClock.ticked.emit(GameClock.game_day, 13.0, GameClock.outbreak_belief())
+	var env = scene.get("_env")
+	if env != null:
+		env.fog_enabled = false
 	await get_tree().create_timer(0.5).timeout
+	var rc = scene.get("_citizen_render")
+	if rc != null:
+		print("RENDER instances=%d focus_zone=%d" % [rc.last_instance_count, fz])
 
 	if _overhead:
 		_add_overhead_camera(scene)
@@ -66,16 +82,24 @@ func _run() -> void:
 
 
 func _add_overhead_camera(scene: Node) -> void:
-	## An elevated angled camera for a city overview shot (makes the block city +
-	## crowd legible instead of the ground-level first-person view). Aims at the
-	## player's real-world location (the city sits at real bundle coordinates).
+	## A mid-level aerial framing the promoted zone: the citizen crowd renders at
+	## the focus zone's centre, so aim there (not at the player, who may be at the
+	## zone edge) and pull back a few hundred metres so streets, building blocks,
+	## and the crowd are all legible.
 	var target := Vector3.ZERO
-	var p = scene.get("_player")
-	if p != null:
-		target = p.position
+	var fz = scene.get("_current_focus_zone")
+	if fz != null and int(fz) >= 0:
+		target = scene._zone_center(int(fz))
+	else:
+		var p = scene.get("_player")
+		if p != null:
+			target = p.position
 	var cam := Camera3D.new()
-	cam.position = target + Vector3(0, 120, 150)
+	cam.fov = 60.0
+	cam.far = 20000.0
+	# Steep, near-top-down so the frame fills with city (streets + blocks + crowd)
+	# rather than sky.
+	cam.position = target + Vector3(30, 560, 150)
 	cam.look_at(target, Vector3.UP)
 	cam.current = true
-	cam.far = 4000.0
 	add_child(cam)

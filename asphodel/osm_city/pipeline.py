@@ -6,6 +6,7 @@ the resulting per-zone populations, lays out blocks/roads, and writes the bundle
 """
 from __future__ import annotations
 
+import os
 import random
 
 from dataclasses import asdict
@@ -147,6 +148,17 @@ def build_bundle(query, bbox, buildings, roads, out_dir, grid=16,
                         "edges": mobility_edges}
     bnd.write_bundle(out_dir, meta, t.zones, road_out, timeline,
                      mobility=mobility_payload)
+
+    # 5b. Real building footprints: project the OSM building rings into the
+    #     bundle metre frame so the renderer can extrude the ACTUAL city, not
+    #     just density-derived sticks. Falls back to a procedural fill if no OSM
+    #     rings are available (e.g. re-deriving an old bundle).
+    from . import buildings as bld
+    if buildings:
+        footprints = bld.project_osm_buildings(buildings, lat0, lon0)
+    else:
+        footprints = bld.generate_procedural(t.zones, seed=seed)
+    bnd._write_json(os.path.join(out_dir, "buildings.json"), footprints)
 
     # 6. Bake a spawnable citizen population from the SAME resolved city -- real
     #    buildings, real streets, real population geography -- so the playable

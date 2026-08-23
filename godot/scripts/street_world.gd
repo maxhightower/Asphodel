@@ -48,7 +48,13 @@ func _ready() -> void:
 	_add_environment_and_light()
 	_bounds = _world_bounds(zones)
 	_build_ground(_bounds)
-	_build_blocks(meta, zones)
+	# Prefer real (or procedural) building footprints extruded into masses; fall
+	# back to the density "blocks" for older bundles that lack buildings.json.
+	var footprints := BundleLoader.load_buildings(dir)
+	if footprints.is_empty():
+		_build_blocks(meta, zones)
+	else:
+		_build_buildings(footprints)
 	_build_roads(bundle["roads"])
 	_spawn_player(_bounds, bundle["roads"])
 	_build_hud()
@@ -143,7 +149,8 @@ func _build_ground(b: Rect2) -> void:
 	var plane := PlaneMesh.new()
 	plane.size = Vector2(sx, sz)
 	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.12, 0.14, 0.17)
+	mat.albedo_color = Color(0.22, 0.26, 0.24)   # muted terrain, not near-black
+	mat.roughness = 1.0
 	plane.material = mat
 	var mi := MeshInstance3D.new()
 	mi.mesh = plane
@@ -158,6 +165,69 @@ func _build_ground(b: Rect2) -> void:
 	cs.position = center + Vector3(0.0, -0.5, 0.0)   # top surface at y=0
 	body.add_child(cs)
 	add_child(body)
+
+
+func _build_buildings(footprints: Array) -> void:
+	## Extrude each footprint polygon (real OSM or procedural) into a solid mass:
+	## a triangulated flat roof at `height` plus vertical walls down to the ground.
+	## The whole city is one batched ArrayMesh; collision is one box per building.
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var body := StaticBody3D.new()
+	add_child(body)
+	var low := Color(0.62, 0.64, 0.68)
+	var high := Color(0.86, 0.87, 0.9)
+	for b in footprints:
+		var poly_xy: Array = b.get("poly", [])
+		if poly_xy.size() < 3:
+			continue
+		var h := float(b.get("height", 6.0)) * HEIGHT_SCALE
+		var ring := PackedVector2Array()
+		var min_x := INF; var min_z := INF; var max_x := -INF; var max_z := -INF
+		for p in poly_xy:
+			var v := Vector2(float(p[0]), float(p[1]))
+			ring.append(v)
+			min_x = min(min_x, v.x); max_x = max(max_x, v.x)
+			min_z = min(min_z, v.y); max_z = max(max_z, v.y)
+		var col := low.lerp(high, clampf(h / (60.0 * HEIGHT_SCALE), 0.0, 1.0))
+		st.set_color(col)
+		# Roof (triangulated at y = h).
+		var tris := Geometry2D.triangulate_polygon(ring)
+		for i in range(0, tris.size(), 3):
+			for k in [tris[i], tris[i + 1], tris[i + 2]]:
+				st.set_normal(Vector3.UP)
+				st.add_vertex(Vector3(ring[k].x, h, ring[k].y))
+		# Walls (a quad per edge). Cull is disabled on the material so winding
+		# does not matter for these placeholder masses.
+		var n := ring.size()
+		for i in range(n):
+			var a := ring[i]
+			var c := ring[(i + 1) % n]
+			var a0 := Vector3(a.x, 0.0, a.y)
+			var a1 := Vector3(a.x, h, a.y)
+			var c0 := Vector3(c.x, 0.0, c.y)
+			var c1 := Vector3(c.x, h, c.y)
+			for v in [a0, c0, c1, a0, c1, a1]:
+				st.set_normal(Vector3((c.y - a.y), 0.0, -(c.x - a.x)).normalized())
+				st.add_vertex(v)
+		# Collision: a box spanning the footprint bounds.
+		var bw := max_x - min_x
+		var bd := max_z - min_z
+		if bw > 0.1 and bd > 0.1:
+			var cs := CollisionShape3D.new()
+			var shape := BoxShape3D.new()
+			shape.size = Vector3(bw, h, bd)
+			cs.shape = shape
+			cs.position = Vector3((min_x + max_x) * 0.5, h * 0.5, (min_z + max_z) * 0.5)
+			body.add_child(cs)
+	var mat := StandardMaterial3D.new()
+	mat.vertex_color_use_as_albedo = true
+	mat.roughness = 0.85
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var mi := MeshInstance3D.new()
+	mi.mesh = st.commit()
+	mi.material_override = mat
+	add_child(mi)
 
 
 func _build_blocks(meta: Dictionary, zones: Array) -> void:
@@ -216,27 +286,50 @@ func _build_roads(roads: Dictionary) -> void:
 	var polylines: Array = roads.get("polylines", [])
 	if polylines.is_empty():
 		return
-	var im := ImmediateMesh.new()
-	var mat := StandardMaterial3D.new()
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.albedo_color = Color(0.85, 0.85, 0.9)
-	# One surface of line SEGMENTS for the whole road network. (One surface per
-	# polyline overflowed the GLES3 MAX_MESH_SURFACES cap on big cities like
-	# Houston, which has hundreds of roads.)
-	im.surface_begin(Mesh.PRIMITIVE_LINES, mat)
+	# Roads render as flat ground RIBBONS (not hairline segments) so the street
+	# network actually reads as streets, from the ground and from above. Every
+	# segment becomes a width-quad; the whole network is one ArrayMesh surface
+	# (one surface per polyline overflowed the GLES3 MAX_MESH_SURFACES cap on big
+	# cities, and 1px lines were invisible).
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	st.set_color(Color(0.34, 0.35, 0.40))
 	for pl in polylines:
 		var pts: Array = pl.get("points", [])
 		if pts.size() < 2:
 			continue
+		var w := _road_width(String(pl.get("class", "")))
 		for k in range(pts.size() - 1):
-			var a: Array = pts[k]
-			var b: Array = pts[k + 1]
-			im.surface_add_vertex(Vector3(float(a[0]), 0.1, float(a[1])))
-			im.surface_add_vertex(Vector3(float(b[0]), 0.1, float(b[1])))
-	im.surface_end()
+			var a := Vector2(float(pts[k][0]), float(pts[k][1]))
+			var b := Vector2(float(pts[k + 1][0]), float(pts[k + 1][1]))
+			var dir := (b - a)
+			if dir.length() < 0.001:
+				continue
+			var n := dir.orthogonal().normalized() * (w * 0.5)
+			var y := 0.15
+			var p0 := Vector3(a.x - n.x, y, a.y - n.y)
+			var p1 := Vector3(a.x + n.x, y, a.y + n.y)
+			var p2 := Vector3(b.x + n.x, y, b.y + n.y)
+			var p3 := Vector3(b.x - n.x, y, b.y - n.y)
+			for v in [p0, p1, p2, p0, p2, p3]:
+				st.set_normal(Vector3.UP)
+				st.add_vertex(v)
+	var mat := StandardMaterial3D.new()
+	mat.vertex_color_use_as_albedo = true
+	mat.roughness = 1.0
 	var mi := MeshInstance3D.new()
-	mi.mesh = im
+	mi.mesh = st.commit()
+	mi.material_override = mat
 	add_child(mi)
+
+
+func _road_width(cls: String) -> float:
+	match cls:
+		"motorway", "trunk": return 22.0
+		"primary": return 16.0
+		"secondary": return 12.0
+		"tertiary": return 9.0
+		_: return 7.0
 
 
 func _add_environment_and_light() -> void:
