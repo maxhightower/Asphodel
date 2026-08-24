@@ -114,9 +114,19 @@ class WorldSession:
         player_home_zone = None
         if want_citizens:
             from ..bundle_population import load_bundle_population
+            from ..embodiment import CitySpatialContext
             from .worldfactory import resolve_bundle_dir
-            population = load_bundle_population(resolve_bundle_dir(bundle))
+            bundle_dir = resolve_bundle_dir(bundle)
+            population = load_bundle_population(bundle_dir)
             world.set_citizens(population)
+            # Package 2: attach the bundle's static geometry so identified
+            # citizens (and the player) resolve to real buildings/roads. Purely a
+            # read source — never perturbs the epidemic.
+            try:
+                world.set_spatial_context(
+                    CitySpatialContext.from_bundle_dir(bundle_dir))
+            except Exception:
+                pass  # embodiment falls back to zone-centre anchors
             n_citizens = len(population)
             if player_citizen is not None:
                 for c in population:
@@ -168,7 +178,9 @@ class WorldSession:
             self.world.step()
         out = dict(self._summary(), advanced=ticks)
         if msg.get("snapshot"):
-            out["world"] = self.world.snapshot()
+            snap = self.world.snapshot()
+            self._inject_player_location(snap)
+            out["world"] = snap
         return P.response(Command.ADVANCE, id=rid, **out)
 
     def _cmd_intervene(self, msg, rid) -> dict:
@@ -209,7 +221,19 @@ class WorldSession:
 
     def _cmd_snapshot(self, msg, rid) -> dict:
         self._require_world(Command.SNAPSHOT)
-        return P.response(Command.SNAPSHOT, id=rid, world=self.world.snapshot())
+        snap = self.world.snapshot()
+        self._inject_player_location(snap)
+        return P.response(Command.SNAPSHOT, id=rid, world=snap)
+
+    def _inject_player_location(self, snap: dict) -> None:
+        """Add the player's one authoritative physical location to a snapshot dict
+        (Package 2), so the client can place the player coherently with their
+        schedule. No-op when no player citizen is set."""
+        if self.player_citizen is None or self.world is None:
+            return
+        loc = self.world.physical_location(self.player_citizen)
+        if loc is not None:
+            snap["player_location"] = loc.to_dict()
 
     def _cmd_save(self, msg, rid) -> dict:
         self._require_world(Command.SAVE)
@@ -226,12 +250,27 @@ class WorldSession:
         if not isinstance(path, str) or not path:
             raise _BadArg("LOAD requires a string 'path'")
         from ..save import load_world_file, SaveError
+        import json as _json
         try:
             world = load_world_file(path)
         except SaveError as e:
             raise _BadArg(str(e))
         self.world = world
         self.paused = False
+        # Restore game identity + re-attach the bundle's static geometry so
+        # embodiment (Package 2) resolves real buildings/roads after reload.
+        try:
+            with open(path) as f:
+                gi = _json.load(f).get("game_identity", {})
+            self.bundle = gi.get("bundle")
+            self.player_citizen = gi.get("player_citizen")
+            if self.bundle:
+                from ..embodiment import CitySpatialContext
+                from .worldfactory import resolve_bundle_dir
+                world.set_spatial_context(
+                    CitySpatialContext.from_bundle_dir(resolve_bundle_dir(self.bundle)))
+        except Exception:
+            pass
         return P.response(Command.LOAD, id=rid, path=path, **self._summary())
 
     def _cmd_shutdown(self, msg, rid) -> dict:

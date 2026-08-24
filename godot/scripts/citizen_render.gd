@@ -71,6 +71,13 @@ func render_snapshot(snap: Dictionary, focus_zone: int,
 	var citizen_id: Array = a.get("citizen_id", [])
 	var named: Array = a.get("named", [])
 	var area: float = float(a.get("area_size", 100.0))
+	# Package 2: authoritative physical embodiment. When present, identified
+	# citizens carry an absolute world position (metres, the same frame as
+	# buildings/roads); we place them there directly instead of scattering the
+	# epidemic torus. Anonymous fill carries an approximate absolute position.
+	var emb: Dictionary = a.get("embodiment", {})
+	var world_xy: Array = emb.get("world_xy", [])
+	var authoritative: Array = emb.get("authoritative", [])
 	var n := pos.size()
 	if extent == Vector2.ZERO:
 		extent = Vector2(area, area)
@@ -99,11 +106,17 @@ func render_snapshot(snap: Dictionary, focus_zone: int,
 		var p: Array = pos[i]
 		var is_named: bool = named.size() > i and bool(named[i])
 		var s: float = NAMED_SCALE if is_named else CROWD_SCALE
-		# Map torus-local [0,area] onto the zone's real extent, centred on the
-		# zone's world position, so people are spread across the block.
-		var fx := (float(p[0]) / area - 0.5) * extent.x
-		var fz := (float(p[1]) / area - 0.5) * extent.y
-		var origin := world_offset + Vector3(fx, AGENT_H, fz)
+		var origin: Vector3
+		if world_xy.size() > i and world_xy[i] != null:
+			# Authoritative (or documented-approximate) absolute world position.
+			var wp: Array = world_xy[i]
+			origin = Vector3(float(wp[0]), AGENT_H, float(wp[1]))
+		else:
+			# Fallback: map torus-local [0,area] onto the zone's real extent,
+			# centred on the zone's world position, so people spread across the block.
+			var fx := (float(p[0]) / area - 0.5) * extent.x
+			var fz := (float(p[1]) / area - 0.5) * extent.y
+			origin = world_offset + Vector3(fx, AGENT_H, fz)
 		_mm.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3(s, s, s)), origin))
 		var cid: int = int(citizen_id[i]) if citizen_id.size() > i else -1
 		_mm.set_instance_color(slot, _color(int(state[i]), cid, is_named))

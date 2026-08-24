@@ -45,6 +45,12 @@ from . import save as save_module
 from .save import save_world, load_world, load_world_file, world_state, SaveError, SAVE_VERSION
 # --- BW1: real-bundle citizen ingestion -------------------------------------
 from .bundle_population import load_bundle_population, zone_of_xy, reconstruct_schedule
+# --- Package 2: physical citizen embodiment ---------------------------------
+from . import embodiment
+from .embodiment import (
+    PhysicalLocation, CitySpatialContext, LocationMode, Movement,
+    resolve_physical_location, LOCATION_SCHEMA_VERSION,
+)
 
 # --- Citizen spawn: the possibility space a player can be dropped into ------
 from .citizen import (

@@ -175,24 +175,43 @@ def restore_roster(state: dict, profiles: dict) -> Roster:
 # Citizen registration (compact; keeps the save self-contained)
 # --------------------------------------------------------------------------- #
 class _CitizenLite:
-    """A minimal restored citizen: enough for identity assignment + activity."""
+    """A minimal restored citizen: enough for identity assignment, activity, and
+    (Package 2) authoritative physical embodiment (home/work coords + zones)."""
 
-    __slots__ = ("citizen_id", "home_zone", "schedule")
+    __slots__ = ("citizen_id", "home_zone", "work_zone", "schedule",
+                 "home_xy", "work_xy")
 
-    def __init__(self, citizen_id, home_zone, schedule):
+    def __init__(self, citizen_id, home_zone, schedule,
+                 work_zone=None, home_xy=None, work_xy=None):
         self.citizen_id = citizen_id
         self.home_zone = home_zone
+        self.work_zone = work_zone
         self.schedule = schedule
+        self.home_xy = home_xy
+        self.work_xy = work_xy
+
+
+def _xy_or_none(prof, name):
+    v = getattr(prof, name, None) if not isinstance(prof, dict) else prof.get(name)
+    if v is None:
+        return None
+    try:
+        return [float(v[0]), float(v[1])]
+    except (TypeError, ValueError, IndexError):
+        return None
 
 
 def _citizen_records(world: World) -> list:
     out = []
     for cid, prof in world.citizens.items():
         sched = world._schedules.get(cid, [])
+        home_xy, work_xy, hz, wz = world._spatial.get(cid, (None, None, None, None))
         out.append({
             "citizen_id": int(cid),
-            "home_zone": (None if getattr(prof, "home_zone", None) is None
-                          else int(prof.home_zone)),
+            "home_zone": (None if hz is None else int(hz)),
+            "work_zone": (None if wz is None else int(wz)),
+            "home_xy": (None if home_xy is None else [float(home_xy[0]), float(home_xy[1])]),
+            "work_xy": (None if work_xy is None else [float(work_xy[0]), float(work_xy[1])]),
             "schedule": [[float(e.start_hour), float(e.end_hour), e.activity,
                           getattr(e, "location", ""), getattr(e, "task", "")]
                          for e in sched],
@@ -207,8 +226,13 @@ def _restore_citizens(records: list) -> list:
                                location=s[3] if len(s) > 3 else "",
                                task=s[4] if len(s) > 4 else "")
                  for s in r.get("schedule", [])]
-        out.append(_CitizenLite(int(r["citizen_id"]),
-                                r.get("home_zone"), sched))
+        hx = r.get("home_xy")
+        wx = r.get("work_xy")
+        out.append(_CitizenLite(
+            int(r["citizen_id"]), r.get("home_zone"), sched,
+            work_zone=r.get("work_zone"),
+            home_xy=(tuple(hx) if hx else None),
+            work_xy=(tuple(wx) if wx else None)))
     return out
 
 

@@ -31,6 +31,7 @@ from .model import Simulation, TickRecord
 from .micro import AgentZone, STATE_NAMES
 from .handoff import promote, macro_zone_counts, largest_remainder_counts, should_promote, should_demote
 from . import npc
+from . import embodiment
 from .affordances import advertise
 from .roster import Roster
 
@@ -108,6 +109,13 @@ class World:
         self.citizens: dict[int, object] = {}
         self._zone_citizens: dict[int, list[int]] = {}
         self._schedules: dict[int, list] = {}      # citizen_id -> schedule
+        # Package 2: per-citizen spatial anchors (home/work coords + zones) and
+        # the static city geometry used to resolve authoritative physical
+        # locations. `spatial_ctx` is optional bundle geometry; without it,
+        # embodiment falls back to zone-centre / synthetic anchors (still
+        # deterministic, still calibration-neutral).
+        self._spatial: dict[int, tuple] = {}       # cid -> (home_xy,work_xy,hz,wz)
+        self.spatial_ctx = None
 
         # --- M3 / SP2: reactive affordances ------------------------------------
         # Optional per-citizen environment/hazard tags the affordance layer reads,
@@ -150,12 +158,14 @@ class World:
         self.citizens = {}
         self._zone_citizens = {}
         self._schedules = {}
+        self._spatial = {}
         for c in citizens:
             cid, home_zone, schedule = _citizen_fields(c)
             if cid is None or home_zone is None:
                 continue
             self.citizens[cid] = c
             self._schedules[cid] = schedule
+            self._spatial[cid] = _citizen_spatial_fields(c, home_zone)
             self._zone_citizens.setdefault(int(home_zone), []).append(cid)
         # Deterministic assignment order within a zone: ascending citizen id.
         for z in self._zone_citizens:
@@ -164,6 +174,48 @@ class World:
     def current_hour(self) -> float:
         """The in-game hour [0,24) at the current authoritative tick."""
         return npc.hour_of_day(self.sim.tick, self.dt, self.start_hour)
+
+    # ------------------------------------------------------- Package 2: embodiment
+    def set_spatial_context(self, ctx) -> None:
+        """Attach the static city geometry (a :class:`embodiment.CitySpatialContext`)
+        used to resolve authoritative physical locations. Optional and purely a
+        read source — attaching or omitting it never changes the epidemic."""
+        self.spatial_ctx = ctx
+
+    def _citizen_action(self, cid: int) -> str:
+        """The behaviour label to embody for a citizen: its live ``chosen_action``
+        if embodied in a promoted zone, else its persisted roster action, else the
+        routine default."""
+        for zone in self.promoted.values():
+            hit = np.where(zone.citizen_id == cid)[0]
+            if hit.size:
+                return npc.action_name(int(zone.chosen_action[hit[0]]))
+        rec = self.roster.get(cid)
+        if rec is not None:
+            return npc.action_name(int(rec.chosen_action))
+        return "continue_schedule"
+
+    def physical_location(self, cid: int):
+        """The one canonical :class:`embodiment.PhysicalLocation` for a citizen at
+        the current in-game hour, or ``None`` if the citizen is unregistered.
+
+        Pure/derived: reads schedule + spatial anchors + current action + static
+        geometry; consumes no RNG and mutates nothing, so it is calibration-neutral
+        and deterministic under save/load and promote/demote churn.
+        """
+        cid = int(cid)
+        if cid not in self.citizens:
+            return None
+        home_xy, work_xy, home_zone, work_zone = self._spatial.get(
+            cid, (None, None, None, None))
+        # Report the zone the macro currently associates with the citizen (home
+        # zone is the stable authoritative association).
+        return embodiment.resolve_physical_location(
+            citizen_id=cid, schedule=self._schedules.get(cid, []),
+            hour=self.current_hour(), home_xy=home_xy, work_xy=work_xy,
+            home_zone=home_zone, work_zone=work_zone,
+            action=self._citizen_action(cid), zone=home_zone,
+            ctx=self.spatial_ctx)
 
     def set_citizen_tags(self, tags_by_id: dict) -> None:
         """Register per-citizen environment/hazard tags the affordance layer reads
@@ -345,6 +397,13 @@ class World:
                 "named": [bool(self.roster.contains(int(c))) for c in zone.citizen_id],
                 "area_size": zone.L,
             }
+            # Package 2: authoritative physical embodiment, aligned per agent.
+            # Identified citizens resolve to real world-space (building/road/route)
+            # in the same frame Godot renders; anonymous fill is placed in a clearly
+            # documented *approximate* mode (torus mapped into the zone cell). The
+            # renderer draws identified citizens at world_xy; interpolation between
+            # authoritative updates is a presentation choice, never truth.
+            agents[z]["embodiment"] = self._zone_embodiment(z, zone)
         out = {
             "day": sim.tick * self.dt, "tick": sim.tick,
             "hour": self.current_hour(),
@@ -365,6 +424,51 @@ class World:
                 for r in self.roster.members()
             ]
         return out
+
+    def _zone_embodiment(self, z: int, zone: AgentZone) -> dict:
+        """Per-agent authoritative physical embodiment for a promoted zone.
+
+        Returns arrays aligned with ``positions``/``citizen_id``. Identified
+        citizens are resolved to real world-space (deterministic, RNG-free);
+        anonymous fill gets an approximate world position (documented) so the
+        renderer can still place it. ``authoritative`` marks which entries are
+        real (identified) vs approximate.
+        """
+        hour = self.current_hour()
+        ctx = self.spatial_ctx
+        n = zone.n
+        world_xy = [None] * n
+        mode = ["outdoors"] * n
+        building_id = [-1] * n
+        movement = ["stationary"] * n
+        authoritative = [False] * n
+        for slot in range(n):
+            cid = int(zone.citizen_id[slot])
+            if cid >= 0 and cid in self.citizens:
+                home_xy, work_xy, hz, wz = self._spatial.get(
+                    cid, (None, None, None, None))
+                loc = embodiment.resolve_physical_location(
+                    citizen_id=cid, schedule=self._schedules.get(cid, []),
+                    hour=hour, home_xy=home_xy, work_xy=work_xy,
+                    home_zone=hz, work_zone=wz,
+                    action=npc.action_name(int(zone.chosen_action[slot])),
+                    zone=z, ctx=ctx)
+                world_xy[slot] = [loc.x, loc.y]
+                mode[slot] = loc.mode
+                building_id[slot] = loc.building_id
+                movement[slot] = loc.movement
+                authoritative[slot] = True
+            else:
+                # Anonymous statistical fill: approximate placement only.
+                approx = (ctx.approx_world_xy(z, zone.pos[slot], zone.L)
+                          if ctx is not None else None)
+                if approx is not None:
+                    world_xy[slot] = [float(approx[0]), float(approx[1])]
+                else:
+                    world_xy[slot] = [float(zone.pos[slot][0]), float(zone.pos[slot][1])]
+        return {"world_xy": world_xy, "mode": mode, "building_id": building_id,
+                "movement": movement, "authoritative": authoritative,
+                "schema_version": embodiment.LOCATION_SCHEMA_VERSION}
 
     def activity_occupancy(self) -> dict:
         """Per-promoted-zone counts of agents by activity (identity certification).
@@ -667,3 +771,26 @@ def _citizen_fields(c):
     if cid is None:
         return None, None, []
     return int(cid), (None if home is None else int(home)), schedule
+
+
+def _citizen_spatial_fields(c, home_zone):
+    """Extract (home_xy, work_xy, home_zone, work_zone) from a CitizenProfile or
+    dict. Coordinates are the real bundle map frame (metres) when present; missing
+    coordinates fall back to zone-centre resolution at embodiment time."""
+    def _get(name):
+        if isinstance(c, dict):
+            return c.get(name)
+        return getattr(c, name, None)
+
+    def _xy(v):
+        if v is None:
+            return None
+        try:
+            return (float(v[0]), float(v[1]))
+        except (TypeError, ValueError, IndexError):
+            return None
+
+    wz = _get("work_zone")
+    return (_xy(_get("home_xy")), _xy(_get("work_xy")),
+            (None if home_zone is None else int(home_zone)),
+            (None if wz is None else int(wz)))
