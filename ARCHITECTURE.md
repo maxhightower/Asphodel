@@ -1,5 +1,13 @@
 # Asphodel — Simulation Architecture & Roadmap
 
+> **Status note (canonicalization):** the roadmap table in §4 below pre-dates the
+> live bridge and save/load work — it still lists "Phase 9" (save/load) as *next*
+> and "Phase 10" (Godot) as after. Both are **done and certified**. The current
+> record is the M0–M6 findings (`FINDINGS_M0_*` … `FINDINGS_M6_*`) and
+> `FINDINGS_BW_LIVING_CITY.md` (live Python↔Godot bridge, embodied citizens,
+> roster, deterministic save/load). See [`docs/CANONICAL_STATUS.md`](docs/CANONICAL_STATUS.md).
+> The engine-contract sections (§2, §3) remain accurate.
+
 This document defines the **engine contract** the rest of the game is built
 against, and the **roadmap** for fleshing out the simulation *before* any game
 engine (Godot) work. The guiding principle:

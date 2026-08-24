@@ -1,4 +1,29 @@
-# Asphodel — Phase 3a: Belief-Cascade Prototype
+# Asphodel
+
+> ## ⚠️ Canonical status — read first
+>
+> **This section of the README describes the original _Phase 3a macro
+> prototype_. It is no longer the whole system.** Asphodel has since grown an
+> authoritative living-city substrate: real OSM city bundles, a live Python↔Godot
+> bridge, embodied citizens, a bounded persistent roster, deterministic
+> versioned save/load, and (in progress) an embodied survival-resource loop.
+>
+> **Python owns simulation truth; Godot renders it and submits player intent.**
+> The macro model documented below is still real and still the population
+> authority — but it is now *one tier* of a larger "one world, one authority,
+> scalable fidelity" engine, not the whole game.
+>
+> For what is actually canonical, see **[`docs/CANONICAL_STATUS.md`](docs/CANONICAL_STATUS.md)**
+> and the milestone findings (`FINDINGS_M0_*` … `FINDINGS_M6_*`,
+> `FINDINGS_BW_LIVING_CITY.md`, `FINDINGS_P1_CANONICALIZATION.md`, and the
+> embodiment/survival findings). The canonical branch is
+> `claude/asphodel-authoritative-world-55z0qw` (continued by
+> `claude/asphodel-embodied-survival-qlizmu`) — **not** the stale GitHub default
+> `claude/asphodel-belief-cascade-kvKKv`.
+
+---
+
+## Original Phase 3a prototype (historical context)
 
 A headless, 2D/no-graphics Python simulation of an outbreak spreading through a
 small grid of abstract **zones**, where what drives behaviour is not the
