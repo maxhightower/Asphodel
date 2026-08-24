@@ -33,6 +33,13 @@ var _traffic: Node3D
 var _current_focus_zone: int = -1
 var _last_render_tick: int = -1
 
+# Package 3: building index -> centroid (Vector2), index-aligned with
+# buildings.json so it equals the authoritative Python building_id. Used to
+# resolve which real building the player is entering/looting.
+var _building_centroids: Array = []      # Array[Vector2]
+var _inventory_label: Label
+const INTERACT_REACH := 8.0              # metres within which E loots a building
+
 
 func _ready() -> void:
 	# Keep processing input while paused so Esc can resume.
@@ -194,6 +201,15 @@ func _build_buildings(footprints: Array) -> void:
 	rng.seed = 0x5EED * 65537 + footprints.size()
 	for b in footprints:
 		var poly_xy: Array = b.get("poly", [])
+		# Keep _building_centroids index-aligned with footprints (== Python
+		# building_id), appending for EVERY building including degenerate ones.
+		if poly_xy.size() > 0:
+			var cx := 0.0; var cy := 0.0
+			for p in poly_xy:
+				cx += float(p[0]); cy += float(p[1])
+			_building_centroids.append(Vector2(cx / poly_xy.size(), cy / poly_xy.size()))
+		else:
+			_building_centroids.append(Vector2(INF, INF))
 		if poly_xy.size() < 3:
 			continue
 		var h := float(b.get("height", 6.0)) * HEIGHT_SCALE
@@ -663,11 +679,19 @@ func _build_hud() -> void:
 	layer.add_child(_outbreak_label)
 
 	var hint := Label.new()
-	hint.text = "WASD move · Shift sprint · mouse look · Esc menu"
+	hint.text = "WASD move · Shift sprint · mouse look · E search/interact · Esc menu"
 	hint.position = Vector2(16, 86)
 	hint.add_theme_font_size_override("font_size", 13)
 	hint.modulate = Color(0.7, 0.75, 0.8)
 	layer.add_child(hint)
+
+	# Package 3: authoritative inventory + survival needs HUD.
+	_inventory_label = Label.new()
+	_inventory_label.position = Vector2(16, 112)
+	_inventory_label.add_theme_font_size_override("font_size", 14)
+	_inventory_label.modulate = Color(0.9, 0.95, 0.8)
+	layer.add_child(_inventory_label)
+	_refresh_inventory_hud()
 
 
 func _on_clock_ticked(_day: int, _hour: float, outbreak: float) -> void:
@@ -814,15 +838,53 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _try_interact() -> void:
-	## BW5: engage the nearest identified citizen -> authoritative roster. Resolves
-	## a citizen_id from the live snapshot and sends INTERACT_WITH; the citizen
-	## becomes persistent (named) and is recognisable on return.
-	if not SimBridge.is_connected_to_sim() or _current_focus_zone < 0:
+	## E-key interaction. Package 3: if the player is at a real building, enter and
+	## loot it authoritatively (Python owns the containers/inventory); otherwise
+	## engage the nearest identified citizen -> authoritative roster (BW5).
+	if not SimBridge.is_connected_to_sim():
+		return
+	if _try_building_loot():
+		return
+	_try_citizen_interact()
+
+
+func _try_building_loot() -> bool:
+	## Enter the nearest building within reach, search its first container, and take
+	## one food/water item — the smallest complete "search a real place, take a
+	## persistent resource" loop. Every mutation is acknowledged by Python.
+	var bid := _nearest_building(Vector2(_player.position.x, _player.position.z))
+	if bid < 0:
+		return false
+	SimBridge.enter_building(bid)
+	var info: Dictionary = SimBridge.inspect_building(bid)
+	if not info.get("ok", false) or int(info.get("n_containers", 0)) <= 0:
+		return false
+	var searched: Dictionary = SimBridge.search_container(bid, 0)
+	if not searched.get("ok", false):
+		return false
+	var contents: Array = searched.get("contents", [])
+	var msg := "Building %d: empty" % bid
+	for c in contents:
+		var kind: String = str(c.get("kind", ""))
+		var took: Dictionary = SimBridge.take_item(bid, 0, kind, 1)
+		if took.get("ok", false):
+			msg = "Took %s from building %d" % [kind, bid]
+			_refresh_inventory_hud()
+			break
+	if _outbreak_label != null:
+		_outbreak_label.text = msg
+	return true
+
+
+func _try_citizen_interact() -> void:
+	if _current_focus_zone < 0:
 		return
 	var world: Dictionary = SimBridge.last_world
 	var a: Dictionary = world.get("agents", {}).get(str(_current_focus_zone), {})
 	var ids: Array = a.get("citizen_id", [])
 	var pos: Array = a.get("positions", [])
+	var emb: Dictionary = a.get("embodiment", {})
+	var world_xy: Array = emb.get("world_xy", [])
 	var area: float = float(a.get("area_size", 100.0))
 	var half := area * 0.5
 	var offset := _zone_center(_current_focus_zone)
@@ -831,8 +893,14 @@ func _try_interact() -> void:
 	for i in range(ids.size()):
 		if int(ids[i]) < 0:
 			continue
-		var p: Array = pos[i]
-		var wp := offset + Vector3(float(p[0]) - half, 0.0, float(p[1]) - half)
+		var wp: Vector3
+		if world_xy.size() > i and world_xy[i] != null:
+			# Authoritative absolute position (Package 2).
+			var w: Array = world_xy[i]
+			wp = Vector3(float(w[0]), 0.0, float(w[1]))
+		else:
+			var p: Array = pos[i]
+			wp = offset + Vector3(float(p[0]) - half, 0.0, float(p[1]) - half)
 		var d := wp.distance_squared_to(_player.position)
 		if d < best_d:
 			best_d = d
@@ -841,6 +909,37 @@ func _try_interact() -> void:
 		var r: Dictionary = SimBridge.interact_with(best)
 		if r.get("ok", false) and _outbreak_label != null:
 			_outbreak_label.text = "Met Citizen %d (now in your roster)" % best
+
+
+func _nearest_building(xy: Vector2) -> int:
+	## Building index (== Python building_id) within INTERACT_REACH of xy, or -1.
+	var best := -1
+	var best_d := INTERACT_REACH * INTERACT_REACH
+	for i in range(_building_centroids.size()):
+		var c: Vector2 = _building_centroids[i]
+		if c.x == INF:
+			continue
+		var d := c.distance_squared_to(xy)
+		if d < best_d:
+			best_d = d
+			best = i
+	return best
+
+
+func _refresh_inventory_hud() -> void:
+	if _inventory_label == null:
+		return
+	var inv: Dictionary = SimBridge.inspect_inventory()
+	if not inv.get("ok", false):
+		return
+	var items_d: Dictionary = inv.get("inventory", {})
+	var sv: Dictionary = inv.get("survival", {})
+	var parts: Array = []
+	for k in items_d:
+		parts.append("%s x%d" % [k, int(items_d[k])])
+	var needs := "H:%d T:%d HP:%d" % [int(sv.get("hunger", 0)),
+		int(sv.get("thirst", 0)), int(sv.get("health", 100))]
+	_inventory_label.text = needs + "\n" + ", ".join(parts)
 
 
 func _zone_center(zid: int) -> Vector3:

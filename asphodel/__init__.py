@@ -51,6 +51,14 @@ from .embodiment import (
     PhysicalLocation, CitySpatialContext, LocationMode, Movement,
     resolve_physical_location, LOCATION_SCHEMA_VERSION,
 )
+# --- Package 3: survival-resource loop --------------------------------------
+from . import items
+from . import survival as survival_module
+from .items import (
+    ItemKind, ItemStack, ITEM_KINDS, item_kind, container_contents,
+    container_flavour, n_containers,
+)
+from .survival import Survival, PlayerSurvival, SurvivalParams, SurvivalError
 
 # --- Citizen spawn: the possibility space a player can be dropped into ------
 from .citizen import (

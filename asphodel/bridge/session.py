@@ -129,14 +129,21 @@ class WorldSession:
                 pass  # embodiment falls back to zone-centre anchors
             n_citizens = len(population)
             if player_citizen is not None:
+                player_profile = None
                 for c in population:
                     if c.citizen_id == player_citizen:
                         player_home_zone = c.home_zone
+                        player_profile = c
                         break
                 if player_home_zone is None:
                     raise _BadArg(
                         f"player_citizen {player_citizen} not in bundle population "
                         f"(0..{n_citizens - 1})")
+                # Package 3: seed the player's survival inventory from the citizen's
+                # on-person loadout, so play begins with what they were carrying.
+                surv = world.ensure_survival()
+                surv.player.inventory = {str(k): int(v) for k, v in
+                                         dict(getattr(player_profile, "inventory", {})).items()}
 
         # Focus: explicit request wins; otherwise the player's home zone so their
         # neighbourhood resolves to agents on entry.
@@ -208,6 +215,97 @@ class WorldSession:
         return P.response(Command.INTERACT_WITH, id=rid, citizen_id=cid,
                           added=bool(added),
                           in_roster=self.world.roster.contains(cid))
+
+    # ---------------------------------------------------- Package 3: survival
+    def _n_buildings(self):
+        ctx = getattr(self.world, "spatial_ctx", None)
+        if ctx is None:
+            return None
+        return int(ctx.building_centroids.shape[0])
+
+    def _req_building(self, msg):
+        bid = msg.get("building_id")
+        if not isinstance(bid, int) or isinstance(bid, bool):
+            raise _BadArg("requires an integer 'building_id'")
+        n = self._n_buildings()
+        if n is not None and not (0 <= bid < n):
+            raise _BadArg(f"building_id {bid} out of range (0..{n - 1})")
+        return int(bid)
+
+    def _survival(self):
+        return self.world.ensure_survival()
+
+    def _cmd_enter_building(self, msg, rid) -> dict:
+        self._require_world(Command.ENTER_BUILDING)
+        bid = self._req_building(msg)
+        return P.response(Command.ENTER_BUILDING, id=rid,
+                          **self._survival().enter_building(bid))
+
+    def _cmd_leave_building(self, msg, rid) -> dict:
+        self._require_world(Command.LEAVE_BUILDING)
+        return P.response(Command.LEAVE_BUILDING, id=rid,
+                          **self._survival().leave_building())
+
+    def _cmd_inspect_building(self, msg, rid) -> dict:
+        self._require_world(Command.INSPECT_BUILDING)
+        bid = self._req_building(msg)
+        return P.response(Command.INSPECT_BUILDING, id=rid,
+                          **self._survival().inspect_building(bid))
+
+    def _cmd_search_container(self, msg, rid) -> dict:
+        self._require_world(Command.SEARCH_CONTAINER)
+        bid = self._req_building(msg)
+        idx = _req_int(msg.get("index"), "index")
+        return self._survival_call(
+            Command.SEARCH_CONTAINER, rid,
+            lambda s: s.search_container(bid, idx))
+
+    def _cmd_take_item(self, msg, rid) -> dict:
+        self._require_world(Command.TAKE_ITEM)
+        bid = self._req_building(msg)
+        idx = _req_int(msg.get("index"), "index")
+        kind = _req_str(msg.get("kind"), "kind")
+        qty = msg.get("quantity", 1)
+        if not isinstance(qty, int) or isinstance(qty, bool):
+            raise _BadArg("'quantity' must be an integer")
+        return self._survival_call(
+            Command.TAKE_ITEM, rid,
+            lambda s: s.take_item(bid, idx, kind, qty))
+
+    def _cmd_drop_item(self, msg, rid) -> dict:
+        self._require_world(Command.DROP_ITEM)
+        kind = _req_str(msg.get("kind"), "kind")
+        qty = msg.get("quantity", 1)
+        if not isinstance(qty, int) or isinstance(qty, bool):
+            raise _BadArg("'quantity' must be an integer")
+        x = float(msg.get("x", 0.0))
+        y = float(msg.get("y", 0.0))
+        zone = msg.get("zone", -1)
+        zone = int(zone) if isinstance(zone, int) and not isinstance(zone, bool) else -1
+        return self._survival_call(
+            Command.DROP_ITEM, rid,
+            lambda s: s.drop_item(kind, qty, x, y, zone))
+
+    def _cmd_use_item(self, msg, rid) -> dict:
+        self._require_world(Command.USE_ITEM)
+        kind = _req_str(msg.get("kind"), "kind")
+        return self._survival_call(
+            Command.USE_ITEM, rid, lambda s: s.use_item(kind))
+
+    def _cmd_inspect_inventory(self, msg, rid) -> dict:
+        self._require_world(Command.INSPECT_INVENTORY)
+        return P.response(Command.INSPECT_INVENTORY, id=rid,
+                          **self._survival().inspect_inventory())
+
+    def _survival_call(self, cmd, rid, fn) -> dict:
+        """Run a survival mutation, mapping a rejected action to a stable error."""
+        from ..survival import SurvivalError
+        try:
+            result = fn(self._survival())
+        except SurvivalError as e:
+            return P.error_response(ErrorCode.ILLEGAL_ACTION, e.message,
+                                    cmd=cmd, id=rid)
+        return P.response(cmd, id=rid, **result)
 
     def _cmd_pause(self, msg, rid) -> dict:
         self._require_world(Command.PAUSE)
@@ -316,6 +414,18 @@ def _opt_int(v, name):
     if isinstance(v, bool) or not isinstance(v, int):
         raise _BadArg(f"{name!r} must be an integer")
     return int(v)
+
+
+def _req_int(v, name):
+    if isinstance(v, bool) or not isinstance(v, int):
+        raise _BadArg(f"requires an integer {name!r}")
+    return int(v)
+
+
+def _req_str(v, name):
+    if not isinstance(v, str) or not v:
+        raise _BadArg(f"requires a non-empty string {name!r}")
+    return v
 
 
 def _micro_from(d):

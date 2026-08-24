@@ -20,7 +20,7 @@ signal connected_changed(is_connected: bool)
 signal world_started(summary: Dictionary)
 signal advanced(tick: int, outbreak: float, summary: Dictionary)
 
-const PROTOCOL_VERSION := 1
+const PROTOCOL_VERSION := 2   # v2: + Package 3 survival/interaction commands
 
 var _peer: StreamPeerTCP = null
 var _id := 0
@@ -109,6 +109,48 @@ func intervene(action: String, zones = null, params: Dictionary = {}) -> Diction
 func interact_with(citizen_id: int) -> Dictionary:
 	## The player engaged a citizen -> authoritative roster promotion.
 	return _send("INTERACT_WITH", {"citizen_id": citizen_id})
+
+
+# ----------------------------------------------- Package 3: survival-resource
+func enter_building(building_id: int) -> Dictionary:
+	## Player enters a building interior (authoritative container access).
+	return _send("ENTER_BUILDING", {"building_id": building_id})
+
+
+func leave_building() -> Dictionary:
+	return _send("LEAVE_BUILDING", {})
+
+
+func inspect_building(building_id: int) -> Dictionary:
+	## Enumerate a building's containers (counts; contents stay implicit).
+	return _send("INSPECT_BUILDING", {"building_id": building_id})
+
+
+func search_container(building_id: int, index: int) -> Dictionary:
+	## Reveal a container's authoritative current contents.
+	return _send("SEARCH_CONTAINER", {"building_id": building_id, "index": index})
+
+
+func take_item(building_id: int, index: int, kind: String, quantity: int = 1) -> Dictionary:
+	## Take item(s) from a container into the authoritative player inventory.
+	return _send("TAKE_ITEM", {"building_id": building_id, "index": index,
+		"kind": kind, "quantity": quantity})
+
+
+func drop_item(kind: String, quantity: int, x: float, y: float, zone: int = -1) -> Dictionary:
+	## Drop item(s) into the world at (x, y) as a persistent world item.
+	return _send("DROP_ITEM", {"kind": kind, "quantity": quantity,
+		"x": x, "y": y, "zone": zone})
+
+
+func use_item(kind: String) -> Dictionary:
+	## Use/consume an item; authoritative survival state changes.
+	return _send("USE_ITEM", {"kind": kind})
+
+
+func inspect_inventory() -> Dictionary:
+	## Read the authoritative player inventory + survival needs.
+	return _send("INSPECT_INVENTORY", {})
 
 
 func pause() -> Dictionary:

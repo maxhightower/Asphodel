@@ -27,7 +27,8 @@ from typing import Any
 
 # Bump on any breaking change to command/response shape. A client HELLO carrying
 # a different major version is rejected (see WorldSession.handle / Command.HELLO).
-PROTOCOL_VERSION = 1
+# v1: authoritative world (M1). v2: + Package 3 survival/interaction commands.
+PROTOCOL_VERSION = 2
 
 
 class Command:
@@ -46,9 +47,21 @@ class Command:
     LOAD = "LOAD"              # replace the world from a saved path
     SHUTDOWN = "SHUTDOWN"      # end the session/process cleanly
 
+    # --- Package 3: survival-resource interaction (v2) ---------------------
+    ENTER_BUILDING = "ENTER_BUILDING"        # player enters a building interior
+    LEAVE_BUILDING = "LEAVE_BUILDING"        # player leaves the current building
+    INSPECT_BUILDING = "INSPECT_BUILDING"    # enumerate a building's containers
+    SEARCH_CONTAINER = "SEARCH_CONTAINER"    # reveal a container's contents
+    TAKE_ITEM = "TAKE_ITEM"                  # take item(s) from a container
+    DROP_ITEM = "DROP_ITEM"                  # drop item(s) into the world
+    USE_ITEM = "USE_ITEM"                    # use/consume an item from inventory
+    INSPECT_INVENTORY = "INSPECT_INVENTORY"  # read the player inventory + needs
+
     ALL = frozenset({
         HELLO, START_WORLD, SET_FOCUS, ADVANCE, INTERVENE, INTERACT_WITH,
         PAUSE, RESUME, SNAPSHOT, SAVE, LOAD, SHUTDOWN,
+        ENTER_BUILDING, LEAVE_BUILDING, INSPECT_BUILDING, SEARCH_CONTAINER,
+        TAKE_ITEM, DROP_ITEM, USE_ITEM, INSPECT_INVENTORY,
     })
 
 
@@ -63,6 +76,7 @@ class ErrorCode:
     BAD_ARGUMENT = "bad_argument"
     PAUSED = "paused"                      # ADVANCE refused while paused
     INTERNAL = "internal"                  # unexpected engine exception
+    ILLEGAL_ACTION = "illegal_action"      # a rejected survival action (v2)
 
 
 class ProtocolError(Exception):

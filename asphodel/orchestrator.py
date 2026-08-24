@@ -116,6 +116,11 @@ class World:
         # deterministic, still calibration-neutral).
         self._spatial: dict[int, tuple] = {}       # cid -> (home_xy,work_xy,hz,wz)
         self.spatial_ctx = None
+        # Package 3: the authoritative survival-resource runtime (player state,
+        # container world-delta store, dropped items). Created on demand so a
+        # bare epidemiological world carries no survival cost. Its needs tick is
+        # advanced with the world but is entirely separate from the epidemic.
+        self.survival = None
 
         # --- M3 / SP2: reactive affordances ------------------------------------
         # Optional per-citizen environment/hazard tags the affordance layer reads,
@@ -181,6 +186,14 @@ class World:
         used to resolve authoritative physical locations. Optional and purely a
         read source — attaching or omitting it never changes the epidemic."""
         self.spatial_ctx = ctx
+
+    def ensure_survival(self):
+        """Return the authoritative :class:`~asphodel.survival.Survival` runtime,
+        creating it (seeded by the world seed) on first use."""
+        if self.survival is None:
+            from .survival import Survival
+            self.survival = Survival(world_seed=self._seed)
+        return self.survival
 
     def _citizen_action(self, cid: int) -> str:
         """The behaviour label to embody for a citizen: its live ``chosen_action``
@@ -338,6 +351,13 @@ class World:
                     self._update_zone_reactions(z, zone)
             self._update_roster_promotion()
 
+        # --- 4c. advance survival needs (Package 3) --------------------------
+        # Pure, RNG-free, epidemic-independent: raises hunger/thirst, bleeds
+        # health when a need is maxed. Never touches the sim, so it cannot perturb
+        # the certified trajectory; it advances in lockstep so resources matter.
+        if self.survival is not None:
+            self.survival.on_tick(self.dt)
+
         # --- 5. authoritative aggregate (after write-back) -------------------
         totals = {name: float(getattr(self.sim, _attr(name)).sum())
                   for name in STATE_NAMES}
@@ -423,6 +443,9 @@ class World:
                  "interactions": r.interactions}
                 for r in self.roster.members()
             ]
+        # Package 3: authoritative survival state (player + dropped world items).
+        if self.survival is not None:
+            out["survival"] = self.survival.snapshot()
         return out
 
     def _zone_embodiment(self, z: int, zone: AgentZone) -> dict:

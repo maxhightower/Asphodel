@@ -33,7 +33,11 @@ from .roster import Roster, RosterRecord
 from .citizen import ScheduleEntry
 
 
-SAVE_VERSION = 1
+# v1: authoritative world (macro + agents + roster + citizens).
+# v2: + Package 3 survival runtime (player state, container deltas, dropped items).
+#     v1 saves are accepted via an explicit migration (survival starts empty).
+SAVE_VERSION = 2
+_READABLE_VERSIONS = (1, 2)
 
 
 class SaveError(Exception):
@@ -272,6 +276,9 @@ def world_state(world: World, *, bundle: str | None = None,
                      for z, zone in world.promoted.items()},
         "roster": roster_state(world.roster),
         "citizens": _citizen_records(world),
+        # Package 3: survival runtime (None when the world has no survival loop).
+        "survival": (world.survival.to_state() if world.survival is not None
+                     else None),
     }
 
 
@@ -310,6 +317,12 @@ def load_world(state: dict) -> World:
     world.promoted = {}
     for z_str, zstate in state["promoted"].items():
         world.promoted[int(z_str)] = restore_agentzone(cfg.genome, zstate)
+    # Package 3: survival runtime. Present in v2 saves; a v1 save (or an explicit
+    # null) migrates to "no survival loop yet" — not silently misread, just absent.
+    surv = state.get("survival")
+    if surv:
+        from .survival import Survival
+        world.survival = Survival.from_state(surv)
     return world
 
 
@@ -338,9 +351,9 @@ def _validate(state) -> None:
     v = state.get("save_version")
     if v is None:
         raise SaveError("save is missing 'save_version'")
-    if int(v) != SAVE_VERSION:
+    if int(v) not in _READABLE_VERSIONS:
         raise SaveError(
-            f"incompatible save_version {v} (this build reads {SAVE_VERSION}); "
+            f"incompatible save_version {v} (this build reads {_READABLE_VERSIONS}); "
             f"no migration path is defined")
     for key in ("config", "world", "sim", "promoted", "roster"):
         if key not in state:
