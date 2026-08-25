@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0asphlivesurviv1"]
+
+[ext_resource type="Script" path="res://tests/live_survival.gd" id="1_surv"]
+
+[node name="LiveSurvival" type="Node"]
+script = ExtResource("1_surv")

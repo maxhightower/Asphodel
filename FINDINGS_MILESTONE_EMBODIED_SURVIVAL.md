@@ -1,8 +1,19 @@
 # Milestone — Canonicalization → Embodied Citizens → Authoritative Survival Loop
 
-**Final verdict: PARTIAL — PASS on all three packages' authoritative substrate
-and required tests; the final all-Godot in-engine sequence is unexecuted here
-because this environment has no `godot4` binary.**
+**Final verdict: PASS.**
+
+> **Update (Gate 0 closure):** this milestone was originally **PARTIAL** solely
+> because the environment lacked a Godot binary. In a later session Godot 4.4.1
+> was installed and the full in-engine surface was run against the real
+> authoritative server and real bundles — TestRunner, StreetSmoke, LiveSmoke,
+> save/destroy/reload (bit-identical), a new in-engine survival cert, and
+> LiveBench all pass (278 Python tests still green). The milestone is now
+> **PASS**. See `FINDINGS_GATE0_CERT_CLOSURE.md`.
+
+_Original verdict (for the record): PARTIAL — PASS on all three packages'
+authoritative substrate and required tests; the final all-Godot in-engine
+sequence was unexecuted at the time because that environment had no `godot4`
+binary._
 
 A truthful PARTIAL, as the brief prefers: every acceptance criterion that can be
 executed against the authoritative Python surface is met and green; the one gate
