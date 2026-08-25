@@ -116,6 +116,39 @@ func _ready() -> void:
 	_check(after_nodes <= base_nodes + 2,
 		"no node leak over 60 build/free cycles (%d -> %d)" % [base_nodes, after_nodes])
 
+	# --- Package 5: interior NPC occupancy ---------------------------------
+	# Find a building that has authoritative occupants at the current time.
+	var occ_bid := -1
+	var occ_desc := {}
+	for b in range(600):
+		var gi2: Dictionary = SimBridge.get_interior(b)
+		if gi2.get("ok", false):
+			var it2: Dictionary = gi2.get("interior", {})
+			if it2.get("occupants", []).size() > 0:
+				occ_bid = b; occ_desc = it2; break
+	_check(occ_bid >= 0, "found a building with authoritative interior occupants")
+	if occ_bid >= 0:
+		var occ_interior: Node3D = InteriorBuilder.build(occ_desc, Vector3(200000, 0, 0))
+		add_child(occ_interior)
+		var occ_node := occ_interior.get_node_or_null("Occupants")
+		_check(occ_node != null and occ_node.get_child_count() == occ_desc["occupants"].size(),
+			"occupant NPCs materialized (%d)" % occ_desc["occupants"].size())
+		var first_cid := int(occ_desc["occupants"][0]["citizen_id"])
+		var cid_ok := false
+		if occ_node != null:
+			for o in occ_node.get_children():
+				if int(o.get_meta("citizen_id", -1)) == first_cid:
+					cid_ok = true
+		_check(cid_ok, "occupant carries its authoritative citizen_id")
+		# unload/reload -> same occupant returns (deterministic, authority persists)
+		occ_interior.free()
+		var reocc: Dictionary = SimBridge.get_interior(occ_bid).get("interior", {})
+		var same := false
+		for o in reocc.get("occupants", []):
+			if int(o["citizen_id"]) == first_cid:
+				same = true
+		_check(same, "same occupant returns after unload/reload")
+
 	# Persistence: after the taking above, re-fetch shows the container searched.
 	var reget: Dictionary = SimBridge.get_interior(bid).get("interior", {})
 	var searched_flag := false

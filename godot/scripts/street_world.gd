@@ -867,6 +867,8 @@ func _try_interact() -> void:
 	if not SimBridge.is_connected_to_sim():
 		return
 	if _inside_building >= 0:
+		if _try_interior_npc():
+			return
 		if _try_loot_fixture():
 			return
 		_try_leave_building()
@@ -927,6 +929,29 @@ func _try_leave_building() -> void:
 	_player.velocity = Vector3.ZERO
 	if _outbreak_label != null:
 		_outbreak_label.text = "Left building %d" % bid
+
+
+func _try_interior_npc() -> bool:
+	## Engage the nearest interior occupant (authoritative roster), if within reach.
+	if _active_interior == null:
+		return false
+	var occ := _active_interior.get_node_or_null("Occupants")
+	if occ == null:
+		return false
+	var best: Node = null
+	var best_d := FIXTURE_REACH * FIXTURE_REACH
+	for o in occ.get_children():
+		var d: float = _player.position.distance_squared_to(o.global_position)
+		if d < best_d:
+			best_d = d
+			best = o
+	if best == null:
+		return false
+	var cid := int(best.get_meta("citizen_id"))
+	var r: Dictionary = SimBridge.interact_with(cid)
+	if r.get("ok", false) and _outbreak_label != null:
+		_outbreak_label.text = "Met Citizen %d indoors (now in your roster)" % cid
+	return true
 
 
 func _try_loot_fixture() -> bool:

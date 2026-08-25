@@ -84,6 +84,15 @@ static func build(descriptor: Dictionary, offset: Vector3 = Vector3(0, 0, 0)) ->
 	for f in fixtures:
 		fx_root.add_child(_fixture(descriptor, f))
 
+	# --- interior NPC occupants (Package 5) --------------------------------
+	var occupants: Array = descriptor.get("occupants", [])
+	if occupants.size() > 0:
+		var occ_root := Node3D.new()
+		occ_root.name = "Occupants"
+		root.add_child(occ_root)
+		for o in occupants:
+			occ_root.add_child(_occupant(o))
+
 	# --- exit marker at the entrance ---------------------------------------
 	if entrances.size() > 0:
 		var e = entrances[0]
@@ -95,6 +104,32 @@ static func build(descriptor: Dictionary, offset: Vector3 = Vector3(0, 0, 0)) ->
 		root.add_child(marker)
 
 	return root
+
+
+static func _occupant(o: Dictionary) -> Node3D:
+	## An interior NPC: a capsule at the authoritative anchor, tagged with the
+	## citizen id so E-interact routes to INTERACT_WITH. Presentation only.
+	var n := Node3D.new()
+	var cid := int(o.get("citizen_id", -1))
+	n.name = "Occupant_%d" % cid
+	n.position = Vector3(float(o.get("x", 0.0)), 0.0, float(o.get("y", 0.0)))
+	var mesh := CapsuleMesh.new()
+	mesh.radius = 0.28
+	mesh.height = 1.7
+	var mat := StandardMaterial3D.new()
+	# roster members tinted by their stable visual seed (recognisable on return)
+	var base := Color(0.75, 0.72, 0.68)
+	if bool(o.get("in_roster", false)):
+		var hue := float((cid * 0x9E3779B1) % 360) / 360.0
+		base = base.lerp(Color.from_hsv(hue, 0.5, 0.95), 0.5)
+	mat.albedo_color = base
+	mesh.material = mat
+	var mi := MeshInstance3D.new()
+	mi.mesh = mesh
+	mi.position = Vector3(0, 1.0, 0)
+	n.add_child(mi)
+	n.set_meta("citizen_id", cid)
+	return n
 
 
 static func _box(size: Vector3, col: Color) -> MeshInstance3D:

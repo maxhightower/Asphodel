@@ -236,7 +236,40 @@ class World:
         if surv is not None:
             out["dropped_here"] = [dict(it) for it in surv.dropped
                                    if int(it.get("building_id", -1)) == int(building_id)]
+        # Package 5: schedule-aware NPC occupancy — identified citizens whose
+        # authoritative physical location resolves *inside* this building, each at
+        # a deterministic interior anchor.
+        out["occupants"] = self.building_occupants(building_id, desc)
         return out
+
+    def building_occupants(self, building_id: int, descriptor=None) -> list:
+        """Identified citizens authoritatively inside ``building_id`` right now,
+        each placed at a deterministic interior anchor (Package 5).
+
+        Schedule-aware and calibration-neutral: a citizen counts as an occupant
+        only when their *authoritative* physical location (schedule + reaction)
+        puts them at this building. Bounded by the registered citizen set; the
+        anchor is a pure function, so occupancy is deterministic and survives
+        save/load and building unload/reload.
+        """
+        from . import interiors
+        if descriptor is None:
+            descriptor = self.interior_descriptor(building_id)
+        occ = []
+        for cid in self.citizens:
+            loc = self.physical_location(cid)
+            if loc is None:
+                continue
+            if loc.mode == embodiment.LocationMode.BUILDING and loc.building_id == int(building_id):
+                anchor = interiors.occupant_anchor(descriptor, cid)
+                occ.append({
+                    "citizen_id": int(cid), "room_id": anchor["room_id"],
+                    "x": anchor["x"], "y": anchor["y"],
+                    "activity": loc.activity, "action": loc.action,
+                    "in_roster": bool(self.roster.contains(cid)),
+                })
+        occ.sort(key=lambda o: o["citizen_id"])
+        return occ
 
     def _citizen_action(self, cid: int) -> str:
         """The behaviour label to embody for a citizen: its live ``chosen_action``

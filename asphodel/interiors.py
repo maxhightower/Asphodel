@@ -398,6 +398,25 @@ def _make_entrance(hull, rooms, road_xy) -> Entrance:
     return Entrance(entrance_id=0, x=ex, y=ey, nx=nx, ny=ny, room_id=room_id)
 
 
+def occupant_anchor(descriptor: InteriorDescriptor, citizen_id: int) -> dict:
+    """A deterministic interior anchor (room + position) for an NPC occupying this
+    building. Pure function of (descriptor, citizen_id) — the same citizen always
+    stands in the same spot of the same interior. Kept away from walls/fixtures by
+    using a citizen-hashed point in the interior of a deterministically-chosen room.
+    """
+    rooms = descriptor.rooms
+    if not rooms:
+        return {"room_id": -1, "x": 0.0, "y": 0.0}
+    r = rooms[int(citizen_id) % len(rooms)]
+    # a stable hashed offset within the room's inner area (avoid the very edges)
+    h = (int(citizen_id) * 2654435761) & 0xFFFFFFFF
+    fx = 0.25 + 0.5 * (((h >> 3) & 0xFF) / 255.0)
+    fy = 0.25 + 0.5 * (((h >> 11) & 0xFF) / 255.0)
+    x = r.x0 + (r.x1 - r.x0) * fx
+    y = r.y0 + (r.y1 - r.y0) * fy
+    return {"room_id": r.room_id, "x": float(x), "y": float(y)}
+
+
 def _fixture_anchor(rng, room: Room, ci: int):
     """A deterministic spot against one of the room's walls, inside its bounds."""
     m = FIXTURE_MARGIN
