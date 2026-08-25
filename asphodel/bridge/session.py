@@ -252,6 +252,16 @@ class WorldSession:
         return P.response(Command.INSPECT_BUILDING, id=rid,
                           **self._survival().inspect_building(bid))
 
+    def _cmd_get_interior(self, msg, rid) -> dict:
+        self._require_world(Command.GET_INTERIOR)
+        bid = self._req_building(msg)
+        gv = msg.get("gen_version")
+        gv = int(gv) if isinstance(gv, int) and not isinstance(gv, bool) else None
+        # ensure the survival store exists so fixture delta overlay is coherent
+        self._survival()
+        return P.response(Command.GET_INTERIOR, id=rid,
+                          interior=self.world.interior_state(bid, gv))
+
     def _cmd_search_container(self, msg, rid) -> dict:
         self._require_world(Command.SEARCH_CONTAINER)
         bid = self._req_building(msg)
@@ -282,9 +292,11 @@ class WorldSession:
         y = float(msg.get("y", 0.0))
         zone = msg.get("zone", -1)
         zone = int(zone) if isinstance(zone, int) and not isinstance(zone, bool) else -1
+        bld = msg.get("building_id", -1)
+        bld = int(bld) if isinstance(bld, int) and not isinstance(bld, bool) else -1
         return self._survival_call(
             Command.DROP_ITEM, rid,
-            lambda s: s.drop_item(kind, qty, x, y, zone))
+            lambda s: s.drop_item(kind, qty, x, y, zone, building_id=bld))
 
     def _cmd_use_item(self, msg, rid) -> dict:
         self._require_world(Command.USE_ITEM)

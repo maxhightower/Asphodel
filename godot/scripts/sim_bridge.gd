@@ -20,7 +20,7 @@ signal connected_changed(is_connected: bool)
 signal world_started(summary: Dictionary)
 signal advanced(tick: int, outbreak: float, summary: Dictionary)
 
-const PROTOCOL_VERSION := 2   # v2: + Package 3 survival/interaction commands
+const PROTOCOL_VERSION := 3   # v3: + GET_INTERIOR (walk-in interiors)
 
 var _peer: StreamPeerTCP = null
 var _id := 0
@@ -137,10 +137,22 @@ func take_item(building_id: int, index: int, kind: String, quantity: int = 1) ->
 		"kind": kind, "quantity": quantity})
 
 
-func drop_item(kind: String, quantity: int, x: float, y: float, zone: int = -1) -> Dictionary:
-	## Drop item(s) into the world at (x, y) as a persistent world item.
+func drop_item(kind: String, quantity: int, x: float, y: float, zone: int = -1,
+		building_id: int = -1) -> Dictionary:
+	## Drop item(s) into the world at (x, y) as a persistent world item. Pass a
+	## building_id >= 0 for an indoor drop bound to that interior.
 	return _send("DROP_ITEM", {"kind": kind, "quantity": quantity,
-		"x": x, "y": y, "zone": zone})
+		"x": x, "y": y, "zone": zone, "building_id": building_id})
+
+
+func get_interior(building_id: int, gen_version: int = -1) -> Dictionary:
+	## Fetch the authoritative interior descriptor (immutable geometry) + the
+	## per-fixture persistent-delta overlay. Godot materializes geometry from this;
+	## it never invents rooms, fixtures, or container assignments.
+	var fields := {"building_id": building_id}
+	if gen_version >= 0:
+		fields["gen_version"] = gen_version
+	return _send("GET_INTERIOR", fields)
 
 
 func use_item(kind: String) -> Dictionary:

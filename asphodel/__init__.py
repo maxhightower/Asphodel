@@ -59,6 +59,13 @@ from .items import (
     container_flavour, n_containers,
 )
 from .survival import Survival, PlayerSurvival, SurvivalParams, SurvivalError
+# --- Walk-in building interiors ---------------------------------------------
+from . import interiors
+from .interiors import (
+    InteriorDescriptor, Room, Doorway, Fixture, Entrance,
+    build_interior, interior_seed, archetype_for,
+    INTERIOR_GEN_VERSION, INTERIOR_SCHEMA_VERSION,
+)
 
 # --- Citizen spawn: the possibility space a player can be dropped into ------
 from .citizen import (

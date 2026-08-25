@@ -126,9 +126,16 @@ class CitySpatialContext:
 
     def __init__(self, *, building_centroids: np.ndarray, road_vertices: np.ndarray,
                  zone_ids: np.ndarray, zone_centers: np.ndarray,
-                 bbox: Optional[tuple] = None, name: str = "", cell_m: float = 0.0):
+                 bbox: Optional[tuple] = None, name: str = "", cell_m: float = 0.0,
+                 building_polys: Optional[list] = None,
+                 building_heights: Optional[list] = None):
         self.name = name
         self.building_centroids = building_centroids       # (B, 2) or (0, 2)
+        # Full footprint polygons + heights, index-aligned with building_centroids
+        # (== building_id). Kept for interior generation (Package: walk-in
+        # interiors); None-safe for older callers.
+        self.building_polys = building_polys or []         # list[list[[x,y]]]
+        self.building_heights = building_heights or []     # list[float]
         self.road_vertices = road_vertices                 # (V, 2) or (0, 2)
         self.zone_ids = zone_ids                           # (Z,)
         self.zone_centers = zone_centers                   # (Z, 2)
@@ -158,8 +165,13 @@ class CitySpatialContext:
                  else (buildings_doc or []))
         if blist:
             centroids = np.array([_poly_centroid(b["poly"]) for b in blist], dtype=float)
+            building_polys = [[[float(p[0]), float(p[1])] for p in b.get("poly", [])]
+                              for b in blist]
+            building_heights = [float(b.get("height", 6.0)) for b in blist]
         else:
             centroids = np.zeros((0, 2), dtype=float)
+            building_polys = []
+            building_heights = []
 
         roads_doc = _load("roads.json") or {}
         verts = []
@@ -192,7 +204,19 @@ class CitySpatialContext:
 
         return cls(building_centroids=centroids, road_vertices=road_vertices,
                    zone_ids=zone_ids, zone_centers=zone_centers, bbox=bbox,
-                   cell_m=cell_m, name=meta.get("name", os.path.basename(bundle_dir)))
+                   cell_m=cell_m, name=meta.get("name", os.path.basename(bundle_dir)),
+                   building_polys=building_polys, building_heights=building_heights)
+
+    def building_poly(self, building_id: int):
+        """Footprint polygon (list of [x,y]) for a building, or None."""
+        if 0 <= building_id < len(self.building_polys):
+            return self.building_polys[building_id]
+        return None
+
+    def building_height(self, building_id: int) -> float:
+        if 0 <= building_id < len(self.building_heights):
+            return self.building_heights[building_id]
+        return 6.0
 
     def approx_world_xy(self, zone: int, local_xy, L: float) -> Optional[tuple]:
         """Map a promoted zone's torus-local position into approximate world

@@ -28,7 +28,8 @@ from typing import Any
 # Bump on any breaking change to command/response shape. A client HELLO carrying
 # a different major version is rejected (see WorldSession.handle / Command.HELLO).
 # v1: authoritative world (M1). v2: + Package 3 survival/interaction commands.
-PROTOCOL_VERSION = 2
+# v3: + GET_INTERIOR (walk-in interiors: authoritative interior descriptor).
+PROTOCOL_VERSION = 3
 
 
 class Command:
@@ -57,11 +58,15 @@ class Command:
     USE_ITEM = "USE_ITEM"                    # use/consume an item from inventory
     INSPECT_INVENTORY = "INSPECT_INVENTORY"  # read the player inventory + needs
 
+    # --- Walk-in interiors (v3) -------------------------------------------
+    GET_INTERIOR = "GET_INTERIOR"            # authoritative interior descriptor + deltas
+
     ALL = frozenset({
         HELLO, START_WORLD, SET_FOCUS, ADVANCE, INTERVENE, INTERACT_WITH,
         PAUSE, RESUME, SNAPSHOT, SAVE, LOAD, SHUTDOWN,
         ENTER_BUILDING, LEAVE_BUILDING, INSPECT_BUILDING, SEARCH_CONTAINER,
         TAKE_ITEM, DROP_ITEM, USE_ITEM, INSPECT_INVENTORY,
+        GET_INTERIOR,
     })
 
 

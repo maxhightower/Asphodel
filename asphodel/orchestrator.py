@@ -195,6 +195,49 @@ class World:
             self.survival = Survival(world_seed=self._seed)
         return self.survival
 
+    def interior_descriptor(self, building_id: int, gen_version: int | None = None):
+        """The authoritative, deterministic interior for a building (immutable base
+        geometry). Regenerable from (world seed, building_id, gen_version) + the
+        real footprint; introduces no new authoritative state — its fixtures anchor
+        to the *existing* containers (building_id, container_index)."""
+        from . import interiors
+        gv = interiors.INTERIOR_GEN_VERSION if gen_version is None else int(gen_version)
+        ctx = self.spatial_ctx
+        poly = ctx.building_poly(building_id) if ctx is not None else None
+        height = ctx.building_height(building_id) if ctx is not None else 6.0
+        road_xy = None
+        if ctx is not None and 0 <= building_id < ctx.building_centroids.shape[0]:
+            road_xy = ctx.nearest_road_xy(ctx.building_centroids[building_id])
+        return interiors.build_interior(
+            building_id, self._seed, poly, height=height, road_xy=road_xy,
+            gen_version=gv)
+
+    def interior_state(self, building_id: int, gen_version: int | None = None) -> dict:
+        """Interior descriptor + the per-fixture *persistent delta* overlay (which
+        fixtures' containers have been searched / are now empty), so a renderer can
+        show looted furniture without owning any authority."""
+        desc = self.interior_descriptor(building_id, gen_version)
+        surv = self.survival
+        fixture_state = []
+        for f in desc.fixtures:
+            searched = empty = False
+            if surv is not None:
+                key = surv._ckey(building_id, f.container_index)
+                searched = key in surv._taken
+                empty = len(surv.container_contents(building_id, f.container_index)) == 0
+            fixture_state.append({
+                "fixture_id": f.fixture_id,
+                "container_index": f.container_index,
+                "searched": bool(searched), "empty": bool(empty),
+            })
+        out = desc.to_dict()
+        out["fixture_state"] = fixture_state
+        # indoor dropped items belonging to this building (see survival.drop_item)
+        if surv is not None:
+            out["dropped_here"] = [dict(it) for it in surv.dropped
+                                   if int(it.get("building_id", -1)) == int(building_id)]
+        return out
+
     def _citizen_action(self, cid: int) -> str:
         """The behaviour label to embody for a citizen: its live ``chosen_action``
         if embodied in a promoted zone, else its persisted roster action, else the

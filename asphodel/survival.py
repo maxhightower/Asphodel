@@ -187,10 +187,13 @@ class Survival:
                 "survival": self.player.to_dict()}
 
     def drop_item(self, kind: str, quantity: int, x: float, y: float,
-                  zone: int = -1) -> dict:
+                  zone: int = -1, building_id: int = -1) -> dict:
         """Drop items from inventory into the world at (x, y). Transfers ownership
         exactly once: the quantity leaves the inventory and appears as a persistent
-        dropped world item with a stable instance id."""
+        dropped world item with a stable instance id.
+
+        ``building_id`` (>= 0) marks an **indoor** drop bound to a building's
+        interior, so unload/reload restores it in the right place (Package 4D)."""
         kind = str(kind)
         qty = int(quantity)
         if qty <= 0:
@@ -205,7 +208,8 @@ class Survival:
         self._drop_counter += 1
         instance_id = self._drop_counter
         item = {"instance_id": instance_id, "kind": kind, "quantity": qty,
-                "x": float(x), "y": float(y), "zone": int(zone)}
+                "x": float(x), "y": float(y), "zone": int(zone),
+                "building_id": int(building_id)}
         self.dropped.append(item)
         return {"dropped": item, "inventory": dict(self.player.inventory)}
 
