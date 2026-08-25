@@ -59,8 +59,10 @@ See `FINDINGS_P1_CANONICALIZATION.md`, `FINDINGS_P2_EMBODIMENT.md`,
 
 ## Environment note
 
-The certification environment used for this milestone has `xvfb-run` but **no
-`godot4` binary**, so the in-engine certification surfaces are not executable
-there. Python-side authority is fully executable and green; the Godot client is
-kept code-current against the authoritative contract. See
-`FINDINGS_P1_CANONICALIZATION.md` §1B.
+Originally the certification environment had `xvfb-run` but no `godot4` binary, so
+the embodied-survival milestone shipped as a truthful PARTIAL. In the follow-on
+initiative Godot **4.4.1** was installed and the full in-engine surface was run
+against the live server and real bundles — TestRunner, StreetSmoke, LiveSmoke,
+save/destroy/reload, survival, and the new walk-in interior scenes all pass. Both
+the embodied-survival milestone and Walk-In Interiors v1 are now **PASS in-engine**.
+See `FINDINGS_GATE0_CERT_CLOSURE.md` and `FINDINGS_INTERIORS_V1.md`.
