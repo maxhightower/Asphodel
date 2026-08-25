@@ -37,8 +37,19 @@ var _last_render_tick: int = -1
 # buildings.json so it equals the authoritative Python building_id. Used to
 # resolve which real building the player is entering/looting.
 var _building_centroids: Array = []      # Array[Vector2]
+var _building_aabb: Array = []           # Array[Rect2], index-aligned == building_id
 var _inventory_label: Label
-const INTERACT_REACH := 8.0              # metres within which E loots a building
+const INTERACT_REACH := 8.0              # metres within which E enters a building
+const FIXTURE_REACH := 3.0              # metres within which E searches a fixture
+
+# Walk-in interior streaming (Packages 3/4). The interior is materialized into an
+# offset "cell" so it never clips the batched exterior; the player is teleported
+# in/out, preserving the entrance relationship. Authority stays in Python.
+const InteriorBuilder = preload("res://scripts/interior_builder.gd")
+const INTERIOR_OFFSET := Vector3(100000.0, 0.0, 0.0)
+var _active_interior: Node3D = null
+var _inside_building: int = -1
+var _interior_return_pos: Vector3 = Vector3.ZERO
 
 
 func _ready() -> void:
@@ -201,15 +212,21 @@ func _build_buildings(footprints: Array) -> void:
 	rng.seed = 0x5EED * 65537 + footprints.size()
 	for b in footprints:
 		var poly_xy: Array = b.get("poly", [])
-		# Keep _building_centroids index-aligned with footprints (== Python
-		# building_id), appending for EVERY building including degenerate ones.
+		# Keep _building_centroids / _building_aabb index-aligned with footprints
+		# (== Python building_id), appending for EVERY building including degenerate.
 		if poly_xy.size() > 0:
 			var cx := 0.0; var cy := 0.0
+			var bx0 := INF; var by0 := INF; var bx1 := -INF; var by1 := -INF
 			for p in poly_xy:
-				cx += float(p[0]); cy += float(p[1])
+				var px := float(p[0]); var pz := float(p[1])
+				cx += px; cy += pz
+				bx0 = min(bx0, px); bx1 = max(bx1, px)
+				by0 = min(by0, pz); by1 = max(by1, pz)
 			_building_centroids.append(Vector2(cx / poly_xy.size(), cy / poly_xy.size()))
+			_building_aabb.append(Rect2(bx0, by0, bx1 - bx0, by1 - by0))
 		else:
 			_building_centroids.append(Vector2(INF, INF))
+			_building_aabb.append(Rect2(INF, INF, 0, 0))
 		if poly_xy.size() < 3:
 			continue
 		var h := float(b.get("height", 6.0)) * HEIGHT_SCALE
@@ -734,6 +751,10 @@ func _update_live_bubble() -> void:
 	## (a new authoritative tick) has arrived. Guarded so an offline scene no-ops.
 	if _zone_map == null or _player == null or not SimBridge.is_connected_to_sim():
 		return
+	# While inside a streamed interior cell the player is far offset; don't let that
+	# offset thrash the exterior focus/render bubble. Freeze it until they leave.
+	if _inside_building >= 0:
+		return
 	var z := _zone_map.zone_of_xy(_player.position.x, _player.position.z)
 	if z != _current_focus_zone and z >= 0:
 		_current_focus_zone = z
@@ -838,41 +859,109 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _try_interact() -> void:
-	## E-key interaction. Package 3: if the player is at a real building, enter and
-	## loot it authoritatively (Python owns the containers/inventory); otherwise
-	## engage the nearest identified citizen -> authoritative roster (BW5).
+	## E-key interaction. Walk-in interiors:
+	##   inside + near a fixture -> search/loot that fixture (authoritative);
+	##   inside + near the exit  -> leave the building;
+	##   outside + near a building entrance -> enter (materialize the interior);
+	##   otherwise -> engage the nearest identified citizen (roster, BW5).
 	if not SimBridge.is_connected_to_sim():
 		return
-	if _try_building_loot():
+	if _inside_building >= 0:
+		if _try_loot_fixture():
+			return
+		_try_leave_building()
+		return
+	if _try_enter_building():
 		return
 	_try_citizen_interact()
 
 
-func _try_building_loot() -> bool:
-	## Enter the nearest building within reach, search its first container, and take
-	## one food/water item — the smallest complete "search a real place, take a
-	## persistent resource" loop. Every mutation is acknowledged by Python.
+func _try_enter_building() -> bool:
+	## Materialize the nearest building's authoritative interior and step inside.
 	var bid := _nearest_building(Vector2(_player.position.x, _player.position.z))
 	if bid < 0:
 		return false
+	var gi: Dictionary = SimBridge.get_interior(bid)
+	if not gi.get("ok", false):
+		return false
+	var desc: Dictionary = gi.get("interior", {})
 	SimBridge.enter_building(bid)
-	var info: Dictionary = SimBridge.inspect_building(bid)
-	if not info.get("ok", false) or int(info.get("n_containers", 0)) <= 0:
-		return false
-	var searched: Dictionary = SimBridge.search_container(bid, 0)
-	if not searched.get("ok", false):
-		return false
-	var contents: Array = searched.get("contents", [])
-	var msg := "Building %d: empty" % bid
-	for c in contents:
-		var kind: String = str(c.get("kind", ""))
-		var took: Dictionary = SimBridge.take_item(bid, 0, kind, 1)
-		if took.get("ok", false):
-			msg = "Took %s from building %d" % [kind, bid]
-			_refresh_inventory_hud()
-			break
+	_interior_return_pos = _player.position
+	_active_interior = InteriorBuilder.build(desc, INTERIOR_OFFSET)
+	add_child(_active_interior)
+	_inside_building = bid
+	# place the player just inside the entrance doorway (coordinate continuity).
+	var ents: Array = desc.get("entrances", [])
+	var spawn := INTERIOR_OFFSET + Vector3(0, 1.5, 0)
+	if ents.size() > 0:
+		var e = ents[0]
+		spawn = INTERIOR_OFFSET + Vector3(
+			float(e["x"]) + float(e["nx"]) * 1.5, 1.5,
+			float(e["y"]) + float(e["ny"]) * 1.5)
+	_player.position = spawn
+	_player.velocity = Vector3.ZERO
 	if _outbreak_label != null:
-		_outbreak_label.text = msg
+		_outbreak_label.text = "Entered building %d (%s) — E to search, E at door to leave" % [
+			bid, str(desc.get("archetype", "?"))]
+	return true
+
+
+func _try_leave_building() -> void:
+	## Only leave when near the interior exit marker (the doorway you came in by).
+	if _active_interior == null:
+		return
+	var marker := _active_interior.get_node_or_null("ExitMarker")
+	var near := true
+	if marker != null:
+		near = _player.position.distance_to(marker.global_position) < 4.0
+	if not near:
+		if _outbreak_label != null:
+			_outbreak_label.text = "Head to the door (E) to leave"
+		return
+	_active_interior.queue_free()
+	_active_interior = null
+	var bid := _inside_building
+	_inside_building = -1
+	SimBridge.leave_building()
+	_player.position = _interior_return_pos
+	_player.velocity = Vector3.ZERO
+	if _outbreak_label != null:
+		_outbreak_label.text = "Left building %d" % bid
+
+
+func _try_loot_fixture() -> bool:
+	## Search the nearest fixture within reach; its container_index is the ONLY
+	## source of what it holds. Take one item; Python is the authority.
+	if _active_interior == null:
+		return false
+	var fixtures := _active_interior.get_node_or_null("Fixtures")
+	if fixtures == null:
+		return false
+	var best: Node = null
+	var best_d := FIXTURE_REACH * FIXTURE_REACH
+	for fx in fixtures.get_children():
+		var d: float = _player.position.distance_squared_to(fx.global_position)
+		if d < best_d:
+			best_d = d
+			best = fx
+	if best == null:
+		return false
+	var bid := int(best.get_meta("building_id"))
+	var ci := int(best.get_meta("container_index"))
+	var searched: Dictionary = SimBridge.search_container(bid, ci)
+	if not searched.get("ok", false):
+		return true
+	var contents: Array = searched.get("contents", [])
+	if contents.is_empty():
+		if _outbreak_label != null:
+			_outbreak_label.text = "That %s is empty" % str(best.name)
+		return true
+	var kind := str(contents[0]["kind"])
+	var took: Dictionary = SimBridge.take_item(bid, ci, kind, 1)
+	if took.get("ok", false):
+		_refresh_inventory_hud()
+		if _outbreak_label != null:
+			_outbreak_label.text = "Took %s" % kind
 	return true
 
 
@@ -912,14 +1001,20 @@ func _try_citizen_interact() -> void:
 
 
 func _nearest_building(xy: Vector2) -> int:
-	## Building index (== Python building_id) within INTERACT_REACH of xy, or -1.
+	## Building index (== Python building_id) whose footprint the player is at or
+	## within INTERACT_REACH of, nearest first, or -1. Measures distance to the
+	## footprint AABB (not the centroid), so large buildings are enterable from
+	## their walls too.
 	var best := -1
 	var best_d := INTERACT_REACH * INTERACT_REACH
-	for i in range(_building_centroids.size()):
-		var c: Vector2 = _building_centroids[i]
-		if c.x == INF:
+	for i in range(_building_aabb.size()):
+		var r: Rect2 = _building_aabb[i]
+		if r.position.x == INF:
 			continue
-		var d := c.distance_squared_to(xy)
+		# distance^2 from point to the (possibly containing) AABB
+		var dx := maxf(maxf(r.position.x - xy.x, xy.x - (r.position.x + r.size.x)), 0.0)
+		var dy := maxf(maxf(r.position.y - xy.y, xy.y - (r.position.y + r.size.y)), 0.0)
+		var d := dx * dx + dy * dy
 		if d < best_d:
 			best_d = d
 			best = i

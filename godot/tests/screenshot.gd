@@ -7,10 +7,13 @@ extends Node
 ##
 ##   xvfb-run -a godot4 --path godot res://tests/Screenshot.tscn -- --bundle houston --out /tmp/shot.png
 
+const InteriorBuilder = preload("res://scripts/interior_builder.gd")
+
 var _bundle := "houston"
 var _out := "/tmp/asph_shot.png"
 var _overhead := false
 var _street := false
+var _interior := false
 
 
 func _ready() -> void:
@@ -24,6 +27,8 @@ func _ready() -> void:
 			_overhead = true
 		elif args[i] == "--street":
 			_street = true
+		elif args[i] == "--interior":
+			_interior = true
 	_run()
 
 
@@ -68,7 +73,10 @@ func _run() -> void:
 	if rc != null:
 		print("RENDER instances=%d focus_zone=%d" % [rc.last_instance_count, fz])
 
-	if _street:
+	if _interior:
+		_add_interior(scene)
+		await get_tree().create_timer(0.4).timeout
+	elif _street:
 		_add_street_camera(scene)
 		await get_tree().create_timer(0.3).timeout
 	elif _overhead:
@@ -135,6 +143,54 @@ func _add_street_camera(scene: Node) -> void:
 		cam.position = centre + Vector3(0, 6, 0)
 		cam.current = true
 		add_child(cam)
+
+
+func _add_interior(scene: Node) -> void:
+	## Materialize a real building interior (the same authoritative descriptor the
+	## client uses) in the offset cell and place a camera inside, looking across the
+	## rooms — visual proof of the walk-in interior.
+	# prefer a roomier building so multiple spaces + furniture read in one shot.
+	var bid := -1
+	var desc := {}
+	var fallback_bid := -1
+	var fallback_desc := {}
+	for b in range(400):
+		var gi: Dictionary = SimBridge.get_interior(b)
+		if not gi.get("ok", false):
+			continue
+		var it: Dictionary = gi.get("interior", {})
+		if it.get("rooms", []).size() >= 3 and it.get("fixtures", []).size() >= 3:
+			bid = b; desc = it; break
+		if fallback_bid < 0 and it.get("fixtures", []).size() >= 2:
+			fallback_bid = b; fallback_desc = it
+	if bid < 0:
+		bid = fallback_bid; desc = fallback_desc
+	if bid < 0:
+		printerr("no suitable interior found for screenshot")
+		return
+	var OFF := Vector3(100000, 0, 0)
+	var interior: Node3D = InteriorBuilder.build(desc, OFF)
+	add_child(interior)
+	print("INTERIOR bid=%d arch=%s rooms=%d fixtures=%d" % [
+		bid, desc.get("archetype", "?"), desc["rooms"].size(), desc["fixtures"].size()])
+	var hull: Array = desc.get("hull", [])
+	var hx0: float = float(hull[0][0])
+	var hy0: float = float(hull[0][1])
+	var hx1: float = float(hull[2][0])
+	var hy1: float = float(hull[2][1])
+	var cx: float = (hx0 + hx1) * 0.5
+	var cy: float = (hy0 + hy1) * 0.5
+	# camera at one corner, eye height, looking diagonally across the rooms.
+	var cam := Camera3D.new()
+	cam.fov = 82.0
+	cam.far = 2000.0
+	cam.position = OFF + Vector3(hx0 + 0.6, 1.7, hy0 + 0.6)
+	cam.current = true
+	add_child(cam)
+	cam.look_at(OFF + Vector3(cx, 1.0, cy), Vector3.UP)
+	var env = scene.get("_env")
+	if env != null:
+		env.fog_enabled = false
 
 
 func _add_overhead_camera(scene: Node) -> void:
