@@ -268,6 +268,32 @@ func _on_exterior_focus_timer() -> void:
 		_exterior.update_focus(_player.position)
 
 
+func screenshot_reposition(x: float, z: float, yaw_deg: float, eye_h: float) -> CharacterBody3D:
+	## Test-only helper for the screenshot harness (tests/screenshot.gd): move the
+	## player to a chosen world position/heading and re-focus the exterior stream
+	## there. Never called from real gameplay. Returns the player node so the
+	## caller can drive further waiting/materialization from outside.
+	if _player == null:
+		return null
+	_player.position = Vector3(x, 2.0, z)
+	_player.rotation.y = deg_to_rad(yaw_deg)
+	if eye_h > 0.0 and _player.has_method("get_camera"):
+		var cam: Camera3D = _player.call("get_camera")
+		if cam != null:
+			cam.position.y = eye_h
+			# A little downward tilt so a raised eye reads as an elevated 3/4
+			# view rather than a level look-around from a tall vantage.
+			cam.rotation.x = -0.12 if eye_h > 2.0 else 0.0
+	if _exterior != null:
+		_exterior.force_materialize(_player.position)
+	if _zone_map != null and SimBridge.is_connected_to_sim():
+		var z2 := _zone_map.zone_of_xy(_player.position.x, _player.position.z)
+		if z2 >= 0:
+			_current_focus_zone = z2
+			SimBridge.set_focus([z2])
+	return _player
+
+
 func _build_buildings(footprints: Array) -> void:
 	## Extrude each footprint polygon (real OSM or procedural) into a solid mass:
 	## a triangulated roof (its own grey), walls with a darker ground-floor plinth

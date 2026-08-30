@@ -14,6 +14,12 @@ var _out := "/tmp/asph_shot.png"
 var _overhead := false
 var _street := false
 var _interior := false
+var _citizen_idx := 0
+var _has_pos := false
+var _pos_x := 0.0
+var _pos_z := 0.0
+var _yaw := 0.0
+var _eye := 0.0
 
 
 func _ready() -> void:
@@ -29,6 +35,18 @@ func _ready() -> void:
 			_street = true
 		elif args[i] == "--interior":
 			_interior = true
+		elif args[i] == "--citizen" and i + 1 < args.size():
+			_citizen_idx = int(args[i + 1])
+		elif args[i] == "--pos" and i + 1 < args.size():
+			var parts := args[i + 1].split(",")
+			if parts.size() == 2:
+				_pos_x = float(parts[0])
+				_pos_z = float(parts[1])
+				_has_pos = true
+		elif args[i] == "--yaw" and i + 1 < args.size():
+			_yaw = float(args[i + 1])
+		elif args[i] == "--eye" and i + 1 < args.size():
+			_eye = float(args[i + 1])
 	_run()
 
 
@@ -38,8 +56,9 @@ func _run() -> void:
 	if citizens.is_empty():
 		printerr("no citizens in bundle")
 		return get_tree().quit(1)
+	var ci := clampi(_citizen_idx, 0, citizens.size() - 1)
 	Session.bundle_dir = dir
-	Session.citizen = citizens[0]
+	Session.citizen = citizens[ci]
 
 	var scene: Node = load("res://StreetScene.tscn").instantiate()
 	add_child(scene)
@@ -60,6 +79,18 @@ func _run() -> void:
 		if snap.get("ok", false):
 			SimBridge.last_world = snap.get("world", {})
 		scene._render_live()
+
+	if _has_pos:
+		# Move the player to the requested presentation spot and let the
+		# streaming exterior materialize its surrounding chunks (T1-T3) before
+		# the camera is placed. See street_world.gd:screenshot_reposition.
+		var player = scene.call("screenshot_reposition", _pos_x, _pos_z, _yaw, _eye)
+		var exterior = scene.get("_exterior")
+		for i in range(40):
+			await get_tree().process_frame
+			if exterior != null and player != null:
+				exterior.call("update_focus", player.position)
+
 	# Force DAYLIGHT + clear the haze (the citizen may spawn asleep at night, which
 	# the day/night system renders near-black; fog washes out an aerial view).
 	# Pure presentation — does not touch the sim.

@@ -122,6 +122,11 @@ var _cache_clock: int = 0
 # Resident chunks: key "cx_cz" -> {cx, cz, nodes: {1:Node3D,2:Node3D,3:Node3D}, stats: {tier:Dictionary}}
 var _resident: Dictionary = {}
 
+# Perf certification (BW/OW harness reads this — see tests/): per-tier build
+# time in milliseconds for every _ensure_tier call this session, keyed by
+# tier (1/2/3) -> Array[float ms]. Pure bookkeeping; never affects behaviour.
+var last_build_ms: Dictionary = {1: [], 2: [], 3: []}
+
 
 # ------------------------------------------------------------------------- setup
 func setup(bundle_dir: String) -> bool:
@@ -369,6 +374,7 @@ func _ensure_tier(cx: int, cz: int, tier: int) -> void:
 	var root := Node3D.new()
 	root.name = "c_%d_%d_t%d" % [cx, cz, tier]
 	add_child(root)
+	var t0 := Time.get_ticks_usec()
 	var stats: Dictionary
 	match tier:
 		1:
@@ -379,6 +385,9 @@ func _ensure_tier(cx: int, cz: int, tier: int) -> void:
 			stats = _build_t3(chunk, root)
 		_:
 			stats = {}
+	var elapsed_ms := (Time.get_ticks_usec() - t0) / 1000.0
+	if last_build_ms.has(tier):
+		last_build_ms[tier].append(elapsed_ms)
 	nodes[tier] = root
 	rec["stats"][tier] = stats
 	rec["nodes"] = nodes
@@ -903,6 +912,34 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 # --------------------------------------------------------------- introspection
 func resident_chunk_count() -> int:
 	return _resident.size()
+
+
+func build_ms_stats(tier: int) -> Dictionary:
+	## min/avg/max/n over every _ensure_tier call recorded so far for `tier`
+	## (see last_build_ms above) — the perf-certification harness's source of
+	## per-chunk build-time numbers.
+	var samples: Array = last_build_ms.get(tier, [])
+	if samples.is_empty():
+		return {"min": 0.0, "avg": 0.0, "max": 0.0, "n": 0}
+	var mn: float = samples[0]
+	var mx: float = samples[0]
+	var sum := 0.0
+	for v in samples:
+		mn = minf(mn, v)
+		mx = maxf(mx, v)
+		sum += v
+	return {"min": mn, "avg": sum / samples.size(), "max": mx, "n": samples.size()}
+
+
+func total_mm_instances() -> int:
+	## Sum of mm_instances across every resident tier stat — the live
+	## MultiMesh instance count (props/vehicles/trees) at the current focus.
+	var total := 0
+	for rec in _resident.values():
+		var stats: Dictionary = rec["stats"]
+		for tier in stats.keys():
+			total += int(stats[tier].get("mm_instances", 0))
+	return total
 
 
 func resident_node_count() -> int:

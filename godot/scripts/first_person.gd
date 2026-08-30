@@ -15,6 +15,10 @@ const _GRAVITY := 20.0
 var _camera: Camera3D
 
 
+func get_camera() -> Camera3D:
+	return _camera
+
+
 func _ready() -> void:
 	var capsule := CapsuleShape3D.new()
 	capsule.radius = 0.35
