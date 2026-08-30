@@ -93,6 +93,58 @@ def _cmd_acquire(args) -> int:
     return 0
 
 
+def _cmd_build(args) -> int:
+    """Full reproducible world build: acquire -> gate -> compile -> rebake
+    citizens -> certify (mission §30)."""
+    import json
+    import os
+
+    from . import compile as compile_mod
+
+    city = args.city
+    release = args.release
+    bundle_dir = os.path.join("godot", "bundles", city)
+    if not os.path.isdir(bundle_dir):
+        print(f"no bundle dir {bundle_dir}", file=sys.stderr)
+        return 1
+
+    if args.download_missing and not args.offline:
+        rc = _cmd_acquire(argparse.Namespace(
+            city=city, release=release, types=None, force=False,
+            offline=False))
+        if rc != 0:
+            return rc
+
+    # License gate is a hard precondition of compiling a releasable bundle.
+    rc = gate_mod._cli([])
+    if rc != 0:
+        return rc
+
+    report = compile_mod.compile_city(city, release, seed=args.seed,
+                                      out_dir=bundle_dir)
+    print(json.dumps(report["counts"], indent=1, sort_keys=True))
+
+    if args.citizens > 0:
+        from ..osm_city import citizens as citizens_mod
+        n = citizens_mod.write_citizens_from_bundle(
+            bundle_dir, args.city_name or city.title(), n=args.citizens,
+            seed=args.seed)
+        print(f"rebaked {n} citizens")
+
+    if args.certify:
+        from . import certify as certify_mod
+        result = certify_mod.certify_city(bundle_dir, seed=args.seed)
+        print(json.dumps(result["gates"], indent=1, sort_keys=True))
+        report_path = os.path.join(bundle_dir, "world",
+                                   "certification.json")
+        with open(report_path, "w") as f:
+            json.dump(result, f, indent=1, sort_keys=True)
+        if not all(result["gates"].values()):
+            print("CERTIFICATION GATES FAILED", file=sys.stderr)
+            return 2
+    return 0
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="python -m asphodel.world_source")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -111,6 +163,21 @@ def main(argv=None) -> int:
 
     p_gate = sub.add_parser("gate", help="run the commercial-cleanliness gate over the manifest")
     p_gate.set_defaults(func=_cmd_gate)
+
+    p_build = sub.add_parser(
+        "build", help="full world build: acquire+gate+compile+citizens+certify")
+    p_build.add_argument("--city", required=True)
+    p_build.add_argument("--city-name", default=None,
+                         help="display name for citizen records")
+    p_build.add_argument("--release", default=DEFAULT_RELEASE)
+    p_build.add_argument("--seed", type=int, default=0)
+    p_build.add_argument("--citizens", type=int, default=60,
+                         help="citizen count to rebake (0 skips)")
+    p_build.add_argument("--download-missing", action="store_true")
+    p_build.add_argument("--offline", action="store_true",
+                         help="build purely from cached source packets")
+    p_build.add_argument("--certify", action="store_true")
+    p_build.set_defaults(func=_cmd_build)
 
     args = parser.parse_args(argv)
     return args.func(args)

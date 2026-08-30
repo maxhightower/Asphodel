@@ -254,7 +254,21 @@ def building_archetype_for(
     if parcel_archetype in ("CIVIC", "SCHOOL", "MEDICAL"):
         return "CIVIC_SPECIAL"
 
-    # PARK, VACANT_OPEN, UNKNOWN, and any unrecognized archetype.
+    # PARK, VACANT_OPEN, UNKNOWN, and any unrecognized archetype: fall back
+    # to what the massing itself implies, so an observed footprint on
+    # unclassified land still reads as *something* coherent.  Small
+    # footprints read as houses; mid-size low masses as small commercial;
+    # large low masses as industrial/warehouse; taller mid-size masses as
+    # multifamily.  GENERIC_UNKNOWN remains only for shapes that genuinely
+    # carry no signal (mid-size, mid-height).
+    if footprint_area_m2 < 300:
+        return "DETACHED_RESIDENTIAL"
+    if footprint_area_m2 >= 2000:
+        return "BIG_BOX_COMMERCIAL" if height_m < 12 else "MULTIFAMILY"
+    if height_m >= 10:
+        return "MULTIFAMILY"
+    if footprint_area_m2 >= 700:
+        return "INDUSTRIAL" if height_m < 7 else "GENERIC_UNKNOWN"
     return "GENERIC_UNKNOWN"
 
 

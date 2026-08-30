@@ -37,6 +37,28 @@ _MIN_BLOCK_AREA = 150.0
 _FRONTAGE_REACH = 8.0  # beyond road half-width + sidewalk + verge
 
 
+def _polygonal(geom):
+    """Reduce any geometry to its polygonal parts (shapely booleans can
+    return GeometryCollections with stray lines/points)."""
+    if geom is None or geom.is_empty:
+        return []
+    if geom.geom_type == "Polygon":
+        return [geom]
+    if geom.geom_type in ("MultiPolygon", "GeometryCollection"):
+        out = []
+        for g in geom.geoms:
+            out.extend(_polygonal(g))
+        return out
+    return []
+
+
+def _largest_polygon(geom):
+    parts = _polygonal(geom)
+    if not parts:
+        return None
+    return max(parts, key=lambda g: g.area)
+
+
 def _building_parcel_hint(props: dict) -> str | None:
     sub = (props.get("subtype") or "").lower()
     if not sub:
@@ -145,10 +167,11 @@ def compile_parcels(roads, buildings, land_use_feats, place_feats, bounds):
         cells = _subdivide(block, members)
         leftover = block
         for b, cell in cells:
-            if cell.is_empty or cell.area <= 1.0:
+            if cell is None or cell.is_empty or cell.area <= 1.0:
                 cell = b["poly"].buffer(2.0).intersection(block)
-                if cell.is_empty:
-                    continue
+            cell = _largest_polygon(cell)
+            if cell is None:
+                continue
             arch = _parcel_arch_for(b, cell, blk_arch, place_tree, place_feats,
                                     lu_tree, land_use_feats)
             parcels.append(Parcel(
@@ -158,8 +181,7 @@ def compile_parcels(roads, buildings, land_use_feats, place_feats, bounds):
             leftover = leftover.difference(cell)
         # Open remainder (big-block interiors, park strips) stays intentional.
         if not leftover.is_empty and leftover.area > 400.0:
-            geoms = (leftover.geoms if leftover.geom_type == "MultiPolygon"
-                     else [leftover])
+            geoms = _polygonal(leftover)
             for gi, g in enumerate(sorted(
                     geoms, key=lambda p: (round(p.centroid.y, 1),
                                           round(p.centroid.x, 1)))):
@@ -210,14 +232,16 @@ def _subdivide(block: Polygon, members: list):
 
 def _principal_part(geom, footprint):
     """Keep the connected component containing the building footprint."""
-    if geom.geom_type == "MultiPolygon":
-        c = footprint.centroid
-        parts = sorted(geom.geoms, key=lambda g: g.area, reverse=True)
-        for g in parts:
-            if g.intersects(footprint):
-                return g
+    parts = _polygonal(geom)
+    if not parts:
+        return geom
+    if len(parts) == 1:
         return parts[0]
-    return geom
+    parts = sorted(parts, key=lambda g: g.area, reverse=True)
+    for g in parts:
+        if g.intersects(footprint):
+            return g
+    return parts[0]
 
 
 def _parcel_arch_for(b, cell, blk_arch, place_tree, place_feats,

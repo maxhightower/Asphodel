@@ -120,7 +120,8 @@ def compile_city(city: str, release: str, seed: int,
     ent_anchors = detail.entrance_anchors(brecords)
 
     placements = det.placements + curb + sprops
-    anchors = det.anchors + sanchors + ent_anchors
+    anchors = _sanitize_anchors(det.anchors + sanchors + ent_anchors,
+                                brecords, bounds)
 
     patches = (
         _base_patches(ws)
@@ -171,6 +172,59 @@ def compile_city(city: str, release: str, seed: int,
     return report
 
 
+def _sanitize_anchors(anchors, brecords, bounds):
+    """Spawn anchors are authoritative spatial promises: none may sit
+    inside a building footprint or off-map.  Non-entrance anchors that
+    cannot be salvaged are dropped; BUILDING_ENTRANCE anchors are nudged
+    until clear (dense row-building edges can push a naive entrance point
+    into the neighbour's footprint)."""
+    from shapely.geometry import Point
+    from shapely.strtree import STRtree
+
+    min_x, min_z, max_x, max_z = bounds
+    polys = [b.poly for b in brecords]
+    tree = STRtree(polys) if polys else None
+
+    def inside(x, z):
+        if tree is None:
+            return False
+        pt = Point(x, z)
+        for idx in tree.query(pt):
+            if polys[int(idx)].covers(pt):
+                return True
+        return False
+
+    def in_bounds(x, z):
+        return (min_x + 0.5 <= x <= max_x - 0.5
+                and min_z + 0.5 <= z <= max_z - 0.5)
+
+    out = []
+    dropped = 0
+    for a in anchors:
+        x, z = a.x, a.z
+        ok = in_bounds(x, z) and not inside(x, z)
+        if not ok:
+            found = None
+            for r in (2.5, 4.0, 6.0, 9.0, 12.0):
+                for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1),
+                               (0.707, 0.707), (-0.707, 0.707),
+                               (0.707, -0.707), (-0.707, -0.707)):
+                    nx, nz = x + dx * r, z + dz * r
+                    if in_bounds(nx, nz) and not inside(nx, nz):
+                        found = (nx, nz)
+                        break
+                if found:
+                    break
+            if found is None:
+                dropped += 1
+                continue  # even entrances: better absent than inside a wall
+            a.x, a.z = found
+        out.append(a)
+    if dropped:
+        print(f"[anchors] dropped {dropped} unsalvageable anchors")
+    return out
+
+
 def _seg_len(pts) -> float:
     import math
     return sum(math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1])
@@ -201,15 +255,21 @@ def _write_world(out_dir, city, release, seed, grid, ident, chunks, anchors,
     }
     with open(os.path.join(wdir, "world_meta.json"), "w") as f:
         json.dump(meta, f, indent=1, sort_keys=True)
-    with open(os.path.join(wdir, "identity.json"), "w") as f:
-        json.dump(ident, f, separators=(",", ":"), sort_keys=True)
-    with open(os.path.join(wdir, "spawn_anchors.json"), "w") as f:
-        json.dump({
-            "version": 1,
-            "anchors": [[a.kind, round(a.x, 2), round(a.z, 2), a.bid]
-                        for a in sorted(anchors, key=lambda a: (
-                            a.kind, round(a.x, 2), round(a.z, 2), a.bid))],
-        }, f, separators=(",", ":"))
+    import gzip
+
+    def _write_gz(path, obj):
+        payload = json.dumps(obj, separators=(",", ":"),
+                             sort_keys=True).encode("utf-8")
+        with open(path, "wb") as f:
+            f.write(gzip.compress(payload, mtime=0))
+
+    _write_gz(os.path.join(wdir, "identity.json.gz"), ident)
+    _write_gz(os.path.join(wdir, "spawn_anchors.json.gz"), {
+        "version": 1,
+        "anchors": [[a.kind, round(a.x, 2), round(a.z, 2), a.bid]
+                    for a in sorted(anchors, key=lambda a: (
+                        a.kind, round(a.x, 2), round(a.z, 2), a.bid))],
+    })
 
     # Regenerated authoritative buildings.json (identity re-founding).
     blist = []
@@ -217,7 +277,7 @@ def _write_world(out_dir, city, release, seed, grid, ident, chunks, anchors,
         ring = [[round(x, 2), round(z, 2)]
                 for x, z in rec.poly.exterior.coords[:-1]]
         blist.append({"poly": ring, "height": round(rec.h, 2),
-                      "key": rec.key})
+                      "key": rec.key, "arch": rec.arch})
     with open(os.path.join(out_dir, "buildings.json"), "w") as f:
         json.dump({"version": 1, "source": f"overture@{release}",
                    "storey_m": 3.3, "buildings": blist},

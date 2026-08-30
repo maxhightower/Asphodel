@@ -2,12 +2,12 @@
   {
     "age": 65,
     "current_activity": "work",
-    "current_location": "West commercial 280",
+    "current_location": "South commercial 5862",
     "environment": "retail",
-    "home_district": "South-East",
+    "home_district": "South-West",
     "home_xy": [
-      1961.67,
-      -2556.16
+      -2183.86,
+      -2747.47
     ],
     "inventory": {
       "face_mask": 1,
@@ -32,38 +32,39 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "James Johnson",
+    "name": "Maria Diallo",
     "occupation": "cleaner",
     "on_duty": true,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "night",
     "signature_dilemma": "A whole empty building to yourself, or get out before others arrive.",
     "signature_location": "an empty office building at night",
     "signature_situation": "Emergency lights snap on while you're alone with the master key.",
     "signature_title": "Alone with a master key",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "workplace",
     "spawn_hour": 0.17,
     "spawn_xy": [
-      -2258.26,
-      -955.35
+      459.68,
+      -1482.51
     ],
-    "work_district": "West",
+    "work_district": "South",
     "work_xy": [
-      -2258.26,
-      -955.35
+      507.25,
+      -1499.28
     ]
   },
   {
     "age": 37,
     "current_activity": "sleep",
-    "current_location": "West residential 333",
+    "current_location": "East residential 9212",
     "environment": "residential",
-    "home_district": "West",
+    "home_district": "East",
     "home_xy": [
-      -1499.35,
-      -743.77
+      1624.32,
+      -138.65
     ],
     "inventory": {
       "cash": 1,
@@ -89,214 +90,44 @@
         "torch": 1
       }
     },
-    "name": "Sara Nguyen",
+    "name": "Diego Park",
     "occupation": "security_guard",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "night",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "West residential 333",
-    "signature_situation": "You're sleep at West residential 333 -- not on shift when the collapse comes. Your security_guard's edge is back at a locked commercial building.",
+    "signature_location": "East residential 9212",
+    "signature_situation": "You're sleep at East residential 9212 -- not on shift when the collapse comes. Your security_guard's edge is back at a locked commercial building.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 7.62,
     "spawn_xy": [
-      -1499.35,
-      -743.77
+      1627.99,
+      -125.96
     ],
-    "work_district": "North-West",
+    "work_district": "West",
     "work_xy": [
-      -1571.7,
-      1580.86
+      -1344.49,
+      -50.84
     ]
   },
   {
     "age": 56,
-    "current_activity": "errand",
-    "current_location": "Old Town commercial 529",
-    "environment": "retail",
-    "home_district": "Old Town",
+    "current_activity": "sleep",
+    "current_location": "North residential 16469",
+    "environment": "residential",
+    "home_district": "North",
     "home_xy": [
-      -510.71,
-      1038.73
+      444.35,
+      1323.33
     ],
     "inventory": {
-      "face_mask": 1,
       "id_badge": 1,
       "keys": 2,
       "phone": 1,
-      "wallet": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "face_mask": 1,
-        "id_badge": 1,
-        "keys": 2,
-        "phone": 1,
-        "wallet": 1
-      },
-      "vehicle": {},
-      "workplace": {
-        "radio": 1,
-        "torch": 1
-      }
-    },
-    "name": "James Okafor",
-    "occupation": "security_guard",
-    "on_duty": false,
-    "profile": "Houston, Texas",
-    "shift": "night",
-    "signature_dilemma": "Make for home, or shelter where you stand.",
-    "signature_location": "Old Town commercial 529",
-    "signature_situation": "You're out at Old Town commercial 529 when the collapse comes -- in the open, among strangers.",
-    "signature_title": "Caught out in public",
-    "situation_kind": "generic",
-    "spawn_approx": true,
-    "spawn_context": "errand",
-    "spawn_hour": 19.17,
-    "spawn_xy": [
-      -510.71,
-      1038.73
-    ],
-    "work_district": "South-West",
-    "work_xy": [
-      -2285.27,
-      -2348.65
-    ]
-  },
-  {
-    "age": 21,
-    "current_activity": "sleep",
-    "current_location": "South residential 193",
-    "environment": "residential",
-    "home_district": "South",
-    "home_xy": [
-      -511.8,
-      -2018.12
-    ],
-    "inventory": {
-      "cash": 1,
-      "name_tag": 1,
-      "phone": 1,
-      "snack": 1,
-      "transit_pass": 1,
-      "wallet": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "cash": 1,
-        "name_tag": 1,
-        "phone": 1,
-        "snack": 1,
-        "transit_pass": 1,
-        "wallet": 1
-      },
-      "vehicle": {},
-      "workplace": {
-        "apron": 1,
-        "order_pad": 1
-      }
-    },
-    "name": "Sara Diallo",
-    "occupation": "waiter",
-    "on_duty": false,
-    "profile": "Houston, Texas",
-    "shift": "night",
-    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "South residential 193",
-    "signature_situation": "You're sleep at South residential 193 -- not on shift when the collapse comes. Your waiter's edge is back at a busy restaurant floor.",
-    "signature_title": "Off-shift when it hit",
-    "situation_kind": "generic",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 8.42,
-    "spawn_xy": [
-      -511.8,
-      -2018.12
-    ],
-    "work_district": "South-East",
-    "work_xy": [
-      2348.41,
-      -3273.97
-    ]
-  },
-  {
-    "age": 38,
-    "current_activity": "commute",
-    "current_location": "South-West commercial 79",
-    "environment": "street",
-    "home_district": "Old Town",
-    "home_xy": [
-      -286.95,
-      238.27
-    ],
-    "inventory": {
-      "face_mask": 1,
-      "id_card": 1,
-      "keys": 1,
-      "phone": 1,
-      "snack": 1,
-      "transit_pass": 1,
-      "wallet": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "face_mask": 1,
-        "id_card": 1,
-        "keys": 1,
-        "phone": 1,
-        "snack": 1,
-        "transit_pass": 1,
-        "wallet": 1
-      },
-      "vehicle": {
-        "laptop": 1
-      },
-      "workplace": {}
-    },
-    "name": "James Cohen",
-    "occupation": "office_worker",
-    "on_duty": false,
-    "profile": "Houston, Texas",
-    "shift": "day",
-    "signature_dilemma": "Sit tight in a metal box, or abandon the car and go on foot.",
-    "signature_location": "on a city street, mid-commute",
-    "signature_situation": "Bumper to bumper, then nobody is moving at all.",
-    "signature_title": "Total gridlock",
-    "situation_kind": "travel",
-    "spawn_approx": true,
-    "spawn_context": "commute",
-    "spawn_hour": 7.9,
-    "spawn_xy": [
-      -1512.19,
-      -2152.2
-    ],
-    "work_district": "South-West",
-    "work_xy": [
-      -1803.18,
-      -2719.93
-    ]
-  },
-  {
-    "age": 27,
-    "current_activity": "commute",
-    "current_location": "North-West residential 567",
-    "environment": "street",
-    "home_district": "North-West",
-    "home_xy": [
-      -1997.9,
-      1613.31
-    ],
-    "inventory": {
-      "cash": 1,
-      "name_tag": 1,
-      "phone": 1,
-      "snack": 1,
       "transit_pass": 1,
       "wallet": 1,
       "water_bottle": 1
@@ -304,52 +135,222 @@
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "cash": 1,
-        "name_tag": 1,
+        "id_badge": 1,
+        "keys": 2,
         "phone": 1,
-        "snack": 1,
         "transit_pass": 1,
         "wallet": 1,
         "water_bottle": 1
       },
-      "vehicle": {
-        "apron": 1,
-        "order_pad": 1
-      },
-      "workplace": {}
+      "vehicle": {},
+      "workplace": {
+        "gloves": 2
+      }
     },
-    "name": "Sara Rivera",
-    "occupation": "waiter",
+    "name": "Maria Rivera",
+    "occupation": "cleaner",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "night",
-    "signature_dilemma": "Sit tight in a metal box, or abandon the car and go on foot.",
-    "signature_location": "on a city street, mid-commute",
-    "signature_situation": "Bumper to bumper, then nobody is moving at all.",
-    "signature_title": "Total gridlock",
-    "situation_kind": "travel",
-    "spawn_approx": true,
-    "spawn_context": "commute",
-    "spawn_hour": 3.54,
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "North residential 16469",
+    "signature_situation": "You're sleep at North residential 16469 -- not on shift when the collapse comes. Your cleaner's edge is back at an empty office building at night.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
+    "spawn_anchor": "entrance",
+    "spawn_approx": false,
+    "spawn_context": "home",
+    "spawn_hour": 6.94,
     "spawn_xy": [
-      -1741.13,
-      1326.45
+      452.28,
+      1326.48
     ],
     "work_district": "South-East",
     "work_xy": [
-      1057.76,
-      -1800.46
+      1223.97,
+      -1984.91
+    ]
+  },
+  {
+    "age": 21,
+    "current_activity": "work",
+    "current_location": "South commercial 4049",
+    "environment": "retail",
+    "home_district": "South-West",
+    "home_xy": [
+      -1946.45,
+      -1968.7
+    ],
+    "inventory": {
+      "apron": 1,
+      "cash": 1,
+      "face_mask": 1,
+      "keys": 1,
+      "name_tag": 1,
+      "wallet": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "apron": 1,
+        "cash": 1,
+        "face_mask": 1,
+        "keys": 1,
+        "name_tag": 1,
+        "wallet": 1
+      },
+      "vehicle": {},
+      "workplace": {}
+    },
+    "name": "Diego Costa",
+    "occupation": "barista",
+    "on_duty": true,
+    "profile": "Houston",
+    "shift": "day",
+    "signature_dilemma": "Hold a small stocked caf\u00e9, or grab supplies and walk.",
+    "signature_location": "a caf\u00e9",
+    "signature_situation": "The morning queue scatters, drinks abandoned on the counter.",
+    "signature_title": "Cups still steaming",
+    "situation_kind": "signature",
+    "spawn_anchor": "entrance",
+    "spawn_approx": false,
+    "spawn_context": "workplace",
+    "spawn_hour": 11.37,
+    "spawn_xy": [
+      156.37,
+      -2321.12
+    ],
+    "work_district": "South",
+    "work_xy": [
+      171.17,
+      -2320.77
+    ]
+  },
+  {
+    "age": 38,
+    "current_activity": "work",
+    "current_location": "South-East commercial 4517",
+    "environment": "retail",
+    "home_district": "East",
+    "home_xy": [
+      1205.41,
+      674.27
+    ],
+    "inventory": {
+      "apron": 1,
+      "box_cutter": 1,
+      "cash": 1,
+      "keys": 1,
+      "name_tag": 1,
+      "phone": 1,
+      "transit_pass": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "apron": 1,
+        "box_cutter": 1,
+        "cash": 1,
+        "keys": 1,
+        "name_tag": 1,
+        "phone": 1,
+        "transit_pass": 1
+      },
+      "vehicle": {},
+      "workplace": {}
+    },
+    "name": "Maria Brooks",
+    "occupation": "grocery_clerk",
+    "on_duty": true,
+    "profile": "Houston",
+    "shift": "day",
+    "signature_dilemma": "Defend the stockroom, or melt into the crowd with a full cart.",
+    "signature_location": "the shop floor of a supermarket",
+    "signature_situation": "The store fills with people who are no longer queuing to pay.",
+    "signature_title": "They've stopped paying",
+    "situation_kind": "signature",
+    "spawn_anchor": "entrance",
+    "spawn_approx": false,
+    "spawn_context": "workplace",
+    "spawn_hour": 9.29,
+    "spawn_xy": [
+      1059.39,
+      -2064.52
+    ],
+    "work_district": "South-East",
+    "work_xy": [
+      1065.43,
+      -2102.61
+    ]
+  },
+  {
+    "age": 27,
+    "current_activity": "work",
+    "current_location": "South-West commercial 5417",
+    "environment": "retail",
+    "home_district": "North-West",
+    "home_xy": [
+      -1386.58,
+      1667.85
+    ],
+    "inventory": {
+      "apron": 1,
+      "cash": 1,
+      "face_mask": 1,
+      "keys": 1,
+      "name_tag": 1,
+      "phone": 1,
+      "snack": 1,
+      "wallet": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "apron": 1,
+        "cash": 1,
+        "face_mask": 1,
+        "keys": 1,
+        "name_tag": 1,
+        "phone": 1,
+        "snack": 1,
+        "wallet": 1
+      },
+      "vehicle": {},
+      "workplace": {}
+    },
+    "name": "Diego Mensah",
+    "occupation": "barista",
+    "on_duty": true,
+    "profile": "Houston",
+    "shift": "day",
+    "signature_dilemma": "Hold a small stocked caf\u00e9, or grab supplies and walk.",
+    "signature_location": "a caf\u00e9",
+    "signature_situation": "The morning queue scatters, drinks abandoned on the counter.",
+    "signature_title": "Cups still steaming",
+    "situation_kind": "signature",
+    "spawn_anchor": "entrance",
+    "spawn_approx": false,
+    "spawn_context": "workplace",
+    "spawn_hour": 14.7,
+    "spawn_xy": [
+      -2573.75,
+      -1728.52
+    ],
+    "work_district": "South-West",
+    "work_xy": [
+      -2584.31,
+      -1723.64
     ]
   },
   {
     "age": 11,
     "current_activity": "leisure",
-    "current_location": "South-West residential 69",
+    "current_location": "South-East residential 1644",
     "environment": "residential",
-    "home_district": "South-West",
+    "home_district": "South-East",
     "home_xy": [
-      -2760.04,
-      -2729.3
+      1452.2,
+      -2863.31
     ],
     "inventory": {
       "backpack": 1,
@@ -378,22 +379,23 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "James Ahmed",
+    "name": "Maria Garcia",
     "occupation": "child",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "none",
     "signature_dilemma": "Find a familiar adult, or hide where no one thinks to look.",
     "signature_location": "at home or the school playground",
     "signature_situation": "The grown-ups are screaming and no one will explain why.",
     "signature_title": "Too small to understand",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 10.4,
     "spawn_xy": [
-      -2760.04,
-      -2729.3
+      1452.08,
+      -2868.72
     ],
     "work_district": "",
     "work_xy": null
@@ -401,12 +403,12 @@
   {
     "age": 26,
     "current_activity": "sleep",
-    "current_location": "South residential 104",
+    "current_location": "South-East residential 2056",
     "environment": "residential",
-    "home_district": "South",
+    "home_district": "South-East",
     "home_xy": [
-      730.1,
-      -2841.81
+      2160.25,
+      -2777.22
     ],
     "inventory": {
       "id_badge": 1,
@@ -430,38 +432,39 @@
         "torch": 1
       }
     },
-    "name": "Sara Brooks",
+    "name": "Diego Johnson",
     "occupation": "security_guard",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "night",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "South residential 104",
-    "signature_situation": "You're sleep at South residential 104 -- not on shift when the collapse comes. Your security_guard's edge is back at a locked commercial building.",
+    "signature_location": "South-East residential 2056",
+    "signature_situation": "You're sleep at South-East residential 2056 -- not on shift when the collapse comes. Your security_guard's edge is back at a locked commercial building.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 6.2,
     "spawn_xy": [
-      730.1,
-      -2841.81
+      2161.98,
+      -2791.54
     ],
     "work_district": "North-West",
     "work_xy": [
-      -2009.14,
-      2392.94
+      -2615.95,
+      1191.18
     ]
   },
   {
     "age": 52,
     "current_activity": "sleep",
-    "current_location": "North-West residential 608",
+    "current_location": "North-West residential 19222",
     "environment": "residential",
     "home_district": "North-West",
     "home_xy": [
-      -1948.62,
-      1705.46
+      -1873.63,
+      2162.49
     ],
     "inventory": {
       "cash": 1,
@@ -486,22 +489,23 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "James Silva",
+    "name": "Maria Patel",
     "occupation": "unemployed",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "none",
     "signature_dilemma": "Move early and light, before the roads choke.",
     "signature_location": "at home or out on errands",
     "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
     "signature_title": "No shift to miss",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 4.34,
     "spawn_xy": [
-      -1948.62,
-      1705.46
+      -1878.92,
+      2152.22
     ],
     "work_district": "",
     "work_xy": null
@@ -509,17 +513,16 @@
   {
     "age": 37,
     "current_activity": "sleep",
-    "current_location": "North-West residential 641",
+    "current_location": "North-West residential 20180",
     "environment": "residential",
     "home_district": "North-West",
     "home_xy": [
-      -2691.21,
-      2429.28
+      -1983.67,
+      2391.8
     ],
     "inventory": {
       "cash": 1,
-      "id_badge": 1,
-      "keys": 2,
+      "keys": 1,
       "phone": 1,
       "snack": 1,
       "wallet": 1
@@ -528,49 +531,51 @@
       "home": {},
       "on_person": {
         "cash": 1,
-        "id_badge": 1,
-        "keys": 2,
+        "keys": 1,
         "phone": 1,
         "snack": 1,
         "wallet": 1
       },
       "vehicle": {},
       "workplace": {
-        "gloves": 2
+        "gloves": 1,
+        "hi_vis": 1,
+        "scanner": 1
       }
     },
-    "name": "Sara Garcia",
-    "occupation": "cleaner",
+    "name": "Diego Okafor",
+    "occupation": "warehouse_worker",
     "on_duty": false,
-    "profile": "Houston, Texas",
-    "shift": "night",
+    "profile": "Houston",
+    "shift": "day",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "North-West residential 641",
-    "signature_situation": "You're sleep at North-West residential 641 -- not on shift when the collapse comes. Your cleaner's edge is back at an empty office building at night.",
+    "signature_location": "North-West residential 20180",
+    "signature_situation": "You're sleep at North-West residential 20180 -- not on shift when the collapse comes. Your warehouse_worker's edge is back at a distribution warehouse.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 5.98,
     "spawn_xy": [
-      -2691.21,
-      2429.28
+      -1987.07,
+      2383.28
     ],
-    "work_district": "West",
+    "work_district": "South",
     "work_xy": [
-      -2762.64,
-      590.02
+      681.85,
+      -1117.98
     ]
   },
   {
     "age": 76,
     "current_activity": "leisure",
-    "current_location": "East residential 355",
+    "current_location": "East residential 9814",
     "environment": "residential",
     "home_district": "East",
     "home_xy": [
-      2239.44,
-      -494.05
+      1690.95,
+      9.88
     ],
     "inventory": {
       "keys": 2,
@@ -595,92 +600,82 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "James Khan",
+    "name": "Maria Reyes",
     "occupation": "retiree",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "none",
     "signature_dilemma": "Stay put among neighbours, or accept a stranger's offer to leave.",
     "signature_location": "at home or out on a morning walk",
     "signature_situation": "The street you've known for decades turns strange in minutes.",
     "signature_title": "Forty years on this street",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 21.77,
     "spawn_xy": [
-      2239.44,
-      -494.05
+      1689.72,
+      -3.38
     ],
     "work_district": "",
     "work_xy": null
   },
   {
     "age": 13,
-    "current_activity": "errand",
-    "current_location": "South-West commercial 186",
-    "environment": "retail",
-    "home_district": "South-West",
+    "current_activity": "sleep",
+    "current_location": "North-West residential 21999",
+    "environment": "residential",
+    "home_district": "North-West",
     "home_xy": [
-      -2120.6,
-      -1899.68
+      -1631.69,
+      3028.76
     ],
     "inventory": {
-      "backpack": 1,
-      "id_card": 1,
+      "cash": 1,
       "phone": 1,
-      "snack": 1,
-      "transit_pass": 1,
-      "water_bottle": 1
+      "wallet": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "backpack": 1,
-        "id_card": 1,
+        "cash": 1,
         "phone": 1,
-        "snack": 1,
-        "transit_pass": 1,
-        "water_bottle": 1
+        "wallet": 1
       },
       "vehicle": {},
-      "workplace": {
-        "laptop": 1,
-        "notebook": 1
-      }
+      "workplace": {}
     },
-    "name": "Sara Patel",
-    "occupation": "student",
+    "name": "Diego Cohen",
+    "occupation": "resident",
     "on_duty": false,
-    "profile": "Houston, Texas",
-    "shift": "day",
-    "signature_dilemma": "Make for home, or shelter where you stand.",
-    "signature_location": "South-West commercial 186",
-    "signature_situation": "You're out at South-West commercial 186 when the collapse comes -- in the open, among strangers.",
-    "signature_title": "Caught out in public",
+    "profile": "Houston",
+    "shift": "none",
+    "signature_dilemma": "",
+    "signature_location": "North-West residential 21999",
+    "signature_situation": "You're sleep at North-West residential 21999 when the collapse comes.",
+    "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
-    "spawn_approx": true,
-    "spawn_context": "errand",
-    "spawn_hour": 17.74,
+    "spawn_anchor": "entrance",
+    "spawn_approx": false,
+    "spawn_context": "home",
+    "spawn_hour": 4.82,
     "spawn_xy": [
-      -2120.6,
-      -1899.68
+      -1662.15,
+      3028.79
     ],
-    "work_district": "West",
-    "work_xy": [
-      -1974.68,
-      -674.68
-    ]
+    "work_district": "",
+    "work_xy": null
   },
   {
     "age": 51,
     "current_activity": "leisure",
-    "current_location": "West residential 462",
+    "current_location": "Old Town residential 14059",
     "environment": "residential",
-    "home_district": "West",
+    "home_district": "Old Town",
     "home_xy": [
-      -2606.28,
-      630.24
+      -921.53,
+      852.91
     ],
     "inventory": {
       "cash": 1,
@@ -705,104 +700,95 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "James Nguyen",
+    "name": "Maria Park",
     "occupation": "homemaker",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "none",
     "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
     "signature_location": "at home, mid-chore",
     "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
     "signature_title": "The house is yours",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 20.97,
     "spawn_xy": [
-      -2606.28,
-      630.24
+      -925.45,
+      862.38
     ],
     "work_district": "",
     "work_xy": null
   },
   {
     "age": 15,
-    "current_activity": "leisure",
-    "current_location": "North residential 695",
+    "current_activity": "sleep",
+    "current_location": "West residential 8214",
     "environment": "residential",
-    "home_district": "North",
+    "home_district": "West",
     "home_xy": [
-      -570.91,
-      2803.5
-    ],
-    "inventory": {
-      "backpack": 1,
-      "face_mask": 1,
-      "id_card": 1,
-      "phone": 1,
-      "snack": 1,
-      "transit_pass": 1,
-      "wallet": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "backpack": 1,
-        "face_mask": 1,
-        "id_card": 1,
-        "phone": 1,
-        "snack": 1,
-        "transit_pass": 1,
-        "wallet": 1
-      },
-      "vehicle": {},
-      "workplace": {
-        "laptop": 1,
-        "notebook": 1
-      }
-    },
-    "name": "Sara Reyes",
-    "occupation": "student",
-    "on_duty": false,
-    "profile": "Houston, Texas",
-    "shift": "day",
-    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "North residential 695",
-    "signature_situation": "You're leisure at North residential 695 -- not on shift when the collapse comes. Your student's edge is back at a packed lecture hall.",
-    "signature_title": "Off-shift when it hit",
-    "situation_kind": "generic",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 18.81,
-    "spawn_xy": [
-      -570.91,
-      2803.5
-    ],
-    "work_district": "West",
-    "work_xy": [
-      -2214.72,
-      903.67
-    ]
-  },
-  {
-    "age": 40,
-    "current_activity": "work",
-    "current_location": "North industrial 700",
-    "environment": "industrial",
-    "home_district": "South-West",
-    "home_xy": [
-      -2568.22,
-      -1446.22
+      -1680.16,
+      -525.43
     ],
     "inventory": {
       "cash": 1,
       "face_mask": 1,
       "keys": 1,
-      "overalls": 1,
-      "phone": 1,
-      "rag": 1,
       "snack": 1,
-      "tool_box": 1,
+      "wallet": 1,
+      "water_bottle": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "cash": 1,
+        "face_mask": 1,
+        "keys": 1,
+        "snack": 1,
+        "wallet": 1,
+        "water_bottle": 1
+      },
+      "vehicle": {},
+      "workplace": {}
+    },
+    "name": "Diego Ahmed",
+    "occupation": "resident",
+    "on_duty": false,
+    "profile": "Houston",
+    "shift": "none",
+    "signature_dilemma": "",
+    "signature_location": "West residential 8214",
+    "signature_situation": "You're sleep at West residential 8214 when the collapse comes.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
+    "spawn_anchor": "entrance",
+    "spawn_approx": false,
+    "spawn_context": "home",
+    "spawn_hour": 22.55,
+    "spawn_xy": [
+      -1672.45,
+      -545.79
+    ],
+    "work_district": "",
+    "work_xy": null
+  },
+  {
+    "age": 40,
+    "current_activity": "leisure",
+    "current_location": "South residential 6505",
+    "environment": "residential",
+    "home_district": "South",
+    "home_xy": [
+      439.19,
+      -1280.04
+    ],
+    "inventory": {
+      "cash": 1,
+      "face_mask": 1,
+      "keys": 1,
+      "phone": 1,
+      "snack": 1,
       "wallet": 1
     },
     "inventory_scopes": {
@@ -811,48 +797,50 @@
         "cash": 1,
         "face_mask": 1,
         "keys": 1,
-        "overalls": 1,
         "phone": 1,
-        "rag": 1,
         "snack": 1,
-        "tool_box": 1,
         "wallet": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "gloves": 1,
+        "overalls": 1,
+        "welding_mask": 1
+      }
     },
-    "name": "James Diallo",
-    "occupation": "mechanic",
-    "on_duty": true,
-    "profile": "Houston, Texas",
-    "shift": "day",
-    "signature_dilemma": "A garage of working vehicles and tools -- take your pick.",
-    "signature_location": "a garage full of vehicles",
-    "signature_situation": "The forecourt empties; a dozen cars sit with keys in the office.",
-    "signature_title": "A garage full of working cars",
-    "situation_kind": "signature",
+    "name": "Maria Costa",
+    "occupation": "welder",
+    "on_duty": false,
+    "profile": "Houston",
+    "shift": "night",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "South residential 6505",
+    "signature_situation": "You're leisure at South residential 6505 -- not on shift when the collapse comes. Your welder's edge is back at a fabrication shop.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
-    "spawn_context": "workplace",
+    "spawn_context": "home",
     "spawn_hour": 15.19,
     "spawn_xy": [
-      915.3,
-      2842.82
+      443.64,
+      -1272.42
     ],
-    "work_district": "North",
+    "work_district": "North-West",
     "work_xy": [
-      915.3,
-      2842.82
+      -1654.12,
+      2991.73
     ]
   },
   {
     "age": 18,
     "current_activity": "sleep",
-    "current_location": "South-West residential 134",
+    "current_location": "South residential 3075",
     "environment": "residential",
-    "home_district": "South-West",
+    "home_district": "South",
     "home_xy": [
-      -1761.76,
-      -2340.94
+      -384.07,
+      -2559.93
     ],
     "inventory": {
       "cash": 1,
@@ -881,38 +869,39 @@
         "gloves": 2
       }
     },
-    "name": "Sara Park",
+    "name": "Diego Silva",
     "occupation": "cleaner",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "night",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "South-West residential 134",
-    "signature_situation": "You're sleep at South-West residential 134 -- not on shift when the collapse comes. Your cleaner's edge is back at an empty office building at night.",
+    "signature_location": "South residential 3075",
+    "signature_situation": "You're sleep at South residential 3075 -- not on shift when the collapse comes. Your cleaner's edge is back at an empty office building at night.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 7.01,
     "spawn_xy": [
-      -1761.76,
-      -2340.94
+      -382.55,
+      -2567.47
     ],
     "work_district": "South-West",
     "work_xy": [
-      -1054.41,
-      -2005.59
+      -1291.41,
+      -1784.85
     ]
   },
   {
     "age": 83,
     "current_activity": "sleep",
-    "current_location": "South-East residential 113",
+    "current_location": "South residential 2315",
     "environment": "residential",
-    "home_district": "South-East",
+    "home_district": "South",
     "home_xy": [
-      1961.67,
-      -2556.16
+      -526.44,
+      -2721.9
     ],
     "inventory": {
       "cash": 1,
@@ -941,22 +930,23 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "James Rivera",
+    "name": "Maria Mensah",
     "occupation": "retiree",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "none",
     "signature_dilemma": "Stay put among neighbours, or accept a stranger's offer to leave.",
     "signature_location": "at home or out on a morning walk",
     "signature_situation": "The street you've known for decades turns strange in minutes.",
     "signature_title": "Forty years on this street",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 2.74,
     "spawn_xy": [
-      1961.67,
-      -2556.16
+      -515.3,
+      -2725.76
     ],
     "work_district": "",
     "work_xy": null
@@ -964,71 +954,73 @@
   {
     "age": 58,
     "current_activity": "sleep",
-    "current_location": "North-West residential 684",
+    "current_location": "North-West residential 21471",
     "environment": "residential",
     "home_district": "North-West",
     "home_xy": [
-      -1905.7,
-      2667.47
+      -2645.22,
+      2754.03
     ],
     "inventory": {
       "cash": 1,
-      "face_mask": 4,
-      "id_badge": 1,
-      "keys": 1,
+      "face_mask": 1,
+      "id_card": 1,
+      "keys": 2,
       "phone": 2,
-      "snack": 1,
-      "wallet": 1
+      "transit_pass": 1,
+      "wallet": 1,
+      "water_bottle": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "cash": 1,
-        "face_mask": 4,
-        "id_badge": 1,
-        "keys": 1,
+        "face_mask": 1,
+        "id_card": 1,
+        "keys": 2,
         "phone": 2,
-        "snack": 1,
-        "wallet": 1
+        "transit_pass": 1,
+        "wallet": 1,
+        "water_bottle": 1
       },
       "vehicle": {},
       "workplace": {
-        "pen_light": 1,
-        "scrubs": 1
+        "laptop": 1
       }
     },
-    "name": "Sara Costa",
-    "occupation": "nurse",
+    "name": "Diego Khan",
+    "occupation": "office_worker",
     "on_duty": false,
-    "profile": "Houston, Texas",
-    "shift": "night",
+    "profile": "Houston",
+    "shift": "day",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "North-West residential 684",
-    "signature_situation": "You're sleep at North-West residential 684 -- not on shift when the collapse comes. Your nurse's edge is back at the hospital floor at shift change.",
+    "signature_location": "North-West residential 21471",
+    "signature_situation": "You're sleep at North-West residential 21471 -- not on shift when the collapse comes. Your office_worker's edge is back at a high floor of an office tower.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 8.47,
+    "spawn_hour": 2.35,
     "spawn_xy": [
-      -1905.7,
-      2667.47
+      -2661.63,
+      2740.0
     ],
-    "work_district": "Old Town",
+    "work_district": "West",
     "work_xy": [
-      -268.03,
-      997.74
+      -1586.88,
+      -258.35
     ]
   },
   {
     "age": 9,
     "current_activity": "sleep",
-    "current_location": "Old Town residential 381",
+    "current_location": "East residential 11311",
     "environment": "residential",
-    "home_district": "Old Town",
+    "home_district": "East",
     "home_xy": [
-      -146.05,
-      -342.6
+      2632.51,
+      284.59
     ],
     "inventory": {
       "backpack": 1,
@@ -1049,22 +1041,23 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "James Brooks",
+    "name": "Maria Johnson",
     "occupation": "child",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "none",
     "signature_dilemma": "Find a familiar adult, or hide where no one thinks to look.",
     "signature_location": "at home or the school playground",
     "signature_situation": "The grown-ups are screaming and no one will explain why.",
     "signature_title": "Too small to understand",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 6.73,
     "spawn_xy": [
-      -146.05,
-      -342.6
+      2625.19,
+      273.5
     ],
     "work_district": "",
     "work_xy": null
@@ -1072,12 +1065,12 @@
   {
     "age": 11,
     "current_activity": "leisure",
-    "current_location": "North residential 695",
+    "current_location": "North-West residential 21714",
     "environment": "residential",
-    "home_district": "North",
+    "home_district": "North-West",
     "home_xy": [
-      -570.91,
-      2803.5
+      -1681.01,
+      2881.53
     ],
     "inventory": {
       "backpack": 1,
@@ -1104,22 +1097,23 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "Sara Mensah",
+    "name": "Diego Nguyen",
     "occupation": "child",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "none",
     "signature_dilemma": "Find a familiar adult, or hide where no one thinks to look.",
     "signature_location": "at home or the school playground",
     "signature_situation": "The grown-ups are screaming and no one will explain why.",
     "signature_title": "Too small to understand",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 10.18,
     "spawn_xy": [
-      -570.91,
-      2803.5
+      -1690.42,
+      2893.44
     ],
     "work_district": "",
     "work_xy": null
@@ -1127,12 +1121,12 @@
   {
     "age": 29,
     "current_activity": "sleep",
-    "current_location": "Old Town residential 387",
+    "current_location": "East residential 11417",
     "environment": "residential",
-    "home_district": "Old Town",
+    "home_district": "East",
     "home_xy": [
-      934.66,
-      -372.58
+      2538.07,
+      304.91
     ],
     "inventory": {
       "cash": 1,
@@ -1158,45 +1152,156 @@
         "usb_drive": 1
       }
     },
-    "name": "James Garcia",
+    "name": "Maria Okafor",
     "occupation": "it_support",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "day",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "Old Town residential 387",
-    "signature_situation": "You're sleep at Old Town residential 387 -- not on shift when the collapse comes. Your it_support's edge is back at a server room.",
+    "signature_location": "East residential 11417",
+    "signature_situation": "You're sleep at East residential 11417 -- not on shift when the collapse comes. Your it_support's edge is back at a server room.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 6.31,
     "spawn_xy": [
-      934.66,
-      -372.58
+      2541.09,
+      321.18
     ],
-    "work_district": "South-West",
+    "work_district": "South-East",
     "work_xy": [
-      -1828.79,
-      -1532.92
+      1752.65,
+      -1642.29
     ]
   },
   {
     "age": 32,
-    "current_activity": "sleep",
-    "current_location": "South residential 240",
+    "current_activity": "leisure",
+    "current_location": "South residential 6895",
     "environment": "residential",
     "home_district": "South",
     "home_xy": [
-      -561.01,
-      -1423.64
+      455.23,
+      -1125.24
+    ],
+    "inventory": {
+      "name_tag": 1,
+      "phone": 1,
+      "snack": 1,
+      "transit_pass": 1,
+      "water_bottle": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "name_tag": 1,
+        "phone": 1,
+        "snack": 1,
+        "transit_pass": 1,
+        "water_bottle": 1
+      },
+      "vehicle": {},
+      "workplace": {
+        "apron": 1,
+        "box_cutter": 1
+      }
+    },
+    "name": "Diego Diallo",
+    "occupation": "grocery_clerk",
+    "on_duty": false,
+    "profile": "Houston",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "South residential 6895",
+    "signature_situation": "You're leisure at South residential 6895 -- not on shift when the collapse comes. Your grocery_clerk's edge is back at the shop floor of a supermarket.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
+    "spawn_anchor": "entrance",
+    "spawn_approx": false,
+    "spawn_context": "home",
+    "spawn_hour": 19.27,
+    "spawn_xy": [
+      465.57,
+      -1125.18
+    ],
+    "work_district": "Old Town",
+    "work_xy": [
+      168.35,
+      -408.14
+    ]
+  },
+  {
+    "age": 41,
+    "current_activity": "leisure",
+    "current_location": "South-West residential 383",
+    "environment": "residential",
+    "home_district": "South-West",
+    "home_xy": [
+      -1196.22,
+      -3187.4
+    ],
+    "inventory": {
+      "face_mask": 1,
+      "keys": 2,
+      "phone": 1,
+      "wallet": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "face_mask": 1,
+        "keys": 2,
+        "phone": 1,
+        "wallet": 1
+      },
+      "vehicle": {},
+      "workplace": {
+        "gloves": 2,
+        "hi_vis": 1
+      }
+    },
+    "name": "Maria Cohen",
+    "occupation": "sanitation_worker",
+    "on_duty": false,
+    "profile": "Houston",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "South-West residential 383",
+    "signature_situation": "You're leisure at South-West residential 383 -- not on shift when the collapse comes. Your sanitation_worker's edge is back at the streets, mid-collection round.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
+    "spawn_anchor": "entrance",
+    "spawn_approx": false,
+    "spawn_context": "home",
+    "spawn_hour": 18.66,
+    "spawn_xy": [
+      -1233.7,
+      -3183.3
+    ],
+    "work_district": "Old Town",
+    "work_xy": [
+      2.23,
+      -393.92
+    ]
+  },
+  {
+    "age": 31,
+    "current_activity": "sleep",
+    "current_location": "North-West residential 20154",
+    "environment": "residential",
+    "home_district": "North-West",
+    "home_xy": [
+      -1067.31,
+      2384.85
     ],
     "inventory": {
       "face_mask": 1,
       "id_card": 1,
       "keys": 2,
-      "phone": 1,
-      "water_bottle": 1
+      "phone": 2,
+      "wallet": 1
     },
     "inventory_scopes": {
       "home": {},
@@ -1204,155 +1309,47 @@
         "face_mask": 1,
         "id_card": 1,
         "keys": 2,
-        "phone": 1,
-        "water_bottle": 1
+        "phone": 2,
+        "wallet": 1
       },
       "vehicle": {},
       "workplace": {
         "laptop": 1
       }
     },
-    "name": "Sara Johnson",
+    "name": "Diego Rivera",
     "occupation": "office_worker",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "day",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "South residential 240",
-    "signature_situation": "You're sleep at South residential 240 -- not on shift when the collapse comes. Your office_worker's edge is back at a high floor of an office tower.",
+    "signature_location": "North-West residential 20154",
+    "signature_situation": "You're sleep at North-West residential 20154 -- not on shift when the collapse comes. Your office_worker's edge is back at a high floor of an office tower.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 4.92,
+    "spawn_hour": 2.65,
     "spawn_xy": [
-      -561.01,
-      -1423.64
+      -1079.82,
+      2367.7
     ],
-    "work_district": "East",
+    "work_district": "West",
     "work_xy": [
-      1814.45,
-      649.01
-    ]
-  },
-  {
-    "age": 41,
-    "current_activity": "leisure",
-    "current_location": "South-West residential 15",
-    "environment": "residential",
-    "home_district": "South-West",
-    "home_xy": [
-      -1344.52,
-      -3095.58
-    ],
-    "inventory": {
-      "face_mask": 3,
-      "id_badge": 1,
-      "keys": 1,
-      "phone": 1,
-      "wallet": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "face_mask": 3,
-        "id_badge": 1,
-        "keys": 1,
-        "phone": 1,
-        "wallet": 1
-      },
-      "vehicle": {},
-      "workplace": {
-        "white_coat": 1
-      }
-    },
-    "name": "James Patel",
-    "occupation": "pharmacist",
-    "on_duty": false,
-    "profile": "Houston, Texas",
-    "shift": "day",
-    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "South-West residential 15",
-    "signature_situation": "You're leisure at South-West residential 15 -- not on shift when the collapse comes. Your pharmacist's edge is back at behind the pharmacy counter.",
-    "signature_title": "Off-shift when it hit",
-    "situation_kind": "generic",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 18.66,
-    "spawn_xy": [
-      -1344.52,
-      -3095.58
-    ],
-    "work_district": "East",
-    "work_xy": [
-      1738.23,
-      -76.85
-    ]
-  },
-  {
-    "age": 31,
-    "current_activity": "leisure",
-    "current_location": "North-East residential 640",
-    "environment": "residential",
-    "home_district": "North-East",
-    "home_xy": [
-      2685.32,
-      1855.69
-    ],
-    "inventory": {
-      "cash": 1,
-      "face_mask": 3,
-      "id_badge": 1,
-      "phone": 2,
-      "wallet": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "cash": 1,
-        "face_mask": 3,
-        "id_badge": 1,
-        "phone": 2,
-        "wallet": 1
-      },
-      "vehicle": {},
-      "workplace": {
-        "pen_light": 1,
-        "scrubs": 1
-      }
-    },
-    "name": "Sara Okafor",
-    "occupation": "nurse",
-    "on_duty": false,
-    "profile": "Houston, Texas",
-    "shift": "night",
-    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "North-East residential 640",
-    "signature_situation": "You're leisure at North-East residential 640 -- not on shift when the collapse comes. Your nurse's edge is back at the hospital floor at shift change.",
-    "signature_title": "Off-shift when it hit",
-    "situation_kind": "generic",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 12.69,
-    "spawn_xy": [
-      2685.32,
-      1855.69
-    ],
-    "work_district": "Old Town",
-    "work_xy": [
-      -363.28,
-      327.84
+      -2037.97,
+      -437.12
     ]
   },
   {
     "age": 39,
     "current_activity": "errand",
-    "current_location": "Old Town commercial 378",
+    "current_location": "East commercial 8439",
     "environment": "retail",
-    "home_district": "Old Town",
+    "home_district": "East",
     "home_xy": [
-      -627.56,
-      -276.45
+      1614.27,
+      228.25
     ],
     "inventory": {
       "keys": 2,
@@ -1375,38 +1372,39 @@
         "work_gloves": 1
       }
     },
-    "name": "James Reyes",
+    "name": "Maria Ahmed",
     "occupation": "landscaper",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "day",
     "signature_dilemma": "Make for home, or shelter where you stand.",
-    "signature_location": "Old Town commercial 378",
-    "signature_situation": "You're out at Old Town commercial 378 when the collapse comes -- in the open, among strangers.",
+    "signature_location": "East commercial 8439",
+    "signature_situation": "You're out at East commercial 8439 when the collapse comes -- in the open, among strangers.",
     "signature_title": "Caught out in public",
     "situation_kind": "generic",
-    "spawn_approx": true,
+    "spawn_anchor": "walk",
+    "spawn_approx": false,
     "spawn_context": "errand",
     "spawn_hour": 17.18,
     "spawn_xy": [
-      -627.56,
-      -276.45
+      1609.34,
+      238.43
     ],
-    "work_district": "South-West",
+    "work_district": "South",
     "work_xy": [
-      -1167.62,
-      -1777.34
+      681.15,
+      -1799.59
     ]
   },
   {
     "age": 71,
     "current_activity": "leisure",
-    "current_location": "North-East residential 669",
+    "current_location": "North-West residential 21025",
     "environment": "residential",
-    "home_district": "North-East",
+    "home_district": "North-West",
     "home_xy": [
-      1110.65,
-      2385.53
+      -2201.3,
+      2624.82
     ],
     "inventory": {
       "keys": 1,
@@ -1429,92 +1427,90 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "Sara Cohen",
+    "name": "Diego Brooks",
     "occupation": "homemaker",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "none",
     "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
     "signature_location": "at home, mid-chore",
     "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
     "signature_title": "The house is yours",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 17.15,
     "spawn_xy": [
-      1110.65,
-      2385.53
+      -2201.3,
+      2631.74
     ],
     "work_district": "",
     "work_xy": null
   },
   {
     "age": 10,
-    "current_activity": "sleep",
-    "current_location": "West residential 471",
+    "current_activity": "leisure",
+    "current_location": "East residential 14459",
     "environment": "residential",
-    "home_district": "West",
+    "home_district": "East",
     "home_xy": [
-      -1352.63,
-      736.99
+      1514.65,
+      916.06
     ],
     "inventory": {
       "backpack": 1,
       "face_mask": 1,
-      "id_card": 1,
+      "keys": 1,
       "phone": 1,
       "snack": 1,
-      "wallet": 1
+      "wallet": 1,
+      "water_bottle": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "backpack": 1,
         "face_mask": 1,
-        "id_card": 1,
+        "keys": 1,
         "phone": 1,
         "snack": 1,
-        "wallet": 1
+        "wallet": 1,
+        "water_bottle": 1
       },
       "vehicle": {},
-      "workplace": {
-        "laptop": 1,
-        "notebook": 1
-      }
+      "workplace": {}
     },
-    "name": "James Park",
-    "occupation": "student",
+    "name": "Maria Silva",
+    "occupation": "child",
     "on_duty": false,
-    "profile": "Houston, Texas",
-    "shift": "day",
-    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "West residential 471",
-    "signature_situation": "You're sleep at West residential 471 -- not on shift when the collapse comes. Your student's edge is back at a packed lecture hall.",
-    "signature_title": "Off-shift when it hit",
-    "situation_kind": "generic",
+    "profile": "Houston",
+    "shift": "none",
+    "signature_dilemma": "Find a familiar adult, or hide where no one thinks to look.",
+    "signature_location": "at home or the school playground",
+    "signature_situation": "The grown-ups are screaming and no one will explain why.",
+    "signature_title": "Too small to understand",
+    "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 4.61,
+    "spawn_hour": 12.98,
     "spawn_xy": [
-      -1352.63,
-      736.99
+      1516.61,
+      904.19
     ],
-    "work_district": "Old Town",
-    "work_xy": [
-      -662.59,
-      -69.35
-    ]
+    "work_district": "",
+    "work_xy": null
   },
   {
     "age": 18,
     "current_activity": "errand",
-    "current_location": "South commercial 151",
+    "current_location": "South-East commercial 3890",
     "environment": "retail",
-    "home_district": "South",
+    "home_district": "South-East",
     "home_xy": [
-      -259.97,
-      -2269.88
+      2618.22,
+      -2410.28
     ],
     "inventory": {
       "face_mask": 1,
@@ -1539,95 +1535,102 @@
         "apron": 1
       }
     },
-    "name": "Sara Ahmed",
+    "name": "Diego Garcia",
     "occupation": "barista",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "day",
     "signature_dilemma": "Make for home, or shelter where you stand.",
-    "signature_location": "South commercial 151",
-    "signature_situation": "You're out at South commercial 151 when the collapse comes -- in the open, among strangers.",
+    "signature_location": "South-East commercial 3890",
+    "signature_situation": "You're out at South-East commercial 3890 when the collapse comes -- in the open, among strangers.",
     "signature_title": "Caught out in public",
     "situation_kind": "generic",
-    "spawn_approx": true,
+    "spawn_anchor": "walk",
+    "spawn_approx": false,
     "spawn_context": "errand",
     "spawn_hour": 17.89,
     "spawn_xy": [
-      -259.97,
-      -2269.88
+      2635.62,
+      -2411.43
     ],
-    "work_district": "North-East",
+    "work_district": "West",
     "work_xy": [
-      1824.13,
-      1326.77
+      -2606.83,
+      83.95
     ]
   },
   {
     "age": 63,
-    "current_activity": "errand",
-    "current_location": "South commercial 306",
+    "current_activity": "work",
+    "current_location": "West commercial 12819",
     "environment": "retail",
-    "home_district": "South",
+    "home_district": "East",
     "home_xy": [
-      783.38,
-      -1378.57
+      2755.88,
+      -1066.28
     ],
     "inventory": {
-      "keys": 2,
-      "snack": 1,
-      "wallet": 1
+      "fuel_can": 1,
+      "keys": 1,
+      "phone": 1,
+      "shears": 1,
+      "wallet": 1,
+      "water_bottle": 1,
+      "work_gloves": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "keys": 2,
-        "snack": 1,
-        "wallet": 1
+        "fuel_can": 1,
+        "keys": 1,
+        "phone": 1,
+        "shears": 1,
+        "wallet": 1,
+        "water_bottle": 1,
+        "work_gloves": 1
       },
       "vehicle": {},
-      "workplace": {
-        "hi_vis": 1,
-        "scanner": 1
-      }
+      "workplace": {}
     },
-    "name": "James Costa",
-    "occupation": "postal_worker",
-    "on_duty": false,
-    "profile": "Houston, Texas",
+    "name": "Maria Khan",
+    "occupation": "landscaper",
+    "on_duty": true,
+    "profile": "Houston",
     "shift": "day",
-    "signature_dilemma": "Make for home, or shelter where you stand.",
-    "signature_location": "South commercial 306",
-    "signature_situation": "You're out at South commercial 306 when the collapse comes -- in the open, among strangers.",
-    "signature_title": "Caught out in public",
-    "situation_kind": "generic",
-    "spawn_approx": true,
-    "spawn_context": "errand",
-    "spawn_hour": 17.84,
+    "signature_dilemma": "Every house around you is a possible shelter -- pick the right door.",
+    "signature_location": "mowing a garden in a residential neighbourhood",
+    "signature_situation": "You're three lawns from your truck when the street erupts.",
+    "signature_title": "Three lawns from the truck",
+    "situation_kind": "signature",
+    "spawn_anchor": "entrance",
+    "spawn_approx": false,
+    "spawn_context": "workplace",
+    "spawn_hour": 13.65,
     "spawn_xy": [
-      783.38,
-      -1378.57
+      -1952.14,
+      611.43
     ],
-    "work_district": "North-West",
+    "work_district": "West",
     "work_xy": [
-      -1591.32,
-      2561.63
+      -1922.56,
+      611.78
     ]
   },
   {
     "age": 38,
     "current_activity": "work",
-    "current_location": "South medical 89",
-    "environment": "medical",
-    "home_district": "West",
+    "current_location": "South civic 2318",
+    "environment": "civic",
+    "home_district": "Old Town",
     "home_xy": [
-      -1173.24,
-      774.85
+      -0.99,
+      937.32
     ],
     "inventory": {
       "cash": 1,
-      "face_mask": 3,
       "gloves": 2,
-      "id_badge": 1,
+      "hi_vis": 1,
+      "keys": 1,
       "transit_pass": 1,
       "water_bottle": 1
     },
@@ -1635,50 +1638,109 @@
       "home": {},
       "on_person": {
         "cash": 1,
-        "face_mask": 3,
         "gloves": 2,
-        "id_badge": 1,
+        "hi_vis": 1,
+        "keys": 1,
         "transit_pass": 1,
         "water_bottle": 1
       },
       "vehicle": {},
       "workplace": {}
     },
-    "name": "Sara Silva",
-    "occupation": "care_worker",
+    "name": "Diego Patel",
+    "occupation": "sanitation_worker",
     "on_duty": true,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "day",
-    "signature_dilemma": "Stay with people who can't flee, or save yourself.",
-    "signature_location": "a care home or a client's house",
-    "signature_situation": "The residents can't move quickly and no relief is coming.",
-    "signature_title": "They can't be moved",
+    "signature_dilemma": "Abandon the round, or use a heavy truck to shove through.",
+    "signature_location": "the streets, mid-collection round",
+    "signature_situation": "Your truck is the only thing moving on a street already snarling up.",
+    "signature_title": "The only thing still moving",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "workplace",
     "spawn_hour": 13.96,
     "spawn_xy": [
-      -673.76,
-      -2541.02
+      506.98,
+      -2605.63
     ],
     "work_district": "South",
     "work_xy": [
-      -673.76,
-      -2541.02
+      645.11,
+      -2666.5
     ]
   },
   {
     "age": 40,
     "current_activity": "sleep",
-    "current_location": "South-East residential 160",
+    "current_location": "South-West residential 4013",
     "environment": "residential",
-    "home_district": "South-East",
+    "home_district": "South-West",
     "home_xy": [
-      1504.36,
-      -2328.28
+      -1186.01,
+      -2332.95
     ],
     "inventory": {
       "cash": 1,
+      "keys": 1,
+      "phone": 1,
+      "snack": 1,
+      "transit_pass": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "cash": 1,
+        "keys": 1,
+        "phone": 1,
+        "snack": 1,
+        "transit_pass": 1
+      },
+      "vehicle": {},
+      "workplace": {
+        "apron": 1,
+        "knife_roll": 1,
+        "thermometer": 1
+      }
+    },
+    "name": "Maria Nguyen",
+    "occupation": "chef",
+    "on_duty": false,
+    "profile": "Houston",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "South-West residential 4013",
+    "signature_situation": "You're sleep at South-West residential 4013 -- not on shift when the collapse comes. Your chef's edge is back at a restaurant kitchen.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
+    "spawn_anchor": "entrance",
+    "spawn_approx": false,
+    "spawn_context": "home",
+    "spawn_hour": 3.01,
+    "spawn_xy": [
+      -1184.89,
+      -2322.83
+    ],
+    "work_district": "South",
+    "work_xy": [
+      686.0,
+      -1519.51
+    ]
+  },
+  {
+    "age": 52,
+    "current_activity": "sleep",
+    "current_location": "Old Town residential 8106",
+    "environment": "residential",
+    "home_district": "Old Town",
+    "home_xy": [
+      -258.12,
+      -585.78
+    ],
+    "inventory": {
+      "cash": 1,
+      "face_mask": 1,
       "keys": 1,
       "name_tag": 1,
       "phone": 1,
@@ -1689,6 +1751,7 @@
       "home": {},
       "on_person": {
         "cash": 1,
+        "face_mask": 1,
         "keys": 1,
         "name_tag": 1,
         "phone": 1,
@@ -1701,207 +1764,149 @@
         "box_cutter": 1
       }
     },
-    "name": "James Mensah",
+    "name": "Diego Reyes",
     "occupation": "grocery_clerk",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "day",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "South-East residential 160",
-    "signature_situation": "You're sleep at South-East residential 160 -- not on shift when the collapse comes. Your grocery_clerk's edge is back at the shop floor of a supermarket.",
+    "signature_location": "Old Town residential 8106",
+    "signature_situation": "You're sleep at Old Town residential 8106 -- not on shift when the collapse comes. Your grocery_clerk's edge is back at the shop floor of a supermarket.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 3.01,
+    "spawn_hour": 3.25,
     "spawn_xy": [
-      1504.36,
-      -2328.28
+      -298.24,
+      -589.01
     ],
     "work_district": "South-East",
     "work_xy": [
-      1550.25,
-      -1382.86
+      1070.43,
+      -1528.81
     ]
   },
   {
-    "age": 52,
+    "age": 62,
     "current_activity": "work",
-    "current_location": "South commercial 250",
+    "current_location": "South-East commercial 80",
     "environment": "retail",
     "home_district": "South-East",
     "home_xy": [
-      2221.13,
-      -1119.89
+      1622.92,
+      -1304.0
     ],
     "inventory": {
-      "cash": 1,
-      "face_mask": 1,
       "id_card": 1,
       "keys": 1,
       "laptop": 1,
       "phone": 1,
       "snack": 1,
-      "wallet": 1,
-      "water_bottle": 1
+      "transit_pass": 1,
+      "usb_drive": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "cash": 1,
-        "face_mask": 1,
         "id_card": 1,
         "keys": 1,
         "laptop": 1,
         "phone": 1,
         "snack": 1,
-        "wallet": 1,
-        "water_bottle": 1
+        "transit_pass": 1,
+        "usb_drive": 1
       },
       "vehicle": {},
       "workplace": {}
     },
-    "name": "Sara Khan",
-    "occupation": "office_worker",
+    "name": "Maria Diallo",
+    "occupation": "it_support",
     "on_duty": true,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "day",
-    "signature_dilemma": "Descend with the crush, or wait it out at altitude.",
-    "signature_location": "a high floor of an office tower",
-    "signature_situation": "The lifts die and the stairwell fills with everyone from above.",
-    "signature_title": "The lifts just stopped",
+    "signature_dilemma": "Keep comms alive a little longer, or pull the plug and run.",
+    "signature_location": "a server room",
+    "signature_situation": "Every system you maintain crashes together -- then the lights go.",
+    "signature_title": "Everything falls over at once",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "workplace",
-    "spawn_hour": 15.17,
+    "spawn_hour": 12.59,
     "spawn_xy": [
-      -59.04,
-      -1345.25
+      1352.3,
+      -3298.86
     ],
-    "work_district": "South",
+    "work_district": "South-East",
     "work_xy": [
-      -59.04,
-      -1345.25
-    ]
-  },
-  {
-    "age": 62,
-    "current_activity": "leisure",
-    "current_location": "South-East residential 222",
-    "environment": "residential",
-    "home_district": "South-East",
-    "home_xy": [
-      2182.59,
-      -1886.85
-    ],
-    "inventory": {
-      "cash": 1,
-      "id_card": 1,
-      "phone": 1,
-      "water_bottle": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "cash": 1,
-        "id_card": 1,
-        "phone": 1,
-        "water_bottle": 1
-      },
-      "vehicle": {},
-      "workplace": {
-        "documents": 3,
-        "laptop": 1
-      }
-    },
-    "name": "James Johnson",
-    "occupation": "lawyer",
-    "on_duty": false,
-    "profile": "Houston, Texas",
-    "shift": "day",
-    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "South-East residential 222",
-    "signature_situation": "You're leisure at South-East residential 222 -- not on shift when the collapse comes. Your lawyer's edge is back at a courthouse or office.",
-    "signature_title": "Off-shift when it hit",
-    "situation_kind": "generic",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 6.95,
-    "spawn_xy": [
-      2182.59,
-      -1886.85
-    ],
-    "work_district": "South-West",
-    "work_xy": [
-      -2140.78,
-      -2948.84
+      1374.04,
+      -3298.61
     ]
   },
   {
     "age": 40,
-    "current_activity": "work",
-    "current_location": "South medical 102",
-    "environment": "medical",
-    "home_district": "West",
+    "current_activity": "sleep",
+    "current_location": "East residential 8446",
+    "environment": "residential",
+    "home_district": "East",
     "home_xy": [
-      -2777.43,
-      -774.23
+      1300.28,
+      -400.18
     ],
     "inventory": {
-      "cash": 1,
-      "face_mask": 3,
-      "id_badge": 1,
-      "pen_light": 1,
-      "phone": 1,
-      "scrubs": 1,
-      "wallet": 1
+      "face_mask": 1,
+      "id_card": 1,
+      "keys": 2,
+      "phone": 2
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "cash": 1,
-        "face_mask": 3,
-        "id_badge": 1,
-        "pen_light": 1,
-        "phone": 1,
-        "scrubs": 1,
-        "wallet": 1
+        "face_mask": 1,
+        "id_card": 1,
+        "keys": 2,
+        "phone": 2
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "laptop": 1
+      }
     },
-    "name": "Sara Nguyen",
-    "occupation": "nurse",
-    "on_duty": true,
-    "profile": "Houston, Texas",
-    "shift": "night",
-    "signature_dilemma": "Triage who you can still save, or walk out while you can.",
-    "signature_location": "the hospital floor at shift change",
-    "signature_situation": "The waiting room is already three deep and the ambulances keep coming.",
-    "signature_title": "The doors won't stop opening",
-    "situation_kind": "signature",
+    "name": "Diego Park",
+    "occupation": "office_worker",
+    "on_duty": false,
+    "profile": "Houston",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "East residential 8446",
+    "signature_situation": "You're sleep at East residential 8446 -- not on shift when the collapse comes. Your office_worker's edge is back at a high floor of an office tower.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
-    "spawn_context": "workplace",
-    "spawn_hour": 0.0,
+    "spawn_context": "home",
+    "spawn_hour": 22.56,
     "spawn_xy": [
-      767.52,
-      -2759.81
+      1300.06,
+      -390.45
     ],
-    "work_district": "South",
+    "work_district": "South-West",
     "work_xy": [
-      767.52,
-      -2759.81
+      -2747.95,
+      -2014.4
     ]
   },
   {
     "age": 68,
     "current_activity": "leisure",
-    "current_location": "West residential 365",
+    "current_location": "East residential 10552",
     "environment": "residential",
-    "home_district": "West",
+    "home_district": "East",
     "home_xy": [
-      -1778.0,
-      -210.46
+      1006.34,
+      154.04
     ],
     "inventory": {
       "cash": 1,
@@ -1926,22 +1931,23 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "James Okafor",
+    "name": "Maria Rivera",
     "occupation": "homemaker",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "none",
     "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
     "signature_location": "at home, mid-chore",
     "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
     "signature_title": "The house is yours",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 14.6,
     "spawn_xy": [
-      -1778.0,
-      -210.46
+      997.66,
+      164.16
     ],
     "work_district": "",
     "work_xy": null
@@ -1949,74 +1955,73 @@
   {
     "age": 46,
     "current_activity": "work",
-    "current_location": "North-West commercial 643",
+    "current_location": "East commercial 15343",
     "environment": "retail",
     "home_district": "North-West",
     "home_xy": [
-      -1310.18,
-      2673.61
+      -1773.58,
+      2794.45
     ],
     "inventory": {
-      "bucket": 1,
       "face_mask": 1,
-      "harness": 1,
-      "keys": 1,
+      "fuel_can": 1,
+      "keys": 2,
       "phone": 1,
-      "rope": 1,
+      "shears": 1,
       "snack": 1,
-      "squeegee": 1,
       "transit_pass": 1,
-      "water_bottle": 1
+      "water_bottle": 1,
+      "work_gloves": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "bucket": 1,
         "face_mask": 1,
-        "harness": 1,
-        "keys": 1,
+        "fuel_can": 1,
+        "keys": 2,
         "phone": 1,
-        "rope": 1,
+        "shears": 1,
         "snack": 1,
-        "squeegee": 1,
         "transit_pass": 1,
-        "water_bottle": 1
+        "water_bottle": 1,
+        "work_gloves": 1
       },
       "vehicle": {},
       "workplace": {}
     },
-    "name": "Sara Diallo",
-    "occupation": "window_washer",
+    "name": "Diego Costa",
+    "occupation": "landscaper",
     "on_duty": true,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "day",
-    "signature_dilemma": "Climb in through a window into a tower of strangers, or trust a dead winch.",
-    "signature_location": "a cradle on the side of a glass tower, thirty storeys up",
-    "signature_situation": "The building's power stutters and the platform lurches to a dead halt.",
-    "signature_title": "Stranded on the sky-lift",
+    "signature_dilemma": "Every house around you is a possible shelter -- pick the right door.",
+    "signature_location": "mowing a garden in a residential neighbourhood",
+    "signature_situation": "You're three lawns from your truck when the street erupts.",
+    "signature_title": "Three lawns from the truck",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "workplace",
     "spawn_hour": 13.22,
     "spawn_xy": [
-      -2431.68,
-      2216.93
+      1513.43,
+      1135.37
     ],
-    "work_district": "North-West",
+    "work_district": "East",
     "work_xy": [
-      -2431.68,
-      2216.93
+      1509.33,
+      1109.95
     ]
   },
   {
     "age": 85,
     "current_activity": "sleep",
-    "current_location": "North-East residential 627",
+    "current_location": "North-East residential 19655",
     "environment": "residential",
     "home_district": "North-East",
     "home_xy": [
-      1474.58,
-      2028.5
+      2561.52,
+      2268.56
     ],
     "inventory": {
       "cash": 1,
@@ -2045,92 +2050,95 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "James Cohen",
+    "name": "Maria Brooks",
     "occupation": "retiree",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "none",
     "signature_dilemma": "Stay put among neighbours, or accept a stranger's offer to leave.",
     "signature_location": "at home or out on a morning walk",
     "signature_situation": "The street you've known for decades turns strange in minutes.",
     "signature_title": "Forty years on this street",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 7.5,
     "spawn_xy": [
-      1474.58,
-      2028.5
+      2561.34,
+      2261.97
     ],
     "work_district": "",
     "work_xy": null
   },
   {
     "age": 18,
-    "current_activity": "sleep",
-    "current_location": "East residential 400",
-    "environment": "residential",
+    "current_activity": "work",
+    "current_location": "South civic 2318",
+    "environment": "civic",
     "home_district": "East",
     "home_xy": [
-      2112.88,
-      -238.81
+      2182.41,
+      396.84
     ],
     "inventory": {
-      "face_mask": 1,
+      "boots": 1,
+      "cash": 1,
+      "id_tag": 1,
       "phone": 1,
+      "rations": 1,
       "snack": 1,
       "transit_pass": 1,
-      "water_bottle": 1
+      "wallet": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "face_mask": 1,
+        "boots": 1,
+        "cash": 1,
+        "id_tag": 1,
         "phone": 1,
+        "rations": 1,
         "snack": 1,
         "transit_pass": 1,
-        "water_bottle": 1
+        "wallet": 1
       },
       "vehicle": {},
-      "workplace": {
-        "gloves": 1,
-        "hard_hat": 1,
-        "hi_vis": 1,
-        "tool_belt": 1
-      }
+      "workplace": {}
     },
-    "name": "Sara Rivera",
-    "occupation": "construction_worker",
-    "on_duty": false,
-    "profile": "Houston, Texas",
+    "name": "Diego Mensah",
+    "occupation": "soldier",
+    "on_duty": true,
+    "profile": "Houston",
     "shift": "day",
-    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "East residential 400",
-    "signature_situation": "You're sleep at East residential 400 -- not on shift when the collapse comes. Your construction_worker's edge is back at a half-built structure.",
-    "signature_title": "Off-shift when it hit",
-    "situation_kind": "generic",
+    "signature_dilemma": "Hold the post, or take your training and gear into the open.",
+    "signature_location": "on base or on duty",
+    "signature_situation": "Orders over the radio start contradicting each other.",
+    "signature_title": "The chain of command fractures",
+    "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 3.29,
+    "spawn_context": "workplace",
+    "spawn_hour": 9.23,
     "spawn_xy": [
-      2112.88,
-      -238.81
+      506.98,
+      -2605.63
     ],
     "work_district": "South",
     "work_xy": [
-      -507.5,
-      -2666.91
+      645.11,
+      -2666.5
     ]
   },
   {
     "age": 5,
     "current_activity": "sleep",
-    "current_location": "South-East residential 160",
+    "current_location": "South-West residential 4022",
     "environment": "residential",
-    "home_district": "South-East",
+    "home_district": "South-West",
     "home_xy": [
-      1504.36,
-      -2328.28
+      -1570.17,
+      -2329.25
     ],
     "inventory": {
       "backpack": 1,
@@ -2153,22 +2161,23 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "James Ahmed",
+    "name": "Maria Garcia",
     "occupation": "child",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "none",
     "signature_dilemma": "Find a familiar adult, or hide where no one thinks to look.",
     "signature_location": "at home or the school playground",
     "signature_situation": "The grown-ups are screaming and no one will explain why.",
     "signature_title": "Too small to understand",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 22.47,
     "spawn_xy": [
-      1504.36,
-      -2328.28
+      -1586.16,
+      -2328.88
     ],
     "work_district": "",
     "work_xy": null
@@ -2176,12 +2185,12 @@
   {
     "age": 48,
     "current_activity": "leisure",
-    "current_location": "East residential 400",
+    "current_location": "Old Town residential 11939",
     "environment": "residential",
-    "home_district": "East",
+    "home_district": "Old Town",
     "home_xy": [
-      2112.88,
-      -238.81
+      845.74,
+      403.17
     ],
     "inventory": {
       "cash": 1,
@@ -2211,38 +2220,39 @@
         "usb_drive": 1
       }
     },
-    "name": "Sara Brooks",
+    "name": "Diego Johnson",
     "occupation": "it_support",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "day",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "East residential 400",
-    "signature_situation": "You're leisure at East residential 400 -- not on shift when the collapse comes. Your it_support's edge is back at a server room.",
+    "signature_location": "Old Town residential 11939",
+    "signature_situation": "You're leisure at Old Town residential 11939 -- not on shift when the collapse comes. Your it_support's edge is back at a server room.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 7.42,
     "spawn_xy": [
-      2112.88,
-      -238.81
+      849.97,
+      409.64
     ],
-    "work_district": "South-East",
+    "work_district": "South",
     "work_xy": [
-      2002.8,
-      -1308.91
+      392.8,
+      -1526.09
     ]
   },
   {
     "age": 75,
     "current_activity": "leisure",
-    "current_location": "Old Town residential 534",
+    "current_location": "North-West residential 16574",
     "environment": "residential",
-    "home_district": "Old Town",
+    "home_district": "North-West",
     "home_xy": [
-      93.01,
-      997.86
+      -1407.05,
+      1340.24
     ],
     "inventory": {
       "face_mask": 1,
@@ -2265,149 +2275,140 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "James Silva",
+    "name": "Maria Patel",
     "occupation": "retiree",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "none",
     "signature_dilemma": "Stay put among neighbours, or accept a stranger's offer to leave.",
     "signature_location": "at home or out on a morning walk",
     "signature_situation": "The street you've known for decades turns strange in minutes.",
     "signature_title": "Forty years on this street",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 18.0,
     "spawn_xy": [
-      93.01,
-      997.86
+      -1397.78,
+      1340.24
     ],
     "work_district": "",
     "work_xy": null
   },
   {
     "age": 48,
-    "current_activity": "work",
-    "current_location": "South-East commercial 46",
-    "environment": "retail",
-    "home_district": "South",
+    "current_activity": "leisure",
+    "current_location": "South-West residential 5161",
+    "environment": "residential",
+    "home_district": "South-West",
     "home_xy": [
-      80.54,
-      -1786.67
+      -2807.22,
+      -1834.61
     ],
     "inventory": {
-      "apron": 1,
-      "cash": 1,
-      "keys": 1,
-      "name_tag": 1,
+      "face_mask": 1,
+      "id_card": 1,
       "phone": 1,
+      "snack": 1,
       "transit_pass": 1,
       "wallet": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "apron": 1,
-        "cash": 1,
-        "keys": 1,
-        "name_tag": 1,
+        "face_mask": 1,
+        "id_card": 1,
         "phone": 1,
+        "snack": 1,
         "transit_pass": 1,
         "wallet": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "calculator": 1,
+        "laptop": 1
+      }
     },
-    "name": "Sara Garcia",
-    "occupation": "barista",
-    "on_duty": true,
-    "profile": "Houston, Texas",
+    "name": "Diego Okafor",
+    "occupation": "accountant",
+    "on_duty": false,
+    "profile": "Houston",
     "shift": "day",
-    "signature_dilemma": "Hold a small stocked caf\u00e9, or grab supplies and walk.",
-    "signature_location": "a caf\u00e9",
-    "signature_situation": "The morning queue scatters, drinks abandoned on the counter.",
-    "signature_title": "Cups still steaming",
-    "situation_kind": "signature",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "South-West residential 5161",
+    "signature_situation": "You're leisure at South-West residential 5161 -- not on shift when the collapse comes. Your accountant's edge is back at an office.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
-    "spawn_context": "workplace",
-    "spawn_hour": 10.16,
+    "spawn_context": "home",
+    "spawn_hour": 18.18,
     "spawn_xy": [
-      1834.21,
-      -3058.92
+      -2807.28,
+      -1823.19
     ],
     "work_district": "South-East",
     "work_xy": [
-      1834.21,
-      -3058.92
+      2558.18,
+      -2489.42
     ]
   },
   {
     "age": 13,
-    "current_activity": "work",
-    "current_location": "South education 22",
-    "environment": "education",
-    "home_district": "South-East",
+    "current_activity": "sleep",
+    "current_location": "East residential 10620",
+    "environment": "residential",
+    "home_district": "East",
     "home_xy": [
-      1717.66,
-      -1708.81
+      2318.76,
+      168.19
     ],
     "inventory": {
-      "backpack": 1,
-      "cash": 1,
       "face_mask": 1,
-      "id_card": 1,
-      "keys": 1,
-      "laptop": 1,
-      "notebook": 1,
-      "wallet": 1
+      "phone": 1,
+      "transit_pass": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "backpack": 1,
-        "cash": 1,
         "face_mask": 1,
-        "id_card": 1,
-        "keys": 1,
-        "laptop": 1,
-        "notebook": 1,
-        "wallet": 1
+        "phone": 1,
+        "transit_pass": 1
       },
       "vehicle": {},
       "workplace": {}
     },
-    "name": "James Khan",
-    "occupation": "student",
-    "on_duty": true,
-    "profile": "Houston, Texas",
-    "shift": "day",
-    "signature_dilemma": "Shelter on a campus you know, or join the rush for the doors.",
-    "signature_location": "a packed lecture hall",
-    "signature_situation": "The lecture cuts off as every phone in the hall lights up.",
-    "signature_title": "Mid-lecture, all phones at once",
-    "situation_kind": "signature",
+    "name": "Maria Reyes",
+    "occupation": "resident",
+    "on_duty": false,
+    "profile": "Houston",
+    "shift": "none",
+    "signature_dilemma": "",
+    "signature_location": "East residential 10620",
+    "signature_situation": "You're sleep at East residential 10620 when the collapse comes.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
-    "spawn_context": "workplace",
-    "spawn_hour": 10.69,
+    "spawn_context": "home",
+    "spawn_hour": 23.33,
     "spawn_xy": [
-      -490.05,
-      -3079.16
+      2317.18,
+      156.09
     ],
-    "work_district": "South",
-    "work_xy": [
-      -490.05,
-      -3079.16
-    ]
+    "work_district": "",
+    "work_xy": null
   },
   {
     "age": 32,
     "current_activity": "sleep",
-    "current_location": "East residential 506",
+    "current_location": "North-West residential 15732",
     "environment": "residential",
-    "home_district": "East",
+    "home_district": "North-West",
     "home_xy": [
-      2637.08,
-      501.8
+      -1908.98,
+      1172.22
     ],
     "inventory": {
       "face_mask": 1,
@@ -2432,156 +2433,148 @@
         "gloves": 2
       }
     },
-    "name": "Sara Patel",
+    "name": "Diego Cohen",
     "occupation": "cleaner",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "night",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "East residential 506",
-    "signature_situation": "You're sleep at East residential 506 -- not on shift when the collapse comes. Your cleaner's edge is back at an empty office building at night.",
+    "signature_location": "North-West residential 15732",
+    "signature_situation": "You're sleep at North-West residential 15732 -- not on shift when the collapse comes. Your cleaner's edge is back at an empty office building at night.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 5.92,
     "spawn_xy": [
-      2637.08,
-      501.8
+      -1880.41,
+      1196.54
     ],
-    "work_district": "North-West",
+    "work_district": "West",
     "work_xy": [
-      -1372.46,
-      1315.36
+      -1017.27,
+      -76.15
     ]
   },
   {
     "age": 61,
-    "current_activity": "sleep",
-    "current_location": "South-West residential 181",
-    "environment": "residential",
-    "home_district": "South-West",
+    "current_activity": "work",
+    "current_location": "West commercial 7372",
+    "environment": "retail",
+    "home_district": "South",
     "home_xy": [
-      -2225.25,
-      -1984.61
+      -171.43,
+      -2102.22
     ],
     "inventory": {
+      "apron": 1,
+      "box_cutter": 1,
       "cash": 1,
       "face_mask": 1,
-      "id_card": 1,
-      "keys": 1,
+      "name_tag": 1,
       "phone": 1,
       "snack": 1,
-      "water_bottle": 1
+      "transit_pass": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
+        "apron": 1,
+        "box_cutter": 1,
         "cash": 1,
         "face_mask": 1,
-        "id_card": 1,
-        "keys": 1,
+        "name_tag": 1,
         "phone": 1,
         "snack": 1,
-        "water_bottle": 1
+        "transit_pass": 1
       },
       "vehicle": {},
-      "workplace": {
-        "laptop": 1
-      }
+      "workplace": {}
     },
-    "name": "James Nguyen",
-    "occupation": "office_worker",
-    "on_duty": false,
-    "profile": "Houston, Texas",
+    "name": "Maria Park",
+    "occupation": "grocery_clerk",
+    "on_duty": true,
+    "profile": "Houston",
     "shift": "day",
-    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "South-West residential 181",
-    "signature_situation": "You're sleep at South-West residential 181 -- not on shift when the collapse comes. Your office_worker's edge is back at a high floor of an office tower.",
-    "signature_title": "Off-shift when it hit",
-    "situation_kind": "generic",
+    "signature_dilemma": "Defend the stockroom, or melt into the crowd with a full cart.",
+    "signature_location": "the shop floor of a supermarket",
+    "signature_situation": "The store fills with people who are no longer queuing to pay.",
+    "signature_title": "They've stopped paying",
+    "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 2.48,
+    "spawn_context": "workplace",
+    "spawn_hour": 8.42,
     "spawn_xy": [
-      -2225.25,
-      -1984.61
+      -2562.99,
+      -1058.49
     ],
-    "work_district": "East",
+    "work_district": "West",
     "work_xy": [
-      1135.11,
-      104.31
+      -2562.98,
+      -960.99
     ]
   },
   {
     "age": 15,
-    "current_activity": "work",
-    "current_location": "Old Town education 429",
-    "environment": "education",
+    "current_activity": "leisure",
+    "current_location": "North-East residential 18869",
+    "environment": "residential",
     "home_district": "North-East",
     "home_xy": [
-      2725.2,
-      1105.92
+      2681.03,
+      1970.71
     ],
     "inventory": {
-      "backpack": 1,
       "cash": 1,
       "face_mask": 1,
-      "id_card": 1,
-      "laptop": 1,
-      "notebook": 1,
+      "keys": 1,
       "phone": 1,
-      "snack": 1,
       "wallet": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "backpack": 1,
         "cash": 1,
         "face_mask": 1,
-        "id_card": 1,
-        "laptop": 1,
-        "notebook": 1,
+        "keys": 1,
         "phone": 1,
-        "snack": 1,
         "wallet": 1
       },
       "vehicle": {},
       "workplace": {}
     },
-    "name": "Sara Reyes",
-    "occupation": "student",
-    "on_duty": true,
-    "profile": "Houston, Texas",
-    "shift": "day",
-    "signature_dilemma": "Shelter on a campus you know, or join the rush for the doors.",
-    "signature_location": "a packed lecture hall",
-    "signature_situation": "The lecture cuts off as every phone in the hall lights up.",
-    "signature_title": "Mid-lecture, all phones at once",
-    "situation_kind": "signature",
+    "name": "Diego Ahmed",
+    "occupation": "resident",
+    "on_duty": false,
+    "profile": "Houston",
+    "shift": "none",
+    "signature_dilemma": "",
+    "signature_location": "North-East residential 18869",
+    "signature_situation": "You're leisure at North-East residential 18869 when the collapse comes.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
-    "spawn_context": "workplace",
-    "spawn_hour": 13.31,
+    "spawn_context": "home",
+    "spawn_hour": 21.64,
     "spawn_xy": [
-      -299.82,
-      168.81
+      2681.04,
+      1992.93
     ],
-    "work_district": "Old Town",
-    "work_xy": [
-      -299.82,
-      168.81
-    ]
+    "work_district": "",
+    "work_xy": null
   },
   {
     "age": 72,
     "current_activity": "sleep",
-    "current_location": "North-West residential 648",
+    "current_location": "North-East residential 20276",
     "environment": "residential",
-    "home_district": "North-West",
+    "home_district": "North-East",
     "home_xy": [
-      -1996.3,
-      2428.99
+      2049.51,
+      2409.99
     ],
     "inventory": {
       "cash": 1,
@@ -2604,22 +2597,23 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "James Diallo",
+    "name": "Maria Costa",
     "occupation": "homemaker",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "none",
     "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
     "signature_location": "at home, mid-chore",
     "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
     "signature_title": "The house is yours",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 0.72,
     "spawn_xy": [
-      -1996.3,
-      2428.99
+      2053.58,
+      2400.62
     ],
     "work_district": "",
     "work_xy": null
@@ -2627,12 +2621,12 @@
   {
     "age": 21,
     "current_activity": "leisure",
-    "current_location": "North-East residential 633",
+    "current_location": "North residential 19979",
     "environment": "residential",
-    "home_district": "North-East",
+    "home_district": "North",
     "home_xy": [
-      2347.88,
-      1917.02
+      546.44,
+      2347.7
     ],
     "inventory": {
       "cash": 1,
@@ -2659,22 +2653,23 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "Sara Park",
+    "name": "Diego Silva",
     "occupation": "unemployed",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "none",
     "signature_dilemma": "Move early and light, before the roads choke.",
     "signature_location": "at home or out on errands",
     "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
     "signature_title": "No shift to miss",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 13.19,
     "spawn_xy": [
-      2347.88,
-      1917.02
+      536.45,
+      2345.18
     ],
     "work_district": "",
     "work_xy": null
@@ -2682,70 +2677,71 @@
   {
     "age": 38,
     "current_activity": "work",
-    "current_location": "East commercial 489",
+    "current_location": "West commercial 8151",
     "environment": "retail",
     "home_district": "South-East",
     "home_xy": [
-      2242.25,
-      -3247.77
+      2060.34,
+      -2922.59
     ],
     "inventory": {
+      "apron": 1,
+      "box_cutter": 1,
       "cash": 1,
       "face_mask": 1,
-      "id_card": 1,
-      "keys": 2,
-      "laptop": 1,
-      "phone": 2,
-      "snack": 1,
-      "transit_pass": 1
+      "name_tag": 1,
+      "transit_pass": 1,
+      "wallet": 1,
+      "water_bottle": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
+        "apron": 1,
+        "box_cutter": 1,
         "cash": 1,
         "face_mask": 1,
-        "id_card": 1,
-        "keys": 2,
-        "laptop": 1,
-        "phone": 2,
-        "snack": 1,
-        "transit_pass": 1
+        "name_tag": 1,
+        "transit_pass": 1,
+        "wallet": 1,
+        "water_bottle": 1
       },
       "vehicle": {},
       "workplace": {}
     },
-    "name": "James Rivera",
-    "occupation": "office_worker",
+    "name": "Maria Mensah",
+    "occupation": "grocery_clerk",
     "on_duty": true,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "day",
-    "signature_dilemma": "Descend with the crush, or wait it out at altitude.",
-    "signature_location": "a high floor of an office tower",
-    "signature_situation": "The lifts die and the stairwell fills with everyone from above.",
-    "signature_title": "The lifts just stopped",
+    "signature_dilemma": "Defend the stockroom, or melt into the crowd with a full cart.",
+    "signature_location": "the shop floor of a supermarket",
+    "signature_situation": "The store fills with people who are no longer queuing to pay.",
+    "signature_title": "They've stopped paying",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "workplace",
-    "spawn_hour": 12.25,
+    "spawn_hour": 11.88,
     "spawn_xy": [
-      1126.67,
-      623.88
+      -1953.25,
+      -556.82
     ],
-    "work_district": "East",
+    "work_district": "West",
     "work_xy": [
-      1126.67,
-      623.88
+      -1938.65,
+      -562.09
     ]
   },
   {
     "age": 23,
     "current_activity": "work",
-    "current_location": "North-East industrial 672",
+    "current_location": "North-West industrial 21061",
     "environment": "industrial",
     "home_district": "North-East",
     "home_xy": [
-      1341.91,
-      1307.72
+      2335.25,
+      1999.88
     ],
     "inventory": {
       "cash": 1,
@@ -2772,38 +2768,39 @@
       "vehicle": {},
       "workplace": {}
     },
-    "name": "Sara Costa",
+    "name": "Diego Khan",
     "occupation": "welder",
     "on_duty": true,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "night",
     "signature_dilemma": "Weld yourself in behind steel, or carry a cutting torch out.",
     "signature_location": "a fabrication shop",
     "signature_situation": "The sparks die as power cuts to the shop.",
     "signature_title": "Seal yourself in steel",
     "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "workplace",
     "spawn_hour": 3.36,
     "spawn_xy": [
-      1287.04,
-      2302.14
+      -2790.51,
+      2634.38
     ],
-    "work_district": "North-East",
+    "work_district": "North-West",
     "work_xy": [
-      1287.04,
-      2302.14
+      -2838.01,
+      2634.44
     ]
   },
   {
     "age": 27,
     "current_activity": "sleep",
-    "current_location": "South-West residential 234",
+    "current_location": "South residential 6698",
     "environment": "residential",
-    "home_district": "South-West",
+    "home_district": "South",
     "home_xy": [
-      -1931.18,
-      -1566.64
+      -961.11,
+      -1201.05
     ],
     "inventory": {
       "cash": 1,
@@ -2826,100 +2823,102 @@
         "wrench": 2
       }
     },
-    "name": "James Brooks",
+    "name": "Maria Johnson",
     "occupation": "plumber",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "day",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "South-West residential 234",
-    "signature_situation": "You're sleep at South-West residential 234 -- not on shift when the collapse comes. Your plumber's edge is back at under a sink or in a basement.",
+    "signature_location": "South residential 6698",
+    "signature_situation": "You're sleep at South residential 6698 -- not on shift when the collapse comes. Your plumber's edge is back at under a sink or in a basement.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 2.64,
     "spawn_xy": [
-      -1931.18,
-      -1566.64
+      -959.92,
+      -1245.7
     ],
     "work_district": "South",
     "work_xy": [
-      -896.66,
-      -2753.29
+      22.91,
+      -3091.06
     ]
   },
   {
     "age": 54,
-    "current_activity": "commute",
-    "current_location": "North residential 577",
-    "environment": "street",
-    "home_district": "North",
-    "home_xy": [
-      -608.33,
-      1444.12
-    ],
-    "inventory": {
-      "cash": 1,
-      "face_mask": 3,
-      "id_badge": 1,
-      "phone": 1,
-      "snack": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "cash": 1,
-        "face_mask": 3,
-        "id_badge": 1,
-        "phone": 1,
-        "snack": 1
-      },
-      "vehicle": {
-        "pen_light": 1,
-        "scrubs": 1
-      },
-      "workplace": {}
-    },
-    "name": "Sara Mensah",
-    "occupation": "nurse",
-    "on_duty": false,
-    "profile": "Houston, Texas",
-    "shift": "night",
-    "signature_dilemma": "Sit tight in a metal box, or abandon the car and go on foot.",
-    "signature_location": "on a city street, mid-commute",
-    "signature_situation": "Bumper to bumper, then nobody is moving at all.",
-    "signature_title": "Total gridlock",
-    "situation_kind": "travel",
-    "spawn_approx": true,
-    "spawn_context": "commute",
-    "spawn_hour": 3.81,
-    "spawn_xy": [
-      -1216.1,
-      -1398.7
-    ],
-    "work_district": "South-West",
-    "work_xy": [
-      -1578.1,
-      -3091.94
-    ]
-  },
-  {
-    "age": 23,
-    "current_activity": "sleep",
-    "current_location": "North-East residential 674",
-    "environment": "residential",
+    "current_activity": "work",
+    "current_location": "South-East commercial 1365",
+    "environment": "retail",
     "home_district": "North-East",
     "home_xy": [
-      1831.08,
-      2206.58
+      1637.16,
+      1830.54
     ],
     "inventory": {
       "cash": 1,
       "face_mask": 1,
       "id_card": 1,
-      "keys": 2,
+      "keys": 1,
+      "laptop": 1,
       "phone": 2,
+      "transit_pass": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "cash": 1,
+        "face_mask": 1,
+        "id_card": 1,
+        "keys": 1,
+        "laptop": 1,
+        "phone": 2,
+        "transit_pass": 1
+      },
+      "vehicle": {},
+      "workplace": {}
+    },
+    "name": "Diego Nguyen",
+    "occupation": "office_worker",
+    "on_duty": true,
+    "profile": "Houston",
+    "shift": "day",
+    "signature_dilemma": "Descend with the crush, or wait it out at altitude.",
+    "signature_location": "a high floor of an office tower",
+    "signature_situation": "The lifts die and the stairwell fills with everyone from above.",
+    "signature_title": "The lifts just stopped",
+    "situation_kind": "signature",
+    "spawn_anchor": "entrance",
+    "spawn_approx": false,
+    "spawn_context": "workplace",
+    "spawn_hour": 11.52,
+    "spawn_xy": [
+      1802.47,
+      -2938.86
+    ],
+    "work_district": "South-East",
+    "work_xy": [
+      1646.46,
+      -2967.29
+    ]
+  },
+  {
+    "age": 23,
+    "current_activity": "leisure",
+    "current_location": "North-East residential 21218",
+    "environment": "residential",
+    "home_district": "North-East",
+    "home_xy": [
+      2800.51,
+      2672.41
+    ],
+    "inventory": {
+      "cash": 1,
+      "face_mask": 1,
+      "keys": 1,
+      "name_tag": 1,
       "snack": 1,
       "transit_pass": 1,
       "wallet": 1,
@@ -2930,9 +2929,8 @@
       "on_person": {
         "cash": 1,
         "face_mask": 1,
-        "id_card": 1,
-        "keys": 2,
-        "phone": 2,
+        "keys": 1,
+        "name_tag": 1,
         "snack": 1,
         "transit_pass": 1,
         "wallet": 1,
@@ -2940,91 +2938,95 @@
       },
       "vehicle": {},
       "workplace": {
-        "laptop": 1
+        "apron": 1,
+        "box_cutter": 1
       }
     },
-    "name": "James Garcia",
-    "occupation": "office_worker",
+    "name": "Maria Okafor",
+    "occupation": "grocery_clerk",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "day",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "North-East residential 674",
-    "signature_situation": "You're sleep at North-East residential 674 -- not on shift when the collapse comes. Your office_worker's edge is back at a high floor of an office tower.",
+    "signature_location": "North-East residential 21218",
+    "signature_situation": "You're leisure at North-East residential 21218 -- not on shift when the collapse comes. Your grocery_clerk's edge is back at the shop floor of a supermarket.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 5.77,
+    "spawn_hour": 21.32,
     "spawn_xy": [
-      1831.08,
-      2206.58
+      2809.01,
+      2672.41
     ],
     "work_district": "South",
     "work_xy": [
-      -677.33,
-      -1295.46
+      -372.5,
+      -1612.8
     ]
   },
   {
     "age": 26,
-    "current_activity": "work",
-    "current_location": "Old Town commercial 294",
-    "environment": "retail",
-    "home_district": "East",
+    "current_activity": "leisure",
+    "current_location": "West residential 12163",
+    "environment": "residential",
+    "home_district": "West",
     "home_xy": [
-      2618.67,
-      -156.43
+      -1985.89,
+      456.85
     ],
     "inventory": {
-      "apron": 1,
-      "name_tag": 1,
-      "snack": 1,
+      "id_card": 1,
+      "keys": 1,
       "water_bottle": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "apron": 1,
-        "name_tag": 1,
-        "snack": 1,
+        "id_card": 1,
+        "keys": 1,
         "water_bottle": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "calculator": 1,
+        "laptop": 1
+      }
     },
-    "name": "Sara Johnson",
-    "occupation": "barista",
-    "on_duty": true,
-    "profile": "Houston, Texas",
+    "name": "Diego Diallo",
+    "occupation": "accountant",
+    "on_duty": false,
+    "profile": "Houston",
     "shift": "day",
-    "signature_dilemma": "Hold a small stocked caf\u00e9, or grab supplies and walk.",
-    "signature_location": "a caf\u00e9",
-    "signature_situation": "The morning queue scatters, drinks abandoned on the counter.",
-    "signature_title": "Cups still steaming",
-    "situation_kind": "signature",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "West residential 12163",
+    "signature_situation": "You're leisure at West residential 12163 -- not on shift when the collapse comes. Your accountant's edge is back at an office.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
-    "spawn_context": "workplace",
-    "spawn_hour": 15.23,
+    "spawn_context": "home",
+    "spawn_hour": 21.52,
     "spawn_xy": [
-      -683.35,
-      -1072.95
+      -1985.63,
+      426.28
     ],
-    "work_district": "Old Town",
+    "work_district": "South",
     "work_xy": [
-      -683.35,
-      -1072.95
+      757.86,
+      -1411.55
     ]
   },
   {
     "age": 57,
     "current_activity": "errand",
-    "current_location": "Old Town commercial 294",
+    "current_location": "Old Town commercial 8432",
     "environment": "retail",
     "home_district": "Old Town",
     "home_xy": [
-      -768.53,
-      -1084.4
+      452.49,
+      -761.17
     ],
     "inventory": {
       "cash": 1,
@@ -3048,47 +3050,50 @@
         "scanner": 1
       }
     },
-    "name": "James Patel",
+    "name": "Maria Cohen",
     "occupation": "delivery_driver",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "day",
     "signature_dilemma": "Make for home, or shelter where you stand.",
-    "signature_location": "Old Town commercial 294",
-    "signature_situation": "You're out at Old Town commercial 294 when the collapse comes -- in the open, among strangers.",
+    "signature_location": "Old Town commercial 8432",
+    "signature_situation": "You're out at Old Town commercial 8432 when the collapse comes -- in the open, among strangers.",
     "signature_title": "Caught out in public",
     "situation_kind": "generic",
-    "spawn_approx": true,
+    "spawn_anchor": "walk",
+    "spawn_approx": false,
     "spawn_context": "errand",
     "spawn_hour": 17.42,
     "spawn_xy": [
-      -768.53,
-      -1084.4
+      434.61,
+      -771.74
     ],
-    "work_district": "East",
+    "work_district": "West",
     "work_xy": [
-      1971.23,
-      367.64
+      -2015.58,
+      -906.21
     ]
   },
   {
     "age": 49,
-    "current_activity": "leisure",
-    "current_location": "South-East residential 125",
-    "environment": "residential",
-    "home_district": "South-East",
+    "current_activity": "work",
+    "current_location": "South commercial 3683",
+    "environment": "retail",
+    "home_district": "South-West",
     "home_xy": [
-      2534.52,
-      -2744.86
+      -2094.59,
+      -2624.55
     ],
     "inventory": {
       "cash": 1,
       "face_mask": 1,
       "id_card": 1,
-      "phone": 1,
+      "laptop": 1,
+      "phone": 2,
       "snack": 1,
       "transit_pass": 1,
-      "wallet": 1
+      "usb_drive": 1,
+      "water_bottle": 1
     },
     "inventory_scopes": {
       "home": {},
@@ -3096,49 +3101,49 @@
         "cash": 1,
         "face_mask": 1,
         "id_card": 1,
-        "phone": 1,
+        "laptop": 1,
+        "phone": 2,
         "snack": 1,
         "transit_pass": 1,
-        "wallet": 1
+        "usb_drive": 1,
+        "water_bottle": 1
       },
       "vehicle": {},
-      "workplace": {
-        "calculator": 1,
-        "laptop": 1
-      }
+      "workplace": {}
     },
-    "name": "Sara Okafor",
-    "occupation": "accountant",
-    "on_duty": false,
-    "profile": "Houston, Texas",
+    "name": "Diego Rivera",
+    "occupation": "it_support",
+    "on_duty": true,
+    "profile": "Houston",
     "shift": "day",
-    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "South-East residential 125",
-    "signature_situation": "You're leisure at South-East residential 125 -- not on shift when the collapse comes. Your accountant's edge is back at an office.",
-    "signature_title": "Off-shift when it hit",
-    "situation_kind": "generic",
+    "signature_dilemma": "Keep comms alive a little longer, or pull the plug and run.",
+    "signature_location": "a server room",
+    "signature_situation": "Every system you maintain crashes together -- then the lights go.",
+    "signature_title": "Everything falls over at once",
+    "situation_kind": "signature",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 22.01,
+    "spawn_context": "workplace",
+    "spawn_hour": 12.21,
     "spawn_xy": [
-      2534.52,
-      -2744.86
+      192.6,
+      -2410.07
     ],
-    "work_district": "South-East",
+    "work_district": "South",
     "work_xy": [
-      1858.33,
-      -3088.57
+      175.55,
+      -2420.45
     ]
   },
   {
     "age": 47,
     "current_activity": "sleep",
-    "current_location": "North-West residential 685",
+    "current_location": "North residential 21530",
     "environment": "residential",
-    "home_district": "North-West",
+    "home_district": "North",
     "home_xy": [
-      -1971.85,
-      2540.96
+      -225.68,
+      2776.45
     ],
     "inventory": {
       "id_card": 1,
@@ -3163,38 +3168,39 @@
         "laptop": 1
       }
     },
-    "name": "James Reyes",
+    "name": "Maria Ahmed",
     "occupation": "office_worker",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "day",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "North-West residential 685",
-    "signature_situation": "You're sleep at North-West residential 685 -- not on shift when the collapse comes. Your office_worker's edge is back at a high floor of an office tower.",
+    "signature_location": "North residential 21530",
+    "signature_situation": "You're sleep at North residential 21530 -- not on shift when the collapse comes. Your office_worker's edge is back at a high floor of an office tower.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 22.72,
     "spawn_xy": [
-      -1971.85,
-      2540.96
+      -217.34,
+      2768.78
     ],
-    "work_district": "West",
+    "work_district": "South-West",
     "work_xy": [
-      -2258.26,
-      -955.35
+      -1885.69,
+      -1509.32
     ]
   },
   {
     "age": 56,
     "current_activity": "sleep",
-    "current_location": "North-West residential 519",
+    "current_location": "North residential 15954",
     "environment": "residential",
-    "home_district": "North-West",
+    "home_district": "North",
     "home_xy": [
-      -1477.65,
-      1175.46
+      292.55,
+      1223.03
     ],
     "inventory": {
       "cash": 1,
@@ -3220,38 +3226,39 @@
         "torch": 1
       }
     },
-    "name": "Sara Cohen",
+    "name": "Diego Brooks",
     "occupation": "security_guard",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "night",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "North-West residential 519",
-    "signature_situation": "You're sleep at North-West residential 519 -- not on shift when the collapse comes. Your security_guard's edge is back at a locked commercial building.",
+    "signature_location": "North residential 15954",
+    "signature_situation": "You're sleep at North residential 15954 -- not on shift when the collapse comes. Your security_guard's edge is back at a locked commercial building.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 10.24,
     "spawn_xy": [
-      -1477.65,
-      1175.46
+      289.89,
+      1211.39
     ],
     "work_district": "North-West",
     "work_xy": [
-      -2009.14,
-      2392.94
+      -2566.6,
+      1193.3
     ]
   },
   {
     "age": 29,
     "current_activity": "sleep",
-    "current_location": "North-East residential 632",
+    "current_location": "North-East residential 19796",
     "environment": "residential",
     "home_district": "North-East",
     "home_xy": [
-      1836.34,
-      1871.75
+      1458.91,
+      2305.91
     ],
     "inventory": {
       "cash": 1,
@@ -3277,86 +3284,78 @@
         "torch": 1
       }
     },
-    "name": "James Park",
+    "name": "Maria Silva",
     "occupation": "security_guard",
     "on_duty": false,
-    "profile": "Houston, Texas",
+    "profile": "Houston",
     "shift": "night",
     "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "North-East residential 632",
-    "signature_situation": "You're sleep at North-East residential 632 -- not on shift when the collapse comes. Your security_guard's edge is back at a locked commercial building.",
+    "signature_location": "North-East residential 19796",
+    "signature_situation": "You're sleep at North-East residential 19796 -- not on shift when the collapse comes. Your security_guard's edge is back at a locked commercial building.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 11.9,
     "spawn_xy": [
-      1836.34,
-      1871.75
+      1458.91,
+      2294.13
     ],
-    "work_district": "South-East",
+    "work_district": "South-West",
     "work_xy": [
-      2203.6,
-      -2950.25
+      -1159.86,
+      -2255.57
     ]
   },
   {
     "age": 13,
-    "current_activity": "sleep",
-    "current_location": "East residential 491",
+    "current_activity": "leisure",
+    "current_location": "South-West residential 6084",
     "environment": "residential",
-    "home_district": "East",
+    "home_district": "South-West",
     "home_xy": [
-      1300.36,
-      697.9
+      -1062.95,
+      -1416.53
     ],
     "inventory": {
-      "backpack": 1,
       "cash": 1,
       "face_mask": 1,
-      "id_card": 1,
       "phone": 1,
-      "transit_pass": 1,
+      "snack": 1,
       "wallet": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "backpack": 1,
         "cash": 1,
         "face_mask": 1,
-        "id_card": 1,
         "phone": 1,
-        "transit_pass": 1,
+        "snack": 1,
         "wallet": 1
       },
       "vehicle": {},
-      "workplace": {
-        "laptop": 1,
-        "notebook": 1
-      }
+      "workplace": {}
     },
-    "name": "Sara Ahmed",
-    "occupation": "student",
+    "name": "Diego Garcia",
+    "occupation": "resident",
     "on_duty": false,
-    "profile": "Houston, Texas",
-    "shift": "day",
-    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
-    "signature_location": "East residential 491",
-    "signature_situation": "You're sleep at East residential 491 -- not on shift when the collapse comes. Your student's edge is back at a packed lecture hall.",
+    "profile": "Houston",
+    "shift": "none",
+    "signature_dilemma": "",
+    "signature_location": "South-West residential 6084",
+    "signature_situation": "You're leisure at South-West residential 6084 when the collapse comes.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
+    "spawn_anchor": "entrance",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 23.48,
+    "spawn_hour": 21.57,
     "spawn_xy": [
-      1300.36,
-      697.9
+      -1041.85,
+      -1367.27
     ],
-    "work_district": "South",
-    "work_xy": [
-      -516.1,
-      -1429.33
-    ]
+    "work_district": "",
+    "work_xy": null
   }
 ]

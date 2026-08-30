@@ -158,9 +158,15 @@ def test_parcel_archetype_for_place_deterministic():
         ("CIVIC", 500.0, 10.0, "CIVIC_SPECIAL"),
         ("SCHOOL", 3000.0, 10.0, "CIVIC_SPECIAL"),
         ("MEDICAL", 3000.0, 10.0, "CIVIC_SPECIAL"),
-        ("PARK", 50.0, 3.0, "GENERIC_UNKNOWN"),
-        ("VACANT_OPEN", 0.0, 0.0, "GENERIC_UNKNOWN"),
-        ("UNKNOWN", 100.0, 5.0, "GENERIC_UNKNOWN"),
+        # Unclassified land falls back to massing-implied archetypes: small
+        # footprints read as houses, mid-size mid-height stays generic.
+        ("PARK", 50.0, 3.0, "DETACHED_RESIDENTIAL"),
+        ("VACANT_OPEN", 0.0, 0.0, "DETACHED_RESIDENTIAL"),
+        ("UNKNOWN", 100.0, 5.0, "DETACHED_RESIDENTIAL"),
+        ("UNKNOWN", 500.0, 5.0, "GENERIC_UNKNOWN"),
+        ("UNKNOWN", 900.0, 5.0, "INDUSTRIAL"),
+        ("UNKNOWN", 2500.0, 6.0, "BIG_BOX_COMMERCIAL"),
+        ("UNKNOWN", 450.0, 11.0, "MULTIFAMILY"),
         # height >= 30 overrides everything
         ("RESIDENTIAL", 100.0, 30.0, "OFFICE_HIGHRISE"),
         ("VACANT_OPEN", 10.0, 31.0, "OFFICE_HIGHRISE"),

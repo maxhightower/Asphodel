@@ -64,8 +64,12 @@ def paint_surfaces(grid: ChunkGrid, patches) -> dict:
                 gx, gz = np.meshgrid(sub_x, sub_z)
                 mask = shapely.contains_xy(patch.poly, gx.ravel(), gz.ravel())
                 if mask.any():
+                    # NOTE: assign through the 2D boolean mask directly, not
+                    # via block.ravel()[mask] -- block is a non-contiguous
+                    # view (a row/col slice of `raster`), so .ravel() on it
+                    # returns a *copy* and silently drops the write.
                     block = raster[r0:r1 + 1, c0:c1 + 1]
-                    block.ravel()[mask] = code
+                    block[mask.reshape(block.shape)] = code
         out[(cx, cz)] = bytearray(raster.tobytes())
     return out
 

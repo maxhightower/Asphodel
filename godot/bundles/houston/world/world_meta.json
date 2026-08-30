@@ -1,0 +1,48 @@
+{
+ "attribution": [
+  "Map data \u00a9 OpenStreetMap contributors, Overture Maps Foundation (ODbL)",
+  "Place data \u00a9 Overture Maps Foundation (CDLA-Permissive-2.0)"
+ ],
+ "bounds_m": [
+  -2897.3024333838644,
+  -3316.200000000126,
+  2897.3024333838644,
+  3316.200000000126
+ ],
+ "chunk_grid": {
+  "cols": 23,
+  "rows": 26
+ },
+ "chunk_size_m": 256.0,
+ "city": "houston",
+ "compiler_version": 1,
+ "counts": {
+  "anchors": 83859,
+  "blocks": 1430,
+  "buildings": 22525,
+  "chunks": 598,
+  "parcels": 23338,
+  "placements": 572087,
+  "props": 465893,
+  "road_km": 958.77,
+  "road_segments": 7977,
+  "trees": 45220,
+  "vehicles": 60974
+ },
+ "license_note": "world/ contains only geographic database content derived from ODbL/CDLA-Permissive sources plus procedural derivations; no proprietary gameplay data lives here.",
+ "seed": 0,
+ "source_release": "2026-08-19.0",
+ "surface_census_cells": {
+  "BARE_GROUND": 941,
+  "BUILDING": 1838469,
+  "MAINTAINED_GRASS": 4132239,
+  "OTHER_IMPERVIOUS": 281851,
+  "PARKING": 1189485,
+  "ROAD": 1271060,
+  "ROUGH_VEGETATION": 453303,
+  "SIDEWALK": 330932,
+  "TREE_CANOPY": 298717,
+  "WATER": 635
+ },
+ "version": 1
+}

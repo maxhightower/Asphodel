@@ -115,17 +115,37 @@ def build_chunks(grid: ChunkGrid, rasters, segments, parcels, buildings,
 
 
 def write_chunks(out_dir: str, chunks: dict) -> dict:
-    """Write chunks/c_<cx>_<cz>.json; returns {name: size} stats."""
+    """Write chunks/c_<cx>_<cz>.json.gz; returns {name: size} stats.
+
+    Gzip with mtime=0 so identical content produces byte-identical files
+    (deterministic rebuild gate).  Godot reads these via
+    PackedByteArray.decompress_dynamic(..., COMPRESSION_GZIP).
+    """
+    import gzip
+
     cdir = os.path.join(out_dir, "chunks")
     os.makedirs(cdir, exist_ok=True)
     sizes = {}
     for (cx, cz), chunk in sorted(chunks.items()):
-        name = f"c_{cx}_{cz}.json"
+        name = f"c_{cx}_{cz}.json.gz"
         path = os.path.join(cdir, name)
-        with open(path, "w") as f:
-            json.dump(chunk, f, separators=(",", ":"), sort_keys=True)
+        payload = json.dumps(chunk, separators=(",", ":"),
+                             sort_keys=True).encode("utf-8")
+        with open(path, "wb") as f:
+            f.write(gzip.compress(payload, mtime=0))
         sizes[name] = os.path.getsize(path)
     return sizes
+
+
+def read_chunk(path: str) -> dict:
+    """Read one chunk file (.json.gz or legacy .json)."""
+    import gzip
+
+    if path.endswith(".gz"):
+        with gzip.open(path, "rt", encoding="utf-8") as f:
+            return json.load(f)
+    with open(path) as f:
+        return json.load(f)
 
 
 def expected_cells() -> int:

@@ -83,36 +83,70 @@ def _scope_inventory(citizen) -> dict:
     return scopes
 
 
-def _spawn_point(citizen, context: str):
+def _commute_frac(citizen) -> float:
+    block = _current_block(citizen.schedule, citizen.spawn_hour)
+    frac = 0.5
+    if block is not None and block.end_hour > block.start_hour:
+        h = citizen.spawn_hour
+        if block.end_hour > 24.0 and h < block.start_hour:
+            h += 24.0
+        frac = min(1.0, max(0.0, (h - block.start_hour)
+                            / (block.end_hour - block.start_hour)))
+    return frac
+
+
+def _spawn_point(citizen, context: str, anchors=None):
     """The authoritative (x, z) the player enters the world at, per context.
 
-    * workplace -> the work building; * home/leisure/sleep -> the home building;
-    * commute   -> a point along the straight home<->work line at the commute's
-      progress (a documented safe approximation of the routed position);
-    * errand    -> home (safe approximation for a local errand).
-    Returns (xy_list_or_None, approx_bool).
+    With compiled spawn anchors (cities carrying world/ data):
+    * workplace/home -> the building's compiled BUILDING_ENTRANCE anchor
+      (immediately outside the entrance on valid pedestrian ground);
+    * commute -> the routed position along the road graph at the commute's
+      schedule progress (straight-line interpolation retired);
+    * errand -> the nearest pedestrian anchor to home.
+
+    Without anchors (legacy cities), the historical behaviour is kept:
+    building centroids and the straight-line commute approximation.
+    Returns (xy_list_or_None, approx_bool, anchor_kind).
     """
     home, work = citizen.home_xy, citizen.work_xy
+    if anchors is not None:
+        if context == "workplace" and work is not None:
+            ent = anchors.entrance(citizen.work_building_id)
+            if ent is not None:
+                return _xy(ent), False, "entrance"
+            walk = anchors.nearest_walk_anchor(work)
+            if walk is not None and (walk[0] - work[0]) ** 2 \
+                    + (walk[1] - work[1]) ** 2 <= 200.0 ** 2:
+                return _xy(walk), True, "walk"
+            return _xy(work), True, "fallback"
+        if context == "commute" and home is not None and work is not None:
+            xy, approx = anchors.commute_point(home, work, _commute_frac(citizen))
+            return _xy(xy), approx, ("route" if not approx else "fallback")
+        if home is not None:
+            ent = anchors.entrance(citizen.home_building_id)
+            if context == "errand":
+                walk = anchors.nearest_walk_anchor(ent or home)
+                if walk is not None:
+                    return _xy(walk), False, "walk"
+            if ent is not None:
+                return _xy(ent), False, "entrance"
+            return _xy(home), True, "fallback"
+        return None, True, "fallback"
+
     if context == "workplace" and work is not None:
-        return _xy(work), False
+        return _xy(work), False, "legacy"
     if context == "commute" and home is not None and work is not None:
-        block = _current_block(citizen.schedule, citizen.spawn_hour)
-        frac = 0.5
-        if block is not None and block.end_hour > block.start_hour:
-            h = citizen.spawn_hour
-            if block.end_hour > 24.0 and h < block.start_hour:
-                h += 24.0
-            frac = min(1.0, max(0.0, (h - block.start_hour)
-                                / (block.end_hour - block.start_hour)))
+        frac = _commute_frac(citizen)
         x = home[0] + (work[0] - home[0]) * frac
         z = home[1] + (work[1] - home[1]) * frac
-        return _xy((x, z)), True                   # straight-line approximation
+        return _xy((x, z)), True, "legacy"         # straight-line approximation
     approx = context == "errand"
-    return _xy(home), approx
+    return _xy(home), approx, "legacy"
 
 
 def _flatten(tag: str, citizen, catalog: CitizenSpawnCatalog,
-             world: CityWorld | None) -> dict:
+             world: CityWorld | None, anchors=None) -> dict:
     """Render one citizen to a JSON-ready dict, with a context-coherent situation."""
     # Resolve the collapse where the citizen actually is *now* (spawn_hour), with
     # the random aerial/ambient layers off so the character-screen signature is
@@ -121,7 +155,8 @@ def _flatten(tag: str, citizen, catalog: CitizenSpawnCatalog,
         citizen, collapse_hour=citizen.spawn_hour, world=world,
         aerial_prob=0.0, ambient_prob=0.0)
     scopes = _scope_inventory(citizen)
-    spawn_xy, spawn_approx = _spawn_point(citizen, situ.context)
+    spawn_xy, spawn_approx, spawn_anchor = _spawn_point(
+        citizen, situ.context, anchors=anchors)
     return {
         "profile": tag,
         "name": _name_for(citizen.citizen_id, tag),
@@ -142,6 +177,7 @@ def _flatten(tag: str, citizen, catalog: CitizenSpawnCatalog,
         "spawn_xy": spawn_xy,
         "spawn_context": situ.context,             # home | workplace | commute | errand
         "spawn_approx": spawn_approx,
+        "spawn_anchor": spawn_anchor,              # entrance|route|walk|legacy|fallback
         # Context-resolved collapse situation (agrees with activity/location).
         "signature_title": situ.title,
         "signature_location": situ.location,
@@ -158,7 +194,8 @@ def _flatten(tag: str, citizen, catalog: CitizenSpawnCatalog,
 # ===========================================================================
 def build_population_from_world(street_map: StreetMap, city_name: str,
                                 n: int = 60, seed: int = 0,
-                                catalog: CitizenSpawnCatalog | None = None) -> list[dict]:
+                                catalog: CitizenSpawnCatalog | None = None,
+                                anchors=None) -> list[dict]:
     """Spawn ``n`` citizens into a resolved ``StreetMap`` and flatten them.
 
     This is the single canonical baker: whether the ``StreetMap`` came from live
@@ -169,7 +206,24 @@ def build_population_from_world(street_map: StreetMap, city_name: str,
     profile = CityProfile(name=city_name)
     world = CityWorld(profile=profile, street_map=street_map)
     pop = spawn_population_in_world(world, catalog, n=n, seed=seed)
-    return [_flatten(city_name, c, catalog, world) for c in pop]
+    return [_flatten(city_name, c, catalog, world, anchors=anchors)
+            for c in pop]
+
+
+def build_population_from_compiled(bundle_dir: str, city_name: str,
+                                   n: int = 60, seed: int = 0) -> list[dict]:
+    """Bake citizens against a *compiled* world bundle (world/ data).
+
+    The StreetMap comes from the regenerated buildings.json (index ==
+    authoritative building_id) + full road graph, and spawns land on
+    compiled spawn anchors: home/work at building entrances, commutes
+    routed along the road graph.
+    """
+    from .world_from_compiled import SpawnAnchors, street_map_from_compiled
+    sm = street_map_from_compiled(bundle_dir)
+    anchors = SpawnAnchors(bundle_dir, sm)
+    return build_population_from_world(sm, city_name, n=n, seed=seed,
+                                       anchors=anchors)
 
 
 def build_population_from_bundle(zones, roads, city_name: str,
@@ -188,7 +242,17 @@ def build_population_from_osm(bbox, buildings, roads, city_name: str,
 
 def write_citizens_from_bundle(bundle_dir: str, city_name: str,
                                n: int = 60, seed: int = 0) -> int:
-    """Read a bundle's zones+roads, (re)bake real-city citizens, write citizens.json."""
+    """(Re)bake real-city citizens and write citizens.json.
+
+    Cities with compiled world data use the compiled path (real building
+    stock + spawn anchors); legacy bundles keep the historical
+    zones-blocks reconstruction.
+    """
+    from .world_from_compiled import has_compiled_world
+    if has_compiled_world(bundle_dir):
+        pop = build_population_from_compiled(bundle_dir, city_name, n=n,
+                                             seed=seed)
+        return _write(bundle_dir, pop)
     with open(os.path.join(bundle_dir, "zones.json")) as f:
         zones = json.load(f)
     with open(os.path.join(bundle_dir, "roads.json")) as f:
