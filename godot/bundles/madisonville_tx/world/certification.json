@@ -1,0 +1,49 @@
+{
+ "citizens": {
+  "fallback_spawns": 0,
+  "invalid": [],
+  "n_invalid": 0,
+  "total": 60
+ },
+ "coverage": {
+  "arch_counts": {
+   "BIG_BOX_COMMERCIAL": 16,
+   "CIVIC_SPECIAL": 51,
+   "DETACHED_RESIDENTIAL": 2464,
+   "GENERIC_UNKNOWN": 125,
+   "INDUSTRIAL": 35,
+   "MULTIFAMILY": 56,
+   "SMALL_COMMERCIAL": 193
+  },
+  "building_road_collisions": 0,
+  "buildings": 2940,
+  "buildings_in_chunks": 2940,
+  "non_generic_frac": 0.9575,
+  "parcels": 3002,
+  "road_records": 1136,
+  "urban_parcels": 2440,
+  "urban_parcels_with_detail": 2440
+ },
+ "gates": {
+  "BUILDING_ARCHETYPE_COVERAGE_95": true,
+  "BUILDING_ON_ROAD_COLLISIONS_ZERO": true,
+  "CHUNKS_VALID": true,
+  "CONTEXTUAL_PROPERTY_DETAIL_95": true,
+  "NORMAL_INVALID_PLAYER_SPAWNS_ZERO": true,
+  "PARCEL_OR_CONTEXT_ASSIGNMENT_98": true,
+  "ROAD_CROSS_SECTION_COVERAGE_95": true,
+  "SAMPLED_SPAWNS_VALID": true,
+  "SOURCE_PROVENANCE_COMPLETE": true,
+  "UNCLASSIFIED_GROUND_ZERO": true,
+  "VALID_PLAYER_SPAWN_100": true,
+  "VISUALLY_EMPTY_URBAN_SPAWNS_LT2": true
+ },
+ "samples": {
+  "invalid": [],
+  "mean_nearby_placements": 111.1,
+  "n": 1000,
+  "n_invalid": 0,
+  "urban": 794,
+  "visually_empty_urban": 0
+ }
+}

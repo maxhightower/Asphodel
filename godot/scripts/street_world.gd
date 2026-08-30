@@ -51,6 +51,14 @@ var _active_interior: Node3D = null
 var _inside_building: int = -1
 var _interior_return_pos: Vector3 = Vector3.ZERO
 
+# Streaming exterior (compiled world/ bundles only). Pure presentation — see
+# scripts/exterior_world.gd. When present, it replaces the legacy density
+# blocks / OSM-mesh road & site-detail construction with chunked streaming.
+const ExteriorWorld = preload("res://scripts/exterior_world.gd")
+var _exterior: ExteriorWorld = null
+var _has_compiled_world: bool = false
+const EXTERIOR_FOCUS_INTERVAL := 0.5
+
 
 func _ready() -> void:
 	# Keep processing input while paused so Esc can resume.
@@ -66,18 +74,28 @@ func _ready() -> void:
 	_zones = zones
 	_add_environment_and_light()
 	_bounds = _world_bounds(zones)
+	_has_compiled_world = FileAccess.file_exists(dir.path_join("world/world_meta.json"))
 	_build_ground(_bounds)
 	# Prefer real (or procedural) building footprints extruded into masses; fall
 	# back to the density "blocks" for older bundles that lack buildings.json.
 	var footprints := BundleLoader.load_buildings(dir)
-	if footprints.is_empty():
+	if _has_compiled_world:
+		# The compiled world/ chunk stream owns building meshes + collision
+		# (ExteriorWorld, below); building_id alignment with Python is still
+		# load-bearing for interiors/containers/interact, so the index-aligned
+		# centroid/AABB tables are populated exactly as _build_buildings would.
+		_index_buildings(footprints)
+	elif footprints.is_empty():
 		_build_blocks(meta, zones)
 	else:
 		_build_buildings(footprints)
-	_build_roads(bundle["roads"])
-	_build_site_detail(footprints, bundle["roads"], int(meta.get("seed", 0)))
+	if not _has_compiled_world:
+		_build_roads(bundle["roads"])
+		_build_site_detail(footprints, bundle["roads"], int(meta.get("seed", 0)))
 	_build_traffic(bundle["roads"])
 	_spawn_player(_bounds, bundle["roads"])
+	if _has_compiled_world:
+		_setup_exterior_streaming(dir)
 	_build_hud()
 	_build_pause_overlay()
 
@@ -163,7 +181,13 @@ func _world_bounds(zones: Array) -> Rect2:
 
 
 func _build_ground(b: Rect2) -> void:
-	var center := Vector3(b.position.x + b.size.x * 0.5, 0.0, b.position.y + b.size.y * 0.5)
+	# With a compiled world/ stream, ExteriorWorld's own chunk ground meshes sit
+	# at y=0; this becomes a neutral dark base a little below them (so it never
+	# z-fights) purely as a fallback under anything the streamed chunks don't
+	# cover (e.g. just past the load radius). Legacy bundles keep y=0 exactly
+	# as before.
+	var ground_y := -0.5 if _has_compiled_world else 0.0
+	var center := Vector3(b.position.x + b.size.x * 0.5, ground_y, b.position.y + b.size.y * 0.5)
 	var sx := b.size.x * 1.4
 	var sz := b.size.y * 1.4
 
@@ -183,7 +207,7 @@ func _build_ground(b: Rect2) -> void:
 	shape.size = Vector3(sx, 1.0, sz)
 	var cs := CollisionShape3D.new()
 	cs.shape = shape
-	cs.position = center + Vector3(0.0, -0.5, 0.0)   # top surface at y=0
+	cs.position = center + Vector3(0.0, -0.5, 0.0)   # top surface at ground_y
 	body.add_child(cs)
 	add_child(body)
 
@@ -196,6 +220,52 @@ const ROOF_COL := Color(0.34, 0.35, 0.39)
 const PARAPET_COL := Color(0.28, 0.29, 0.33)
 const ROOFUNIT_COL := Color(0.40, 0.41, 0.44)
 const PARAPET_H := 0.9              # roof-edge lip height (m)
+
+
+func _index_buildings(footprints: Array) -> void:
+	## Populate _building_centroids / _building_aabb index-aligned with
+	## `footprints` (== Python building_id) WITHOUT building any mesh/collision
+	## — used when a compiled world/ chunk stream (ExteriorWorld) owns the
+	## visuals instead. Mirrors the bookkeeping half of _build_buildings exactly
+	## so identity stays load-bearing-compatible either way.
+	for b in footprints:
+		var poly_xy: Array = b.get("poly", [])
+		if poly_xy.size() > 0:
+			var cx := 0.0; var cy := 0.0
+			var bx0 := INF; var by0 := INF; var bx1 := -INF; var by1 := -INF
+			for p in poly_xy:
+				var px := float(p[0]); var pz := float(p[1])
+				cx += px; cy += pz
+				bx0 = min(bx0, px); bx1 = max(bx1, px)
+				by0 = min(by0, pz); by1 = max(by1, pz)
+			_building_centroids.append(Vector2(cx / poly_xy.size(), cy / poly_xy.size()))
+			_building_aabb.append(Rect2(bx0, by0, bx1 - bx0, by1 - by0))
+		else:
+			_building_centroids.append(Vector2(INF, INF))
+			_building_aabb.append(Rect2(INF, INF, 0, 0))
+
+
+func _setup_exterior_streaming(dir: String) -> void:
+	## Instantiate the chunked streaming exterior renderer and materialize the
+	## player's spawn chunk synchronously so it's never an empty void on the
+	## first rendered frame; a timer then keeps it following the player.
+	_exterior = ExteriorWorld.new()
+	add_child(_exterior)
+	if not _exterior.setup(dir):
+		push_error("street_world: compiled world/ present but ExteriorWorld.setup failed for %s" % dir)
+		return
+	_exterior.force_materialize(_player.position)
+	var timer := Timer.new()
+	timer.wait_time = EXTERIOR_FOCUS_INTERVAL
+	timer.autostart = true
+	timer.process_mode = Node.PROCESS_MODE_PAUSABLE
+	timer.timeout.connect(_on_exterior_focus_timer)
+	add_child(timer)
+
+
+func _on_exterior_focus_timer() -> void:
+	if _exterior != null and _player != null:
+		_exterior.update_focus(_player.position)
 
 
 func _build_buildings(footprints: Array) -> void:
@@ -639,6 +709,12 @@ func _spawn_player(b: Rect2, roads: Dictionary) -> void:
 				desired = Vector2(float(pts[0][0]), float(pts[0][1]))
 
 	var clear := _find_clear_spawn(desired)
+	if clear.distance_to(desired) > 0.01 and _inside_building_footprint(desired):
+		# Certified compiled-world data should place every citizen's spawn
+		# point outside every building footprint already — this firing means
+		# the anchor/entrance data disagreed with the compiled AABBs.
+		push_warning("street_world: desired spawn %s was inside a building AABB; moved to %s" %
+			[str(desired), str(clear)])
 	_spawn_pos = Vector3(clear.x, 3.0, clear.y)   # a little above ground; falls to floor
 
 	_player = CharacterBody3D.new()
@@ -652,7 +728,9 @@ func _spawn_player(b: Rect2, roads: Dictionary) -> void:
 func _find_clear_spawn(desired: Vector2) -> Vector2:
 	## Return a point not inside any building footprint. Tries the desired point,
 	## then a widening ring of candidates around it, then gives up on the desired
-	## point (still above ground, never inside a wall).
+	## point (still above ground, never inside a wall). Compiled-world bundles
+	## validate against the real per-building AABB table; legacy bundles keep
+	## the density "block" boxes.
 	if not _inside_block(desired):
 		return desired
 	for ring in range(1, 16):
@@ -666,9 +744,24 @@ func _find_clear_spawn(desired: Vector2) -> Vector2:
 
 
 func _inside_block(p: Vector2) -> bool:
+	if _has_compiled_world:
+		return _inside_building_footprint(p)
 	for bb in _block_boxes:
 		var half: float = bb.z + PLAYER_RADIUS
 		if abs(p.x - bb.x) <= half and abs(p.y - bb.y) <= half:
+			return true
+	return false
+
+
+func _inside_building_footprint(p: Vector2) -> bool:
+	## Real-footprint point-in-AABB validation over the compiled building list
+	## (index-aligned with Python building_id), per OUTSIDE_WORLD_DESIGN §7.
+	for r in _building_aabb:
+		var rr: Rect2 = r
+		if rr.position.x == INF:
+			continue
+		var grown := rr.grow(PLAYER_RADIUS)
+		if grown.has_point(p):
 			return true
 	return false
 

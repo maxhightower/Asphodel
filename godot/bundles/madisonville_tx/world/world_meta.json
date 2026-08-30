@@ -1,0 +1,48 @@
+{
+ "attribution": [
+  "Map data \u00a9 OpenStreetMap contributors, Overture Maps Foundation (ODbL)",
+  "Place data \u00a9 Overture Maps Foundation (CDLA-Permissive-2.0)"
+ ],
+ "bounds_m": [
+  -2543.2964570394297,
+  -2419.2286970000405,
+  2543.2964570394297,
+  2419.2286970000405
+ ],
+ "chunk_grid": {
+  "cols": 20,
+  "rows": 19
+ },
+ "chunk_size_m": 256.0,
+ "city": "madisonville_tx",
+ "compiler_version": 1,
+ "counts": {
+  "anchors": 11576,
+  "blocks": 144,
+  "buildings": 2940,
+  "chunks": 380,
+  "parcels": 3002,
+  "placements": 142571,
+  "props": 96731,
+  "road_km": 151.81,
+  "road_segments": 652,
+  "trees": 21950,
+  "vehicles": 23890
+ },
+ "license_note": "world/ contains only geographic database content derived from ODbL/CDLA-Permissive sources plus procedural derivations; no proprietary gameplay data lives here.",
+ "seed": 0,
+ "source_release": "2026-08-19.0",
+ "surface_census_cells": {
+  "BARE_GROUND": 0,
+  "BUILDING": 171964,
+  "MAINTAINED_GRASS": 1954123,
+  "OTHER_IMPERVIOUS": 16530,
+  "PARKING": 767412,
+  "ROAD": 212718,
+  "ROUGH_VEGETATION": 3038093,
+  "SIDEWALK": 64736,
+  "TREE_CANOPY": 0,
+  "WATER": 344
+ },
+ "version": 1
+}

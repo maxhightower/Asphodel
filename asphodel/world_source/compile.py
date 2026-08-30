@@ -168,7 +168,8 @@ def compile_city(city: str, release: str, seed: int,
 
     if out_dir is not None:
         _write_world(out_dir, city, release, seed, grid, ident, chunks,
-                     anchors, report, feats_by_bid, brecords, ws)
+                     anchors, report, feats_by_bid, brecords, ws,
+                     parcel_list)
     return report
 
 
@@ -232,7 +233,7 @@ def _seg_len(pts) -> float:
 
 
 def _write_world(out_dir, city, release, seed, grid, ident, chunks, anchors,
-                 report, feats_by_bid, brecords, ws):
+                 report, feats_by_bid, brecords, ws, ws_parcels):
     wdir = os.path.join(out_dir, "world")
     os.makedirs(wdir, exist_ok=True)
     sizes = write_chunks(wdir, chunks)
@@ -272,12 +273,30 @@ def _write_world(out_dir, city, release, seed, grid, ident, chunks, anchors,
     })
 
     # Regenerated authoritative buildings.json (identity re-founding).
+    # "cat" is the occupation-workplace category (asphodel.world keys):
+    # parcel context refines the building archetype so hospitals/schools
+    # keep hosting their occupations after the source switch.
+    parcel_arch = {}
+    for p in ws_parcels:
+        for bid in p.building_bids:
+            parcel_arch[bid] = p.arch
+    arch_cat = {
+        "DETACHED_RESIDENTIAL": "residential", "MULTIFAMILY": "residential",
+        "SMALL_COMMERCIAL": "commercial", "BIG_BOX_COMMERCIAL": "commercial",
+        "OFFICE_HIGHRISE": "commercial", "INDUSTRIAL": "industrial",
+        "CIVIC_SPECIAL": "civic", "GENERIC_UNKNOWN": "residential",
+    }
+    parcel_cat = {"SCHOOL": "education", "MEDICAL": "medical",
+                  "CIVIC": "civic", "INDUSTRIAL": "industrial",
+                  "RETAIL": "commercial", "OFFICE": "commercial"}
     blist = []
     for bid, rec in enumerate(brecords):
         ring = [[round(x, 2), round(z, 2)]
                 for x, z in rec.poly.exterior.coords[:-1]]
+        cat = parcel_cat.get(parcel_arch.get(bid, ""),
+                             arch_cat.get(rec.arch, "residential"))
         blist.append({"poly": ring, "height": round(rec.h, 2),
-                      "key": rec.key, "arch": rec.arch})
+                      "key": rec.key, "arch": rec.arch, "cat": cat})
     with open(os.path.join(out_dir, "buildings.json"), "w") as f:
         json.dump({"version": 1, "source": f"overture@{release}",
                    "storey_m": 3.3, "buildings": blist},

@@ -118,7 +118,8 @@ def street_map_from_compiled(bundle_dir: str) -> StreetMap:
             tmp.append(None)
             continue
         h = float(entry.get("height", 3.3))
-        cat = ARCH_TO_CATEGORY.get(entry.get("arch", ""), RESIDENTIAL)
+        cat = entry.get("cat") or ARCH_TO_CATEGORY.get(
+            entry.get("arch", ""), RESIDENTIAL)
         tmp.append((ring, area, (cx, cz), max(1, round(h / 3.3)), cat))
         xs += [p[0] for p in ring]
         zs += [p[1] for p in ring]
@@ -165,6 +166,35 @@ class SpawnAnchors:
                 self.parking_by_near.append((float(x), float(z)))
         self.sm = street_map
         self._adj: dict[int, list[tuple[int, float]]] | None = None
+        # Footprint index for validating routed points (roads occasionally
+        # thread observed building footprints -- canopies, data conflicts).
+        self._foot = [(self._ring_bbox(b.footprint), b.footprint)
+                      for b in street_map.buildings]
+
+    @staticmethod
+    def _ring_bbox(ring):
+        xs = [p[0] for p in ring]
+        zs = [p[1] for p in ring]
+        return (min(xs), min(zs), max(xs), max(zs))
+
+    @staticmethod
+    def _in_ring(x, z, ring) -> bool:
+        inside = False
+        n = len(ring)
+        for i in range(n):
+            x0, z0 = ring[i]
+            x1, z1 = ring[(i + 1) % n]
+            if (z0 > z) != (z1 > z):
+                t = (z - z0) / (z1 - z0)
+                if x < x0 + t * (x1 - x0):
+                    inside = not inside
+        return inside
+
+    def _inside_footprint(self, x, z) -> bool:
+        for (bx0, bz0, bx1, bz1), ring in self._foot:
+            if bx0 <= x <= bx1 and bz0 <= z <= bz1 and self._in_ring(x, z, ring):
+                return True
+        return False
 
     # -- routing -----------------------------------------------------------
     def _adjacency(self):
@@ -215,17 +245,29 @@ class SpawnAnchors:
                     for i in range(len(pts) - 1))
         if total <= 0:
             return tuple(home_xy), True
+
+        def point_at(dist):
+            dist = min(max(dist, 0.0), total)
+            acc = 0.0
+            for i in range(len(pts) - 1):
+                seg = math.hypot(pts[i + 1][0] - pts[i][0],
+                                 pts[i + 1][1] - pts[i][1])
+                if acc + seg >= dist and seg > 0:
+                    t = (dist - acc) / seg
+                    return (pts[i][0] + (pts[i + 1][0] - pts[i][0]) * t,
+                            pts[i][1] + (pts[i + 1][1] - pts[i][1]) * t)
+                acc += seg
+            return pts[-1]
+
         target = frac * total
-        acc = 0.0
-        for i in range(len(pts) - 1):
-            seg = math.hypot(pts[i + 1][0] - pts[i][0],
-                             pts[i + 1][1] - pts[i][1])
-            if acc + seg >= target and seg > 0:
-                t = (target - acc) / seg
-                return ((pts[i][0] + (pts[i + 1][0] - pts[i][0]) * t,
-                         pts[i][1] + (pts[i + 1][1] - pts[i][1]) * t), False)
-            acc += seg
-        return pts[-1], False
+        # Roads occasionally thread an observed footprint (canopy/data
+        # conflict): slide along the route until the point is clear ground.
+        for delta in (0.0, 3.0, -3.0, 6.0, -6.0, 9.0, -9.0, 15.0, -15.0,
+                      24.0, -24.0, 36.0, -36.0, 60.0, -60.0):
+            x, z = point_at(target + delta)
+            if not self._inside_footprint(x, z):
+                return (x, z), False
+        return point_at(target), True  # give up: flagged approximate
 
     def entrance(self, bid: int | None):
         if bid is None:
