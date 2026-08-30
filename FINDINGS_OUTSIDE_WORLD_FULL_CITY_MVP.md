@@ -26,7 +26,9 @@ Commits (small, per-package):
 b960be9 OW1+OW2: Overture acquisition, provenance gate, normalizer, stable identity, compiler core
 ba29591 OW3-OW8: full-city exterior compiler — all 12 certification gates pass for Houston
 a50b97b OW9: chunked streaming exterior renderer + workplace categories + routed-commute clearing
-<final>  OW10: certification evidence + findings (this commit)
+fe277c7 OW10 (in progress): screenshot/perf harness extensions + first exterior evidence captures
+c1951d2 OW10: remaining exterior evidence captures
+(final)  OW10: performance + evidence sections, final regression (this commit)
 ```
 
 ## Data packet
@@ -209,17 +211,81 @@ use fixtures, never the network. Full rebuild verified **byte-identical**
 
 ## Performance
 
-[PERF_SECTION]
+Measured with `godot --headless --path godot res://tests/OwPerfBench.tscn --
+--bundle houston` (new, `godot/tests/ow_perf_bench.gd` — a dense 7x7 focus
+sweep around the origin, reading `ExteriorWorld.build_ms_stats()` /
+`total_mm_instances()`, three runs, numbers stable across runs) and
+`res://tests/StreetSmoke.tscn` for boot time (three runs on an otherwise idle
+box; xvfb/GL contention from concurrent capture runs was seen to roughly
+double these numbers, so the machine was quiesced first):
+
+| metric | min | avg | max | n |
+|---|---|---|---|---|
+| T1 build (ground raster + building masses), ms/chunk | 2.51 | 9.70 | 22.19 | 102 |
+| T2 build (grammar detail + road markings + collision), ms/chunk | 0.02 | 3.97 | 9.60 | 62 |
+| T3 build (props/vehicles/trees MultiMesh), ms/chunk | 0.90 | 1.46 | 3.42 | 28 |
+
+| metric | value |
+|---|---|
+| Resident chunks at steady state (dense 7x7 sweep around origin) | 96 |
+| Resident scene-tree nodes | 3,205 |
+| Total MultiMesh instances (props+vehicles+trees) | 5,903 |
+| `OS.get_static_memory_usage()` before a fresh 3x3 T3 materialize | 22,189,150 B |
+| same, after | 60,517,502 B (Δ 36.55 MB for 9 chunks' worth of T1-T3) |
+| StreetScene boot: process launch → first ready assertion (headless, no bridge) | ~0.15 s |
+| StreetScene boot: process launch → smoke-test done + quit | ~2.77 s (~3.18 s incl. engine teardown) |
 
 The legacy path built the entire city (all buildings, all roads, the global
 occupancy-grid scatter) eagerly at scene `_ready`; the compiled path builds
 a bounded neighborhood and streams the rest. Steady-state resident node
 count is bounded by tier radii (max observed in the streaming soak:
-~1.9k nodes, returning to baseline after unload — no monotonic growth).
+~1.9k nodes, returning to baseline after unload — no monotonic growth). The
+per-chunk build costs above bound the worst case a player crossing several
+tier boundaries per frame could trigger (`BUILD_BUDGET` caps this to 2
+tier-builds/call regardless), so a T1 spike (~22ms max) is the number to
+watch if streaming ever shows a frame hitch.
 
 ## Evidence
 
-[EVIDENCE_SECTION]
+16 gameplay screenshots via the extended harness (`godot/tests/screenshot.gd`
++ `res://tests/Screenshot.tscn -- --bundle <city> --pos X,Z --yaw D --eye H
+--citizen N`), captured under `xvfb-run` with a fresh Python bridge per run,
+saved to `output/ow_screens/`. Coordinates were picked deterministically
+from the compiled chunk JSON (parcel/building archetype + surface raster,
+scratchpad `pick_coords.py`, not committed) — one representative spot per
+certification context, nudged onto non-building ground with wall clearance.
+Every honest visual read below is from actually looking at the PNG, not
+inferring from the pick logic:
+
+| file | context | reads as |
+|---|---|---|
+| `houston_residential.png` | detached-residential street | Reads well: single-family house facade, a second apartment-style block and street behind it, mowed yard, all lit and proportioned correctly. |
+| `houston_multifamily.png` | multifamily | Camera sits in a tight interior courtyard corner — building fabric (windows, trim) is correct but the framing is too close-in to read as "multifamily block" at a glance; needs more standoff. |
+| `houston_commercial.png` | small-commercial / arterial | A plain cream box wall with a dumpster and cars visible past it; recognizable as a small commercial building near a road, but the arterial road itself and any storefront glazing aren't in frame. |
+| `houston_retail_parking.png` | big-box parking lot | Reads correctly after two rounds of coordinate tuning (see below): the store's long wall, light poles, and a row of parked cars are all in frame together — a legible big-box lot. |
+| `houston_industrial.png` | industrial | Too close to the warehouse siding — the wall fills most of the frame with only a strip of grass and sky; industrial material reads (flat corrugated-style wall) but not the building as a whole. |
+| `houston_downtown.png` | tallest-building context | Reads well: a genuine street canyon with the tallest tower in frame, parked cars, sidewalk markings — the best "downtown" feel in the set. |
+| `houston_civic.png` | civic/school/medical | Tan civic-building wall with a rear yard/turf area and a low skyline of other buildings beyond; recognizable as an institutional building but framed from the back, not the entrance. |
+| `houston_park.png` | park / open space | Weakest of the set: mostly a flat paved/turf boundary with houses on the distant horizon; the automated pick landed on the parcel's grass-vs-pavement seam rather than anywhere with trees/benches, so it reads as "edge of an open lot" more than "park." |
+| `houston_highway.png` | elevated highway | Reads correctly as standing under an elevated deck — pillars, beam, lane stripes on the surface road below are all visible; the deck's underside has a visible repeating-texture/lightmap artifact worth a follow-up look. |
+| `houston_vacant.png` | vacant/rough land | Reads as another paved lot (light poles, cars, a warehouse) rather than a rough/undeveloped parcel — plausible given the underlying data (this VACANT_OPEN parcel genuinely is bare pavement), but it doesn't visually differentiate from the retail-parking shot. |
+| `houston_overhead.png` | overhead | Reads very well: full mixed-use area legible from above — road, parking lots, a spread of building footprints and colors, moving/parked traffic. |
+| `houston_citizen7.png` | random spawn (citizen 7) | Reads well: sidewalk-level neighborhood view, multiple building types, streetlight, correct daylight. |
+| `houston_citizen23.png` | random spawn (citizen 23) | Reads well: courtyard-style spawn between two building wings, trash bins, sidewalk — plausible apartment-complex spawn. |
+| `houston_citizen41.png` | random spawn (citizen 41) | Reads well: fenced yard, parked car, small commercial-looking strip beyond — a believable street-level spawn. |
+| `madisonville_tx_residential.png` | Madisonville residential | Same close-in framing issue as the Houston multifamily shot — right on top of a house wall; building material/color is correct for a smaller town but the shot needs more standoff. |
+| `madisonville_tx_overhead.png` | Madisonville overhead | Reads very well: a retail strip along the highway frontage, dense parking, and open land beyond — clearly a smaller/lower-density city than Houston from the air alone. |
+
+**Honest summary:** the overhead, downtown, retail-parking, and the three
+random-citizen shots are unambiguous wins. Multifamily, industrial, civic,
+and the Madisonville residential shot are technically correct (right
+materials, right archetype) but stand too close to a single wall to read as
+their category at a glance — a coordinate-picking issue (needs more
+standoff biased away from every nearby building, not just the nearest one),
+not a rendering bug. The park and vacant shots are the most honestly weak:
+both landed on paved ground rather than the greenery/undeveloped texture a
+human would pick for those categories, which is a limitation of picking by
+raster-cell type alone from a script rather than a rendering defect.
 
 ## Gate table
 
