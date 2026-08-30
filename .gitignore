@@ -12,3 +12,8 @@ output/*_aggregate.csv
 
 # Raw OSM response cache (large; regenerated on demand by asphodel.osm_city).
 output/osm_cache/
+
+# Raw public-data downloads (Overture parquet etc.); regenerated on demand by
+# asphodel.world_source. The provenance manifest under geo/provenance/ is
+# committed and describes exactly what these files contain.
+data/raw/
