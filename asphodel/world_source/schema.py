@@ -95,7 +95,10 @@ class WorldSourceV1:
 #   "buildings": [ {"bid": int, "poly": [[x,z],...], "h": m, "floors": int,
 #                   "arch": str, "roof": str,
 #                   "entrance": {"edge": int, "t": 0..1, "w": m},
-#                   "feat": [str,...]} ],
+#                   "feat": [str,...],
+#                   "appearance": BuildingAppearanceV1.to_dict()  # optional,
+#                     facade/roof colour+material+shape with OBSERVED/DERIVED/
+#                     PROCEDURAL provenance (Package B)} ],
 #   "props":    [[kind, x, z, rot_deg, variant], ...],
 #   "vehicles": [[kind, x, z, rot_deg, variant], ...],
 #   "trees":    [[kind, x, z, rot_deg, variant], ...],   # bushes included

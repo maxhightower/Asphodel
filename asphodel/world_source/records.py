@@ -53,6 +53,9 @@ class BuildingRecord:
     feat: list = field(default_factory=list)       # BUILDING_FEATURES subset
     parcel_id: str | None = None
     height_observed: bool = False
+    # Package B: BuildingAppearanceV1.to_dict() — facade/roof colour+material+
+    # shape with OBSERVED/DERIVED/PROCEDURAL provenance. None until assembled.
+    appearance: dict | None = None
 
 
 @dataclass

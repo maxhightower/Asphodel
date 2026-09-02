@@ -91,13 +91,16 @@ def build_chunks(grid: ChunkGrid, rasters, segments, parcels, buildings,
         ring = [[_rf(x), _rf(z)] for x, z in b.poly.exterior.coords[:-1]]
         if len(ring) < 3:
             continue
-        chunks[key]["buildings"].append({
+        bdict = {
             "bid": b.bid, "poly": ring, "h": _rf(b.h), "floors": b.floors,
             "arch": b.arch, "roof": b.roof,
             "entrance": {"edge": b.entrance_edge, "t": round(b.entrance_t, 3),
                          "w": _rf(b.entrance_w)},
             "feat": sorted(b.feat),
-        })
+        }
+        if b.appearance is not None:      # Package B: appearance truth + provenance
+            bdict["appearance"] = b.appearance
+        chunks[key]["buildings"].append(bdict)
 
     cat_field = {"prop": "props", "vehicle": "vehicles", "tree": "trees"}
     for pl in sorted(placements, key=lambda p: (p.kind, round(p.x, 2),

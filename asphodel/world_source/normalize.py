@@ -165,9 +165,16 @@ def load_world_source(city: str, release: str,
     subtypes = _col(tbl, "subtype")
     classes = _col(tbl, "class")
     roofs = _col(tbl, "roof_shape")
+    # Package B: appearance-bearing columns (facade/roof colour + material).
+    # Coverage is ~0% for the cert cities (VIS-0) but preserved end-to-end with
+    # provenance so the rare observed values survive and future data generalizes.
+    facade_colors = _col(tbl, "facade_color")
+    facade_materials = _col(tbl, "facade_material")
+    roof_colors = _col(tbl, "roof_color")
+    roof_materials = _col(tbl, "roof_material")
     ids = _col(tbl, "id")
-    for gid, geom, h, fl, sub, cls, roof in zip(
-            ids, geoms, heights, floors, subtypes, classes, roofs):
+    for idx, (gid, geom, h, fl, sub, cls, roof) in enumerate(zip(
+            ids, geoms, heights, floors, subtypes, classes, roofs)):
         if geom is None or geom.is_empty:
             continue
         parts = geom.geoms if geom.geom_type == "MultiPolygon" else [geom]
@@ -192,6 +199,10 @@ def load_world_source(city: str, release: str,
                     "height_m": float(h) if h is not None else None,
                     "levels": int(fl) if fl is not None else None,
                     "subtype": sub, "class": cls, "roof_shape": roof,
+                    "facade_color": facade_colors[idx],
+                    "facade_material": facade_materials[idx],
+                    "roof_color": roof_colors[idx],
+                    "roof_material": roof_materials[idx],
                     "_centroid": (c.x, c.y),
                     "_area": poly.area,
                 },

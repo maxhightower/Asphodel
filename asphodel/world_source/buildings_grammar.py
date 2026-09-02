@@ -24,6 +24,7 @@ from shapely.strtree import STRtree
 from . import geomutil, grammar_tables
 from .detrand import DetRand
 from .records import BuildingRecord, SurfacePatch
+from . import appearance as appearance_mod
 
 # Deterministic-infer height ranges (metres) per BUILDING_ARCHETYPES, used
 # only when a footprint has neither an observed height_m nor a levels count.
@@ -183,12 +184,17 @@ def compile_buildings(ordered_features: list, parcels: list, segments: list,
         elif arch == "CIVIC_SPECIAL":
             feat += ["lobby"]
 
+        # Package B: assemble appearance truth (observed where the source
+        # supplies it; roof shape observed or DERIVED; height provenance).
+        appearance = appearance_mod.build_appearance(
+            bid, props, roof, h, height_observed).to_dict()
+
         records.append(BuildingRecord(
             bid=bid, key=f.stable_key, poly=poly, h=h, floors=floors,
             arch=arch, roof=roof, entrance_edge=entrance_edge,
             entrance_t=0.5, entrance_w=entrance_w, entrance_xy=(ex, ez),
             feat=feat, parcel_id=(parcel.pid if parcel is not None else None),
-            height_observed=height_observed,
+            height_observed=height_observed, appearance=appearance,
         ))
 
     return records

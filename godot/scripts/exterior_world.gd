@@ -506,6 +506,35 @@ func _erase_paved_cells(cells: PackedByteArray) -> PackedByteArray:
 	return out
 
 
+## Observed appearance value (BuildingAppearanceV1) for section/field, or "" when
+## absent. Only OBSERVED/DERIVED values are carried in the bundle; PROCEDURAL
+## nulls read as "". (Package B / C)
+static func _appearance_hex(b: Dictionary, section: String, fld: String) -> String:
+	var ap: Dictionary = b.get("appearance", {})
+	if ap.is_empty():
+		return ""
+	var sec: Dictionary = ap.get(section, {})
+	var c: Dictionary = sec.get(fld, {})
+	var v = c.get("value", null)
+	return String(v) if v != null else ""
+
+
+static func _is_hex6(s: String) -> bool:
+	return s.length() == 7 and s.begins_with("#")
+
+
+## Facade colour: an observed/derived appearance colour wins; otherwise the
+## archetype base colour with a stable per-building tint (original behaviour).
+func _facade_color(b: Dictionary, bid: int, arch: String) -> Color:
+	var hex := _appearance_hex(b, "facade", "color")
+	if _is_hex6(hex):
+		return Color.html(hex)
+	var base_col: Color = BUILDING_ARCH_COLORS.get(arch, BUILDING_ARCH_COLORS["GENERIC_UNKNOWN"])
+	var tint := (float(_stable_hash(bid, 7) % 1000) / 1000.0 - 0.5) * 0.12
+	return Color(clampf(base_col.r + tint, 0.0, 1.0),
+		clampf(base_col.g + tint, 0.0, 1.0), clampf(base_col.b + tint, 0.0, 1.0))
+
+
 func _mass_building(st: SurfaceTool, b: Dictionary) -> int:
 	var poly: Array = b.get("poly", [])
 	if poly.size() < 3:
@@ -513,20 +542,16 @@ func _mass_building(st: SurfaceTool, b: Dictionary) -> int:
 	var h := float(b.get("h", 3.0))
 	var bid := int(b.get("bid", 0))
 	var arch := String(b.get("arch", "GENERIC_UNKNOWN"))
-	var base_col: Color = BUILDING_ARCH_COLORS.get(arch, BUILDING_ARCH_COLORS["GENERIC_UNKNOWN"])
-	var tint := (float(_stable_hash(bid, 7) % 1000) / 1000.0 - 0.5) * 0.12
-	var col := Color(
-		clampf(base_col.r + tint, 0.0, 1.0),
-		clampf(base_col.g + tint, 0.0, 1.0),
-		clampf(base_col.b + tint, 0.0, 1.0))
+	var col := _facade_color(b, bid, arch)
 
 	var ring := PackedVector2Array()
 	for p in poly:
 		ring.append(Vector2(float(p[0]), float(p[1])))
 	var n := ring.size()
 	var verts := 0
-	# Flat roof.
-	st.set_color(col.darkened(0.15))
+	# Flat roof top — observed roof colour wins, else a darkened facade tone.
+	var rhex := _appearance_hex(b, "roof", "color")
+	st.set_color(Color.html(rhex) if _is_hex6(rhex) else col.darkened(0.15))
 	var tris := Geometry2D.triangulate_polygon(ring)
 	for i in range(0, tris.size(), 3):
 		for k in [tris[i], tris[i + 1], tris[i + 2]]:
@@ -846,6 +871,9 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array,
 			2: roof_col = Color(0.27, 0.31, 0.38)   # slate blue
 			3: roof_col = Color(0.31, 0.34, 0.31)   # grey-green
 			4: roof_col = Color(0.40, 0.32, 0.28)   # terracotta-ish
+		var rhex := _appearance_hex(b, "roof", "color")   # observed roof colour wins
+		if _is_hex6(rhex):
+			roof_col = Color.html(rhex)
 		var rect := _is_roughly_rectangular(ring)
 		var oh := _obb_half(ring)
 		var minhalf := minf(oh.x, oh.y)
