@@ -1905,11 +1905,13 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 	var cells := _decode_rle(runs, CELLS * CELLS) if not runs.is_empty() else PackedByteArray()
 	# Yard fences must stop at the property line, not march across the carriageway.
 	var yard_fence := {"wood_fence": true, "chainlink_fence": true}
-	var vehicle_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true, "box_truck": true}
+	var vehicle_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true,
+		"box_truck": true, "jeep": true, "sports_car": true}
 	# Kinds whose per-instance `variant` selects a distinct baked mesh (vehicle colour
 	# or foliage colour), so they must be grouped by kind:variant.
 	var variant_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true,
-		"box_truck": true, "tree_round": true, "tree_oak": true, "tree_conical": true,
+		"box_truck": true, "jeep": true, "sports_car": true,
+		"tree_round": true, "tree_oak": true, "tree_conical": true,
 		"tree_columnar": true, "tree_palm": true, "tree_willow": true, "bush_round": true, "bush_low": true,
 		"tree_magnolia": true, "tree_crape_myrtle": true, "tree_baldcypress": true,
 		"hedge": true, "flowering_shrub": true, "tall_grass": true, "native_scrub": true}
@@ -1962,7 +1964,8 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 	_scatter_vegetation(chunk, groups, cells, origin)
 
 	var shadow_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true,
-		"box_truck": true, "tree_round": true, "tree_oak": true, "tree_conical": true,
+		"box_truck": true, "jeep": true, "sports_car": true,
+		"tree_round": true, "tree_oak": true, "tree_conical": true,
 		"tree_columnar": true, "tree_palm": true, "tree_willow": true,
 		"tree_magnolia": true, "tree_crape_myrtle": true, "tree_baldcypress": true}
 	var mm_count := 0

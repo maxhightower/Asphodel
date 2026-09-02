@@ -19,7 +19,7 @@ PROP_MESHES_SUPPORTED = {
     "transformer_box", "utility_cabinet", "ac_condenser", "rooftop_hvac",
     "dumpster", "parking_stop", "bench", "bus_shelter", "wood_fence",
     "chainlink_fence", "pallet", "road_barrier",
-    "sedan", "suv", "pickup", "van", "box_truck",
+    "sedan", "suv", "pickup", "van", "box_truck", "jeep", "sports_car",
     "tree_round", "tree_oak", "tree_conical", "tree_columnar", "tree_palm",
     "tree_willow", "bush_round", "bush_low",
     "tree_magnolia", "tree_crape_myrtle", "tree_baldcypress",

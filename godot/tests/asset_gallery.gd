@@ -17,7 +17,7 @@ const GROUPS := {
 		"dumpster", "traffic_sign", "traffic_signal", "bus_shelter",
 		"parking_stop", "utility_pole", "ac_condenser", "guardrail",
 		"road_barrier", "pallet", "wood_fence", "chainlink_fence"],
-	"vehicles": ["sedan", "suv", "pickup", "van", "box_truck"],
+	"vehicles": ["sedan", "sports_car", "suv", "jeep", "pickup", "van", "box_truck"],
 	"veg": ["tree_oak", "tree_round", "tree_magnolia", "tree_conical",
 		"tree_baldcypress", "tree_columnar", "tree_palm", "tree_willow",
 		"tree_crape_myrtle", "bush_round", "bush_low", "hedge",

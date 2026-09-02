@@ -48,7 +48,9 @@ static func _vehicle_material() -> StandardMaterial3D:
 		_mat_vehicle.roughness = 0.7
 		_mat_vehicle.metallic = 0.0
 		_mat_vehicle.metallic_specular = 0.2
-		_mat_vehicle.cull_mode = BaseMaterial3D.CULL_BACK
+		# Double-sided: the bodies are built from many boxes, round wheels and glass
+		# panels, so a stray interior/back face never punches a hole.
+		_mat_vehicle.cull_mode = BaseMaterial3D.CULL_DISABLED
 	return _mat_vehicle
 
 
@@ -73,7 +75,7 @@ const SUPPORTED_KINDS := [
 	"transformer_box", "utility_cabinet", "ac_condenser", "rooftop_hvac",
 	"dumpster", "parking_stop", "bench", "bus_shelter", "wood_fence",
 	"chainlink_fence", "pallet", "road_barrier",
-	"sedan", "suv", "pickup", "van", "box_truck",
+	"sedan", "suv", "pickup", "van", "box_truck", "jeep", "sports_car",
 	"tree_round", "tree_oak", "tree_conical", "tree_columnar", "tree_palm",
 	"tree_willow", "bush_round", "bush_low",
 	"tree_magnolia", "tree_crape_myrtle", "tree_baldcypress",
@@ -168,7 +170,7 @@ static func _build(kind: String, variant: int) -> ArrayMesh:
 			_build_pallet(st)
 		"road_barrier":
 			_build_road_barrier(st)
-		"sedan", "suv", "pickup", "van", "box_truck":
+		"sedan", "suv", "pickup", "van", "box_truck", "jeep", "sports_car":
 			_build_vehicle(st, kind, variant)
 		"tree_round":
 			_build_tree_round(st, variant)
@@ -205,7 +207,8 @@ static func _build(kind: String, variant: int) -> ArrayMesh:
 			_box(st, Vector3(0.0, 0.5, 0.0), Vector3(0.5, 1.0, 0.5), Color(1.0, 0.0, 1.0))
 	st.generate_normals()
 	var mesh := st.commit()
-	var vehicle_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true, "box_truck": true}
+	var vehicle_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true,
+		"box_truck": true, "jeep": true, "sports_car": true}
 	mesh.surface_set_material(0, _vehicle_material() if vehicle_kinds.has(kind) else _opaque_material())
 	return mesh
 
@@ -587,72 +590,168 @@ static func _vehicle_color(variant: int) -> Color:
 	return VEHICLE_COLORS[i]
 
 
-static func _wheels(st: SurfaceTool, xs: Array, z: float, y: float, size: Vector3) -> void:
-	for x in xs:
-		_box(st, Vector3(x, y, z), size, WHEEL_COLOR)
-		_box(st, Vector3(x, y, -z), size, WHEEL_COLOR)
+## A round wheel: a Z-axis barrel (a tyre lying across the car) with dark side
+## discs and a lighter hub, its bottom on the ground. `cx`,`cz` = axle centre,
+## `r` = radius, `w` = width.
+static func _wheel(st: SurfaceTool, cx: float, cz: float, r: float, w: float) -> void:
+	var segs := 10
+	var hw := w * 0.5
+	var y := r
+	var c0 := Vector3(cx, y, cz - hw)
+	var c1 := Vector3(cx, y, cz + hw)
+	var hub := Color(0.28, 0.29, 0.32)
+	for i in range(segs):
+		var a0 := TAU * float(i) / float(segs)
+		var a1 := TAU * float(i + 1) / float(segs)
+		var d0 := Vector2(cos(a0) * r, sin(a0) * r)
+		var d1 := Vector2(cos(a1) * r, sin(a1) * r)
+		var p0 := Vector3(cx + d0.x, y + d0.y, cz - hw)
+		var p1 := Vector3(cx + d1.x, y + d1.y, cz - hw)
+		var p2 := Vector3(cx + d1.x, y + d1.y, cz + hw)
+		var p3 := Vector3(cx + d0.x, y + d0.y, cz + hw)
+		st.set_color(WHEEL_COLOR)
+		st.add_vertex(p0); st.add_vertex(p1); st.add_vertex(p2)
+		st.add_vertex(p0); st.add_vertex(p2); st.add_vertex(p3)
+		# side discs, hub-coloured near the axle
+		st.set_color(hub if (i % 2 == 0) else WHEEL_COLOR)
+		st.add_vertex(c0); st.add_vertex(p1); st.add_vertex(p0)
+		st.add_vertex(c1); st.add_vertex(p3); st.add_vertex(p2)
 
 
-## A tapered greenhouse/cab: a bottom rectangle (x in [bx0,bx1], z in ±bz at y0)
-## lofted to a smaller top rectangle (x in [tx0,tx1], z in ±tz at y1). Pulling the
-## top's front edge back gives a raked windshield; the four sides are glass and the
-## cap is body colour, so a car reads as body + dark angled greenhouse instead of a
-## box on a box. Wound to match `_box` so generate_normals() gives outward faces
-## (vehicle material is back-face culled). +X is forward.
-static func _frustum(st: SurfaceTool, bx0: float, bx1: float, bz: float,
-		tx0: float, tx1: float, tz: float, y0: float, y1: float,
-		side_col: Color, top_col: Color) -> void:
-	var b0 := Vector3(bx0, y0, -bz); var b1 := Vector3(bx1, y0, -bz)
-	var b2 := Vector3(bx1, y0, bz);  var b3 := Vector3(bx0, y0, bz)
-	var t0 := Vector3(tx0, y1, -tz); var t1 := Vector3(tx1, y1, -tz)
-	var t2 := Vector3(tx1, y1, tz);  var t3 := Vector3(tx0, y1, tz)
-	_quad(st, t3, t2, t1, t0, top_col)   # roof
-	_quad(st, t0, t1, b1, b0, side_col)  # left side window (-Z)
-	_quad(st, t2, t3, b3, b2, side_col)  # right side window (+Z)
-	_quad(st, t1, t2, b2, b1, side_col)  # windshield (+X, raked)
-	_quad(st, t3, t0, b0, b3, side_col)  # rear window (-X)
+static func _axles(st: SurfaceTool, xf: float, xr: float, zc: float, r: float, w: float) -> void:
+	for x in [xf, xr]:
+		_wheel(st, x, zc, r, w)
+		_wheel(st, x, -zc, r, w)
+
+
+## A raked glazing panel (windshield / backlight) spanning the full width ±zc,
+## sloping from (xb, yb) at the belt up to (xt, yt) at the roof.
+static func _rake(st: SurfaceTool, xb: float, yb: float, xt: float, yt: float,
+		zc: float, col: Color) -> void:
+	_quad(st, Vector3(xb, yb, -zc), Vector3(xb, yb, zc),
+		Vector3(xt, yt, zc), Vector3(xt, yt, -zc), col)
+
+
+## Head/tail light pair on the front (+X) or rear (-X) face at height y.
+static func _lights(st: SurfaceTool, x: float, y: float, zc: float, col: Color) -> void:
+	_box(st, Vector3(x, y, zc), Vector3(0.08, 0.16, 0.34), col)
+	_box(st, Vector3(x, y, -zc), Vector3(0.08, 0.16, 0.34), col)
 
 
 static func _build_vehicle(st: SurfaceTool, kind: String, variant: int) -> void:
 	var col := _vehicle_color(variant)
-	var glass := Color(0.13, 0.15, 0.19)
-	var tire := Vector3(0.6, 0.6, 0.22)
+	var glass := Color(0.11, 0.13, 0.17)
+	var trim := col.darkened(0.42)                 # bumpers, rocker, cladding
+	var flight := Color(0.93, 0.90, 0.74)          # headlights
+	var rlight := Color(0.58, 0.09, 0.08)          # tail lights
 	match kind:
 		"sedan":
-			_wheels(st, [-1.35, 1.4], 0.80, 0.30, tire)
-			_box(st, Vector3(0.05, 0.52, 0.0), Vector3(4.4, 0.5, 1.68), col)
-			# lower body accent (darker sill) so the greenhouse reads as a separate volume
-			_box(st, Vector3(0.05, 0.34, 0.0), Vector3(4.2, 0.18, 1.7), col.darkened(0.22))
-			_frustum(st, -1.5, 0.95, 0.74, -1.15, 0.2, 0.6, 0.75, 1.36, glass, col)
+			# 3-box saloon: low hood, raised cabin, separate boot. Head/tail lights
+			# and bumpers make front vs rear unmistakable.
+			var zc := 0.80
+			_axles(st, 1.35, -1.4, zc, 0.34, 0.24)
+			_box(st, Vector3(0.0, 0.5, 0.0), Vector3(4.5, 0.30, 1.66), trim)     # rocker
+			_box(st, Vector3(-0.1, 0.80, 0.0), Vector3(4.3, 0.34, 1.72), col)    # lower body / doors
+			_box(st, Vector3(1.45, 0.94, 0.0), Vector3(1.7, 0.22, 1.66), col)    # hood (low, front)
+			_box(st, Vector3(-1.55, 1.0, 0.0), Vector3(1.4, 0.26, 1.66), col)    # boot (rear, a touch higher)
+			_box(st, Vector3(-0.25, 1.24, 0.0), Vector3(1.5, 0.5, 1.56), glass)  # greenhouse glass
+			_box(st, Vector3(-0.3, 1.44, 0.0), Vector3(1.35, 0.1, 1.5), col)     # roof
+			_rake(st, 0.62, 1.02, 0.45, 1.44, 0.76, glass)                       # windshield
+			_rake(st, -1.05, 1.06, -0.9, 1.44, 0.76, glass)                      # rear window
+			_box(st, Vector3(2.28, 0.62, 0.0), Vector3(0.16, 0.3, 1.7), trim)    # front bumper
+			_box(st, Vector3(-2.28, 0.66, 0.0), Vector3(0.16, 0.3, 1.7), trim)   # rear bumper
+			_lights(st, 2.29, 0.78, 0.6, flight)
+			_lights(st, -2.29, 0.86, 0.62, rlight)
+		"sports_car":
+			# low + wide, long bonnet, cabin pushed right back, stubby tail.
+			var zc := 0.86
+			_axles(st, 1.5, -1.45, zc, 0.36, 0.28)
+			_box(st, Vector3(0.0, 0.42, 0.0), Vector3(4.4, 0.30, 1.86), col)     # low wide body
+			_box(st, Vector3(0.0, 0.24, 0.0), Vector3(4.2, 0.14, 1.9), trim)     # splitter/rocker
+			_box(st, Vector3(1.35, 0.6, 0.0), Vector3(1.9, 0.2, 1.78), col)      # long low bonnet
+			_box(st, Vector3(-1.4, 0.66, 0.0), Vector3(1.4, 0.26, 1.8), col)     # short rear deck
+			_box(st, Vector3(-0.6, 0.88, 0.0), Vector3(1.2, 0.36, 1.62), glass)  # low cabin glass
+			_box(st, Vector3(-0.7, 1.04, 0.0), Vector3(0.9, 0.08, 1.5), col)     # low roof
+			_rake(st, 0.2, 0.7, -0.15, 1.06, 0.72, glass)                        # steep windscreen
+			_rake(st, -1.25, 0.78, -1.05, 1.05, 0.72, glass)                     # fastback rear
+			_box(st, Vector3(-2.15, 0.9, 0.0), Vector3(0.1, 0.12, 1.4), trim)    # rear spoiler lip
+			_box(st, Vector3(2.22, 0.5, 0.0), Vector3(0.14, 0.22, 1.82), trim)   # front splitter
+			_lights(st, 2.2, 0.6, 0.66, flight)
+			_lights(st, -2.18, 0.78, 0.62, rlight)
+		"jeep":
+			# tall, boxy, upright — flat vertical windscreen, flat roof to the tail,
+			# chunky tyres, round headlamps, tailgate-mounted spare.
+			var zc := 0.86
+			_axles(st, 1.4, -1.45, zc, 0.46, 0.30)
+			_box(st, Vector3(0.0, 0.78, 0.0), Vector3(4.1, 0.72, 1.9), col)      # tall body
+			_box(st, Vector3(0.0, 0.4, 0.0), Vector3(3.9, 0.22, 1.96), trim)     # sill/cladding
+			_box(st, Vector3(1.55, 0.98, 0.0), Vector3(1.0, 0.5, 1.86), col)     # short flat bonnet
+			_box(st, Vector3(-0.25, 1.5, 0.0), Vector3(2.6, 0.72, 1.66), glass)  # tall upright cabin glass
+			_box(st, Vector3(-0.25, 1.82, 0.0), Vector3(2.7, 0.1, 1.8), col)     # flat roof (to the tail)
+			_box(st, Vector3(1.02, 1.5, 0.0), Vector3(0.12, 0.72, 1.72), glass)  # near-vertical windscreen
+			_box(st, Vector3(-2.05, 0.95, 0.0), Vector3(0.12, 0.9, 1.7), col)    # flat tailgate
+			_wheel(st, -2.18, 0.0, 0.4, 0.22)                                    # spare on the tailgate
+			_box(st, Vector3(2.12, 0.7, 0.0), Vector3(0.16, 0.5, 1.9), trim)     # brush bumper
+			# round headlamps
+			for zz in [0.6, -0.6]:
+				_cylinder(st, Vector3(2.16, 0.95, zz), 0.13, 0.06, 8, flight, true, false)
+			_lights(st, -2.13, 1.05, 0.66, rlight)
 		"suv":
-			_wheels(st, [-1.5, 1.5], 0.84, 0.34, Vector3(0.66, 0.66, 0.24))
-			_box(st, Vector3(0.0, 0.62, 0.0), Vector3(4.7, 0.72, 1.86), col)
-			_box(st, Vector3(0.0, 0.36, 0.0), Vector3(4.5, 0.2, 1.9), col.darkened(0.22))
-			_frustum(st, -1.75, 1.35, 0.82, -1.6, 0.95, 0.72, 0.94, 1.66, glass, col)
+			# tall wagon: hood, big glasshouse, sloped tailgate.
+			var zc := 0.84
+			_axles(st, 1.5, -1.5, zc, 0.42, 0.26)
+			_box(st, Vector3(0.0, 0.58, 0.0), Vector3(4.7, 0.4, 1.86), col)      # body
+			_box(st, Vector3(0.0, 0.34, 0.0), Vector3(4.5, 0.2, 1.9), trim)      # cladding
+			_box(st, Vector3(1.55, 0.85, 0.0), Vector3(1.6, 0.22, 1.8), col)     # hood
+			_box(st, Vector3(-0.4, 1.2, 0.0), Vector3(3.0, 0.56, 1.66), glass)   # long glasshouse
+			_box(st, Vector3(-0.4, 1.5, 0.0), Vector3(2.8, 0.1, 1.72), col)      # roof
+			_rake(st, 0.9, 0.97, 0.6, 1.5, 0.78, glass)                          # windshield
+			_rake(st, -1.85, 0.78, -1.7, 1.5, 0.78, glass)                       # sloped tailgate glass
+			_box(st, Vector3(2.28, 0.6, 0.0), Vector3(0.16, 0.34, 1.8), trim)
+			_box(st, Vector3(-2.32, 0.62, 0.0), Vector3(0.14, 0.36, 1.8), trim)
+			_lights(st, 2.29, 0.82, 0.62, flight)
+			_lights(st, -2.32, 0.95, 0.64, rlight)
 		"pickup":
-			_wheels(st, [-1.3, 1.45], 0.84, 0.32, Vector3(0.64, 0.64, 0.24))
-			_box(st, Vector3(0.1, 0.5, 0.0), Vector3(5.0, 0.46, 1.8), col)
-			_box(st, Vector3(0.1, 0.32, 0.0), Vector3(4.8, 0.2, 1.82), col.darkened(0.22))
-			# cab at the front, open bed behind
-			_frustum(st, -0.35, 1.5, 0.78, -0.15, 1.0, 0.66, 0.73, 1.46, glass, col)
-			_box(st, Vector3(-1.6, 0.82, 0.0), Vector3(2.7, 0.12, 1.66), col.darkened(0.12))   # bed floor
-			_box(st, Vector3(-1.6, 1.02, 0.82), Vector3(2.7, 0.44, 0.1), col)                   # bed wall +Z
-			_box(st, Vector3(-1.6, 1.02, -0.82), Vector3(2.7, 0.44, 0.1), col)                  # bed wall -Z
-			_box(st, Vector3(-2.9, 1.02, 0.0), Vector3(0.1, 0.44, 1.74), col)                   # tailgate
+			var zc := 0.82
+			_axles(st, 1.45, -1.45, zc, 0.42, 0.26)
+			_box(st, Vector3(0.2, 0.56, 0.0), Vector3(5.1, 0.4, 1.8), col)       # frame/body
+			_box(st, Vector3(0.2, 0.32, 0.0), Vector3(4.9, 0.2, 1.84), trim)     # rocker
+			_box(st, Vector3(1.7, 0.86, 0.0), Vector3(1.5, 0.26, 1.76), col)     # hood
+			_box(st, Vector3(0.55, 1.16, 0.0), Vector3(1.5, 0.5, 1.66), glass)   # cab glass
+			_box(st, Vector3(0.5, 1.42, 0.0), Vector3(1.4, 0.1, 1.6), col)       # cab roof
+			_rake(st, 1.2, 0.95, 1.0, 1.42, 0.76, glass)                         # windshield
+			# open bed behind the cab
+			_box(st, Vector3(-1.4, 0.82, 0.0), Vector3(2.9, 0.14, 1.7), col.darkened(0.1))  # bed floor
+			_box(st, Vector3(-1.4, 1.06, 0.82), Vector3(2.9, 0.48, 0.12), col)              # bed wall
+			_box(st, Vector3(-1.4, 1.06, -0.82), Vector3(2.9, 0.48, 0.12), col)
+			_box(st, Vector3(-2.85, 1.04, 0.0), Vector3(0.12, 0.44, 1.72), col)             # tailgate
+			_box(st, Vector3(2.5, 0.62, 0.0), Vector3(0.16, 0.36, 1.82), trim)
+			_lights(st, 2.51, 0.82, 0.64, flight)
+			_lights(st, -2.9, 0.96, 0.66, rlight)
 		"van":
-			_wheels(st, [-1.7, 1.7], 0.86, 0.30, Vector3(0.58, 0.58, 0.24))
-			_box(st, Vector3(0.0, 0.98, 0.0), Vector3(4.9, 1.5, 1.9), col)
-			_box(st, Vector3(0.0, 0.34, 0.0), Vector3(4.7, 0.22, 1.94), col.darkened(0.22))
-			# raked front cab windshield + side window strip
-			_frustum(st, 1.35, 2.45, 0.9, 1.55, 2.2, 0.86, 1.05, 1.66, glass, col)
-			_box(st, Vector3(0.4, 1.34, 0.94), Vector3(2.4, 0.5, 0.04), glass)
-			_box(st, Vector3(0.4, 1.34, -0.94), Vector3(2.4, 0.5, 0.04), glass)
+			# tall one-box: stubby raked nose, tall slab body, window band.
+			var zc := 0.86
+			_axles(st, 1.6, -1.55, zc, 0.4, 0.24)
+			_box(st, Vector3(-0.2, 1.05, 0.0), Vector3(4.6, 1.5, 1.94), col)     # tall body
+			_box(st, Vector3(-0.2, 0.36, 0.0), Vector3(4.5, 0.24, 1.98), trim)  # rocker
+			_box(st, Vector3(2.05, 0.7, 0.0), Vector3(0.7, 0.5, 1.9), col)      # short nose
+			_rake(st, 2.4, 0.95, 2.0, 1.7, 0.86, glass)                         # steep windscreen
+			_box(st, Vector3(0.5, 1.42, 0.97), Vector3(2.2, 0.44, 0.03), glass) # side window band
+			_box(st, Vector3(0.5, 1.42, -0.97), Vector3(2.2, 0.44, 0.03), glass)
+			_box(st, Vector3(-2.52, 1.0, 0.0), Vector3(0.08, 1.3, 1.86), col)   # rear doors
+			_box(st, Vector3(2.42, 0.55, 0.0), Vector3(0.14, 0.34, 1.92), trim)
+			_lights(st, 2.42, 0.7, 0.7, flight)
+			_lights(st, -2.55, 1.35, 0.66, rlight)
 		"box_truck":
-			_wheels(st, [-2.1, 0.6, 1.9], 0.9, 0.38, Vector3(0.72, 0.72, 0.3))
-			# cab with a raked windshield, then the tall cargo box behind
-			_box(st, Vector3(1.95, 0.95, 0.0), Vector3(1.5, 1.4, 2.05), col)
-			_frustum(st, 1.4, 2.75, 0.95, 1.55, 2.55, 0.9, 1.65, 2.0, glass, col)
-			_box(st, Vector3(-0.95, 1.75, 0.0), Vector3(4.3, 2.9, 2.2), col.lerp(Color.WHITE, 0.12))
+			var zc := 1.0
+			_axles(st, 2.0, -1.6, zc, 0.44, 0.3)
+			_box(st, Vector3(1.95, 0.95, 0.0), Vector3(1.5, 1.3, 2.05), col)     # cab
+			_rake(st, 2.55, 1.1, 2.25, 1.95, 0.95, glass)                        # cab windshield
+			_box(st, Vector3(2.05, 1.42, 0.97), Vector3(0.9, 0.5, 0.03), glass)  # cab side windows
+			_box(st, Vector3(2.05, 1.42, -0.97), Vector3(0.9, 0.5, 0.03), glass)
+			_box(st, Vector3(-0.95, 1.8, 0.0), Vector3(4.3, 2.9, 2.2), col.lerp(Color.WHITE, 0.12))  # cargo box
+			_box(st, Vector3(2.7, 0.5, 0.0), Vector3(0.14, 0.4, 2.0), trim)
+			_lights(st, 2.71, 0.7, 0.75, flight)
 
 
 # ------------------------------------------------------------------------ vegetation
