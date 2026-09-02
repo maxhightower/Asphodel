@@ -13,7 +13,7 @@ import json
 import os
 import time
 
-from . import buildings_grammar, detail, identity, normalize, streets
+from . import appearance_infer, buildings_grammar, detail, identity, normalize, streets
 from . import parcels as parcels_mod
 from .chunkgrid import ChunkGrid
 from .chunks import build_chunks, expected_cells, write_chunks
@@ -113,6 +113,10 @@ def compile_city(city: str, release: str, seed: int,
 
     brecords = buildings_grammar.compile_buildings(
         ordered, parcel_list, segments, seed)
+    # Package C: fill appearance (facade/roof colour+material) for buildings that
+    # carry no observed values, deterministically + spatially coherently. Never
+    # overwrites observed truth; provenance stays honest (mostly PROCEDURAL).
+    appearance_infer.infer_records(brecords, seed)
 
     det = detail.compile_detail(parcel_list, brecords, segments, seed)
     curb = detail.curb_vehicles(segments, parcel_list, seed)

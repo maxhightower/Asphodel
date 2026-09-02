@@ -1,0 +1,70 @@
+{
+  "city": "houston",
+  "buildings": 22525,
+  "facade_color_class": {
+    "PROCEDURAL": 22523,
+    "OBSERVED": 2
+  },
+  "observed_facade_colors": 2,
+  "observed_roof_colors": 5,
+  "facade_material_dist": {
+    "brick": 7539,
+    "painted_masonry": 3697,
+    "siding": 7067,
+    "stucco": 2948,
+    "metal_panel": 663,
+    "concrete": 428,
+    "stone": 179,
+    "glass_curtain": 4
+  },
+  "roof_material_dist": {
+    "asphalt_shingle": 17691,
+    "flat_membrane": 4136,
+    "standing_seam_metal": 697,
+    "roof_generic": 1
+  },
+  "facade_material_by_archetype": {
+    "DETACHED_RESIDENTIAL": {
+      "brick": 6648,
+      "siding": 6628,
+      "painted_masonry": 2178,
+      "stucco": 2237
+    },
+    "GENERIC_UNKNOWN": {
+      "painted_masonry": 710
+    },
+    "MULTIFAMILY": {
+      "brick": 410,
+      "painted_masonry": 207,
+      "siding": 439,
+      "stucco": 400
+    },
+    "INDUSTRIAL": {
+      "metal_panel": 414,
+      "concrete": 283
+    },
+    "BIG_BOX_COMMERCIAL": {
+      "concrete": 58,
+      "metal_panel": 93,
+      "painted_masonry": 31
+    },
+    "SMALL_COMMERCIAL": {
+      "painted_masonry": 497,
+      "stucco": 311,
+      "metal_panel": 155,
+      "brick": 295,
+      "concrete": 1
+    },
+    "CIVIC_SPECIAL": {
+      "brick": 186,
+      "painted_masonry": 74,
+      "stone": 179,
+      "concrete": 83
+    },
+    "OFFICE_HIGHRISE": {
+      "concrete": 3,
+      "glass_curtain": 4,
+      "metal_panel": 1
+    }
+  }
+}
