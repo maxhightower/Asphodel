@@ -627,8 +627,21 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array) -> int
 			verts += _quad_v(st, Vector3(e0.x, 0.0, e0.y), Vector3(e1.x, 0.0, e1.y),
 				Vector3(e1.x, 2.2, e1.y), Vector3(e0.x, 2.2, e0.y), nrm3, DOOR_COL)
 
+	# A single gable only fits a roughly-rectangular footprint; for L-shaped/complex
+	# polygons the oriented bbox overhangs, so keep the flat roof (which follows the
+	# real polygon) instead of an oversized gable.
+	if roof == "pitched" and not _is_roughly_rectangular(ring):
+		roof = "flat"
 	if roof == "pitched":
-		verts += _pitched_roof(st, ring, h)
+		# Per-building roof colour for variety (shingle browns / slate blues / greys).
+		var roof_col := ROOF_COL
+		match _stable_hash(bid, 23) % 5:
+			0: roof_col = Color(0.30, 0.30, 0.34)   # charcoal
+			1: roof_col = Color(0.36, 0.29, 0.25)   # brown shingle
+			2: roof_col = Color(0.27, 0.31, 0.38)   # slate blue
+			3: roof_col = Color(0.31, 0.34, 0.31)   # grey-green
+			4: roof_col = Color(0.40, 0.32, 0.28)   # terracotta-ish
+		verts += _pitched_roof(st, ring, h, roof_col)
 	elif "parapet" in feat:
 		verts += _parapet(st, ring, h)
 
@@ -655,41 +668,105 @@ func _quad_v(st: SurfaceTool, p0: Vector3, p1: Vector3, p2: Vector3, p3: Vector3
 	return 6
 
 
-func _pitched_roof(st: SurfaceTool, ring: PackedVector2Array, h: float) -> int:
-	# Approximate gable over the footprint's axis-aligned bbox, shrunk to ~85%.
-	var min_x := INF; var min_z := INF; var max_x := -INF; var max_z := -INF
+func _pitched_roof(st: SurfaceTool, ring: PackedVector2Array, h: float,
+		col: Color = ROOF_COL) -> int:
+	# Gable built over the footprint's ORIENTED bounding box (aligned to the
+	# building's longest edge) with a small eave overhang, so the roof follows a
+	# rotated/angled footprint instead of an axis-aligned bbox that overhangs the
+	# real walls. Ridge runs along the building's long axis.
+	var n := ring.size()
+	if n < 3:
+		return 0
+	# primary axis = direction of the longest edge
+	var axis := Vector2(1.0, 0.0)
+	var best_len := 0.0
+	for i in range(n):
+		var e := ring[(i + 1) % n] - ring[i]
+		var l := e.length()
+		if l > best_len:
+			best_len = l
+			axis = e / l
+	var perp := Vector2(-axis.y, axis.x)
+	var c := Vector2.ZERO
 	for p in ring:
-		min_x = minf(min_x, p.x); max_x = maxf(max_x, p.x)
-		min_z = minf(min_z, p.y); max_z = maxf(max_z, p.y)
-	var cx := (min_x + max_x) * 0.5
-	var cz := (min_z + max_z) * 0.5
-	var hw := (max_x - min_x) * 0.5 * 0.85
-	var hd := (max_z - min_z) * 0.5 * 0.85
-	var ridge_h := h + maxf(hw, hd) * 0.35
-	var along_x := hw >= hd     # ridge runs along the longer axis
+		c += p
+	c /= float(n)
+	var minu := INF; var maxu := -INF; var minv := INF; var maxv := -INF
+	for p in ring:
+		var d := p - c
+		var u := d.dot(axis); var v := d.dot(perp)
+		minu = minf(minu, u); maxu = maxf(maxu, u)
+		minv = minf(minv, v); maxv = maxf(maxv, v)
+	# small eave overhang past the walls
+	var eave := 0.4
+	minu -= eave; maxu += eave; minv -= eave; maxv += eave
+	var half_u := (maxu - minu) * 0.5
+	var half_v := (maxv - minv) * 0.5
+	var midu := (minu + maxu) * 0.5
+	var midv := (minv + maxv) * 0.5
+	var ridge_h := h + minf(half_u, half_v) * 0.7
 	var verts := 0
-	st.set_color(ROOF_COL)
-	if along_x:
-		var r0 := Vector3(cx - hw, ridge_h, cz)
-		var r1 := Vector3(cx + hw, ridge_h, cz)
-		var eaves := [
-			Vector3(cx - hw, h, cz - hd), Vector3(cx + hw, h, cz - hd),
-			Vector3(cx + hw, h, cz + hd), Vector3(cx - hw, h, cz + hd)]
-		verts += _quad_v(st, eaves[0], eaves[1], r1, r0, Vector3.UP, ROOF_COL)
-		verts += _quad_v(st, eaves[3], eaves[2], r1, r0, Vector3.UP, ROOF_COL)
-		verts += _tri_v(st, eaves[0], eaves[3], r0, ROOF_COL)
-		verts += _tri_v(st, eaves[1], eaves[2], r1, ROOF_COL)
+	if half_u >= half_v:
+		# ridge along axis (u); slopes fall toward ±v
+		var r0 := _obb_world(c, axis, perp, midu - half_u, midv, ridge_h)
+		var r1 := _obb_world(c, axis, perp, midu + half_u, midv, ridge_h)
+		var e0 := _obb_world(c, axis, perp, midu - half_u, midv - half_v, h)
+		var e1 := _obb_world(c, axis, perp, midu + half_u, midv - half_v, h)
+		var e2 := _obb_world(c, axis, perp, midu + half_u, midv + half_v, h)
+		var e3 := _obb_world(c, axis, perp, midu - half_u, midv + half_v, h)
+		verts += _quad_v(st, e0, e1, r1, r0, Vector3.UP, col)
+		verts += _quad_v(st, e3, e2, r1, r0, Vector3.UP, col)
+		verts += _tri_v(st, e0, e3, r0, col)
+		verts += _tri_v(st, e1, e2, r1, col)
 	else:
-		var r0b := Vector3(cx, ridge_h, cz - hd)
-		var r1b := Vector3(cx, ridge_h, cz + hd)
-		var eaves2 := [
-			Vector3(cx - hw, h, cz - hd), Vector3(cx + hw, h, cz - hd),
-			Vector3(cx + hw, h, cz + hd), Vector3(cx - hw, h, cz + hd)]
-		verts += _quad_v(st, eaves2[0], eaves2[3], r1b, r0b, Vector3.UP, ROOF_COL)
-		verts += _quad_v(st, eaves2[1], eaves2[2], r1b, r0b, Vector3.UP, ROOF_COL)
-		verts += _tri_v(st, eaves2[0], eaves2[1], r0b, ROOF_COL)
-		verts += _tri_v(st, eaves2[3], eaves2[2], r1b, ROOF_COL)
+		# ridge along perp (v); slopes fall toward ±u
+		var r0b := _obb_world(c, axis, perp, midu, midv - half_v, ridge_h)
+		var r1b := _obb_world(c, axis, perp, midu, midv + half_v, ridge_h)
+		var f0 := _obb_world(c, axis, perp, midu - half_u, midv - half_v, h)
+		var f1 := _obb_world(c, axis, perp, midu + half_u, midv - half_v, h)
+		var f2 := _obb_world(c, axis, perp, midu + half_u, midv + half_v, h)
+		var f3 := _obb_world(c, axis, perp, midu - half_u, midv + half_v, h)
+		verts += _quad_v(st, f0, f3, r1b, r0b, Vector3.UP, col)
+		verts += _quad_v(st, f1, f2, r1b, r0b, Vector3.UP, col)
+		verts += _tri_v(st, f0, f1, r0b, col)
+		verts += _tri_v(st, f3, f2, r1b, col)
 	return verts
+
+
+func _obb_world(c: Vector2, axis: Vector2, perp: Vector2, u: float, v: float, y: float) -> Vector3:
+	var w := c + axis * u + perp * v
+	return Vector3(w.x, y, w.y)
+
+
+func _is_roughly_rectangular(ring: PackedVector2Array) -> bool:
+	## True when the polygon fills most of its oriented bounding box, i.e. a single
+	## gable will sit on it without overhanging. Uses |shoelace area| / obb area.
+	var n := ring.size()
+	if n < 3:
+		return false
+	var area2 := 0.0
+	for i in range(n):
+		var a := ring[i]
+		var b := ring[(i + 1) % n]
+		area2 += a.x * b.y - b.x * a.y
+	var poly_area := absf(area2) * 0.5
+	# oriented bbox from the longest edge
+	var axis := Vector2(1.0, 0.0)
+	var best_len := 0.0
+	for i in range(n):
+		var e := ring[(i + 1) % n] - ring[i]
+		var l := e.length()
+		if l > best_len:
+			best_len = l
+			axis = e / l
+	var perp := Vector2(-axis.y, axis.x)
+	var minu := INF; var maxu := -INF; var minv := INF; var maxv := -INF
+	for p in ring:
+		var u := p.dot(axis); var v := p.dot(perp)
+		minu = minf(minu, u); maxu = maxf(maxu, u)
+		minv = minf(minv, v); maxv = maxf(maxv, v)
+	var obb_area := maxf(maxu - minu, 0.01) * maxf(maxv - minv, 0.01)
+	return poly_area / obb_area >= 0.82
 
 
 func _tri_v(st: SurfaceTool, p0: Vector3, p1: Vector3, p2: Vector3, col: Color) -> int:
@@ -903,21 +980,84 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 				gkey = "%s:%d" % [kind, variant]
 			if not groups.has(gkey):
 				groups[gkey] = {"kind": kind, "variant": variant, "xforms": []}
-			var basis := Basis(Vector3.UP, deg_to_rad(rot))
+			# The compiler's heading is +Z-forward (atan2(dx,dz)); every directional
+			# prop mesh (vehicles, fences, guardrails, benches) is built with its
+			# length on +X, so correct by -90 deg. Radial props (bins/poles/trees)
+			# are unaffected by the extra yaw.
+			var basis := Basis(Vector3.UP, deg_to_rad(rot) - PI * 0.5)
 			(groups[gkey]["xforms"] as Array).append(Transform3D(basis, Vector3(x, 0.0, z)))
 			total += 1
 
+	# Presentation-only vegetation scatter driven by the chunk's land-cover raster:
+	# trees on canopy cells, bushes on rough vegetation, occasional lawn trees. This
+	# fills the world with greenery without any tile authority — positions are
+	# continuous (cell centre + deterministic jitter) and resolve back to metres.
+	_scatter_vegetation(chunk, groups)
+
+	var shadow_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true,
+		"box_truck": true, "tree_round": true, "tree_conical": true, "tree_columnar": true}
 	var mm_count := 0
 	for gkey in groups.keys():
 		var g: Dictionary = groups[gkey]
 		var xforms: Array = g["xforms"]
 		if xforms.is_empty():
 			continue
-		var mmi := PropMeshes.make_multimesh(String(g["kind"]), xforms, int(g["variant"]))
+		var kind_s := String(g["kind"])
+		var mmi := PropMeshes.make_multimesh(kind_s, xforms, int(g["variant"]),
+			shadow_kinds.has(kind_s))
 		root.add_child(mmi)
 		mm_count += xforms.size()
 
 	return {"quads": 0, "verts": 0, "buildings": 0, "mm_instances": mm_count, "collisions": 0}
+
+
+func _scatter_vegetation(chunk: Dictionary, groups: Dictionary) -> void:
+	var origin_arr: Array = chunk.get("origin", [0.0, 0.0])
+	var origin := Vector2(float(origin_arr[0]), float(origin_arr[1]))
+	var runs: Array = chunk.get("surface", [])
+	if runs.is_empty():
+		return
+	var cells := _decode_rle(runs, CELLS * CELLS)
+	var cx := int(chunk.get("cx", 0))
+	var cz := int(chunk.get("cz", 0))
+	# Deterministic per-cell placement so reloads don't flicker. One candidate per
+	# STEP*STEP block of cells keeps density sane (STEP*CELL_M metres apart).
+	var STEP := 3
+	for row in range(0, CELLS, STEP):
+		for col in range(0, CELLS, STEP):
+			var t := cells[row * CELLS + col]
+			var kind := ""
+			var skip_mod := 1
+			if t == S_TREE_CANOPY:
+				kind = "tree_round"; skip_mod = 1
+			elif t == S_ROUGH_VEGETATION:
+				kind = "bush_round"; skip_mod = 2
+			elif t == S_MAINTAINED_GRASS:
+				kind = "tree_round"; skip_mod = 6      # sparse lawn trees
+			else:
+				continue
+			var hsh := _stable_hash(cx * 131071 + row, cz * 8191 + col)
+			if skip_mod > 1 and (hsh % skip_mod) != 0:
+				continue
+			# choose a tree/bush variant kind deterministically
+			if kind == "tree_round":
+				match hsh % 3:
+					0: kind = "tree_round"
+					1: kind = "tree_conical"
+					2: kind = "tree_columnar"
+			elif kind == "bush_round":
+				kind = "bush_round" if (hsh % 2) == 0 else "bush_low"
+			# continuous jitter within the block, deterministic
+			var jx := (float(hsh % 1000) / 1000.0 - 0.5) * CELL_M * float(STEP)
+			var jz := (float((hsh >> 10) % 1000) / 1000.0 - 0.5) * CELL_M * float(STEP)
+			var wx := origin.x + (float(col) + 0.5) * CELL_M + jx
+			var wz := origin.y + (float(row) + 0.5) * CELL_M + jz
+			var s := 0.8 + float((hsh >> 5) % 100) / 100.0 * 0.6   # 0.8..1.4 scale
+			var yaw := float(hsh % 360)
+			if not groups.has(kind):
+				groups[kind] = {"kind": kind, "variant": 0, "xforms": []}
+			var basis := Basis(Vector3.UP, deg_to_rad(yaw)).scaled(Vector3(s, s, s))
+			(groups[kind]["xforms"] as Array).append(Transform3D(basis, Vector3(wx, 0.0, wz)))
 
 
 # --------------------------------------------------------------- introspection

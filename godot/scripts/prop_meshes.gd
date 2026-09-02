@@ -34,6 +34,22 @@ static func _opaque_material() -> StandardMaterial3D:
 	return _mat_opaque
 
 
+static var _mat_vehicle: StandardMaterial3D = null
+
+
+static func _vehicle_material() -> StandardMaterial3D:
+	# Glossier + slightly metallic so car bodies catch light instead of reading as
+	# flat matte boxes. Back-face culled (vehicle meshes are closed + correctly wound)
+	# so interior faces don't wash out the shading.
+	if _mat_vehicle == null:
+		_mat_vehicle = StandardMaterial3D.new()
+		_mat_vehicle.vertex_color_use_as_albedo = true
+		_mat_vehicle.roughness = 0.4
+		_mat_vehicle.metallic = 0.35
+		_mat_vehicle.cull_mode = BaseMaterial3D.CULL_BACK
+	return _mat_vehicle
+
+
 static func _glass_material() -> StandardMaterial3D:
 	# Shared semi-transparent material for the chainlink-fence mesh panel.
 	if _mat_glass == null:
@@ -60,7 +76,8 @@ static func get_mesh(kind: String, variant: int = 0) -> Mesh:
 
 ## Builds a MultiMeshInstance3D drawing `kind` at every Transform3D in
 ## `transforms`, in one draw call. Shadows are off (small/cheap props).
-static func make_multimesh(kind: String, transforms: Array, variant: int = 0) -> MultiMeshInstance3D:
+static func make_multimesh(kind: String, transforms: Array, variant: int = 0,
+		cast_shadow: bool = false) -> MultiMeshInstance3D:
 	var mesh := get_mesh(kind, variant)
 	var mm := MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
@@ -70,7 +87,8 @@ static func make_multimesh(kind: String, transforms: Array, variant: int = 0) ->
 		mm.set_instance_transform(i, transforms[i])
 	var mmi := MultiMeshInstance3D.new()
 	mmi.multimesh = mm
-	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if cast_shadow \
+		else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	return mmi
 
 
@@ -141,7 +159,8 @@ static func _build(kind: String, variant: int) -> ArrayMesh:
 			_box(st, Vector3(0.0, 0.5, 0.0), Vector3(0.5, 1.0, 0.5), Color(1.0, 0.0, 1.0))
 	st.generate_normals()
 	var mesh := st.commit()
-	mesh.surface_set_material(0, _opaque_material())
+	var vehicle_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true, "box_truck": true}
+	mesh.surface_set_material(0, _vehicle_material() if vehicle_kinds.has(kind) else _opaque_material())
 	return mesh
 
 
