@@ -70,6 +70,33 @@ def test_spatial_continuity():
     assert mean_far > mean_near * 1.5, f"no distance variety ({mean_far:.1f} vs {mean_near:.1f})"
 
 
+def test_tall_buildings_favour_glass_curtain():
+    """The taller the building, the more often its facade resolves to a full glass
+    curtain wall; short buildings almost never do. Deterministic + PROCEDURAL."""
+    # SMALL_COMMERCIAL has no glass in its base prior, so any glass here is the
+    # height rule (OFFICE_HIGHRISE would be ~half glass regardless of height).
+    def glass_frac(height):
+        hits = 0
+        for i in range(200):
+            ap = inf.infer_building(i, f"g{i}", 10.0 * i, 5.0 * i, "SMALL_COMMERCIAL",
+                                    _blank(i), seed=3, height=height)
+            if ap["facade"]["material"]["value"] == "glass_curtain":
+                hits += 1
+                assert ap["facade"]["material"]["class"] == "PROCEDURAL"
+        return hits / 200.0
+
+    assert glass_frac(6.0) < 0.05          # low-rise: essentially never forced glass
+    assert glass_frac(60.0) > glass_frac(20.0) > glass_frac(6.0)   # monotone in height
+    assert glass_frac(60.0) > 0.6          # high-rise: mostly glass
+
+
+def test_glazing_choice_is_deterministic():
+    a = inf.infer_building(9, "k9", 3.0, 4.0, "SMALL_COMMERCIAL", _blank(9), seed=2, height=40.0)
+    b = inf.infer_building(9, "k9", 3.0, 4.0, "SMALL_COMMERCIAL", _blank(9), seed=2, height=40.0)
+    assert a["facade"]["material"] == b["facade"]["material"]
+    assert a["facade"]["color"] == b["facade"]["color"]
+
+
 def test_unknown_archetype_is_fallback_procedural():
     ap = inf.infer_building(0, "kx", 0.0, 0.0, "NOT_A_REAL_ARCH", _blank(), seed=1)
     assert ap["facade"]["color"]["class"] == "PROCEDURAL"

@@ -89,6 +89,29 @@ _PRIOR = {
         roof_ways=[(0.0, 0.0, 0.38)]),
 }
 
+# Cool, muted curtain-wall colourways (h,s,v) for buildings that resolve to a full
+# glass_curtain facade — used instead of the archetype's opaque palette so a glass
+# tower reads blue/steel/teal rather than tinted stucco.
+_GLASS_WAYS = [(0.55, 0.22, 0.46), (0.57, 0.15, 0.52), (0.52, 0.11, 0.55),
+               (0.60, 0.20, 0.42), (0.50, 0.26, 0.40), (0.54, 0.08, 0.58)]
+
+# Height (m) where curtain-wall glazing starts to appear, and the span over which
+# its probability ramps to the cap. Below the start it never forces glass; a
+# ~48 m tower is ~0.9 likely to be a full glass surface.
+_GLASS_START_M = 12.0
+_GLASS_SPAN_M = 40.0
+_GLASS_MAX_P = 0.9
+
+
+def glass_probability(height: float) -> float:
+    """Chance a building of this height reads as a full glass curtain wall.
+
+    Pure function of height (a geometry truth): 0 below the start height, ramping
+    linearly to a cap. Taller → more likely a skyscraper-style glazed surface."""
+    if not height or height < _GLASS_START_M:
+        return 0.0
+    return min(_GLASS_MAX_P, (height - _GLASS_START_M) / _GLASS_SPAN_M)
+
 
 def _hash(*ints: int) -> int:
     h = 1469598103934665603
@@ -174,11 +197,13 @@ def _pick_way(ways, x, z, kh, seed, salt):
 
 
 def infer_building(bid: int, key: str, cx: float, cz: float, arch: str,
-                   appearance: dict, seed: int, region: str = "regional") -> dict:
+                   appearance: dict, seed: int, region: str = "regional",
+                   height: float = 0.0) -> dict:
     """Fill missing facade/roof colour+material + style_family for one building.
 
     `appearance` is a BuildingAppearanceV1.to_dict(); observed values are never
-    overwritten. Returns the same dict (mutated) for convenience.
+    overwritten. `height` (m) biases tall buildings toward a full glass curtain
+    wall (see glass_probability). Returns the same dict (mutated) for convenience.
     """
     prior = _PRIOR.get(arch, _PRIOR["GENERIC_UNKNOWN"])
     is_fallback = arch not in _PRIOR
@@ -190,10 +215,17 @@ def infer_building(bid: int, key: str, cx: float, cz: float, arch: str,
     if fmat["value"] is None:
         fmat["value"] = _pick_weighted(prior["facade_mats"], _h01(kh, seed, 11))
         fmat["class"] = infer_cls
+        # Height-driven glazing: the taller the building, the more likely its whole
+        # facade is a glass curtain wall (skyscraper surface). Stays PROCEDURAL and
+        # deterministic; never overrides observed material.
+        if _h01(kh, seed, 71) < glass_probability(height):
+            fmat["value"] = "glass_curtain"
+    is_glass = fmat["value"] == "glass_curtain"
     # ---- facade colour (colourway, spatially coherent) ----
     fcol = appearance["facade"]["color"]
     if fcol["value"] is None:
-        h, s, v = _pick_way(prior["facade_ways"], cx, cz, kh, seed, 100)
+        ways = _GLASS_WAYS if is_glass else prior["facade_ways"]
+        h, s, v = _pick_way(ways, cx, cz, kh, seed, 140 if is_glass else 100)
         fcol["value"] = _hex(h, s, v)
         fcol["class"] = infer_cls
     # ---- roof material ----
@@ -227,8 +259,9 @@ def infer_records(records: list, seed: int, region: str = "regional") -> int:
             continue
         c = r.poly.centroid
         before = r.appearance["facade"]["color"]["value"]
+        hm = r.appearance.get("height_m", {}).get("value")
         infer_building(r.bid, r.key, float(c.x), float(c.y), r.arch,
-                       r.appearance, seed, region)
+                       r.appearance, seed, region, float(hm) if hm else 0.0)
         if before is None and r.appearance["facade"]["color"]["value"] is not None:
             filled += 1
     return filled

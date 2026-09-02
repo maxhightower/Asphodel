@@ -111,15 +111,21 @@ void fragment() {
 		float grain = sin(uv.x * 5.0 + vnoise(uv * vec2(0.4, 6.0)) * 6.0) * 0.05;
 		albedo *= 1.0 + grain + macro * 0.06;
 		rough = 0.8;
-	} else if (fam == 8) {              // glass curtain: dark cool, mullion grid, hot spec
-		vec3 cool = mix(tint, vec3(0.10, 0.14, 0.20), 0.5);
-		float mull = max(grooves(uv.x, 1.4, 0.03), grooves(uv.y, 1.2, 0.03));
-		float sheen = vnoise(uv * vec2(0.2, 0.6)) * 0.12;
-		albedo = cool * (1.0 + sheen);
-		albedo = mix(albedo, albedo * 0.5, mull);
-		rough = 0.12;
-		metallic = 0.1;
-		spec = 0.9;
+	} else if (fam == 8) {              // glass curtain wall: pane grid + sky gradient
+		vec3 cool = mix(tint, vec3(0.14, 0.19, 0.26), 0.45);
+		// Vertical mullions + horizontal transoms make a window-pane grid; a wider
+		// spandrel line every few metres reads as floor slabs.
+		float panes = max(grooves(uv.x, 1.5, 0.04), grooves(uv.y, 1.5, 0.04));
+		float floors = grooves(uv.y, 3.6, 0.09);
+		// Reflected sky: brighter toward the top of the tower + a slow drift, so the
+		// surface reads as reflective glazing rather than a flat slab.
+		float skyref = clamp(v_world.y / 55.0, 0.0, 1.0) * 0.22 + vnoise(uv * vec2(0.15, 0.5)) * 0.12;
+		albedo = cool * (1.0 + skyref);
+		albedo = mix(albedo, albedo * 1.18, panes * 0.5);   // bright mullion edge
+		albedo = mix(albedo, albedo * 0.62, floors);        // darker spandrel band
+		rough = 0.2;
+		metallic = 0.0;
+		spec = 0.6;
 	} else if (fam == 9) {              // painted masonry: near flat, slight variation
 		albedo *= 0.98 + macro * 0.05 + vnoise(uv * 2.0) * 0.03;
 		rough = 0.85;

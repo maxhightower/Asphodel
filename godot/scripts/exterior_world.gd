@@ -746,6 +746,10 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array,
 	var is_storefront := ("storefront" in feat) and (arch == "SMALL_COMMERCIAL" or arch == "BIG_BOX_COMMERCIAL")
 	var is_residential := arch == "DETACHED_RESIDENTIAL" or arch == "MULTIFAMILY"
 	var is_house := arch == "DETACHED_RESIDENTIAL"
+	# Full glass curtain wall (usually tall towers): the facade shader already draws
+	# a continuous mullion grid, so skip the punched-window quads and let the whole
+	# surface read as glazing.
+	var is_glass_facade := _facade_family_of(b) == WorldMaterials.B_GLASS_CURTAIN
 	var shutter_col: Color = SHUTTER_COLS[_stable_hash(bid, 29) % SHUTTER_COLS.size()]
 	# Per-house massing is picked deterministically so a subdivision reads as varied
 	# homes (some with a porch, some a garage, etc.) instead of copy-paste — and so a
@@ -861,6 +865,8 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array,
 					verts += _quad_v(st, Vector3(d0.x, 0.0, d0.y), Vector3(d1.x, 0.0, d1.y),
 						Vector3(d1.x, 2.2, d1.y), Vector3(d0.x, 2.2, d0.y), nrm3, DOOR_COL)
 				continue
+			if is_glass_facade:
+				continue   # curtain wall: glazing is the facade shader, no punched windows
 			var win_h := floor_h * 0.55
 			var win_y := y0 + floor_h * 0.3
 			# Punched openings, not full glazing: wider spacing (houses widest) so
