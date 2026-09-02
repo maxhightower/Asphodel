@@ -137,6 +137,7 @@ var _min_x: float = 0.0
 var _min_z: float = 0.0
 var _cols: int = 0
 var _rows: int = 0
+var _veg_region: String = "temperate"   # geographic biome for vegetation selection
 
 # Parsed-chunk-JSON LRU cache: key "cx_cz" -> Dictionary.
 var _chunk_cache: Dictionary = {}
@@ -172,8 +173,38 @@ func setup(bundle_dir: String) -> bool:
 	_cols = int(grid.get("cols", 0))
 	_rows = int(grid.get("rows", 0))
 	_world_dir = bundle_dir.path_join("world")
+	# Geographic vegetation region from the bundle bbox (lat/lon) — never the city
+	# name. Drives which species scatter favours (Section 6 / Section 24).
+	_veg_region = _derive_veg_region(bundle_dir)
 	_ready_ok = _cols > 0 and _rows > 0
 	return _ready_ok
+
+
+## Coarse deterministic biome from the bundle's geographic bbox centroid. Pure
+## geography (latitude + a continental-dryness proxy from longitude), so the same
+## place always reads the same and no rule ever branches on a city name.
+func _derive_veg_region(bundle_dir: String) -> String:
+	var mpath := bundle_dir.path_join("meta.json")
+	if not FileAccess.file_exists(mpath):
+		return "temperate"
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(mpath))
+	if not (parsed is Dictionary):
+		return "temperate"
+	var bbox: Array = (parsed as Dictionary).get("bbox", [])  # [S, W, N, E]
+	if bbox.size() < 4:
+		return "temperate"
+	var lat := (float(bbox[0]) + float(bbox[2])) * 0.5
+	var lon := (float(bbox[1]) + float(bbox[3])) * 0.5
+	var alat := absf(lat)
+	# dry interior/west (very rough continental proxy) vs humid; gulf/subtropical
+	# vs temperate vs boreal by latitude band.
+	if alat < 31.0:
+		return "arid" if lon < -100.0 else "gulf"
+	if alat < 37.0:
+		return "arid" if lon < -103.0 else "subtropical"
+	if alat < 49.0:
+		return "temperate"
+	return "boreal"
 
 
 func world_meta_ok() -> bool:
@@ -1604,7 +1635,9 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 	# or foliage colour), so they must be grouped by kind:variant.
 	var variant_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true,
 		"box_truck": true, "tree_round": true, "tree_oak": true, "tree_conical": true,
-		"tree_columnar": true, "tree_palm": true, "tree_willow": true, "bush_round": true, "bush_low": true}
+		"tree_columnar": true, "tree_palm": true, "tree_willow": true, "bush_round": true, "bush_low": true,
+		"tree_magnolia": true, "tree_crape_myrtle": true, "tree_baldcypress": true,
+		"hedge": true, "flowering_shrub": true, "tall_grass": true, "native_scrub": true}
 	var total := 0
 	for lst in lists:
 		for row in lst:
@@ -1639,6 +1672,11 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 			# length on +X, so correct by -90 deg. Radial props (bins/poles/trees)
 			# are unaffected by the extra yaw.
 			var basis := Basis(Vector3.UP, deg_to_rad(rot) - PI * 0.5)
+			# Grammar-placed trees also get per-species age/proportion variation so
+			# they match the scattered ones (bushes/props unaffected).
+			if kind.begins_with("tree_"):
+				var tsh := _stable_hash(int(round(x * 4.0)), int(round(z * 4.0)))
+				basis = basis.scaled(_tree_scale(kind, 1.0, tsh))
 			(groups[gkey]["xforms"] as Array).append(Transform3D(basis, Vector3(x, 0.0, z)))
 			total += 1
 
@@ -1650,7 +1688,8 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 
 	var shadow_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true,
 		"box_truck": true, "tree_round": true, "tree_oak": true, "tree_conical": true,
-		"tree_columnar": true, "tree_palm": true, "tree_willow": true}
+		"tree_columnar": true, "tree_palm": true, "tree_willow": true,
+		"tree_magnolia": true, "tree_crape_myrtle": true, "tree_baldcypress": true}
 	var mm_count := 0
 	for gkey in groups.keys():
 		var g: Dictionary = groups[gkey]
@@ -1701,8 +1740,13 @@ func _scatter_vegetation(chunk: Dictionary, groups: Dictionary,
 	var cz := int(chunk.get("cz", 0))
 	# Deterministic per-cell placement so reloads don't flicker. One candidate per
 	# STEP*STEP block of cells keeps density sane (STEP*CELL_M metres apart).
-	var canopy := ["tree_oak", "tree_round", "tree_conical", "tree_willow", "tree_oak", "tree_palm"]
-	var lawn := ["tree_round", "tree_oak", "tree_conical", "tree_columnar", "tree_willow"]
+	# Species mix is conditioned on the geographic biome (region) + land cover, so
+	# a Gulf city favours live oak / magnolia / palm / bald cypress while a
+	# temperate one favours pines / elms — driven by geography, never city name.
+	var veg := _region_veg(_veg_region)
+	var canopy: Array = veg["canopy"]
+	var lawn: Array = veg["lawn"]
+	var rough: Array = veg["rough"]
 	var STEP := 3
 	for row in range(0, CELLS, STEP):
 		for col in range(0, CELLS, STEP):
@@ -1717,7 +1761,7 @@ func _scatter_vegetation(chunk: Dictionary, groups: Dictionary,
 			elif t == S_ROUGH_VEGETATION:
 				if (hsh % 3) != 0:
 					continue
-				kind = "bush_round" if (hsh % 2) == 0 else "bush_low"
+				kind = rough[hsh % rough.size()]
 				s_lo = 0.9; s_hi = 1.7
 			elif t == S_MAINTAINED_GRASS:
 				if (hsh % 6) != 0:
@@ -1757,6 +1801,56 @@ func _scatter_vegetation(chunk: Dictionary, groups: Dictionary,
 			(groups[gkey]["xforms"] as Array).append(Transform3D(basis, Vector3(wx, 0.0, wz)))
 
 
+## Region-conditioned vegetation palettes (weighted by repetition). Keys:
+## canopy (tree-canopy cells), lawn (maintained grass), rough (rough vegetation /
+## ground cover). Species are the geographic mix for the biome; every kind is a
+## real PropMeshes builder.
+func _region_veg(region: String) -> Dictionary:
+	match region:
+		"gulf":
+			return {
+				"canopy": ["tree_oak", "tree_oak", "tree_magnolia", "tree_magnolia",
+					"tree_round", "tree_palm", "tree_palm", "tree_baldcypress",
+					"tree_willow"],
+				"lawn": ["tree_oak", "tree_crape_myrtle", "tree_crape_myrtle",
+					"tree_palm", "tree_round", "tree_magnolia"],
+				"rough": ["bush_round", "bush_low", "native_scrub", "tall_grass",
+					"flowering_shrub", "hedge"],
+			}
+		"subtropical":
+			return {
+				"canopy": ["tree_oak", "tree_oak", "tree_round", "tree_round",
+					"tree_magnolia", "tree_conical", "tree_crape_myrtle", "tree_palm"],
+				"lawn": ["tree_oak", "tree_crape_myrtle", "tree_round",
+					"tree_columnar", "tree_magnolia"],
+				"rough": ["bush_round", "bush_low", "native_scrub", "tall_grass",
+					"flowering_shrub", "hedge"],
+			}
+		"arid":
+			return {
+				"canopy": ["tree_round", "tree_conical", "tree_columnar",
+					"tree_crape_myrtle", "native_scrub"],
+				"lawn": ["tree_crape_myrtle", "tree_round", "tree_columnar"],
+				"rough": ["native_scrub", "native_scrub", "tall_grass", "bush_low"],
+			}
+		"boreal":
+			return {
+				"canopy": ["tree_conical", "tree_conical", "tree_conical",
+					"tree_columnar", "tree_round"],
+				"lawn": ["tree_conical", "tree_columnar", "tree_round"],
+				"rough": ["bush_round", "bush_low", "native_scrub", "tall_grass"],
+			}
+		_:  # temperate
+			return {
+				"canopy": ["tree_round", "tree_round", "tree_conical", "tree_conical",
+					"tree_oak", "tree_columnar", "tree_willow"],
+				"lawn": ["tree_round", "tree_conical", "tree_columnar",
+					"tree_crape_myrtle"],
+				"rough": ["bush_round", "bush_low", "hedge", "flowering_shrub",
+					"tall_grass"],
+			}
+
+
 ## Non-uniform tree scale = cover-size × age tier × per-species proportion.
 ## Bushes stay near-uniform. `hsh` is the placement's stable hash.
 func _tree_scale(kind: String, base: float, hsh: int) -> Vector3:
@@ -1781,6 +1875,9 @@ func _tree_scale(kind: String, base: float, hsh: int) -> Vector3:
 		"tree_oak": spw = 1.24; sph = 0.90           # live oak: broad, low
 		"tree_willow": spw = 1.06; sph = 1.02        # willow: full rounded
 		"tree_palm": spw = 0.95; sph = 1.12          # palm: tall trunk
+		"tree_magnolia": spw = 1.08; sph = 0.96      # magnolia: dense, low
+		"tree_baldcypress": spw = 0.82; sph = 1.20   # bald cypress: tall, narrow
+		"tree_crape_myrtle": spw = 0.9; sph = 0.85   # crape myrtle: small ornamental
 		_: pass                                      # tree_round: balanced
 	return Vector3(base * ow * spw, base * oh * sph, base * ow * spw)
 

@@ -74,6 +74,8 @@ const SUPPORTED_KINDS := [
 	"sedan", "suv", "pickup", "van", "box_truck",
 	"tree_round", "tree_oak", "tree_conical", "tree_columnar", "tree_palm",
 	"tree_willow", "bush_round", "bush_low",
+	"tree_magnolia", "tree_crape_myrtle", "tree_baldcypress",
+	"hedge", "flowering_shrub", "tall_grass", "native_scrub",
 ]
 
 
@@ -182,6 +184,20 @@ static func _build(kind: String, variant: int) -> ArrayMesh:
 			_build_bush_round(st, variant)
 		"bush_low":
 			_build_bush_low(st, variant)
+		"tree_magnolia":
+			_build_tree_magnolia(st, variant)
+		"tree_crape_myrtle":
+			_build_tree_crape_myrtle(st, variant)
+		"tree_baldcypress":
+			_build_tree_baldcypress(st, variant)
+		"hedge":
+			_build_hedge(st, variant)
+		"flowering_shrub":
+			_build_flowering_shrub(st, variant)
+		"tall_grass":
+			_build_tall_grass(st, variant)
+		"native_scrub":
+			_build_native_scrub(st, variant)
 		_:
 			# Unknown kind: an obvious magenta box rather than a silent crash.
 			_box(st, Vector3(0.0, 0.5, 0.0), Vector3(0.5, 1.0, 0.5), Color(1.0, 0.0, 1.0))
@@ -674,3 +690,72 @@ static func _build_bush_round(st: SurfaceTool, variant: int = 0) -> void:
 static func _build_bush_low(st: SurfaceTool, variant: int = 0) -> void:
 	var leaf := _leaf(variant, 0.03)
 	_box(st, Vector3(0.0, 0.35, 0.0), Vector3(1.6, 0.7, 0.9), leaf)
+
+
+## Southern magnolia — dense, dark, glossy broadleaf; rounded compact crown low
+## to the ground on a short trunk.
+static func _build_tree_magnolia(st: SurfaceTool, variant: int = 0) -> void:
+	_cylinder(st, Vector3.ZERO, 0.26, 1.8, 6, TRUNK_COL.darkened(0.1), false, false)
+	var c := _leaf(variant, -0.06)   # darker green
+	_box(st, Vector3(0.0, 2.6, 0.0), Vector3(3.4, 2.2, 3.4), c.darkened(0.05))
+	_box(st, Vector3(0.6, 3.4, 0.3), Vector3(2.4, 1.8, 2.4), c)
+	_box(st, Vector3(-0.6, 3.5, -0.3), Vector3(2.2, 1.7, 2.4), c.lerp(Color.WHITE, 0.03))
+	_box(st, Vector3(0.0, 4.4, 0.0), Vector3(1.8, 1.3, 1.8), c.lerp(Color.WHITE, 0.06))
+
+
+## Crape myrtle — small multi-stem ornamental with an airy rounded head; blooms
+## give a pink/white tint on some variants.
+static func _build_tree_crape_myrtle(st: SurfaceTool, variant: int = 0) -> void:
+	var trunk := Color(0.55, 0.45, 0.38)
+	for sx in [-0.18, 0.0, 0.18]:
+		_cylinder(st, Vector3(sx, 0.0, sx * 0.5), 0.06, 2.2, 5, trunk, false, false)
+	var bloom := [Color(0.72, 0.45, 0.6), Color(0.85, 0.82, 0.86), Color(0.6, 0.5, 0.66)]
+	var c: Color = _leaf(variant, 0.02).lerp(bloom[variant % bloom.size()], 0.5)
+	_box(st, Vector3(0.0, 2.6, 0.0), Vector3(2.0, 1.2, 2.0), c.darkened(0.04))
+	_box(st, Vector3(0.2, 3.2, 0.1), Vector3(1.5, 1.0, 1.5), c)
+	_box(st, Vector3(-0.2, 3.4, -0.1), Vector3(1.2, 0.9, 1.2), c.lerp(Color.WHITE, 0.06))
+
+
+## Bald cypress — tall wetland conifer: straight trunk, narrow feathery conical
+## crown that broadens near the base (riparian).
+static func _build_tree_baldcypress(st: SurfaceTool, variant: int = 0) -> void:
+	_cylinder(st, Vector3.ZERO, 0.28, 3.4, 6, TRUNK_COL.darkened(0.08), false, false)
+	var leaf := _leaf(variant, 0.04).lerp(Color(0.6, 0.62, 0.4), 0.25)  # feathery yellow-green
+	_cone(st, Vector3(0.0, 2.6, 0.0), 2.0, 2.6, 9, leaf, true)
+	_cone(st, Vector3(0.0, 4.4, 0.0), 1.5, 2.4, 9, leaf.lerp(Color.WHITE, 0.04), false)
+	_cone(st, Vector3(0.0, 6.0, 0.0), 1.0, 2.2, 9, leaf.lerp(Color.WHITE, 0.08), false)
+
+
+## Clipped hedge — a low boxy run of dense foliage (property lines, borders).
+static func _build_hedge(st: SurfaceTool, variant: int = 0) -> void:
+	var leaf := _leaf(variant, -0.02)
+	_box(st, Vector3(0.0, 0.55, 0.0), Vector3(2.0, 1.1, 0.8), leaf.darkened(0.04))
+	_box(st, Vector3(0.0, 1.05, 0.0), Vector3(1.94, 0.2, 0.74), leaf.lerp(Color.WHITE, 0.05))
+
+
+## Flowering shrub — a rounded bush dotted with small blossoms.
+static func _build_flowering_shrub(st: SurfaceTool, variant: int = 0) -> void:
+	var leaf := _leaf(variant, 0.0)
+	_box(st, Vector3(0.0, 0.5, 0.0), Vector3(1.3, 1.0, 1.3), leaf)
+	var bloom: Color = [Color(0.85, 0.4, 0.5), Color(0.9, 0.85, 0.5), Color(0.7, 0.5, 0.8)][variant % 3]
+	for p in [Vector3(0.4, 1.0, 0.2), Vector3(-0.3, 0.95, -0.35), Vector3(0.1, 1.05, -0.2),
+			Vector3(-0.35, 1.0, 0.3)]:
+		_box(st, p, Vector3(0.28, 0.22, 0.28), bloom)
+
+
+## Tall grass tuft — a few crossed upright blades (ditches / rough ground).
+static func _build_tall_grass(st: SurfaceTool, variant: int = 0) -> void:
+	var g := _leaf(variant, 0.06).lerp(Color(0.7, 0.68, 0.4), 0.3)
+	for a in [0.0, 0.7, 1.5, 2.3, 3.0]:
+		var dx := cos(a) * 0.12
+		var dz := sin(a) * 0.12
+		_quad(st, Vector3(-0.05, 0.0, 0.0), Vector3(0.05, 0.0, 0.0),
+			Vector3(dx + 0.03, 1.1, dz), Vector3(dx - 0.03, 1.1, dz), g)
+
+
+## Native scrub — a low sprawling irregular clump of dry brush.
+static func _build_native_scrub(st: SurfaceTool, variant: int = 0) -> void:
+	var g := _leaf(variant, -0.04).lerp(Color(0.5, 0.5, 0.34), 0.35)
+	_box(st, Vector3(0.0, 0.3, 0.0), Vector3(1.5, 0.6, 1.4), g.darkened(0.05))
+	_box(st, Vector3(0.4, 0.5, -0.2), Vector3(0.9, 0.5, 0.9), g)
+	_box(st, Vector3(-0.4, 0.45, 0.3), Vector3(0.8, 0.45, 0.8), g.lerp(Color.WHITE, 0.04))

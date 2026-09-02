@@ -35,8 +35,15 @@ render_variants:
   tree_columnar: 5
   tree_palm: 5
   tree_willow: 5
+  tree_magnolia: 5
+  tree_crape_myrtle: 5
+  tree_baldcypress: 5
   bush_round: 5
   bush_low: 5
+  hedge: 5
+  flowering_shrub: 5
+  tall_grass: 5
+  native_scrub: 5
   cabinet: 1
   fridge: 1
   shelf: 1
@@ -1570,6 +1577,163 @@ families:
     procedural: tree_willow
     conditions:
     - NORMAL
+- semantic_id: magnolia
+  category: vegetation
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 6.0
+    depth_m: 6.0
+    height_m: 8.0
+  clearance: {}
+  collision: none
+  interaction: none
+  material_family: null
+  room_tags: []
+  parcel_tags: []
+  building_tags: []
+  climate_tags:
+  - gulf
+  - subtropical
+  seed_tag: magnolia
+  render_kind: tree_magnolia
+  lod_fallback: tree_magnolia
+  variants:
+  - id: magnolia_00
+    weight: 1.0
+    resource: null
+    procedural: tree_magnolia
+    conditions:
+    - NORMAL
+  - id: magnolia_01
+    weight: 1.0
+    resource: null
+    procedural: tree_magnolia
+    conditions:
+    - NORMAL
+  - id: magnolia_02
+    weight: 1.0
+    resource: null
+    procedural: tree_magnolia
+    conditions:
+    - NORMAL
+  - id: magnolia_03
+    weight: 1.0
+    resource: null
+    procedural: tree_magnolia
+    conditions:
+    - NORMAL
+  - id: magnolia_04
+    weight: 1.0
+    resource: null
+    procedural: tree_magnolia
+    conditions:
+    - NORMAL
+- semantic_id: crape_myrtle
+  category: vegetation
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 4.0
+    depth_m: 4.0
+    height_m: 5.0
+  clearance: {}
+  collision: none
+  interaction: none
+  material_family: null
+  room_tags: []
+  parcel_tags: []
+  building_tags: []
+  climate_tags:
+  - gulf
+  - subtropical
+  - arid
+  seed_tag: crape_myrtle
+  render_kind: tree_crape_myrtle
+  lod_fallback: tree_crape_myrtle
+  variants:
+  - id: crape_myrtle_00
+    weight: 1.0
+    resource: null
+    procedural: tree_crape_myrtle
+    conditions:
+    - NORMAL
+  - id: crape_myrtle_01
+    weight: 1.0
+    resource: null
+    procedural: tree_crape_myrtle
+    conditions:
+    - NORMAL
+  - id: crape_myrtle_02
+    weight: 1.0
+    resource: null
+    procedural: tree_crape_myrtle
+    conditions:
+    - NORMAL
+  - id: crape_myrtle_03
+    weight: 1.0
+    resource: null
+    procedural: tree_crape_myrtle
+    conditions:
+    - NORMAL
+  - id: crape_myrtle_04
+    weight: 1.0
+    resource: null
+    procedural: tree_crape_myrtle
+    conditions:
+    - NORMAL
+- semantic_id: bald_cypress
+  category: vegetation
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 5.0
+    depth_m: 5.0
+    height_m: 10.0
+  clearance: {}
+  collision: none
+  interaction: none
+  material_family: null
+  room_tags: []
+  parcel_tags: []
+  building_tags: []
+  climate_tags:
+  - gulf
+  - riparian
+  seed_tag: bald_cypress
+  render_kind: tree_baldcypress
+  lod_fallback: tree_baldcypress
+  variants:
+  - id: bald_cypress_00
+    weight: 1.0
+    resource: null
+    procedural: tree_baldcypress
+    conditions:
+    - NORMAL
+  - id: bald_cypress_01
+    weight: 1.0
+    resource: null
+    procedural: tree_baldcypress
+    conditions:
+    - NORMAL
+  - id: bald_cypress_02
+    weight: 1.0
+    resource: null
+    procedural: tree_baldcypress
+    conditions:
+    - NORMAL
+  - id: bald_cypress_03
+    weight: 1.0
+    resource: null
+    procedural: tree_baldcypress
+    conditions:
+    - NORMAL
+  - id: bald_cypress_04
+    weight: 1.0
+    resource: null
+    procedural: tree_baldcypress
+    conditions:
+    - NORMAL
 - semantic_id: shrub_round
   category: vegetation
   placement: ground
@@ -1668,6 +1832,213 @@ families:
     weight: 1.0
     resource: null
     procedural: bush_low
+    conditions:
+    - NORMAL
+- semantic_id: hedge
+  category: vegetation
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 2.0
+    depth_m: 0.8
+    height_m: 1.1
+  clearance: {}
+  collision: none
+  interaction: none
+  material_family: null
+  room_tags: []
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: hedge
+  render_kind: hedge
+  lod_fallback: hedge
+  variants:
+  - id: hedge_00
+    weight: 1.0
+    resource: null
+    procedural: hedge
+    conditions:
+    - NORMAL
+  - id: hedge_01
+    weight: 1.0
+    resource: null
+    procedural: hedge
+    conditions:
+    - NORMAL
+  - id: hedge_02
+    weight: 1.0
+    resource: null
+    procedural: hedge
+    conditions:
+    - NORMAL
+  - id: hedge_03
+    weight: 1.0
+    resource: null
+    procedural: hedge
+    conditions:
+    - NORMAL
+  - id: hedge_04
+    weight: 1.0
+    resource: null
+    procedural: hedge
+    conditions:
+    - NORMAL
+- semantic_id: flowering_shrub
+  category: vegetation
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 1.3
+    depth_m: 1.3
+    height_m: 1.1
+  clearance: {}
+  collision: none
+  interaction: none
+  material_family: null
+  room_tags: []
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: flowering_shrub
+  render_kind: flowering_shrub
+  lod_fallback: flowering_shrub
+  variants:
+  - id: flowering_shrub_00
+    weight: 1.0
+    resource: null
+    procedural: flowering_shrub
+    conditions:
+    - NORMAL
+  - id: flowering_shrub_01
+    weight: 1.0
+    resource: null
+    procedural: flowering_shrub
+    conditions:
+    - NORMAL
+  - id: flowering_shrub_02
+    weight: 1.0
+    resource: null
+    procedural: flowering_shrub
+    conditions:
+    - NORMAL
+  - id: flowering_shrub_03
+    weight: 1.0
+    resource: null
+    procedural: flowering_shrub
+    conditions:
+    - NORMAL
+  - id: flowering_shrub_04
+    weight: 1.0
+    resource: null
+    procedural: flowering_shrub
+    conditions:
+    - NORMAL
+- semantic_id: tall_grass
+  category: vegetation
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 0.6
+    depth_m: 0.6
+    height_m: 1.1
+  clearance: {}
+  collision: none
+  interaction: none
+  material_family: null
+  room_tags: []
+  parcel_tags: []
+  building_tags: []
+  climate_tags:
+  - gulf
+  - riparian
+  - temperate
+  - arid
+  seed_tag: tall_grass
+  render_kind: tall_grass
+  lod_fallback: tall_grass
+  variants:
+  - id: tall_grass_00
+    weight: 1.0
+    resource: null
+    procedural: tall_grass
+    conditions:
+    - NORMAL
+  - id: tall_grass_01
+    weight: 1.0
+    resource: null
+    procedural: tall_grass
+    conditions:
+    - NORMAL
+  - id: tall_grass_02
+    weight: 1.0
+    resource: null
+    procedural: tall_grass
+    conditions:
+    - NORMAL
+  - id: tall_grass_03
+    weight: 1.0
+    resource: null
+    procedural: tall_grass
+    conditions:
+    - NORMAL
+  - id: tall_grass_04
+    weight: 1.0
+    resource: null
+    procedural: tall_grass
+    conditions:
+    - NORMAL
+- semantic_id: native_scrub
+  category: vegetation
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 1.6
+    depth_m: 1.6
+    height_m: 0.7
+  clearance: {}
+  collision: none
+  interaction: none
+  material_family: null
+  room_tags: []
+  parcel_tags: []
+  building_tags: []
+  climate_tags:
+  - arid
+  - gulf
+  - temperate
+  seed_tag: native_scrub
+  render_kind: native_scrub
+  lod_fallback: native_scrub
+  variants:
+  - id: native_scrub_00
+    weight: 1.0
+    resource: null
+    procedural: native_scrub
+    conditions:
+    - NORMAL
+  - id: native_scrub_01
+    weight: 1.0
+    resource: null
+    procedural: native_scrub
+    conditions:
+    - NORMAL
+  - id: native_scrub_02
+    weight: 1.0
+    resource: null
+    procedural: native_scrub
+    conditions:
+    - NORMAL
+  - id: native_scrub_03
+    weight: 1.0
+    resource: null
+    procedural: native_scrub
+    conditions:
+    - NORMAL
+  - id: native_scrub_04
+    weight: 1.0
+    resource: null
+    procedural: native_scrub
     conditions:
     - NORMAL
 - semantic_id: storage_cabinet

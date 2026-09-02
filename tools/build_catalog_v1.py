@@ -100,10 +100,23 @@ fam("palm", "vegetation", "tree_palm", (5.0, 5.0, 9.0), collision="none",
     climate=("gulf", "subtropical"), variants=5)
 fam("willow", "vegetation", "tree_willow", (7.0, 7.0, 7.0), collision="none",
     climate=("gulf", "riparian", "temperate"), variants=5)
+fam("magnolia", "vegetation", "tree_magnolia", (6.0, 6.0, 8.0), collision="none",
+    climate=("gulf", "subtropical"), variants=5)
+fam("crape_myrtle", "vegetation", "tree_crape_myrtle", (4.0, 4.0, 5.0),
+    collision="none", climate=("gulf", "subtropical", "arid"), variants=5)
+fam("bald_cypress", "vegetation", "tree_baldcypress", (5.0, 5.0, 10.0),
+    collision="none", climate=("gulf", "riparian"), variants=5)
 fam("shrub_round", "vegetation", "bush_round", (1.4, 1.4, 1.2), collision="none",
     variants=5)
 fam("shrub_low", "vegetation", "bush_low", (1.6, 1.6, 0.7), collision="none",
     variants=5)
+fam("hedge", "vegetation", "hedge", (2.0, 0.8, 1.1), collision="none", variants=5)
+fam("flowering_shrub", "vegetation", "flowering_shrub", (1.3, 1.3, 1.1),
+    collision="none", variants=5)
+fam("tall_grass", "vegetation", "tall_grass", (0.6, 0.6, 1.1), collision="none",
+    climate=("gulf", "riparian", "temperate", "arid"), variants=5)
+fam("native_scrub", "vegetation", "native_scrub", (1.6, 1.6, 0.7),
+    collision="none", climate=("arid", "gulf", "temperate"), variants=5)
 
 # ---- interior authoritative fixtures (searchable containers) ------------------
 fam("storage_cabinet", "furniture", "cabinet", (0.9, 0.5, 0.9), placement="floor",

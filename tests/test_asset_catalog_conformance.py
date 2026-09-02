@@ -22,6 +22,8 @@ PROP_MESHES_SUPPORTED = {
     "sedan", "suv", "pickup", "van", "box_truck",
     "tree_round", "tree_oak", "tree_conical", "tree_columnar", "tree_palm",
     "tree_willow", "bush_round", "bush_low",
+    "tree_magnolia", "tree_crape_myrtle", "tree_baldcypress",
+    "hedge", "flowering_shrub", "tall_grass", "native_scrub",
 }
 
 
