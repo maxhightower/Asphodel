@@ -1,0 +1,598 @@
+{
+  "release": "2026-08-19.0",
+  "cities": [
+    {
+      "city": "madisonville_tx",
+      "buildings": 2940,
+      "coverage": {
+        "height": {
+          "n": 1995,
+          "pct": 67.86
+        },
+        "num_floors": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "roof_shape": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "roof_material": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "roof_color": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "roof_direction": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "facade_material": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "facade_color": {
+          "n": 0,
+          "pct": 0.0
+        }
+      },
+      "useful_appearance_rows": {
+        "n": 0,
+        "pct": 0.0
+      },
+      "distributions": {
+        "roof_shape": [],
+        "roof_material": [],
+        "facade_material": [],
+        "facade_color": [],
+        "roof_color": []
+      },
+      "by_class": [
+        [
+          "(none)",
+          {
+            "total": 2907
+          }
+        ],
+        [
+          "retail",
+          {
+            "total": 11
+          }
+        ],
+        [
+          "roof",
+          {
+            "total": 9
+          }
+        ],
+        [
+          "school",
+          {
+            "total": 4
+          }
+        ],
+        [
+          "church",
+          {
+            "total": 3
+          }
+        ],
+        [
+          "house",
+          {
+            "total": 2
+          }
+        ],
+        [
+          "warehouse",
+          {
+            "total": 1
+          }
+        ],
+        [
+          "government",
+          {
+            "total": 1
+          }
+        ],
+        [
+          "fire_station",
+          {
+            "total": 1
+          }
+        ],
+        [
+          "apartments",
+          {
+            "total": 1
+          }
+        ]
+      ]
+    },
+    {
+      "city": "houston",
+      "buildings": 22524,
+      "coverage": {
+        "height": {
+          "n": 20892,
+          "pct": 92.75
+        },
+        "num_floors": {
+          "n": 66,
+          "pct": 0.29
+        },
+        "roof_shape": {
+          "n": 24,
+          "pct": 0.11
+        },
+        "roof_material": {
+          "n": 1,
+          "pct": 0.0
+        },
+        "roof_color": {
+          "n": 5,
+          "pct": 0.02
+        },
+        "roof_direction": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "facade_material": {
+          "n": 4,
+          "pct": 0.02
+        },
+        "facade_color": {
+          "n": 2,
+          "pct": 0.01
+        }
+      },
+      "useful_appearance_rows": {
+        "n": 9,
+        "pct": 0.04
+      },
+      "distributions": {
+        "roof_shape": [
+          [
+            "flat",
+            11
+          ],
+          [
+            "gabled",
+            9
+          ],
+          [
+            "pyramidal",
+            3
+          ],
+          [
+            "saltbox",
+            1
+          ]
+        ],
+        "roof_material": [
+          [
+            "concrete",
+            1
+          ]
+        ],
+        "facade_material": [
+          [
+            "brick",
+            2
+          ],
+          [
+            "concrete",
+            1
+          ],
+          [
+            "metal",
+            1
+          ]
+        ],
+        "facade_color": [
+          [
+            "#666666",
+            1
+          ],
+          [
+            "#494949",
+            1
+          ]
+        ],
+        "roof_color": [
+          [
+            "#0000FF",
+            2
+          ],
+          [
+            "#CCC8C6",
+            1
+          ],
+          [
+            "#616E65",
+            1
+          ],
+          [
+            "#8B4513",
+            1
+          ]
+        ]
+      },
+      "by_class": [
+        [
+          "(none)",
+          {
+            "total": 21819,
+            "roof_shape": 1
+          }
+        ],
+        [
+          "house",
+          {
+            "total": 179
+          }
+        ],
+        [
+          "roof",
+          {
+            "total": 147,
+            "roof_color": 2,
+            "roof_shape": 3
+          }
+        ],
+        [
+          "retail",
+          {
+            "total": 76,
+            "facade_material": 2,
+            "roof_shape": 11
+          }
+        ],
+        [
+          "apartments",
+          {
+            "total": 76,
+            "roof_shape": 2
+          }
+        ],
+        [
+          "detached",
+          {
+            "total": 56
+          }
+        ],
+        [
+          "commercial",
+          {
+            "total": 46,
+            "roof_shape": 2,
+            "roof_color": 2,
+            "facade_material": 2
+          }
+        ],
+        [
+          "industrial",
+          {
+            "total": 34,
+            "roof_shape": 4
+          }
+        ],
+        [
+          "office",
+          {
+            "total": 20,
+            "facade_color": 1,
+            "roof_color": 1,
+            "roof_material": 1
+          }
+        ],
+        [
+          "school",
+          {
+            "total": 19
+          }
+        ],
+        [
+          "parking",
+          {
+            "total": 16,
+            "facade_color": 1
+          }
+        ],
+        [
+          "church",
+          {
+            "total": 12
+          }
+        ]
+      ]
+    },
+    {
+      "city": "austin",
+      "buildings": 29245,
+      "coverage": {
+        "height": {
+          "n": 26385,
+          "pct": 90.22
+        },
+        "num_floors": {
+          "n": 295,
+          "pct": 1.01
+        },
+        "roof_shape": {
+          "n": 19,
+          "pct": 0.06
+        },
+        "roof_material": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "roof_color": {
+          "n": 1,
+          "pct": 0.0
+        },
+        "roof_direction": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "facade_material": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "facade_color": {
+          "n": 1,
+          "pct": 0.0
+        }
+      },
+      "useful_appearance_rows": {
+        "n": 1,
+        "pct": 0.0
+      },
+      "distributions": {
+        "roof_shape": [
+          [
+            "hipped",
+            8
+          ],
+          [
+            "flat",
+            4
+          ],
+          [
+            "gabled",
+            4
+          ],
+          [
+            "half_hipped",
+            2
+          ],
+          [
+            "saltbox",
+            1
+          ]
+        ],
+        "roof_material": [],
+        "facade_material": [],
+        "facade_color": [
+          [
+            "#DEB887",
+            1
+          ]
+        ],
+        "roof_color": [
+          [
+            "#872E08",
+            1
+          ]
+        ]
+      },
+      "by_class": [
+        [
+          "(none)",
+          {
+            "total": 27382,
+            "roof_shape": 7
+          }
+        ],
+        [
+          "detached",
+          {
+            "total": 704
+          }
+        ],
+        [
+          "apartments",
+          {
+            "total": 207
+          }
+        ],
+        [
+          "house",
+          {
+            "total": 180,
+            "roof_shape": 2
+          }
+        ],
+        [
+          "university",
+          {
+            "total": 126,
+            "roof_shape": 5,
+            "facade_color": 1,
+            "roof_color": 1
+          }
+        ],
+        [
+          "roof",
+          {
+            "total": 117
+          }
+        ],
+        [
+          "government",
+          {
+            "total": 55
+          }
+        ],
+        [
+          "retail",
+          {
+            "total": 48
+          }
+        ],
+        [
+          "parking",
+          {
+            "total": 47
+          }
+        ],
+        [
+          "commercial",
+          {
+            "total": 44
+          }
+        ],
+        [
+          "school",
+          {
+            "total": 43,
+            "roof_shape": 1
+          }
+        ],
+        [
+          "garage",
+          {
+            "total": 36,
+            "roof_shape": 3
+          }
+        ]
+      ]
+    },
+    {
+      "city": "san_antonio",
+      "buildings": 35658,
+      "coverage": {
+        "height": {
+          "n": 35246,
+          "pct": 98.84
+        },
+        "num_floors": {
+          "n": 49,
+          "pct": 0.14
+        },
+        "roof_shape": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "roof_material": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "roof_color": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "roof_direction": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "facade_material": {
+          "n": 0,
+          "pct": 0.0
+        },
+        "facade_color": {
+          "n": 0,
+          "pct": 0.0
+        }
+      },
+      "useful_appearance_rows": {
+        "n": 0,
+        "pct": 0.0
+      },
+      "distributions": {
+        "roof_shape": [],
+        "roof_material": [],
+        "facade_material": [],
+        "facade_color": [],
+        "roof_color": []
+      },
+      "by_class": [
+        [
+          "(none)",
+          {
+            "total": 34768
+          }
+        ],
+        [
+          "house",
+          {
+            "total": 533
+          }
+        ],
+        [
+          "garage",
+          {
+            "total": 55
+          }
+        ],
+        [
+          "school",
+          {
+            "total": 54
+          }
+        ],
+        [
+          "commercial",
+          {
+            "total": 43
+          }
+        ],
+        [
+          "roof",
+          {
+            "total": 37
+          }
+        ],
+        [
+          "retail",
+          {
+            "total": 29
+          }
+        ],
+        [
+          "apartments",
+          {
+            "total": 29
+          }
+        ],
+        [
+          "church",
+          {
+            "total": 15
+          }
+        ],
+        [
+          "parking",
+          {
+            "total": 15
+          }
+        ],
+        [
+          "carport",
+          {
+            "total": 11
+          }
+        ],
+        [
+          "residential",
+          {
+            "total": 9
+          }
+        ]
+      ]
+    }
+  ]
+}

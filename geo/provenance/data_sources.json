@@ -327,7 +327,7 @@
       "provider": "Overture Maps Foundation",
       "raw_path": "data/raw/overture/2026-08-19.0/houston/building.parquet",
       "release": "2026-08-19.0",
-      "retrieval_date": "2026-08-30T20:49:49.904463+00:00",
+      "retrieval_date": "2026-09-02T18:37:01.380462+00:00",
       "row_count": 22524,
       "sha256": "ec73ba722170ecd19a855f59ab423851d9bf7982d197a5ee6d64104b39f75f72",
       "share_alike": true,
@@ -354,7 +354,7 @@
       "provider": "Overture Maps Foundation",
       "raw_path": "data/raw/overture/2026-08-19.0/madisonville_tx/building.parquet",
       "release": "2026-08-19.0",
-      "retrieval_date": "2026-08-30T20:50:10.588674+00:00",
+      "retrieval_date": "2026-09-02T18:36:10.227410+00:00",
       "row_count": 2940,
       "sha256": "e5ceaa7df71a88bc17f6c7d7b470d59a69cc84066f843b1f68f33b3a3421aac3",
       "share_alike": true,
@@ -605,6 +605,60 @@
       "status": "ok",
       "theme": "places",
       "type": "place"
+    },
+    {
+      "attribution": "\u00a9 OpenStreetMap contributors, Overture Maps Foundation",
+      "bbox": [
+        -97.77864755,
+        30.277569399999997,
+        -97.71864755,
+        30.3375694
+      ],
+      "city": "austin",
+      "commercial_permitted": true,
+      "dataset": "Overture buildings/building",
+      "file_size_bytes": 5557324,
+      "license_family": "ODBL",
+      "license_name": "ODbL-1.0",
+      "license_note": "docs.overturemaps.org is blocked by egress policy in this environment; ODbL-1.0 confirmed instead from the sources.list.element.license field present on downloaded rows.",
+      "provider": "Overture Maps Foundation",
+      "raw_path": "data/raw/overture/2026-08-19.0/austin/building.parquet",
+      "release": "2026-08-19.0",
+      "retrieval_date": "2026-09-02T18:37:20.235309+00:00",
+      "row_count": 29245,
+      "sha256": "5bc0ceeadd07145c45b3ad60fb1a806b2e9d17031bd37a78649270b9d4973bee",
+      "share_alike": true,
+      "source_url_pattern": "https://overturemaps-us-west-2.s3.amazonaws.com/release/2026-08-19.0/theme=buildings/type=building/part-*.parquet",
+      "status": "ok",
+      "theme": "buildings",
+      "type": "building"
+    },
+    {
+      "attribution": "\u00a9 OpenStreetMap contributors, Overture Maps Foundation",
+      "bbox": [
+        -98.54809470000001,
+        29.42860975,
+        -98.4880947,
+        29.488609750000002
+      ],
+      "city": "san_antonio",
+      "commercial_permitted": true,
+      "dataset": "Overture buildings/building",
+      "file_size_bytes": 5135346,
+      "license_family": "ODBL",
+      "license_name": "ODbL-1.0",
+      "license_note": "docs.overturemaps.org is blocked by egress policy in this environment; ODbL-1.0 confirmed instead from the sources.list.element.license field present on downloaded rows.",
+      "provider": "Overture Maps Foundation",
+      "raw_path": "data/raw/overture/2026-08-19.0/san_antonio/building.parquet",
+      "release": "2026-08-19.0",
+      "retrieval_date": "2026-09-02T18:37:39.503212+00:00",
+      "row_count": 35658,
+      "sha256": "5d2a200fe37fcf199b47d927886f179202b610c2fd9d691e8dc99b1306e23b35",
+      "share_alike": true,
+      "source_url_pattern": "https://overturemaps-us-west-2.s3.amazonaws.com/release/2026-08-19.0/theme=buildings/type=building/part-*.parquet",
+      "status": "ok",
+      "theme": "buildings",
+      "type": "building"
     }
   ]
 }
