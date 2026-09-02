@@ -133,6 +133,7 @@ class Decor:
     y: float
     kind: str            # bed / sofa / table / chair / toilet / rack / ...
     facing: float        # radians
+    variant: int = 0     # presentation-only material/colour variant
 
     def to_dict(self):
         return asdict(self)
@@ -219,11 +220,12 @@ _ARCH_ROOMS = {
 # no loot) so interiors read as furnished. Rendered by InteriorBuilder; ignored by
 # gameplay. Kept modest so it stays legible at isometric scale.
 _ROOM_DECOR = {
-    "living": ["sofa", "coffee_table", "tv", "armchair", "bookshelf"],
-    "kitchen": ["counter", "stove", "table", "chair", "chair"],
-    "bedroom": ["bed", "nightstand", "wardrobe"],
-    "bathroom": ["bathtub", "sink", "toilet"],
+    "living": ["sofa", "coffee_table", "tv_stand", "armchair", "bookshelf"],
+    "kitchen": ["counter", "stove", "fridge", "sink", "table", "chair", "chair"],
+    "bedroom": ["bed", "nightstand", "dresser", "wardrobe"],
+    "bathroom": ["toilet", "sink", "bathtub"],
     "hall": ["bench", "sideboard"],
+    "garage": ["workbench", "tool_cabinet", "washer", "dryer", "water_heater", "shelf"],
     "shop_floor": ["rack", "rack", "rack", "display"],
     "back_room": ["shelf", "crate", "crate"],
     "storeroom": ["shelf", "shelf", "crate"],
@@ -236,6 +238,16 @@ _ROOM_DECOR = {
     "office": ["desk", "chair", "cabinet"],
     "shop": ["rack", "counter", "display"],
     "room": ["table", "chair", "shelf"],
+}
+
+# Optional per-home extras, sampled deterministically so no two homes are dressed
+# identically (a lamp here, a side table there). Presentation only.
+_ROOM_DECOR_EXTRAS = {
+    "living": ["side_table", "lamp", "armchair"],
+    "kitchen": ["microwave", "chair"],
+    "bedroom": ["lamp", "side_table"],
+    "bathroom": ["vanity"],
+    "hall": ["lamp", "side_table"],
 }
 
 
@@ -435,7 +447,13 @@ def _place_decor(rng, rooms, fixtures) -> list:
     decor: list = []
     did = 0
     for room in rooms:
-        kinds = _ROOM_DECOR.get(room.kind, _ROOM_DECOR["room"])
+        kinds = list(_ROOM_DECOR.get(room.kind, _ROOM_DECOR["room"]))
+        # Per-home variety: sprinkle 0-2 optional extras, deterministically.
+        extras = _ROOM_DECOR_EXTRAS.get(room.kind, [])
+        if extras:
+            n_extra = int(rng.integers(0, 3))
+            for _e in range(n_extra):
+                kinds.append(extras[int(rng.integers(0, len(extras)))])
         m = FIXTURE_MARGIN + 0.3
         rx0, ry0 = room.x0 + m, room.y0 + m
         rx1, ry1 = room.x1 - m, room.y1 - m
@@ -465,7 +483,8 @@ def _place_decor(rng, rooms, fixtures) -> list:
             facing = math.atan2(cy - chosen[1], cx - chosen[0])
             decor.append(Decor(decor_id=did, room_id=room.room_id,
                                x=float(chosen[0]), y=float(chosen[1]),
-                               kind=kind, facing=float(facing)))
+                               kind=kind, facing=float(facing),
+                               variant=int(rng.integers(0, 3))))
             did += 1
             placed.append(chosen)
     return decor

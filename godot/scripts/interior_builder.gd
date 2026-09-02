@@ -12,6 +12,8 @@ class_name InteriorBuilder
 ## preserved logically: the player is placed just inside the entrance doorway on
 ## enter and returned to the exterior entrance on leave (street_world owns that).
 
+const FurnitureMeshes = preload("res://scripts/furniture_meshes.gd")
+
 const WALL_H := 3.0
 const WALL_T := 0.2
 const FLOOR_Y := 0.0
@@ -178,14 +180,14 @@ static func _occupant(o: Dictionary) -> Node3D:
 
 
 static func _decor(d: Dictionary) -> MeshInstance3D:
-	## A presentation-only furniture piece: a coloured box sized by kind at the decor
-	## anchor. No collision (interiors stay walkable) and no container metadata.
+	## A presentation-only furniture piece: a real furniture mesh (pivot on the
+	## floor) at the decor anchor. No collision (interiors stay walkable) and no
+	## container metadata.
 	var kind := str(d.get("kind", "crate"))
-	var size: Vector3 = DECOR_SIZE.get(kind, DECOR_DEFAULT_SIZE)
-	var col: Color = DECOR_COL.get(kind, DECOR_DEFAULT_COL)
-	var mi := _box(size, col)
+	var mi := MeshInstance3D.new()
+	mi.mesh = FurnitureMeshes.get_mesh(kind, int(d.get("variant", 0)))
 	mi.name = "Decor_%s" % kind
-	mi.position = Vector3(float(d.get("x", 0.0)), FLOOR_Y + size.y * 0.5, float(d.get("y", 0.0)))
+	mi.position = Vector3(float(d.get("x", 0.0)), FLOOR_Y, float(d.get("y", 0.0)))
 	mi.rotation.y = float(d.get("facing", 0.0))
 	return mi
 
@@ -304,18 +306,22 @@ static func _fixture(descriptor: Dictionary, f: Dictionary) -> Node3D:
 	var size: Vector3 = FIXTURE_SIZE.get(kind, Vector3(0.8, 0.9, 0.6))
 	var n := StaticBody3D.new()
 	n.name = "Fixture_%d" % int(f.get("fixture_id", -1))
-	var mi := _box(size, FIXTURE_COL)
-	mi.position = Vector3(float(f["x"]), FLOOR_Y + size.y * 0.5, float(f["y"]))
+	# Real furniture mesh (pivot on the floor); the collision box + authoritative
+	# container metadata are unchanged, so searchable-container linkage is intact.
+	var mi := MeshInstance3D.new()
+	mi.mesh = FurnitureMeshes.get_mesh(kind, int(f.get("variant", 0)))
+	mi.position = Vector3(float(f["x"]), FLOOR_Y, float(f["y"]))
+	mi.rotation.y = float(f.get("facing", 0.0))
 	n.add_child(mi)
 	var cs := CollisionShape3D.new()
 	var shape := BoxShape3D.new()
 	shape.size = size
 	cs.shape = shape
-	cs.position = mi.position
+	cs.position = Vector3(float(f["x"]), FLOOR_Y + size.y * 0.5, float(f["y"]))
 	n.add_child(cs)
 	# authoritative linkage — the ONLY source of the container this fixture opens
 	n.set_meta("building_id", int(descriptor.get("building_id", -1)))
 	n.set_meta("fixture_id", int(f.get("fixture_id", -1)))
 	n.set_meta("container_index", int(f.get("container_index", -1)))
-	n.set_meta("fixture_pos", mi.position)
+	n.set_meta("fixture_pos", cs.position)
 	return n

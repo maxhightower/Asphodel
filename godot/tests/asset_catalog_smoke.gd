@@ -5,6 +5,7 @@ extends Node
 ## falls through to the magenta unknown-asset box in the field.
 
 const PropMeshes = preload("res://scripts/prop_meshes.gd")
+const FurnitureMeshes = preload("res://scripts/furniture_meshes.gd")
 
 
 func _ready() -> void:
@@ -50,6 +51,18 @@ func _ready() -> void:
 		if not rv.has(k):
 			print("  FAIL  supported kind %s absent from catalog" % k)
 			failures += 1
+
+	# Package F: every interior furniture kind builds a real, non-empty mesh.
+	var furn := 0
+	for fk in FurnitureMeshes.SUPPORTED:
+		for v in range(3):
+			var fm: Mesh = FurnitureMeshes.get_mesh(String(fk), v)
+			if fm == null or fm.get_surface_count() == 0:
+				print("  FAIL  furniture %s v%d built no surfaces" % [fk, v])
+				failures += 1
+			else:
+				furn += 1
+	print("  ok   built %d furniture kind:variant meshes, all non-empty" % furn)
 
 	print("== AssetCatalogSmoke done: %d failure(s) ==" % failures)
 	get_tree().quit(1 if failures > 0 else 0)
