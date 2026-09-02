@@ -471,6 +471,9 @@ func _build_t1(chunk: Dictionary, root: Node3D) -> Dictionary:
 			var col2 := col + 1
 			while col2 < CELLS and cells[row * CELLS + col2] == t:
 				col2 += 1
+			# Buildings paint as impervious hardscape; the surface-class id rides in
+			# COLOR.a so the ground shader can treat asphalt/concrete/grass distinctly.
+			var fam := S_OTHER_IMPERVIOUS if t == S_BUILDING else t
 			var color: Color = SURFACE_COLORS[S_OTHER_IMPERVIOUS] if t == S_BUILDING \
 				else (SURFACE_COLORS[t] if t < SURFACE_COLORS.size() else Color(1, 0, 1))
 			var y := -0.15 if t == S_WATER else 0.02
@@ -478,7 +481,7 @@ func _build_t1(chunk: Dictionary, root: Node3D) -> Dictionary:
 			var x1 := origin.x + float(col2) * CELL_M
 			var z0 := origin.y + float(row) * CELL_M
 			var z1 := origin.y + float(row + 1) * CELL_M
-			st.set_color(color)
+			st.set_color(WorldMaterials.encode(color, fam))
 			_tri(st, Vector3(x0, y, z0), Vector3(x1, y, z0), Vector3(x1, y, z1), Vector3.UP)
 			_tri(st, Vector3(x0, y, z0), Vector3(x1, y, z1), Vector3(x0, y, z1), Vector3.UP)
 			quads += 1
@@ -486,7 +489,7 @@ func _build_t1(chunk: Dictionary, root: Node3D) -> Dictionary:
 	var ground_mesh := st.commit()
 	var mi := MeshInstance3D.new()
 	mi.mesh = ground_mesh
-	mi.material_override = _ground_material()
+	mi.material_override = WorldMaterials.ground_material()
 	root.add_child(mi)
 
 	var buildings: Array = chunk.get("buildings", [])
@@ -499,7 +502,7 @@ func _build_t1(chunk: Dictionary, root: Node3D) -> Dictionary:
 		var bmesh := bst.commit()
 		var bmi := MeshInstance3D.new()
 		bmi.mesh = bmesh
-		bmi.material_override = _shared_opaque_material()
+		bmi.material_override = WorldMaterials.building_material()
 		root.add_child(bmi)
 
 	return {"quads": quads, "verts": quads * 6 + bverts, "buildings": buildings.size(),
@@ -566,6 +569,27 @@ func _facade_color(b: Dictionary, bid: int, arch: String) -> Color:
 		clampf(base_col.g + tint, 0.0, 1.0), clampf(base_col.b + tint, 0.0, 1.0))
 
 
+## Material-family ids from the building's compiled appearance (facade/roof
+## material). These drive the semantic building shader; a missing value falls back
+## to a safe neutral-ish family.
+static func _appearance_material(b: Dictionary, section: String) -> String:
+	var ap: Dictionary = b.get("appearance", {})
+	if ap.is_empty():
+		return ""
+	var sec: Dictionary = ap.get(section, {})
+	var m: Dictionary = sec.get("material", {})
+	var v = m.get("value", null)
+	return String(v) if v != null else ""
+
+
+static func _facade_family_of(b: Dictionary) -> int:
+	return WorldMaterials.facade_family(_appearance_material(b, "facade"))
+
+
+static func _roof_family_of(b: Dictionary) -> int:
+	return WorldMaterials.roof_family(_appearance_material(b, "roof"))
+
+
 func _mass_building(st: SurfaceTool, b: Dictionary) -> int:
 	var poly: Array = b.get("poly", [])
 	if poly.size() < 3:
@@ -580,17 +604,21 @@ func _mass_building(st: SurfaceTool, b: Dictionary) -> int:
 		ring.append(Vector2(float(p[0]), float(p[1])))
 	var n := ring.size()
 	var verts := 0
-	# Flat roof top — observed roof colour wins, else a darkened facade tone.
+	var facade_fam := _facade_family_of(b)
+	var roof_fam := _roof_family_of(b)
+	# Flat roof top — observed roof colour wins, else a darkened facade tone. The
+	# roof material family rides in COLOR.a for the semantic shader.
 	var rhex := _appearance_hex(b, "roof", "color")
-	st.set_color(Color.html(rhex) if _is_hex6(rhex) else col.darkened(0.15))
+	var roof_base: Color = Color.html(rhex) if _is_hex6(rhex) else col.darkened(0.15)
+	st.set_color(WorldMaterials.encode(roof_base, roof_fam))
 	var tris := Geometry2D.triangulate_polygon(ring)
 	for i in range(0, tris.size(), 3):
 		for k in [tris[i], tris[i + 1], tris[i + 2]]:
 			st.set_normal(Vector3.UP)
 			st.add_vertex(Vector3(ring[k].x, h, ring[k].y))
 		verts += 3
-	# Walls.
-	st.set_color(col)
+	# Walls — facade material family in COLOR.a.
+	st.set_color(WorldMaterials.encode(col, facade_fam))
 	for i in range(n):
 		var a := ring[i]
 		var c := ring[(i + 1) % n]
@@ -681,7 +709,7 @@ func _build_t2(chunk: Dictionary, root: Node3D) -> Dictionary:
 		var dmesh := dst.commit()
 		var dmi := MeshInstance3D.new()
 		dmi.mesh = dmesh
-		dmi.material_override = _shared_opaque_material()
+		dmi.material_override = WorldMaterials.building_material()
 		root.add_child(dmi)
 
 	var mm_count := 0
@@ -933,6 +961,8 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array,
 		var rhex := _appearance_hex(b, "roof", "color")   # observed roof colour wins
 		if _is_hex6(rhex):
 			roof_col = Color.html(rhex)
+		# Roof material family in COLOR.a → asphalt courses / standing seam / tile.
+		roof_col = WorldMaterials.encode(roof_col, _roof_family_of(b))
 		var rect := _is_roughly_rectangular(ring)
 		var oh := _obb_half(ring)
 		var minhalf := minf(oh.x, oh.y)
@@ -1504,7 +1534,7 @@ func _build_road_surfaces(chunk: Dictionary, root: Node3D,
 			var phw := maxf(0.6, float(r.get("carriage_w", 1.6)) * 0.5)
 			var pl := _offset_polyline(pts, -phw)
 			var pr := _offset_polyline(pts, phw)
-			verts += _ribbon_flat(st, pl, pr, PATH_Y, SURFACE_COLORS[S_SIDEWALK])
+			verts += _ribbon_flat(st, pl, pr, PATH_Y, WorldMaterials.encode(SURFACE_COLORS[S_SIDEWALK], S_SIDEWALK))
 			any = true
 			continue
 		var carriage_w := float(r.get("carriage_w", 6.0))
@@ -1513,7 +1543,7 @@ func _build_road_surfaces(chunk: Dictionary, root: Node3D,
 		var hw := carriage_w * 0.5
 		var edge_l := _offset_polyline(pts, -hw)
 		var edge_r := _offset_polyline(pts, hw)
-		verts += _ribbon_flat(st, edge_l, edge_r, ROAD_RIBBON_Y, SURFACE_COLORS[S_ROAD])
+		verts += _ribbon_flat(st, edge_l, edge_r, ROAD_RIBBON_Y, WorldMaterials.encode(SURFACE_COLORS[S_ROAD], S_ROAD))
 		any = true
 		var has_curb := bool(r.get("curb", false))
 		var sidewalk_w := float(r.get("sidewalk_w", 0.0))
@@ -1547,22 +1577,24 @@ func _build_road_surfaces(chunk: Dictionary, root: Node3D,
 				var in1: Vector2 = inner[i + 1]
 				var ou0: Vector2 = outer[i]
 				var ou1: Vector2 = outer[i + 1]
+				var curb_c := WorldMaterials.encode(CURB_COL, S_OTHER_IMPERVIOUS)
+				var walk_c := WorldMaterials.encode(SURFACE_COLORS[S_SIDEWALK], S_SIDEWALK)
 				if has_curb:
 					verts += _quad_v(st, Vector3(e0.x, ROAD_RIBBON_Y, e0.y),
 						Vector3(e1.x, ROAD_RIBBON_Y, e1.y), Vector3(e1.x, SIDEWALK_Y, e1.y),
-						Vector3(e0.x, SIDEWALK_Y, e0.y), nrm3, CURB_COL)
+						Vector3(e0.x, SIDEWALK_Y, e0.y), nrm3, curb_c)
 				verts += _quad_v(st, Vector3(in0.x, SIDEWALK_Y, in0.y),
 					Vector3(ou0.x, SIDEWALK_Y, ou0.y), Vector3(ou1.x, SIDEWALK_Y, ou1.y),
-					Vector3(in1.x, SIDEWALK_Y, in1.y), Vector3.UP, SURFACE_COLORS[S_SIDEWALK])
+					Vector3(in1.x, SIDEWALK_Y, in1.y), Vector3.UP, walk_c)
 				verts += _quad_v(st, Vector3(ou0.x, 0.03, ou0.y),
 					Vector3(ou1.x, 0.03, ou1.y), Vector3(ou1.x, SIDEWALK_Y, ou1.y),
-					Vector3(ou0.x, SIDEWALK_Y, ou0.y), nrm3, CURB_COL)
+					Vector3(ou0.x, SIDEWALK_Y, ou0.y), nrm3, curb_c)
 	if not any:
 		return 0
 	var mesh := st.commit()
 	var mi := MeshInstance3D.new()
 	mi.mesh = mesh
-	mi.material_override = _shared_opaque_material()
+	mi.material_override = WorldMaterials.ground_material()
 	root.add_child(mi)
 	return verts
 
