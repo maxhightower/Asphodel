@@ -721,8 +721,9 @@ func _build_t2(chunk: Dictionary, root: Node3D) -> Dictionary:
 	var sverts := _build_road_surfaces(chunk, root, cells, origin)
 	var rverts := _build_road_markings(chunk, root)
 	var everts := _build_elevated_roads(chunk, root)
+	var gverts := _build_ground_markings(chunk, root)
 
-	return {"quads": 0, "verts": dverts + rverts + everts + sverts, "buildings": buildings.size(),
+	return {"quads": 0, "verts": dverts + rverts + everts + sverts + gverts, "buildings": buildings.size(),
 		"mm_instances": mm_count, "collisions": collisions}
 
 
@@ -1694,6 +1695,60 @@ func _build_road_markings(chunk: Dictionary, root: Node3D) -> int:
 			verts += _dashed_line(st, pts_raw, half, 0.15, 999999.0, 0.0)
 			verts += _dashed_line(st, pts_raw, -half, 0.15, 999999.0, 0.0)
 	if not any:
+		return 0
+	var mesh := st.commit()
+	var mi := MeshInstance3D.new()
+	mi.mesh = mesh
+	mi.material_override = _shared_opaque_material()
+	root.add_child(mi)
+	return verts
+
+
+## Painted ground markings (parking stalls, crosswalks, stop bars, loading zones)
+## batched into a single thin mesh per chunk — the compiled `ground_markings`
+## stream: records of [x, z, heading_deg, length, kind]. A whole parking field of
+## stall stripes therefore costs one MeshInstance, so lots read as laid-out parking
+## instead of a blank polygon (P0-D5).
+func _build_ground_markings(chunk: Dictionary, root: Node3D) -> int:
+	var marks: Array = chunk.get("ground_markings", [])
+	if marks.is_empty():
+		return 0
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var verts := 0
+	var y := 0.05                                  # just above the parking surface (0.02)
+	for m in marks:
+		if not (m is Array) or (m as Array).size() < 5:
+			continue
+		var x := float(m[0])
+		var z := float(m[1])
+		var heading := deg_to_rad(float(m[2]))
+		var length := float(m[3])
+		var kind := String(m[4])
+		var width := 0.12
+		var col := LANE_COL
+		match kind:
+			"crosswalk": width = 0.5
+			"stop_bar": width = 0.4
+			"accessible": width = 0.16; col = Color(0.52, 0.72, 0.95)
+			"loading_zone": width = 0.16; col = Color(0.92, 0.80, 0.32)
+			_: pass                                # parking_stall: thin off-white line
+		var dir := Vector2(cos(heading), sin(heading))
+		var nrm := Vector2(-dir.y, dir.x)
+		var hl := length * 0.5
+		var hw := width * 0.5
+		var c := Vector2(x, z)
+		var a0 := c - dir * hl - nrm * hw
+		var a1 := c + dir * hl - nrm * hw
+		var a2 := c + dir * hl + nrm * hw
+		var a3 := c - dir * hl + nrm * hw
+		st.set_color(col)
+		for v in [Vector3(a0.x, y, a0.y), Vector3(a1.x, y, a1.y), Vector3(a2.x, y, a2.y),
+				Vector3(a0.x, y, a0.y), Vector3(a2.x, y, a2.y), Vector3(a3.x, y, a3.y)]:
+			st.set_normal(Vector3.UP)
+			st.add_vertex(v)
+		verts += 6
+	if verts == 0:
 		return 0
 	var mesh := st.commit()
 	var mi := MeshInstance3D.new()
