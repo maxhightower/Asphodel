@@ -360,13 +360,20 @@ static func _build_bus_shelter(st: SurfaceTool) -> void:
 
 
 static func _build_wood_fence(st: SurfaceTool) -> void:
-	var post := Color(0.4, 0.28, 0.16)
-	var plank := Color(0.55, 0.40, 0.24)
-	_box(st, Vector3(-1.0, 0.6, 0.0), Vector3(0.10, 1.2, 0.10), post)
-	_box(st, Vector3(1.0, 0.6, 0.0), Vector3(0.10, 1.2, 0.10), post)
-	for i in range(4):
-		var y := 0.18 + float(i) * 0.28
-		_box(st, Vector3(0.0, y, 0.0), Vector3(2.0, 0.20, 0.04), plank)
+	# A picket fence with real thickness: chunky end posts, two set-back rails, and
+	# vertical pickets standing slightly proud of the rails so the panel reads as a
+	# 3D object (not a flat billboard) at iso scale. Cost is paid once (MultiMesh).
+	var post := Color(0.34, 0.24, 0.14)
+	var rail := Color(0.46, 0.33, 0.19)
+	var plank := Color(0.57, 0.42, 0.25)
+	_box(st, Vector3(-1.0, 0.62, 0.0), Vector3(0.15, 1.24, 0.15), post)
+	_box(st, Vector3(1.0, 0.62, 0.0), Vector3(0.15, 1.24, 0.15), post)
+	_box(st, Vector3(0.0, 0.35, -0.02), Vector3(2.0, 0.11, 0.08), rail)
+	_box(st, Vector3(0.0, 0.92, -0.02), Vector3(2.0, 0.11, 0.08), rail)
+	var pickets := 9
+	for i in range(pickets):
+		var x := -0.88 + float(i) * (1.76 / float(pickets - 1))
+		_box(st, Vector3(x, 0.60, 0.04), Vector3(0.13, 1.16, 0.06), plank)
 
 
 static func _build_chainlink_fence() -> ArrayMesh:
@@ -374,9 +381,10 @@ static func _build_chainlink_fence() -> ArrayMesh:
 	var post_col := Color(0.5, 0.5, 0.52)
 	var st_frame := SurfaceTool.new()
 	st_frame.begin(Mesh.PRIMITIVE_TRIANGLES)
-	_box(st_frame, Vector3(-1.0, 0.9, 0.0), Vector3(0.06, 1.8, 0.06), post_col)
-	_box(st_frame, Vector3(1.0, 0.9, 0.0), Vector3(0.06, 1.8, 0.06), post_col)
-	_box(st_frame, Vector3(0.0, 1.8, 0.0), Vector3(2.0, 0.05, 0.05), post_col)
+	_box(st_frame, Vector3(-1.0, 0.9, 0.0), Vector3(0.09, 1.8, 0.09), post_col)
+	_box(st_frame, Vector3(1.0, 0.9, 0.0), Vector3(0.09, 1.8, 0.09), post_col)
+	_box(st_frame, Vector3(0.0, 1.78, 0.0), Vector3(2.0, 0.07, 0.07), post_col)   # top rail
+	_box(st_frame, Vector3(0.0, 0.10, 0.0), Vector3(2.0, 0.06, 0.06), post_col)   # bottom rail
 	st_frame.generate_normals()
 
 	# Mesh panel (transparent surface 1): a single thin double-sided slab.

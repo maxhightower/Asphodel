@@ -523,6 +523,12 @@ static func _stable_hash(a: int, b: int) -> int:
 # ------------------------------------------------------------------------- T2
 func _build_t2(chunk: Dictionary, root: Node3D) -> Dictionary:
 	var buildings: Array = chunk.get("buildings", [])
+	# Decode the land-cover raster once: building detail infers doors/garages from
+	# adjacent pavement, and the road ribbons let driveways cut the sidewalk.
+	var origin_arr: Array = chunk.get("origin", [0.0, 0.0])
+	var origin := Vector2(float(origin_arr[0]), float(origin_arr[1]))
+	var runs: Array = chunk.get("surface", [])
+	var cells := _decode_rle(runs, CELLS * CELLS) if not runs.is_empty() else PackedByteArray()
 	var dst := SurfaceTool.new()
 	dst.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var dverts := 0
@@ -530,7 +536,7 @@ func _build_t2(chunk: Dictionary, root: Node3D) -> Dictionary:
 	var collisions := 0
 	var hvac_xforms: Array = []
 	for b in buildings:
-		dverts += _detail_building(dst, b, hvac_xforms)
+		dverts += _detail_building(dst, b, hvac_xforms, cells, origin)
 		var poly: Array = b.get("poly", [])
 		if poly.size() < 3:
 			continue
@@ -567,7 +573,7 @@ func _build_t2(chunk: Dictionary, root: Node3D) -> Dictionary:
 		root.add_child(mmi)
 		mm_count += hvac_xforms.size()
 
-	var sverts := _build_road_surfaces(chunk, root)
+	var sverts := _build_road_surfaces(chunk, root, cells, origin)
 	var rverts := _build_road_markings(chunk, root)
 	var everts := _build_elevated_roads(chunk, root)
 
@@ -575,7 +581,8 @@ func _build_t2(chunk: Dictionary, root: Node3D) -> Dictionary:
 		"mm_instances": mm_count, "collisions": collisions}
 
 
-func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array) -> int:
+func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array,
+		cells: PackedByteArray, origin: Vector2) -> int:
 	var poly: Array = b.get("poly", [])
 	if poly.size() < 3:
 		return 0
@@ -611,6 +618,43 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array) -> int
 	var n := ring.size()
 	var verts := 0
 
+	# Read the ground just outside each wall: an abutting concrete patch
+	# (OTHER_IMPERVIOUS) is a driveway/walkway/patio. The widest one becomes the
+	# garage edge (houses), narrower isolated ones become side/back doors — so
+	# openings line up with the pavement that leads to them.
+	var edge_pav_frac := PackedFloat32Array()
+	var edge_pav_t := PackedFloat32Array()
+	edge_pav_frac.resize(n)
+	edge_pav_t.resize(n)
+	var garage_edge := -1
+	var garage_frac := 0.0
+	if not cells.is_empty():
+		for i in range(n):
+			var a := ring[i]
+			var c := ring[(i + 1) % n]
+			var seg := c - a
+			var length := seg.length()
+			edge_pav_t[i] = 0.5
+			if length <= 3.0:
+				continue
+			var nrm2 := Vector2(seg.y, -seg.x).normalized()
+			var hits := 0
+			var tsum := 0.0
+			var samples := 6
+			for s in range(samples):
+				var t := (float(s) + 0.5) / float(samples)
+				var pnt := a.lerp(c, t) + nrm2 * 2.2
+				if _surface_class(cells, origin, pnt.x, pnt.y) == S_OTHER_IMPERVIOUS:
+					hits += 1
+					tsum += t
+			var frac := float(hits) / float(samples)
+			edge_pav_frac[i] = frac
+			if hits > 0:
+				edge_pav_t[i] = tsum / float(hits)
+			if is_house and frac > garage_frac and frac >= 0.34 and length >= 5.0:
+				garage_frac = frac
+				garage_edge = i
+
 	for i in range(n):
 		var a := ring[i]
 		var c := ring[(i + 1) % n]
@@ -629,26 +673,31 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array) -> int
 		# read fine at iso distance.
 		var edge_relief := is_house and length <= 30.0
 
-		# Openings that windows must not overlap on the ground floor: the entrance
-		# door and, for houses with room for one, an attached garage door.
+		# Openings on this edge: the entrance door; a garage on the driveway edge
+		# (houses); and a secondary door where an isolated concrete walkway/patio
+		# abuts a non-entrance wall.
+		var has_garage := want_garage and (i == garage_edge) and length >= ent_w + 6.5
+		# A door here if this is the entrance edge, or a modest pavement patch
+		# (walkway) touches this edge but it isn't the driveway/garage edge.
+		var side_door := (not is_entrance_edge) and (not has_garage) \
+			and edge_pav_frac[i] > 0.0 and edge_pav_frac[i] < 0.5
+		var door_here := is_entrance_edge or side_door
+		var door_t: float = ent_t if is_entrance_edge else edge_pav_t[i]
 		var door_lo := 0.0
 		var door_hi := -1.0
-		var has_garage := false
-		var gar_t := 0.5
+		var gar_t := edge_pav_t[i] if has_garage else 0.5
 		var gar_lo := 0.0
 		var gar_hi := -1.0
-		if is_entrance_edge:
+		if door_here:
 			var dt := (ent_w * 0.5 + 0.6) / length
-			door_lo = ent_t - dt
-			door_hi = ent_t + dt
-			if want_garage and length >= ent_w + 6.5:
-				var gw := 2.8
-				var side := 1.0 if ent_t < 0.5 else -1.0
-				gar_t = clampf(ent_t + side * (ent_w * 0.5 + 0.5 + gw * 0.5) / length, 0.14, 0.86)
-				var gg := (gw * 0.5 + 0.4) / length
-				gar_lo = gar_t - gg
-				gar_hi = gar_t + gg
-				has_garage = true
+			door_lo = door_t - dt
+			door_hi = door_t + dt
+		if has_garage:
+			var gw := 2.8
+			gar_t = clampf(gar_t, (gw * 0.5 + 0.4) / length, 1.0 - (gw * 0.5 + 0.4) / length)
+			var gg := (gw * 0.5 + 0.4) / length
+			gar_lo = gar_t - gg
+			gar_hi = gar_t + gg
 
 		for f in range(floors):
 			var y0 := float(f) * floor_h
@@ -700,28 +749,30 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array) -> int
 				verts += _facade_box(st, cwin + Vector3(0.0, jy, 0.0) - along3 * (half_w + 0.18) + nrm3 * 0.05,
 					along3, nrm3, 0.10, 0.05, win_h * 0.5, shutter_col)
 
-		if is_entrance_edge and not is_storefront:
-			var dc := a.lerp(c, ent_t)
+		var along3e := Vector3(dir.x, 0.0, dir.y)
+		# Garage door on the driveway edge: a recessed panel with a raised frame.
+		if has_garage:
+			var gc := a.lerp(c, gar_t)
+			var gc3 := Vector3(gc.x, 0.0, gc.y)
+			var gh := 2.1
+			var ghw := 1.4
+			var gp0 := gc - dir * ghw + nrm2 * 0.02
+			var gp1 := gc + dir * ghw + nrm2 * 0.02
+			verts += _quad_v(st, Vector3(gp0.x, 0.05, gp0.y), Vector3(gp1.x, 0.05, gp1.y),
+				Vector3(gp1.x, gh, gp1.y), Vector3(gp0.x, gh, gp0.y), nrm3, GARAGE_COL)
+			verts += _facade_box(st, gc3 + Vector3(0.0, gh + 0.08, 0.0) + nrm3 * 0.05,
+				along3e, nrm3, ghw + 0.12, 0.09, 0.08, FRAME_COL)
+		# Entrance / secondary door where pavement leads to it.
+		if door_here and not is_storefront:
+			var dc := a.lerp(c, door_t)
 			var hw := ent_w * 0.5
 			var e0 := dc - dir * hw + nrm2 * 0.06
 			var e1 := dc + dir * hw + nrm2 * 0.06
 			verts += _quad_v(st, Vector3(e0.x, 0.0, e0.y), Vector3(e1.x, 0.0, e1.y),
 				Vector3(e1.x, 2.2, e1.y), Vector3(e0.x, 2.2, e0.y), nrm3, DOOR_COL)
-			var along3e := Vector3(dir.x, 0.0, dir.y)
-			# Garage door: a recessed panel with a raised frame (depth, not a decal).
-			if has_garage:
-				var gc := a.lerp(c, gar_t)
-				var gc3 := Vector3(gc.x, 0.0, gc.y)
-				var gh := 2.1
-				var ghw := 1.4
-				var gp0 := gc - dir * ghw + nrm2 * 0.02
-				var gp1 := gc + dir * ghw + nrm2 * 0.02
-				verts += _quad_v(st, Vector3(gp0.x, 0.05, gp0.y), Vector3(gp1.x, 0.05, gp1.y),
-					Vector3(gp1.x, gh, gp1.y), Vector3(gp0.x, gh, gp0.y), nrm3, GARAGE_COL)
-				verts += _facade_box(st, gc3 + Vector3(0.0, gh + 0.08, 0.0) + nrm3 * 0.05,
-					along3e, nrm3, ghw + 0.12, 0.09, 0.08, FRAME_COL)
-			# Front porch: a real covered volume (platform + posts + roof) out front.
-			if want_porch:
+			# Front porch: a real covered volume (platform + posts + roof) at the
+			# main entrance.
+			if want_porch and is_entrance_edge:
 				var pw := minf(ent_w + 2.6, length * 0.7)
 				var pdepth := 2.2
 				var dc3 := Vector3(dc.x, 0.0, dc.y)
@@ -979,7 +1030,8 @@ func _parapet(st: SurfaceTool, ring: PackedVector2Array, h: float) -> int:
 ## with mitered joins, laid over the rasterized ground so curves read smoothly.
 ## Widths, curbs and sidewalks are data-driven (carriage_w / curb / sidewalk_w /
 ## verge_w from the world source), not tiles.
-func _build_road_surfaces(chunk: Dictionary, root: Node3D) -> int:
+func _build_road_surfaces(chunk: Dictionary, root: Node3D,
+		cells: PackedByteArray, origin: Vector2) -> int:
 	var roads: Array = chunk.get("roads", [])
 	if roads.is_empty():
 		return 0
@@ -1017,21 +1069,43 @@ func _build_road_surfaces(chunk: Dictionary, root: Node3D) -> int:
 		var verge_w := float(r.get("verge_w", 0.0))
 		if not has_curb and sidewalk_w <= 0.0:
 			continue
-		# Curb + sidewalk on both sides. The curb is a short vertical lip at the
-		# carriageway edge (the yard/street boundary); the sidewalk is a raised
-		# slab set back past an optional grass verge.
+		# Curb + sidewalk on both sides, drawn per segment so a driveway/apron
+		# crossing (an impervious patch under the sidewalk band) interrupts the curb
+		# and sidewalk — the driveway reads as running unbroken from road to garage.
+		var swidth: float = sidewalk_w if sidewalk_w > 0.0 else 1.5
 		for side in [-1.0, 1.0]:
-			var edge := edge_r if side > 0.0 else edge_l
-			if has_curb:
-				verts += _ribbon_wall(st, edge, ROAD_RIBBON_Y, SIDEWALK_Y, CURB_COL)
-			var swidth: float = sidewalk_w if sidewalk_w > 0.0 else (1.5 if has_curb else 0.0)
-			if swidth <= 0.0:
-				continue
-			var inner := _offset_polyline(pts, side * (hw + verge_w))
-			var outer := _offset_polyline(pts, side * (hw + verge_w + swidth))
-			# grass verge (if any) sits between curb and sidewalk at ground level
-			verts += _ribbon_flat(st, inner, outer, SIDEWALK_Y, SURFACE_COLORS[S_SIDEWALK])
-			verts += _ribbon_wall(st, outer, 0.03, SIDEWALK_Y, CURB_COL)   # outer drop to yard
+			var sidef := float(side)
+			var edge := edge_r if sidef > 0.0 else edge_l
+			var inner := _offset_polyline(pts, sidef * (hw + verge_w))
+			var outer := _offset_polyline(pts, sidef * (hw + verge_w + swidth))
+			for i in range(pts.size() - 1):
+				var pa: Vector2 = pts[i]
+				var pb: Vector2 = pts[i + 1]
+				var d := pb - pa
+				if d.length() < 0.0001:
+					continue
+				var sn := Vector2(d.y, -d.x).normalized() * sidef
+				var samp := (pa + pb) * 0.5 + sn * (hw + verge_w + swidth * 0.5)
+				var sc := _surface_class(cells, origin, samp.x, samp.y)
+				if sc == S_OTHER_IMPERVIOUS or sc == S_PARKING:
+					continue                                # driveway cuts through here
+				var nrm3 := Vector3(sn.x, 0.0, sn.y)
+				var e0: Vector2 = edge[i]
+				var e1: Vector2 = edge[i + 1]
+				var in0: Vector2 = inner[i]
+				var in1: Vector2 = inner[i + 1]
+				var ou0: Vector2 = outer[i]
+				var ou1: Vector2 = outer[i + 1]
+				if has_curb:
+					verts += _quad_v(st, Vector3(e0.x, ROAD_RIBBON_Y, e0.y),
+						Vector3(e1.x, ROAD_RIBBON_Y, e1.y), Vector3(e1.x, SIDEWALK_Y, e1.y),
+						Vector3(e0.x, SIDEWALK_Y, e0.y), nrm3, CURB_COL)
+				verts += _quad_v(st, Vector3(in0.x, SIDEWALK_Y, in0.y),
+					Vector3(ou0.x, SIDEWALK_Y, ou0.y), Vector3(ou1.x, SIDEWALK_Y, ou1.y),
+					Vector3(in1.x, SIDEWALK_Y, in1.y), Vector3.UP, SURFACE_COLORS[S_SIDEWALK])
+				verts += _quad_v(st, Vector3(ou0.x, 0.03, ou0.y),
+					Vector3(ou1.x, 0.03, ou1.y), Vector3(ou1.x, SIDEWALK_Y, ou1.y),
+					Vector3(ou0.x, SIDEWALK_Y, ou0.y), nrm3, CURB_COL)
 	if not any:
 		return 0
 	var mesh := st.commit()
@@ -1303,10 +1377,11 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 			var z := float(row[2])
 			var rot := float(row[3])
 			var variant := int(row[4])
-			# Drop yard fences that fall on the carriageway / parking apron.
+			# Drop yard fences that reach past the property line onto the sidewalk,
+			# carriageway or parking apron — they should stop at the sidewalk edge.
 			if yard_fence.has(kind):
 				var sc := _surface_class(cells, origin, x, z)
-				if sc == S_ROAD or sc == S_PARKING:
+				if sc == S_ROAD or sc == S_PARKING or sc == S_SIDEWALK:
 					continue
 			var gkey := kind
 			if variant_kinds.has(kind):
