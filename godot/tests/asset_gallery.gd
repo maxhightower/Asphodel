@@ -74,9 +74,11 @@ func _run() -> void:
 	var kinds: Array = GROUPS.get(_group, GROUPS["street"])
 	# Pack kinds into a squarish grid of cells; a cell holds one kind's variants
 	# in a short row, so the whole sheet reads compactly rather than as a strip.
-	var vstep: float = {"street": 1.7, "vehicles": 3.2, "veg": 6.0}.get(_group, 1.7)
-	var cellw: float = {"street": 7.0, "vehicles": 18.0, "veg": 32.0}.get(_group, 7.0)
-	var celld: float = {"street": 3.2, "vehicles": 6.5, "veg": 8.0}.get(_group, 3.2)
+	# vstep spaces the variants along +X (a vehicle's length axis), so it must clear
+	# the longest body (~6 m box truck) or the cars telescope into each other.
+	var vstep: float = {"street": 1.7, "vehicles": 7.5, "veg": 6.0}.get(_group, 1.7)
+	var cellw: float = {"street": 7.0, "vehicles": 42.0, "veg": 32.0}.get(_group, 7.0)
+	var celld: float = {"street": 3.2, "vehicles": 7.5, "veg": 8.0}.get(_group, 3.2)
 	var kpr := int(round(sqrt(float(kinds.size()))))
 	kpr = maxi(1, kpr)
 	var min_x := INF; var min_z := INF; var max_x := -INF; var max_z := -INF
