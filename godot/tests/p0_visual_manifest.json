@@ -1,0 +1,131 @@
+{
+  "note": "P0 visual baseline \u2014 12 fixed world-space views over Houston. gl_compatibility capture (geometry/composition). Forward+ AO/material fidelity is a separate gate. yaw fixed at camera default across all views for like-for-like before/after comparison.",
+  "bundle": "houston",
+  "time_hour": 13.0,
+  "screen": [
+    1600,
+    900
+  ],
+  "views": [
+    {
+      "id": "P0-V01",
+      "scene": "storefront strip",
+      "pos": [
+        -2808.4,
+        -2065.6
+      ],
+      "zoom": 120,
+      "pitch": 40
+    },
+    {
+      "id": "P0-V02",
+      "scene": "big-box retail",
+      "pos": [
+        1885.0,
+        -3360.0
+      ],
+      "zoom": 110,
+      "pitch": 40
+    },
+    {
+      "id": "P0-V03",
+      "scene": "industrial",
+      "pos": [
+        1645.8,
+        3169.9
+      ],
+      "zoom": 130,
+      "pitch": 40
+    },
+    {
+      "id": "P0-V04",
+      "scene": "office/tall",
+      "pos": [
+        1228.8,
+        -2035.2
+      ],
+      "zoom": 110,
+      "pitch": 38
+    },
+    {
+      "id": "P0-V05",
+      "scene": "civic",
+      "pos": [
+        -942.3,
+        -2458.7
+      ],
+      "zoom": 120,
+      "pitch": 40
+    },
+    {
+      "id": "P0-V06",
+      "scene": "dense residential",
+      "pos": [
+        2534.7,
+        -2746.9
+      ],
+      "zoom": 110,
+      "pitch": 40
+    },
+    {
+      "id": "P0-V07",
+      "scene": "small commercial",
+      "pos": [
+        -298.0,
+        98.8
+      ],
+      "zoom": 110,
+      "pitch": 40
+    },
+    {
+      "id": "P0-V08",
+      "scene": "tallest/high-rise",
+      "pos": [
+        1228.8,
+        -2035.2
+      ],
+      "zoom": 80,
+      "pitch": 34
+    },
+    {
+      "id": "P0-V09",
+      "scene": "mixed use",
+      "pos": [
+        -1663.1,
+        -2277.7
+      ],
+      "zoom": 120,
+      "pitch": 40
+    },
+    {
+      "id": "P0-V10",
+      "scene": "neighborhood A",
+      "pos": [
+        -1916.6,
+        -57.3
+      ],
+      "zoom": 115,
+      "pitch": 42
+    },
+    {
+      "id": "P0-V11",
+      "scene": "neighborhood B",
+      "pos": [
+        557.8,
+        -3096.0
+      ],
+      "zoom": 115,
+      "pitch": 42
+    },
+    {
+      "id": "P0-V12",
+      "scene": "neighborhood C",
+      "pos": [
+        2037.4,
+        2341.8
+      ],
+      "zoom": 115,
+      "pitch": 42
+    }
+  ]
+}
