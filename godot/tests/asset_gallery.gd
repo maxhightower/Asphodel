@@ -18,8 +18,10 @@ const GROUPS := {
 		"parking_stop", "utility_pole", "ac_condenser", "guardrail",
 		"road_barrier", "pallet", "wood_fence", "chainlink_fence"],
 	"vehicles": ["sedan", "suv", "pickup", "van", "box_truck"],
-	"veg": ["tree_oak", "tree_round", "tree_conical", "tree_columnar",
-		"tree_palm", "tree_willow", "bush_round", "bush_low"],
+	"veg": ["tree_oak", "tree_round", "tree_magnolia", "tree_conical",
+		"tree_baldcypress", "tree_columnar", "tree_palm", "tree_willow",
+		"tree_crape_myrtle", "bush_round", "bush_low", "hedge",
+		"flowering_shrub", "tall_grass", "native_scrub"],
 }
 
 

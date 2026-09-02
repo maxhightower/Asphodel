@@ -278,6 +278,51 @@ static func _cone(st: SurfaceTool, base: Vector3, radius: float, height: float,
 			st.add_vertex(base); st.add_vertex(b0); st.add_vertex(b1)
 
 
+static func _tjit(seed: int, i: int, amp: float) -> float:
+	var h := (seed * 73856093) ^ (i * 19349663)
+	h = (h ^ (h >> 13)) & 0x7fffffff
+	return (float(h % 1000) / 1000.0 - 0.5) * 2.0 * amp
+
+
+## A low-poly faceted foliage lobe — an irregular ellipsoid. `radius` is per-axis;
+## a small deterministic per-vertex jitter (keyed on `seed`) breaks the sphere into
+## facets so canopies read as foliage rather than boxes or perfect balls. About
+## lat*lon*2 triangles (default 6x3 -> ~36), so a broadleaf tree built from a few
+## lobes stays well under the ~180-tri budget. Wound outward for correct flat
+## normals; the foliage material is double-sided so there are never holes.
+static func _faceted_ellipsoid(st: SurfaceTool, center: Vector3, radius: Vector3,
+		color: Color, seed: int = 0, lon: int = 5, lat: int = 3) -> void:
+	st.set_color(color)
+	var amp := 0.18
+	var grid: Array = []
+	for i in range(lat + 1):
+		var row: Array = []
+		var theta := PI * float(i) / float(lat)
+		var cy := cos(theta)
+		var sr := sin(theta)
+		for j in range(lon):
+			if i == 0 or i == lat:
+				var py0 := cy * radius.y * (1.0 + _tjit(seed, i * 131, amp))
+				row.append(center + Vector3(0.0, py0, 0.0))
+			else:
+				var phi := TAU * float(j) / float(lon)
+				var jr := 1.0 + _tjit(seed, i * 97 + j * 7, amp)
+				var px := cos(phi) * sr * radius.x * jr
+				var pz := sin(phi) * sr * radius.z * jr
+				var py := cy * radius.y * (1.0 + _tjit(seed, i * 31 + j * 3, amp * 0.5))
+				row.append(center + Vector3(px, py, pz))
+		grid.append(row)
+	for i in range(lat):
+		for j in range(lon):
+			var j2 := (j + 1) % lon
+			var a: Vector3 = grid[i][j]
+			var b: Vector3 = grid[i][j2]
+			var c: Vector3 = grid[i + 1][j]
+			var d: Vector3 = grid[i + 1][j2]
+			st.add_vertex(a); st.add_vertex(c); st.add_vertex(d)
+			st.add_vertex(a); st.add_vertex(d); st.add_vertex(b)
+
+
 ## A single flat two-sided quad (its own two triangles), useful for thin
 ## rails/panels where a full box would be overkill. `p0..p3` must wind CCW
 ## as seen from the side the normal should face; cull is disabled anyway so
@@ -634,26 +679,25 @@ static func _leaf(variant: int, shift: float = 0.0) -> Color:
 static func _build_tree_round(st: SurfaceTool, variant: int = 0) -> void:
 	_cylinder(st, Vector3.ZERO, 0.22, 3.0, 6, TRUNK_COL, false, false)
 	var c := _leaf(variant)
-	# lower wide band + rounded top built from several offset lobes
-	_box(st, Vector3(0.0, 3.6, 0.0), Vector3(3.2, 1.6, 3.2), c.darkened(0.08))
-	_box(st, Vector3(1.1, 4.2, 0.2), Vector3(2.2, 1.5, 2.2), c)
-	_box(st, Vector3(-1.0, 4.3, -0.4), Vector3(2.0, 1.4, 2.2), c.lerp(Color.WHITE, 0.04))
-	_box(st, Vector3(0.2, 4.4, 1.1), Vector3(2.0, 1.4, 2.0), c.lerp(Color.WHITE, 0.05))
-	_box(st, Vector3(0.0, 5.2, 0.0), Vector3(2.0, 1.3, 2.0), c.lerp(Color.WHITE, 0.10))
-	_box(st, Vector3(0.0, 5.9, 0.0), Vector3(1.2, 0.9, 1.2), c.lerp(Color.WHITE, 0.14))
+	# a rounded ball crown from a few overlapping faceted lobes on a clear trunk
+	_faceted_ellipsoid(st, Vector3(0.0, 4.1, 0.0), Vector3(1.9, 2.0, 1.9), c.darkened(0.07), 21)
+	_faceted_ellipsoid(st, Vector3(0.8, 4.5, 0.2), Vector3(1.3, 1.3, 1.3), c, 22)
+	_faceted_ellipsoid(st, Vector3(-0.7, 4.4, -0.3), Vector3(1.2, 1.2, 1.3), c.lerp(Color.WHITE, 0.06), 23)
+	_faceted_ellipsoid(st, Vector3(0.1, 5.2, 0.4), Vector3(1.1, 1.1, 1.1), c.lerp(Color.WHITE, 0.11), 24)
 
 
 ## Live oak — short thick trunk and a broad, low, spreading crown (the classic
 ## Gulf-coast silhouette): wider than tall, many lobes at similar height.
 static func _build_tree_oak(st: SurfaceTool, variant: int = 0) -> void:
-	_cylinder(st, Vector3.ZERO, 0.36, 2.2, 8, TRUNK_COL.darkened(0.05), false, false)
+	# Short thick trunk, then a very broad, low, irregular crown built from wide
+	# flattened lobes at similar height (the live-oak silhouette: wider than tall).
+	_cylinder(st, Vector3.ZERO, 0.38, 2.2, 8, TRUNK_COL.darkened(0.05), false, false)
 	var c := _leaf(variant)
-	_box(st, Vector3(0.0, 3.0, 0.0), Vector3(5.4, 1.7, 5.4), c.darkened(0.10))
-	_box(st, Vector3(1.9, 3.3, 0.5), Vector3(3.2, 1.5, 3.0), c)
-	_box(st, Vector3(-1.9, 3.2, -0.6), Vector3(3.0, 1.5, 3.2), c.lerp(Color.WHITE, 0.04))
-	_box(st, Vector3(0.3, 3.5, 2.0), Vector3(2.8, 1.4, 2.6), c.lerp(Color.WHITE, 0.05))
-	_box(st, Vector3(-0.4, 3.6, -2.0), Vector3(2.6, 1.4, 2.6), c.lerp(Color.WHITE, 0.03))
-	_box(st, Vector3(0.0, 4.2, 0.0), Vector3(3.0, 1.4, 3.0), c.lerp(Color.WHITE, 0.09))
+	_faceted_ellipsoid(st, Vector3(0.0, 3.1, 0.0), Vector3(3.0, 1.7, 3.0), c.darkened(0.09), 11)
+	_faceted_ellipsoid(st, Vector3(2.0, 3.3, 0.4), Vector3(2.0, 1.4, 2.0), c, 12)
+	_faceted_ellipsoid(st, Vector3(-1.9, 3.2, -0.5), Vector3(2.0, 1.4, 2.1), c.lerp(Color.WHITE, 0.05), 13)
+	_faceted_ellipsoid(st, Vector3(0.3, 3.6, 2.0), Vector3(1.8, 1.3, 1.8), c.lerp(Color.WHITE, 0.03), 14)
+	_faceted_ellipsoid(st, Vector3(-0.3, 3.7, -2.0), Vector3(1.7, 1.3, 1.8), c.darkened(0.04), 15)
 
 
 ## Loblolly pine — tall bare trunk, several stacked conical tiers of decreasing
@@ -682,9 +726,8 @@ static func _build_tree_columnar(st: SurfaceTool, variant: int = 0) -> void:
 static func _build_tree_willow(st: SurfaceTool, variant: int = 0) -> void:
 	_cylinder(st, Vector3.ZERO, 0.26, 3.2, 6, TRUNK_COL, false, false)
 	var c := _leaf(variant, 0.08)   # willows read lighter / yellow-green
-	_box(st, Vector3(0.0, 4.0, 0.0), Vector3(3.8, 1.7, 3.8), c.darkened(0.06))
-	_box(st, Vector3(0.0, 4.7, 0.0), Vector3(2.8, 1.3, 2.8), c.lerp(Color.WHITE, 0.05))
-	_box(st, Vector3(0.0, 5.3, 0.0), Vector3(1.6, 0.9, 1.6), c.lerp(Color.WHITE, 0.10))
+	_faceted_ellipsoid(st, Vector3(0.0, 4.2, 0.0), Vector3(2.0, 1.6, 2.0), c.darkened(0.05), 41)
+	_faceted_ellipsoid(st, Vector3(0.0, 4.9, 0.0), Vector3(1.3, 1.1, 1.3), c.lerp(Color.WHITE, 0.06), 42)
 	# drooping fronds around the crown edge
 	for k in range(12):
 		var a := TAU * float(k) / 12.0
@@ -716,8 +759,8 @@ static func _build_tree_palm(st: SurfaceTool, variant: int = 0) -> void:
 
 static func _build_bush_round(st: SurfaceTool, variant: int = 0) -> void:
 	var leaf := _leaf(variant, 0.02)
-	_box(st, Vector3(0.0, 0.45, 0.0), Vector3(1.2, 0.9, 1.2), leaf)
-	_box(st, Vector3(0.15, 0.95, -0.1), Vector3(0.8, 0.6, 0.8), leaf.lerp(Color.WHITE, 0.05))
+	_faceted_ellipsoid(st, Vector3(0.0, 0.55, 0.0), Vector3(0.72, 0.6, 0.72), leaf, 61, 6, 2)
+	_faceted_ellipsoid(st, Vector3(0.18, 0.95, -0.1), Vector3(0.5, 0.42, 0.5), leaf.lerp(Color.WHITE, 0.06), 62, 6, 2)
 
 
 static func _build_bush_low(st: SurfaceTool, variant: int = 0) -> void:
@@ -728,12 +771,13 @@ static func _build_bush_low(st: SurfaceTool, variant: int = 0) -> void:
 ## Southern magnolia — dense, dark, glossy broadleaf; rounded compact crown low
 ## to the ground on a short trunk.
 static func _build_tree_magnolia(st: SurfaceTool, variant: int = 0) -> void:
-	_cylinder(st, Vector3.ZERO, 0.26, 1.8, 6, TRUNK_COL.darkened(0.1), false, false)
+	_cylinder(st, Vector3.ZERO, 0.26, 1.6, 6, TRUNK_COL.darkened(0.1), false, false)
 	var c := _leaf(variant, -0.06)   # darker green
-	_box(st, Vector3(0.0, 2.6, 0.0), Vector3(3.4, 2.2, 3.4), c.darkened(0.05))
-	_box(st, Vector3(0.6, 3.4, 0.3), Vector3(2.4, 1.8, 2.4), c)
-	_box(st, Vector3(-0.6, 3.5, -0.3), Vector3(2.2, 1.7, 2.4), c.lerp(Color.WHITE, 0.03))
-	_box(st, Vector3(0.0, 4.4, 0.0), Vector3(1.8, 1.3, 1.8), c.lerp(Color.WHITE, 0.06))
+	# dense, compact, roughly pyramidal crown (taller than wide), low branching
+	_faceted_ellipsoid(st, Vector3(0.0, 2.9, 0.0), Vector3(1.7, 2.0, 1.7), c.darkened(0.05), 31)
+	_faceted_ellipsoid(st, Vector3(0.4, 3.8, 0.2), Vector3(1.2, 1.5, 1.2), c, 32)
+	_faceted_ellipsoid(st, Vector3(-0.3, 3.9, -0.2), Vector3(1.1, 1.3, 1.1), c.lerp(Color.WHITE, 0.03), 33)
+	_faceted_ellipsoid(st, Vector3(0.0, 4.7, 0.0), Vector3(0.8, 1.0, 0.8), c.lerp(Color.WHITE, 0.05), 34)
 
 
 ## Crape myrtle — small multi-stem ornamental with an airy rounded head; blooms
@@ -744,9 +788,10 @@ static func _build_tree_crape_myrtle(st: SurfaceTool, variant: int = 0) -> void:
 		_cylinder(st, Vector3(sx, 0.0, sx * 0.5), 0.06, 2.2, 5, trunk, false, false)
 	var bloom := [Color(0.72, 0.45, 0.6), Color(0.85, 0.82, 0.86), Color(0.6, 0.5, 0.66)]
 	var c: Color = _leaf(variant, 0.02).lerp(bloom[variant % bloom.size()], 0.5)
-	_box(st, Vector3(0.0, 2.6, 0.0), Vector3(2.0, 1.2, 2.0), c.darkened(0.04))
-	_box(st, Vector3(0.2, 3.2, 0.1), Vector3(1.5, 1.0, 1.5), c)
-	_box(st, Vector3(-0.2, 3.4, -0.1), Vector3(1.2, 0.9, 1.2), c.lerp(Color.WHITE, 0.06))
+	# small, airy, multi-stem head — obviously much smaller than a live oak
+	_faceted_ellipsoid(st, Vector3(0.0, 2.7, 0.0), Vector3(1.0, 1.1, 1.0), c.darkened(0.04), 51)
+	_faceted_ellipsoid(st, Vector3(0.35, 3.1, 0.15), Vector3(0.8, 0.8, 0.8), c, 52)
+	_faceted_ellipsoid(st, Vector3(-0.35, 3.2, -0.15), Vector3(0.7, 0.75, 0.7), c.lerp(Color.WHITE, 0.06), 53)
 
 
 ## Bald cypress — tall wetland conifer: straight trunk, narrow feathery conical
