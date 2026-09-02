@@ -1,6 +1,60 @@
 version: 1
 note: 'AssetCatalogV1 seed: semantic families over existing procedural meshes. V1 variants are procedural
   fallbacks; add resource: authored assets in later packages.'
+render_variants:
+  utility_pole: 1
+  utility_cabinet: 3
+  transformer_box: 2
+  ac_condenser: 1
+  rooftop_hvac: 1
+  fire_hydrant: 3
+  streetlight: 3
+  traffic_sign: 1
+  traffic_signal: 1
+  bollard: 3
+  bench: 3
+  bus_shelter: 1
+  parking_stop: 1
+  garbage_bin: 3
+  mailbox: 4
+  recycling_bin: 3
+  wood_fence: 1
+  chainlink_fence: 1
+  dumpster: 3
+  pallet: 1
+  road_barrier: 1
+  guardrail: 1
+  sedan: 5
+  suv: 5
+  pickup: 5
+  van: 5
+  box_truck: 5
+  tree_oak: 5
+  tree_round: 5
+  tree_conical: 5
+  tree_columnar: 5
+  tree_palm: 5
+  bush_round: 5
+  bush_low: 5
+  cabinet: 1
+  fridge: 1
+  shelf: 1
+  dresser: 1
+  desk: 1
+  counter: 1
+  crate: 1
+  sofa: 1
+  armchair: 1
+  coffee_table: 1
+  tv: 1
+  bookshelf: 1
+  bed: 1
+  table: 1
+  chair: 1
+  stove: 1
+  stool: 1
+  rack: 1
+  display: 1
 families:
 - semantic_id: utility_pole
   category: utility
@@ -19,6 +73,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: utility_pole
+  render_kind: utility_pole
   lod_fallback: utility_pole
   variants:
   - id: utility_pole_00
@@ -44,9 +99,22 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: utility_cabinet
+  render_kind: utility_cabinet
   lod_fallback: utility_cabinet
   variants:
   - id: utility_cabinet_00
+    weight: 1.0
+    resource: null
+    procedural: utility_cabinet
+    conditions:
+    - NORMAL
+  - id: utility_cabinet_01
+    weight: 1.0
+    resource: null
+    procedural: utility_cabinet
+    conditions:
+    - NORMAL
+  - id: utility_cabinet_02
     weight: 1.0
     resource: null
     procedural: utility_cabinet
@@ -69,9 +137,16 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: transformer_box
+  render_kind: transformer_box
   lod_fallback: transformer_box
   variants:
   - id: transformer_box_00
+    weight: 1.0
+    resource: null
+    procedural: transformer_box
+    conditions:
+    - NORMAL
+  - id: transformer_box_01
     weight: 1.0
     resource: null
     procedural: transformer_box
@@ -94,9 +169,22 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: electrical_meter
+  render_kind: utility_cabinet
   lod_fallback: utility_cabinet
   variants:
   - id: electrical_meter_00
+    weight: 1.0
+    resource: null
+    procedural: utility_cabinet
+    conditions:
+    - NORMAL
+  - id: electrical_meter_01
+    weight: 1.0
+    resource: null
+    procedural: utility_cabinet
+    conditions:
+    - NORMAL
+  - id: electrical_meter_02
     weight: 1.0
     resource: null
     procedural: utility_cabinet
@@ -119,9 +207,22 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: telecom_box
+  render_kind: utility_cabinet
   lod_fallback: utility_cabinet
   variants:
   - id: telecom_box_00
+    weight: 1.0
+    resource: null
+    procedural: utility_cabinet
+    conditions:
+    - NORMAL
+  - id: telecom_box_01
+    weight: 1.0
+    resource: null
+    procedural: utility_cabinet
+    conditions:
+    - NORMAL
+  - id: telecom_box_02
     weight: 1.0
     resource: null
     procedural: utility_cabinet
@@ -145,6 +246,7 @@ families:
   - residential
   climate_tags: []
   seed_tag: ac_condenser
+  render_kind: ac_condenser
   lod_fallback: ac_condenser
   variants:
   - id: ac_condenser_00
@@ -172,6 +274,7 @@ families:
   - industrial
   climate_tags: []
   seed_tag: rooftop_hvac
+  render_kind: rooftop_hvac
   lod_fallback: rooftop_hvac
   variants:
   - id: rooftop_hvac_00
@@ -197,9 +300,22 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: fire_hydrant
+  render_kind: fire_hydrant
   lod_fallback: fire_hydrant
   variants:
   - id: fire_hydrant_00
+    weight: 1.0
+    resource: null
+    procedural: fire_hydrant
+    conditions:
+    - NORMAL
+  - id: fire_hydrant_01
+    weight: 1.0
+    resource: null
+    procedural: fire_hydrant
+    conditions:
+    - NORMAL
+  - id: fire_hydrant_02
     weight: 1.0
     resource: null
     procedural: fire_hydrant
@@ -222,9 +338,22 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: streetlight
+  render_kind: streetlight
   lod_fallback: streetlight
   variants:
   - id: streetlight_00
+    weight: 1.0
+    resource: null
+    procedural: streetlight
+    conditions:
+    - NORMAL
+  - id: streetlight_01
+    weight: 1.0
+    resource: null
+    procedural: streetlight
+    conditions:
+    - NORMAL
+  - id: streetlight_02
     weight: 1.0
     resource: null
     procedural: streetlight
@@ -247,6 +376,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: traffic_sign
+  render_kind: traffic_sign
   lod_fallback: traffic_sign
   variants:
   - id: traffic_sign_00
@@ -272,6 +402,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: traffic_signal
+  render_kind: traffic_signal
   lod_fallback: traffic_signal
   variants:
   - id: traffic_signal_00
@@ -297,9 +428,22 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: bollard
+  render_kind: bollard
   lod_fallback: bollard
   variants:
   - id: bollard_00
+    weight: 1.0
+    resource: null
+    procedural: bollard
+    conditions:
+    - NORMAL
+  - id: bollard_01
+    weight: 1.0
+    resource: null
+    procedural: bollard
+    conditions:
+    - NORMAL
+  - id: bollard_02
     weight: 1.0
     resource: null
     procedural: bollard
@@ -322,9 +466,22 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: bench
+  render_kind: bench
   lod_fallback: bench
   variants:
   - id: bench_00
+    weight: 1.0
+    resource: null
+    procedural: bench
+    conditions:
+    - NORMAL
+  - id: bench_01
+    weight: 1.0
+    resource: null
+    procedural: bench
+    conditions:
+    - NORMAL
+  - id: bench_02
     weight: 1.0
     resource: null
     procedural: bench
@@ -347,6 +504,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: bus_shelter
+  render_kind: bus_shelter
   lod_fallback: bus_shelter
   variants:
   - id: bus_shelter_00
@@ -372,6 +530,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: parking_stop
+  render_kind: parking_stop
   lod_fallback: parking_stop
   variants:
   - id: parking_stop_00
@@ -397,9 +556,22 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: parking_meter
+  render_kind: bollard
   lod_fallback: bollard
   variants:
   - id: parking_meter_00
+    weight: 1.0
+    resource: null
+    procedural: bollard
+    conditions:
+    - NORMAL
+  - id: parking_meter_01
+    weight: 1.0
+    resource: null
+    procedural: bollard
+    conditions:
+    - NORMAL
+  - id: parking_meter_02
     weight: 1.0
     resource: null
     procedural: bollard
@@ -422,9 +594,22 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: bike_rack
+  render_kind: bollard
   lod_fallback: bollard
   variants:
   - id: bike_rack_00
+    weight: 1.0
+    resource: null
+    procedural: bollard
+    conditions:
+    - NORMAL
+  - id: bike_rack_01
+    weight: 1.0
+    resource: null
+    procedural: bollard
+    conditions:
+    - NORMAL
+  - id: bike_rack_02
     weight: 1.0
     resource: null
     procedural: bollard
@@ -447,9 +632,22 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: trash_can_public
+  render_kind: garbage_bin
   lod_fallback: garbage_bin
   variants:
   - id: trash_can_public_00
+    weight: 1.0
+    resource: null
+    procedural: garbage_bin
+    conditions:
+    - NORMAL
+  - id: trash_can_public_01
+    weight: 1.0
+    resource: null
+    procedural: garbage_bin
+    conditions:
+    - NORMAL
+  - id: trash_can_public_02
     weight: 1.0
     resource: null
     procedural: garbage_bin
@@ -472,9 +670,22 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: newspaper_box
+  render_kind: utility_cabinet
   lod_fallback: utility_cabinet
   variants:
   - id: newspaper_box_00
+    weight: 1.0
+    resource: null
+    procedural: utility_cabinet
+    conditions:
+    - NORMAL
+  - id: newspaper_box_01
+    weight: 1.0
+    resource: null
+    procedural: utility_cabinet
+    conditions:
+    - NORMAL
+  - id: newspaper_box_02
     weight: 1.0
     resource: null
     procedural: utility_cabinet
@@ -498,9 +709,28 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: mailbox_suburban
+  render_kind: mailbox
   lod_fallback: mailbox
   variants:
   - id: mailbox_suburban_00
+    weight: 1.0
+    resource: null
+    procedural: mailbox
+    conditions:
+    - NORMAL
+  - id: mailbox_suburban_01
+    weight: 1.0
+    resource: null
+    procedural: mailbox
+    conditions:
+    - NORMAL
+  - id: mailbox_suburban_02
+    weight: 1.0
+    resource: null
+    procedural: mailbox
+    conditions:
+    - NORMAL
+  - id: mailbox_suburban_03
     weight: 1.0
     resource: null
     procedural: mailbox
@@ -524,9 +754,22 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: garbage_bin
+  render_kind: garbage_bin
   lod_fallback: garbage_bin
   variants:
   - id: garbage_bin_00
+    weight: 1.0
+    resource: null
+    procedural: garbage_bin
+    conditions:
+    - NORMAL
+  - id: garbage_bin_01
+    weight: 1.0
+    resource: null
+    procedural: garbage_bin
+    conditions:
+    - NORMAL
+  - id: garbage_bin_02
     weight: 1.0
     resource: null
     procedural: garbage_bin
@@ -550,9 +793,22 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: recycling_bin
+  render_kind: recycling_bin
   lod_fallback: recycling_bin
   variants:
   - id: recycling_bin_00
+    weight: 1.0
+    resource: null
+    procedural: recycling_bin
+    conditions:
+    - NORMAL
+  - id: recycling_bin_01
+    weight: 1.0
+    resource: null
+    procedural: recycling_bin
+    conditions:
+    - NORMAL
+  - id: recycling_bin_02
     weight: 1.0
     resource: null
     procedural: recycling_bin
@@ -576,6 +832,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: wood_fence
+  render_kind: wood_fence
   lod_fallback: wood_fence
   variants:
   - id: wood_fence_00
@@ -601,6 +858,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: chainlink_fence
+  render_kind: chainlink_fence
   lod_fallback: chainlink_fence
   variants:
   - id: chainlink_fence_00
@@ -628,9 +886,22 @@ families:
   - industrial
   climate_tags: []
   seed_tag: dumpster
+  render_kind: dumpster
   lod_fallback: dumpster
   variants:
   - id: dumpster_00
+    weight: 1.0
+    resource: null
+    procedural: dumpster
+    conditions:
+    - NORMAL
+  - id: dumpster_01
+    weight: 1.0
+    resource: null
+    procedural: dumpster
+    conditions:
+    - NORMAL
+  - id: dumpster_02
     weight: 1.0
     resource: null
     procedural: dumpster
@@ -654,6 +925,7 @@ families:
   - industrial
   climate_tags: []
   seed_tag: pallet
+  render_kind: pallet
   lod_fallback: pallet
   variants:
   - id: pallet_00
@@ -679,6 +951,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: road_barrier
+  render_kind: road_barrier
   lod_fallback: road_barrier
   variants:
   - id: road_barrier_00
@@ -704,6 +977,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: guardrail
+  render_kind: guardrail
   lod_fallback: guardrail
   variants:
   - id: guardrail_00
@@ -729,6 +1003,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: vehicle_sedan
+  render_kind: sedan
   lod_fallback: sedan
   variants:
   - id: vehicle_sedan_00
@@ -778,6 +1053,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: vehicle_suv
+  render_kind: suv
   lod_fallback: suv
   variants:
   - id: vehicle_suv_00
@@ -827,6 +1103,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: vehicle_pickup
+  render_kind: pickup
   lod_fallback: pickup
   variants:
   - id: vehicle_pickup_00
@@ -876,6 +1153,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: vehicle_van
+  render_kind: van
   lod_fallback: van
   variants:
   - id: vehicle_van_00
@@ -925,6 +1203,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: vehicle_box_truck
+  render_kind: box_truck
   lod_fallback: box_truck
   variants:
   - id: vehicle_box_truck_00
@@ -976,6 +1255,7 @@ families:
   - gulf
   - south_central
   seed_tag: live_oak
+  render_kind: tree_oak
   lod_fallback: tree_oak
   variants:
   - id: live_oak_00
@@ -1025,6 +1305,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: street_tree_round
+  render_kind: tree_round
   lod_fallback: tree_round
   variants:
   - id: street_tree_round_00
@@ -1075,6 +1356,7 @@ families:
   climate_tags:
   - temperate
   seed_tag: conifer
+  render_kind: tree_conical
   lod_fallback: tree_conical
   variants:
   - id: conifer_00
@@ -1124,6 +1406,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: columnar_tree
+  render_kind: tree_columnar
   lod_fallback: tree_columnar
   variants:
   - id: columnar_tree_00
@@ -1175,6 +1458,7 @@ families:
   - gulf
   - subtropical
   seed_tag: palm
+  render_kind: tree_palm
   lod_fallback: tree_palm
   variants:
   - id: palm_00
@@ -1224,6 +1508,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: shrub_round
+  render_kind: bush_round
   lod_fallback: bush_round
   variants:
   - id: shrub_round_00
@@ -1273,6 +1558,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: shrub_low
+  render_kind: bush_low
   lod_fallback: bush_low
   variants:
   - id: shrub_low_00
@@ -1325,6 +1611,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: storage_cabinet
+  render_kind: cabinet
   lod_fallback: cabinet
   variants:
   - id: storage_cabinet_00
@@ -1352,6 +1639,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: refrigerator
+  render_kind: fridge
   lod_fallback: fridge
   variants:
   - id: refrigerator_00
@@ -1381,6 +1669,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: shelf_unit
+  render_kind: shelf
   lod_fallback: shelf
   variants:
   - id: shelf_unit_00
@@ -1407,6 +1696,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: dresser
+  render_kind: dresser
   lod_fallback: dresser
   variants:
   - id: dresser_00
@@ -1435,6 +1725,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: desk
+  render_kind: desk
   lod_fallback: desk
   variants:
   - id: desk_00
@@ -1463,6 +1754,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: counter
+  render_kind: counter
   lod_fallback: counter
   variants:
   - id: counter_00
@@ -1491,6 +1783,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: crate
+  render_kind: crate
   lod_fallback: crate
   variants:
   - id: crate_00
@@ -1517,6 +1810,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: sofa
+  render_kind: sofa
   lod_fallback: sofa
   variants:
   - id: sofa_00
@@ -1543,6 +1837,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: armchair
+  render_kind: armchair
   lod_fallback: armchair
   variants:
   - id: armchair_00
@@ -1569,6 +1864,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: coffee_table
+  render_kind: coffee_table
   lod_fallback: coffee_table
   variants:
   - id: coffee_table_00
@@ -1596,6 +1892,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: television
+  render_kind: tv
   lod_fallback: tv
   variants:
   - id: television_00
@@ -1623,6 +1920,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: bookshelf
+  render_kind: bookshelf
   lod_fallback: bookshelf
   variants:
   - id: bookshelf_00
@@ -1650,6 +1948,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: bed_double
+  render_kind: bed
   lod_fallback: bed
   variants:
   - id: bed_double_00
@@ -1677,6 +1976,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: dining_table
+  render_kind: table
   lod_fallback: table
   variants:
   - id: dining_table_00
@@ -1705,6 +2005,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: chair_dining
+  render_kind: chair
   lod_fallback: chair
   variants:
   - id: chair_dining_00
@@ -1731,6 +2032,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: stove
+  render_kind: stove
   lod_fallback: stove
   variants:
   - id: stove_00
@@ -1758,6 +2060,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: stool
+  render_kind: stool
   lod_fallback: stool
   variants:
   - id: stool_00
@@ -1784,6 +2087,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: retail_rack
+  render_kind: rack
   lod_fallback: rack
   variants:
   - id: retail_rack_00
@@ -1810,6 +2114,7 @@ families:
   building_tags: []
   climate_tags: []
   seed_tag: retail_display
+  render_kind: display
   lod_fallback: display
   variants:
   - id: retail_display_00

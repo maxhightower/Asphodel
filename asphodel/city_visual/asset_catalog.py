@@ -93,6 +93,7 @@ class AssetFamily:
     building_tags: tuple = ()
     climate_tags: tuple = ()
     seed_tag: str = ""                                 # deterministic selection key
+    render_kind: Optional[str] = None                  # procedural mesh kind drawn
     lod_fallback: Optional[str] = None                 # procedural kind for far LOD
     variants: list = field(default_factory=list)       # list[AssetVariant]
 
@@ -106,7 +107,8 @@ class AssetFamily:
             "room_tags": list(self.room_tags), "parcel_tags": list(self.parcel_tags),
             "building_tags": list(self.building_tags),
             "climate_tags": list(self.climate_tags),
-            "seed_tag": self.seed_tag, "lod_fallback": self.lod_fallback,
+            "seed_tag": self.seed_tag, "render_kind": self.render_kind,
+            "lod_fallback": self.lod_fallback,
             "variants": [v.to_dict() for v in self.variants],
         }
 
@@ -123,6 +125,7 @@ class AssetFamily:
             building_tags=tuple(d.get("building_tags", [])),
             climate_tags=tuple(d.get("climate_tags", [])),
             seed_tag=d.get("seed_tag", d["semantic_id"]),
+            render_kind=d.get("render_kind"),
             lod_fallback=d.get("lod_fallback"),
             variants=[AssetVariant.from_dict(v) for v in d.get("variants", [])],
         )

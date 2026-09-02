@@ -62,9 +62,29 @@ static func _glass_material() -> StandardMaterial3D:
 	return _mat_glass
 
 
+## Every kind `_build` has an explicit case for. Anything outside this set draws
+## the magenta unknown-asset box, so the catalog-conformance gate asserts every
+## placed/catalogued render kind is in here (no silent magenta in the field).
+const SUPPORTED_KINDS := [
+	"mailbox", "garbage_bin", "recycling_bin", "fire_hydrant", "utility_pole",
+	"streetlight", "traffic_sign", "traffic_signal", "guardrail", "bollard",
+	"transformer_box", "utility_cabinet", "ac_condenser", "rooftop_hvac",
+	"dumpster", "parking_stop", "bench", "bus_shelter", "wood_fence",
+	"chainlink_fence", "pallet", "road_barrier",
+	"sedan", "suv", "pickup", "van", "box_truck",
+	"tree_round", "tree_oak", "tree_conical", "tree_columnar", "tree_palm",
+	"bush_round", "bush_low",
+]
+
+
+static func is_supported(kind: String) -> bool:
+	return kind in SUPPORTED_KINDS
+
+
 ## Returns a cached ArrayMesh for `kind` (see the match in `_build` for the
-## full list of supported kinds). `variant` only affects vehicle body colour;
-## non-vehicle kinds ignore it but it still participates in the cache key.
+## full list of supported kinds). `variant` selects a distinct baked mesh for
+## vehicles, foliage, and the street families that expose variants; other kinds
+## ignore it but it still participates in the cache key.
 static func get_mesh(kind: String, variant: int = 0) -> Mesh:
 	var key := "%s:%d" % [kind, variant]
 	if _mesh_cache.has(key):
@@ -101,17 +121,19 @@ static func _build(kind: String, variant: int) -> ArrayMesh:
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	match kind:
 		"mailbox":
-			_build_mailbox(st)
+			_build_mailbox(st, variant)
 		"garbage_bin":
-			_build_bin(st, Color(0.09, 0.22, 0.12), Color(0.14, 0.30, 0.17))
+			_build_bin(st, variant, [Color(0.09, 0.22, 0.12), Color(0.20, 0.20, 0.22),
+				Color(0.15, 0.22, 0.34)])
 		"recycling_bin":
-			_build_bin(st, Color(0.10, 0.16, 0.32), Color(0.15, 0.23, 0.42))
+			_build_bin(st, variant, [Color(0.10, 0.16, 0.32), Color(0.13, 0.30, 0.42),
+				Color(0.55, 0.50, 0.12)])
 		"fire_hydrant":
-			_build_fire_hydrant(st)
+			_build_fire_hydrant(st, variant)
 		"utility_pole":
 			_build_utility_pole(st)
 		"streetlight":
-			_build_streetlight(st)
+			_build_streetlight(st, variant)
 		"traffic_sign":
 			_build_traffic_sign(st)
 		"traffic_signal":
@@ -119,21 +141,21 @@ static func _build(kind: String, variant: int) -> ArrayMesh:
 		"guardrail":
 			_build_guardrail(st)
 		"bollard":
-			_build_bollard(st)
+			_build_bollard(st, variant)
 		"transformer_box":
-			_build_transformer_box(st)
+			_build_transformer_box(st, variant)
 		"utility_cabinet":
-			_box(st, Vector3(0.0, 0.6, 0.0), Vector3(0.6, 1.2, 0.4), Color(0.45, 0.46, 0.48))
+			_build_utility_cabinet(st, variant)
 		"ac_condenser":
 			_build_ac_condenser(st)
 		"rooftop_hvac":
 			_box(st, Vector3(0.0, 0.5, 0.0), Vector3(2.0, 1.0, 1.5), Color(0.55, 0.56, 0.58))
 		"dumpster":
-			_build_dumpster(st)
+			_build_dumpster(st, variant)
 		"parking_stop":
 			_box(st, Vector3(0.0, 0.075, 0.0), Vector3(1.8, 0.15, 0.15), Color(0.6, 0.6, 0.58))
 		"bench":
-			_build_bench(st)
+			_build_bench(st, variant)
 		"bus_shelter":
 			_build_bus_shelter(st)
 		"wood_fence":
@@ -247,21 +269,47 @@ static func _quad(st: SurfaceTool, p0: Vector3, p1: Vector3, p2: Vector3, p3: Ve
 
 
 # ------------------------------------------------------------------- street furniture
-static func _build_mailbox(st: SurfaceTool) -> void:
-	var post_col := Color(0.30, 0.30, 0.33)
-	var box_col := Color(0.22, 0.26, 0.34)
-	_cylinder(st, Vector3.ZERO, 0.04, 1.0, 6, post_col, true, false)
-	_box(st, Vector3(0.0, 1.075, 0.05), Vector3(0.16, 0.15, 0.38), box_col)
+static func _build_mailbox(st: SurfaceTool, variant := 0) -> void:
+	var posts := [Color(0.30, 0.30, 0.33), Color(0.34, 0.28, 0.22),
+		Color(0.42, 0.42, 0.44), Color(0.50, 0.42, 0.32)]
+	var boxes := [Color(0.22, 0.26, 0.34), Color(0.55, 0.14, 0.12),
+		Color(0.20, 0.20, 0.22), Color(0.35, 0.36, 0.40)]
+	var pc: Color = posts[variant % posts.size()]
+	var bc: Color = boxes[variant % boxes.size()]
+	match variant % 4:
+		0:
+			_cylinder(st, Vector3.ZERO, 0.04, 1.0, 6, pc, true, false)
+			_box(st, Vector3(0.0, 1.075, 0.05), Vector3(0.16, 0.15, 0.38), bc)
+		1:
+			_cylinder(st, Vector3.ZERO, 0.045, 1.15, 6, pc, true, false)
+			_box(st, Vector3(0.0, 1.24, 0.06), Vector3(0.20, 0.20, 0.46), bc)
+		2:
+			_box(st, Vector3(0.0, 0.55, 0.0), Vector3(0.10, 1.1, 0.10), pc)
+			_box(st, Vector3(0.0, 1.15, 0.0), Vector3(0.42, 0.60, 0.34), bc)
+		3:
+			_box(st, Vector3(0.0, 0.5, 0.0), Vector3(0.34, 1.0, 0.34), pc)
+			_box(st, Vector3(0.0, 1.12, 0.06), Vector3(0.22, 0.16, 0.40), bc)
 
 
-static func _build_bin(st: SurfaceTool, body_col: Color, lip_col: Color) -> void:
-	_box(st, Vector3(0.0, 0.5, 0.0), Vector3(0.6, 1.0, 0.6), body_col)
-	_box(st, Vector3(0.0, 1.02, 0.0), Vector3(0.66, 0.08, 0.66), lip_col)
+static func _build_bin(st: SurfaceTool, variant := 0, bodies := []) -> void:
+	var body_col: Color = bodies[variant % bodies.size()] if bodies else Color(0.2, 0.2, 0.22)
+	var lip_col := body_col.lightened(0.12)
+	match variant % 3:
+		0:
+			_box(st, Vector3(0.0, 0.5, 0.0), Vector3(0.6, 1.0, 0.6), body_col)
+			_box(st, Vector3(0.0, 1.02, 0.0), Vector3(0.66, 0.08, 0.66), lip_col)
+		1:
+			_box(st, Vector3(0.0, 0.58, 0.0), Vector3(0.52, 1.16, 0.56), body_col)
+			_box(st, Vector3(0.0, 1.18, -0.02), Vector3(0.56, 0.08, 0.5), lip_col)
+		2:
+			_cylinder(st, Vector3(0.0, 0.0, 0.0), 0.32, 0.9, 10, body_col, false, false)
+			_cylinder(st, Vector3(0.0, 0.9, 0.0), 0.35, 0.08, 10, lip_col, false, true)
 
 
-static func _build_fire_hydrant(st: SurfaceTool) -> void:
-	var col := Color(0.55, 0.12, 0.10)
-	var dark := Color(0.35, 0.08, 0.07)
+static func _build_fire_hydrant(st: SurfaceTool, variant := 0) -> void:
+	var bodies := [Color(0.55, 0.12, 0.10), Color(0.70, 0.58, 0.10), Color(0.70, 0.72, 0.74)]
+	var col: Color = bodies[variant % bodies.size()]
+	var dark := col.darkened(0.35)
 	_cylinder(st, Vector3(0.0, 0.0, 0.0), 0.17, 0.08, 8, dark, false, true)   # base flange
 	_cylinder(st, Vector3(0.0, 0.08, 0.0), 0.14, 0.55, 8, col, false, false)
 	_cone(st, Vector3(0.0, 0.63, 0.0), 0.16, 0.17, 8, col, false)
@@ -278,11 +326,32 @@ static func _build_utility_pole(st: SurfaceTool) -> void:
 	_box(st, Vector3(0.6, 8.15, 0.0), Vector3(0.08, 0.2, 0.08), Color(0.55, 0.52, 0.48))
 
 
-static func _build_streetlight(st: SurfaceTool) -> void:
+static func _build_streetlight(st: SurfaceTool, variant := 0) -> void:
 	var col := Color(0.22, 0.23, 0.25)
-	_cylinder(st, Vector3.ZERO, 0.08, 6.0, 6, col, true, false)
-	_box(st, Vector3(0.7, 5.95, 0.0), Vector3(1.4, 0.08, 0.08), col)
-	_box(st, Vector3(1.4, 5.78, 0.0), Vector3(0.30, 0.22, 0.30), Color(0.15, 0.16, 0.18))
+	var head := Color(0.15, 0.16, 0.18)
+	match variant % 3:
+		0:
+			_cylinder(st, Vector3.ZERO, 0.08, 6.0, 6, col, true, false)
+			_box(st, Vector3(0.7, 5.95, 0.0), Vector3(1.4, 0.08, 0.08), col)
+			_box(st, Vector3(1.4, 5.78, 0.0), Vector3(0.30, 0.22, 0.30), head)
+		1:
+			_cylinder(st, Vector3.ZERO, 0.09, 4.6, 6, col, true, false)
+			_box(st, Vector3(0.0, 4.78, 0.0), Vector3(0.34, 0.30, 0.34), head)
+		2:
+			_cylinder(st, Vector3.ZERO, 0.09, 6.6, 6, col, true, false)
+			for s in [-1.0, 1.0]:
+				var sf := float(s)
+				_box(st, Vector3(0.6 * sf, 6.55, 0.0), Vector3(1.2, 0.08, 0.08), col)
+				_box(st, Vector3(1.2 * sf, 6.4, 0.0), Vector3(0.28, 0.20, 0.28), head)
+
+
+static func _build_utility_cabinet(st: SurfaceTool, variant := 0) -> void:
+	var cols := [Color(0.45, 0.46, 0.48), Color(0.50, 0.52, 0.48), Color(0.38, 0.40, 0.44)]
+	var c: Color = cols[variant % cols.size()]
+	var sizes := [Vector3(0.6, 1.2, 0.4), Vector3(0.9, 1.4, 0.5), Vector3(0.45, 1.0, 0.35)]
+	var sz: Vector3 = sizes[variant % sizes.size()]
+	_box(st, Vector3(0.0, sz.y * 0.5, 0.0), sz, c)
+	_box(st, Vector3(0.0, sz.y + 0.03, 0.0), Vector3(sz.x + 0.06, 0.06, sz.z + 0.06), c.darkened(0.2))
 
 
 static func _build_traffic_sign(st: SurfaceTool) -> void:
@@ -310,16 +379,27 @@ static func _build_guardrail(st: SurfaceTool) -> void:
 	_box(st, Vector3(0.0, 0.55, 0.0), Vector3(2.0, 0.18, 0.06), rail_col)
 
 
-static func _build_bollard(st: SurfaceTool) -> void:
-	var col := Color(0.12, 0.12, 0.14)
-	_cylinder(st, Vector3.ZERO, 0.10, 0.85, 8, col, false, true)
-	_cone(st, Vector3(0.0, 0.85, 0.0), 0.10, 0.05, 8, col, false)
+static func _build_bollard(st: SurfaceTool, variant := 0) -> void:
+	var cols := [Color(0.12, 0.12, 0.14), Color(0.72, 0.20, 0.06), Color(0.72, 0.72, 0.10)]
+	var col: Color = cols[variant % cols.size()]
+	match variant % 3:
+		0:
+			_cylinder(st, Vector3.ZERO, 0.10, 0.85, 8, col, false, true)
+			_cone(st, Vector3(0.0, 0.85, 0.0), 0.10, 0.05, 8, col, false)
+		1:
+			_cylinder(st, Vector3.ZERO, 0.09, 0.95, 8, col, false, true)
+			_cylinder(st, Vector3(0.0, 0.95, 0.0), 0.11, 0.06, 8, col.lightened(0.3), false, true)
+		2:
+			_box(st, Vector3(0.0, 0.4, 0.0), Vector3(0.18, 0.8, 0.18), col)
+			_box(st, Vector3(0.0, 0.83, 0.0), Vector3(0.22, 0.06, 0.22), col.lightened(0.2))
 
 
-static func _build_transformer_box(st: SurfaceTool) -> void:
-	var col := Color(0.55, 0.62, 0.52)
-	_box(st, Vector3(0.0, 0.5, 0.0), Vector3(1.2, 1.0, 1.0), col)
-	_box(st, Vector3(0.0, 1.03, 0.0), Vector3(1.24, 0.06, 1.04), col.darkened(0.2))
+static func _build_transformer_box(st: SurfaceTool, variant := 0) -> void:
+	var cols := [Color(0.55, 0.62, 0.52), Color(0.48, 0.50, 0.52)]
+	var col: Color = cols[variant % cols.size()]
+	var w := 1.2 if variant % 2 == 0 else 1.5
+	_box(st, Vector3(0.0, 0.5, 0.0), Vector3(w, 1.0, 1.0), col)
+	_box(st, Vector3(0.0, 1.03, 0.0), Vector3(w + 0.04, 0.06, 1.04), col.darkened(0.2))
 
 
 static func _build_ac_condenser(st: SurfaceTool) -> void:
@@ -329,21 +409,25 @@ static func _build_ac_condenser(st: SurfaceTool) -> void:
 	_box(st, Vector3(0.0, 0.72, 0.0), Vector3(0.82, 0.06, 0.82), top)
 
 
-static func _build_dumpster(st: SurfaceTool) -> void:
-	var col := Color(0.08, 0.20, 0.11)
-	var lid := Color(0.12, 0.26, 0.15)
-	_box(st, Vector3(0.0, 0.65, 0.0), Vector3(1.8, 1.3, 1.2), col)
-	_box(st, Vector3(0.0, 1.36, 0.0), Vector3(1.85, 0.12, 1.25), lid)
+static func _build_dumpster(st: SurfaceTool, variant := 0) -> void:
+	var cols := [Color(0.08, 0.20, 0.11), Color(0.20, 0.12, 0.10), Color(0.16, 0.18, 0.30)]
+	var col: Color = cols[variant % cols.size()]
+	var lid := col.lightened(0.10)
+	var w := 1.8 if variant % 2 == 0 else 2.2
+	_box(st, Vector3(0.0, 0.65, 0.0), Vector3(w, 1.3, 1.2), col)
+	_box(st, Vector3(0.0, 1.36, 0.0), Vector3(w + 0.05, 0.12, 1.25), lid)
 	_box(st, Vector3(0.0, 1.48, 0.0), Vector3(0.20, 0.12, 1.25), lid.darkened(0.1))
 
 
-static func _build_bench(st: SurfaceTool) -> void:
-	var wood := Color(0.45, 0.30, 0.16)
+static func _build_bench(st: SurfaceTool, variant := 0) -> void:
+	var woods := [Color(0.45, 0.30, 0.16), Color(0.30, 0.32, 0.34), Color(0.22, 0.34, 0.24)]
+	var wood: Color = woods[variant % woods.size()]
 	var metal := Color(0.20, 0.20, 0.22)
-	_box(st, Vector3(0.0, 0.45, 0.0), Vector3(1.6, 0.05, 0.4), wood)
-	_box(st, Vector3(0.0, 0.75, -0.17), Vector3(1.6, 0.35, 0.05), wood)
-	_box(st, Vector3(-0.7, 0.225, 0.0), Vector3(0.08, 0.45, 0.36), metal)
-	_box(st, Vector3(0.7, 0.225, 0.0), Vector3(0.08, 0.45, 0.36), metal)
+	var length := 1.6 if variant % 2 == 0 else 2.0
+	_box(st, Vector3(0.0, 0.45, 0.0), Vector3(length, 0.05, 0.4), wood)
+	_box(st, Vector3(0.0, 0.75, -0.17), Vector3(length, 0.35, 0.05), wood)
+	_box(st, Vector3(-length * 0.44, 0.225, 0.0), Vector3(0.08, 0.45, 0.36), metal)
+	_box(st, Vector3(length * 0.44, 0.225, 0.0), Vector3(0.08, 0.45, 0.36), metal)
 
 
 static func _build_bus_shelter(st: SurfaceTool) -> void:

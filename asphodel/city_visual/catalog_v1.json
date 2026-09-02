@@ -1,0 +1,2811 @@
+{
+ "version": 1,
+ "note": "AssetCatalogV1 seed: semantic families over existing procedural meshes. V1 variants are procedural fallbacks; add resource: authored assets in later packages.",
+ "render_variants": {
+  "utility_pole": 1,
+  "utility_cabinet": 3,
+  "transformer_box": 2,
+  "ac_condenser": 1,
+  "rooftop_hvac": 1,
+  "fire_hydrant": 3,
+  "streetlight": 3,
+  "traffic_sign": 1,
+  "traffic_signal": 1,
+  "bollard": 3,
+  "bench": 3,
+  "bus_shelter": 1,
+  "parking_stop": 1,
+  "garbage_bin": 3,
+  "mailbox": 4,
+  "recycling_bin": 3,
+  "wood_fence": 1,
+  "chainlink_fence": 1,
+  "dumpster": 3,
+  "pallet": 1,
+  "road_barrier": 1,
+  "guardrail": 1,
+  "sedan": 5,
+  "suv": 5,
+  "pickup": 5,
+  "van": 5,
+  "box_truck": 5,
+  "tree_oak": 5,
+  "tree_round": 5,
+  "tree_conical": 5,
+  "tree_columnar": 5,
+  "tree_palm": 5,
+  "bush_round": 5,
+  "bush_low": 5,
+  "cabinet": 1,
+  "fridge": 1,
+  "shelf": 1,
+  "dresser": 1,
+  "desk": 1,
+  "counter": 1,
+  "crate": 1,
+  "sofa": 1,
+  "armchair": 1,
+  "coffee_table": 1,
+  "tv": 1,
+  "bookshelf": 1,
+  "bed": 1,
+  "table": 1,
+  "chair": 1,
+  "stove": 1,
+  "stool": 1,
+  "rack": 1,
+  "display": 1
+ },
+ "families": [
+  {
+   "semantic_id": "utility_pole",
+   "category": "utility",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.4,
+    "depth_m": 0.4,
+    "height_m": 8.0
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "utility_pole",
+   "render_kind": "utility_pole",
+   "lod_fallback": "utility_pole",
+   "variants": [
+    {
+     "id": "utility_pole_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "utility_pole",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "utility_cabinet",
+   "category": "utility",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.9,
+    "depth_m": 0.5,
+    "height_m": 1.3
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "utility_cabinet",
+   "render_kind": "utility_cabinet",
+   "lod_fallback": "utility_cabinet",
+   "variants": [
+    {
+     "id": "utility_cabinet_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "utility_cabinet",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "utility_cabinet_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "utility_cabinet",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "utility_cabinet_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "utility_cabinet",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "transformer_box",
+   "category": "utility",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 1.2,
+    "depth_m": 1.0,
+    "height_m": 1.1
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "transformer_box",
+   "render_kind": "transformer_box",
+   "lod_fallback": "transformer_box",
+   "variants": [
+    {
+     "id": "transformer_box_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "transformer_box",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "transformer_box_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "transformer_box",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "electrical_meter",
+   "category": "utility",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.4,
+    "depth_m": 0.2,
+    "height_m": 0.5
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "electrical_meter",
+   "render_kind": "utility_cabinet",
+   "lod_fallback": "utility_cabinet",
+   "variants": [
+    {
+     "id": "electrical_meter_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "utility_cabinet",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "electrical_meter_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "utility_cabinet",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "electrical_meter_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "utility_cabinet",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "telecom_box",
+   "category": "utility",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.8,
+    "depth_m": 0.4,
+    "height_m": 1.0
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "telecom_box",
+   "render_kind": "utility_cabinet",
+   "lod_fallback": "utility_cabinet",
+   "variants": [
+    {
+     "id": "telecom_box_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "utility_cabinet",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "telecom_box_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "utility_cabinet",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "telecom_box_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "utility_cabinet",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "ac_condenser",
+   "category": "utility",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.9,
+    "depth_m": 0.9,
+    "height_m": 0.8
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [
+    "residential"
+   ],
+   "climate_tags": [],
+   "seed_tag": "ac_condenser",
+   "render_kind": "ac_condenser",
+   "lod_fallback": "ac_condenser",
+   "variants": [
+    {
+     "id": "ac_condenser_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "ac_condenser",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "rooftop_hvac",
+   "category": "utility",
+   "placement": "roof",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 1.8,
+    "depth_m": 1.4,
+    "height_m": 1.0
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [
+    "commercial",
+    "industrial"
+   ],
+   "climate_tags": [],
+   "seed_tag": "rooftop_hvac",
+   "render_kind": "rooftop_hvac",
+   "lod_fallback": "rooftop_hvac",
+   "variants": [
+    {
+     "id": "rooftop_hvac_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "rooftop_hvac",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "fire_hydrant",
+   "category": "utility",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.3,
+    "depth_m": 0.3,
+    "height_m": 0.8
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "fire_hydrant",
+   "render_kind": "fire_hydrant",
+   "lod_fallback": "fire_hydrant",
+   "variants": [
+    {
+     "id": "fire_hydrant_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "fire_hydrant",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "fire_hydrant_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "fire_hydrant",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "fire_hydrant_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "fire_hydrant",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "streetlight",
+   "category": "street_furniture",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.3,
+    "depth_m": 0.3,
+    "height_m": 7.0
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "streetlight",
+   "render_kind": "streetlight",
+   "lod_fallback": "streetlight",
+   "variants": [
+    {
+     "id": "streetlight_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "streetlight",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "streetlight_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "streetlight",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "streetlight_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "streetlight",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "traffic_sign",
+   "category": "street_furniture",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.6,
+    "depth_m": 0.1,
+    "height_m": 2.4
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "traffic_sign",
+   "render_kind": "traffic_sign",
+   "lod_fallback": "traffic_sign",
+   "variants": [
+    {
+     "id": "traffic_sign_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "traffic_sign",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "traffic_signal",
+   "category": "street_furniture",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.4,
+    "depth_m": 0.4,
+    "height_m": 5.5
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "traffic_signal",
+   "render_kind": "traffic_signal",
+   "lod_fallback": "traffic_signal",
+   "variants": [
+    {
+     "id": "traffic_signal_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "traffic_signal",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "bollard",
+   "category": "street_furniture",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.2,
+    "depth_m": 0.2,
+    "height_m": 0.9
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "bollard",
+   "render_kind": "bollard",
+   "lod_fallback": "bollard",
+   "variants": [
+    {
+     "id": "bollard_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bollard",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "bollard_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bollard",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "bollard_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bollard",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "bench",
+   "category": "street_furniture",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 1.6,
+    "depth_m": 0.5,
+    "height_m": 0.8
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "sit",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "bench",
+   "render_kind": "bench",
+   "lod_fallback": "bench",
+   "variants": [
+    {
+     "id": "bench_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bench",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "bench_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bench",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "bench_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bench",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "bus_shelter",
+   "category": "street_furniture",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 3.0,
+    "depth_m": 1.2,
+    "height_m": 2.4
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "bus_shelter",
+   "render_kind": "bus_shelter",
+   "lod_fallback": "bus_shelter",
+   "variants": [
+    {
+     "id": "bus_shelter_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bus_shelter",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "parking_stop",
+   "category": "street_furniture",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 1.8,
+    "depth_m": 0.15,
+    "height_m": 0.15
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "parking_stop",
+   "render_kind": "parking_stop",
+   "lod_fallback": "parking_stop",
+   "variants": [
+    {
+     "id": "parking_stop_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "parking_stop",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "parking_meter",
+   "category": "street_furniture",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.2,
+    "depth_m": 0.2,
+    "height_m": 1.2
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "parking_meter",
+   "render_kind": "bollard",
+   "lod_fallback": "bollard",
+   "variants": [
+    {
+     "id": "parking_meter_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bollard",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "parking_meter_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bollard",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "parking_meter_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bollard",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "bike_rack",
+   "category": "street_furniture",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 1.6,
+    "depth_m": 0.1,
+    "height_m": 0.8
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "bike_rack",
+   "render_kind": "bollard",
+   "lod_fallback": "bollard",
+   "variants": [
+    {
+     "id": "bike_rack_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bollard",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "bike_rack_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bollard",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "bike_rack_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bollard",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "trash_can_public",
+   "category": "street_furniture",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.5,
+    "depth_m": 0.5,
+    "height_m": 1.0
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "trash_can_public",
+   "render_kind": "garbage_bin",
+   "lod_fallback": "garbage_bin",
+   "variants": [
+    {
+     "id": "trash_can_public_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "garbage_bin",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "trash_can_public_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "garbage_bin",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "trash_can_public_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "garbage_bin",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "newspaper_box",
+   "category": "street_furniture",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.4,
+    "depth_m": 0.5,
+    "height_m": 1.2
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "newspaper_box",
+   "render_kind": "utility_cabinet",
+   "lod_fallback": "utility_cabinet",
+   "variants": [
+    {
+     "id": "newspaper_box_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "utility_cabinet",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "newspaper_box_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "utility_cabinet",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "newspaper_box_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "utility_cabinet",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "mailbox_suburban",
+   "category": "residential",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.4,
+    "depth_m": 0.2,
+    "height_m": 1.2
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [
+    "residential"
+   ],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "mailbox_suburban",
+   "render_kind": "mailbox",
+   "lod_fallback": "mailbox",
+   "variants": [
+    {
+     "id": "mailbox_suburban_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "mailbox",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "mailbox_suburban_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "mailbox",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "mailbox_suburban_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "mailbox",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "mailbox_suburban_03",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "mailbox",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "garbage_bin",
+   "category": "residential",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.6,
+    "depth_m": 0.6,
+    "height_m": 1.1
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [
+    "residential"
+   ],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "garbage_bin",
+   "render_kind": "garbage_bin",
+   "lod_fallback": "garbage_bin",
+   "variants": [
+    {
+     "id": "garbage_bin_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "garbage_bin",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "garbage_bin_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "garbage_bin",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "garbage_bin_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "garbage_bin",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "recycling_bin",
+   "category": "residential",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 0.6,
+    "depth_m": 0.6,
+    "height_m": 1.1
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [
+    "residential"
+   ],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "recycling_bin",
+   "render_kind": "recycling_bin",
+   "lod_fallback": "recycling_bin",
+   "variants": [
+    {
+     "id": "recycling_bin_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "recycling_bin",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "recycling_bin_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "recycling_bin",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "recycling_bin_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "recycling_bin",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "wood_fence",
+   "category": "residential",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 2.0,
+    "depth_m": 0.2,
+    "height_m": 1.3
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [
+    "residential"
+   ],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "wood_fence",
+   "render_kind": "wood_fence",
+   "lod_fallback": "wood_fence",
+   "variants": [
+    {
+     "id": "wood_fence_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "wood_fence",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "chainlink_fence",
+   "category": "residential",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 2.0,
+    "depth_m": 0.1,
+    "height_m": 1.8
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "chainlink_fence",
+   "render_kind": "chainlink_fence",
+   "lod_fallback": "chainlink_fence",
+   "variants": [
+    {
+     "id": "chainlink_fence_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "chainlink_fence",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "dumpster",
+   "category": "commercial_equipment",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 1.8,
+    "depth_m": 1.2,
+    "height_m": 1.4
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [
+    "commercial",
+    "industrial"
+   ],
+   "climate_tags": [],
+   "seed_tag": "dumpster",
+   "render_kind": "dumpster",
+   "lod_fallback": "dumpster",
+   "variants": [
+    {
+     "id": "dumpster_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "dumpster",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "dumpster_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "dumpster",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "dumpster_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "dumpster",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "pallet",
+   "category": "commercial_equipment",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 1.2,
+    "depth_m": 1.0,
+    "height_m": 0.15
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [
+    "industrial"
+   ],
+   "climate_tags": [],
+   "seed_tag": "pallet",
+   "render_kind": "pallet",
+   "lod_fallback": "pallet",
+   "variants": [
+    {
+     "id": "pallet_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "pallet",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "road_barrier",
+   "category": "infrastructure",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 1.5,
+    "depth_m": 0.5,
+    "height_m": 0.8
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "road_barrier",
+   "render_kind": "road_barrier",
+   "lod_fallback": "road_barrier",
+   "variants": [
+    {
+     "id": "road_barrier_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "road_barrier",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "guardrail",
+   "category": "infrastructure",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 2.0,
+    "depth_m": 0.1,
+    "height_m": 0.7
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "guardrail",
+   "render_kind": "guardrail",
+   "lod_fallback": "guardrail",
+   "variants": [
+    {
+     "id": "guardrail_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "guardrail",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "vehicle_sedan",
+   "category": "vehicle",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 2.0,
+    "depth_m": 4.6,
+    "height_m": 1.5
+   },
+   "clearance": {},
+   "collision": "mesh",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "vehicle_sedan",
+   "render_kind": "sedan",
+   "lod_fallback": "sedan",
+   "variants": [
+    {
+     "id": "vehicle_sedan_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "sedan",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_sedan_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "sedan",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_sedan_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "sedan",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_sedan_03",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "sedan",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_sedan_04",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "sedan",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "vehicle_suv",
+   "category": "vehicle",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 2.1,
+    "depth_m": 4.8,
+    "height_m": 1.8
+   },
+   "clearance": {},
+   "collision": "mesh",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "vehicle_suv",
+   "render_kind": "suv",
+   "lod_fallback": "suv",
+   "variants": [
+    {
+     "id": "vehicle_suv_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "suv",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_suv_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "suv",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_suv_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "suv",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_suv_03",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "suv",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_suv_04",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "suv",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "vehicle_pickup",
+   "category": "vehicle",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 2.1,
+    "depth_m": 5.4,
+    "height_m": 1.8
+   },
+   "clearance": {},
+   "collision": "mesh",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "vehicle_pickup",
+   "render_kind": "pickup",
+   "lod_fallback": "pickup",
+   "variants": [
+    {
+     "id": "vehicle_pickup_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "pickup",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_pickup_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "pickup",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_pickup_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "pickup",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_pickup_03",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "pickup",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_pickup_04",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "pickup",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "vehicle_van",
+   "category": "vehicle",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 2.2,
+    "depth_m": 5.2,
+    "height_m": 2.2
+   },
+   "clearance": {},
+   "collision": "mesh",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "vehicle_van",
+   "render_kind": "van",
+   "lod_fallback": "van",
+   "variants": [
+    {
+     "id": "vehicle_van_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "van",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_van_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "van",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_van_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "van",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_van_03",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "van",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_van_04",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "van",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "vehicle_box_truck",
+   "category": "vehicle",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 2.5,
+    "depth_m": 7.0,
+    "height_m": 3.2
+   },
+   "clearance": {},
+   "collision": "mesh",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "vehicle_box_truck",
+   "render_kind": "box_truck",
+   "lod_fallback": "box_truck",
+   "variants": [
+    {
+     "id": "vehicle_box_truck_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "box_truck",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_box_truck_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "box_truck",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_box_truck_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "box_truck",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_box_truck_03",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "box_truck",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "vehicle_box_truck_04",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "box_truck",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "live_oak",
+   "category": "vegetation",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 12.0,
+    "depth_m": 12.0,
+    "height_m": 10.0
+   },
+   "clearance": {},
+   "collision": "none",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [
+    "gulf",
+    "south_central"
+   ],
+   "seed_tag": "live_oak",
+   "render_kind": "tree_oak",
+   "lod_fallback": "tree_oak",
+   "variants": [
+    {
+     "id": "live_oak_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_oak",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "live_oak_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_oak",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "live_oak_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_oak",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "live_oak_03",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_oak",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "live_oak_04",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_oak",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "street_tree_round",
+   "category": "vegetation",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 6.0,
+    "depth_m": 6.0,
+    "height_m": 7.0
+   },
+   "clearance": {},
+   "collision": "none",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "street_tree_round",
+   "render_kind": "tree_round",
+   "lod_fallback": "tree_round",
+   "variants": [
+    {
+     "id": "street_tree_round_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_round",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "street_tree_round_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_round",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "street_tree_round_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_round",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "street_tree_round_03",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_round",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "street_tree_round_04",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_round",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "conifer",
+   "category": "vegetation",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 4.0,
+    "depth_m": 4.0,
+    "height_m": 9.0
+   },
+   "clearance": {},
+   "collision": "none",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [
+    "temperate"
+   ],
+   "seed_tag": "conifer",
+   "render_kind": "tree_conical",
+   "lod_fallback": "tree_conical",
+   "variants": [
+    {
+     "id": "conifer_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_conical",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "conifer_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_conical",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "conifer_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_conical",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "conifer_03",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_conical",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "conifer_04",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_conical",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "columnar_tree",
+   "category": "vegetation",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 2.5,
+    "depth_m": 2.5,
+    "height_m": 9.0
+   },
+   "clearance": {},
+   "collision": "none",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "columnar_tree",
+   "render_kind": "tree_columnar",
+   "lod_fallback": "tree_columnar",
+   "variants": [
+    {
+     "id": "columnar_tree_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_columnar",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "columnar_tree_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_columnar",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "columnar_tree_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_columnar",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "columnar_tree_03",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_columnar",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "columnar_tree_04",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_columnar",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "palm",
+   "category": "vegetation",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 5.0,
+    "depth_m": 5.0,
+    "height_m": 9.0
+   },
+   "clearance": {},
+   "collision": "none",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [
+    "gulf",
+    "subtropical"
+   ],
+   "seed_tag": "palm",
+   "render_kind": "tree_palm",
+   "lod_fallback": "tree_palm",
+   "variants": [
+    {
+     "id": "palm_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_palm",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "palm_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_palm",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "palm_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_palm",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "palm_03",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_palm",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "palm_04",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tree_palm",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "shrub_round",
+   "category": "vegetation",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 1.4,
+    "depth_m": 1.4,
+    "height_m": 1.2
+   },
+   "clearance": {},
+   "collision": "none",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "shrub_round",
+   "render_kind": "bush_round",
+   "lod_fallback": "bush_round",
+   "variants": [
+    {
+     "id": "shrub_round_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bush_round",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "shrub_round_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bush_round",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "shrub_round_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bush_round",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "shrub_round_03",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bush_round",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "shrub_round_04",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bush_round",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "shrub_low",
+   "category": "vegetation",
+   "placement": "ground",
+   "outdoor": true,
+   "dimensions": {
+    "width_m": 1.6,
+    "depth_m": 1.6,
+    "height_m": 0.7
+   },
+   "clearance": {},
+   "collision": "none",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "shrub_low",
+   "render_kind": "bush_low",
+   "lod_fallback": "bush_low",
+   "variants": [
+    {
+     "id": "shrub_low_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bush_low",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "shrub_low_01",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bush_low",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "shrub_low_02",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bush_low",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "shrub_low_03",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bush_low",
+     "conditions": [
+      "NORMAL"
+     ]
+    },
+    {
+     "id": "shrub_low_04",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bush_low",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "storage_cabinet",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 0.9,
+    "depth_m": 0.5,
+    "height_m": 0.9
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "search",
+   "material_family": null,
+   "room_tags": [
+    "kitchen",
+    "office",
+    "supply"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "storage_cabinet",
+   "render_kind": "cabinet",
+   "lod_fallback": "cabinet",
+   "variants": [
+    {
+     "id": "storage_cabinet_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "cabinet",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "refrigerator",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 0.8,
+    "depth_m": 0.7,
+    "height_m": 1.8
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "search",
+   "material_family": null,
+   "room_tags": [
+    "kitchen",
+    "break_room"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "refrigerator",
+   "render_kind": "fridge",
+   "lod_fallback": "fridge",
+   "variants": [
+    {
+     "id": "refrigerator_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "fridge",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "shelf_unit",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 1.0,
+    "depth_m": 0.4,
+    "height_m": 1.8
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "search",
+   "material_family": null,
+   "room_tags": [
+    "storeroom",
+    "back_room",
+    "supply",
+    "shop"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "shelf_unit",
+   "render_kind": "shelf",
+   "lod_fallback": "shelf",
+   "variants": [
+    {
+     "id": "shelf_unit_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "shelf",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "dresser",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 1.1,
+    "depth_m": 0.5,
+    "height_m": 0.8
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "search",
+   "material_family": null,
+   "room_tags": [
+    "bedroom"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "dresser",
+   "render_kind": "dresser",
+   "lod_fallback": "dresser",
+   "variants": [
+    {
+     "id": "dresser_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "dresser",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "desk",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 1.4,
+    "depth_m": 0.7,
+    "height_m": 0.75
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "work_at_desk",
+   "material_family": null,
+   "room_tags": [
+    "office",
+    "open_office",
+    "bedroom"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "desk",
+   "render_kind": "desk",
+   "lod_fallback": "desk",
+   "variants": [
+    {
+     "id": "desk_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "desk",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "counter",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 2.0,
+    "depth_m": 0.6,
+    "height_m": 0.9
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "search",
+   "material_family": null,
+   "room_tags": [
+    "kitchen",
+    "shop",
+    "break_room"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "counter",
+   "render_kind": "counter",
+   "lod_fallback": "counter",
+   "variants": [
+    {
+     "id": "counter_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "counter",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "crate",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 0.8,
+    "depth_m": 0.8,
+    "height_m": 0.8
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "search",
+   "material_family": null,
+   "room_tags": [
+    "storeroom",
+    "back_room",
+    "supply"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "crate",
+   "render_kind": "crate",
+   "lod_fallback": "crate",
+   "variants": [
+    {
+     "id": "crate_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "crate",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "sofa",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 2.0,
+    "depth_m": 0.9,
+    "height_m": 0.8
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "sit",
+   "material_family": null,
+   "room_tags": [
+    "living"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "sofa",
+   "render_kind": "sofa",
+   "lod_fallback": "sofa",
+   "variants": [
+    {
+     "id": "sofa_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "sofa",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "armchair",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 0.9,
+    "depth_m": 0.9,
+    "height_m": 0.9
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "sit",
+   "material_family": null,
+   "room_tags": [
+    "living"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "armchair",
+   "render_kind": "armchair",
+   "lod_fallback": "armchair",
+   "variants": [
+    {
+     "id": "armchair_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "armchair",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "coffee_table",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 1.1,
+    "depth_m": 0.6,
+    "height_m": 0.4
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [
+    "living"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "coffee_table",
+   "render_kind": "coffee_table",
+   "lod_fallback": "coffee_table",
+   "variants": [
+    {
+     "id": "coffee_table_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "coffee_table",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "television",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 1.2,
+    "depth_m": 0.1,
+    "height_m": 0.7
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [
+    "living",
+    "break_room"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "television",
+   "render_kind": "tv",
+   "lod_fallback": "tv",
+   "variants": [
+    {
+     "id": "television_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "tv",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "bookshelf",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 1.0,
+    "depth_m": 0.35,
+    "height_m": 1.9
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [
+    "living",
+    "office"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "bookshelf",
+   "render_kind": "bookshelf",
+   "lod_fallback": "bookshelf",
+   "variants": [
+    {
+     "id": "bookshelf_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bookshelf",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "bed_double",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 1.6,
+    "depth_m": 2.0,
+    "height_m": 0.6
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "sleep",
+   "material_family": null,
+   "room_tags": [
+    "bedroom",
+    "exam"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "bed_double",
+   "render_kind": "bed",
+   "lod_fallback": "bed",
+   "variants": [
+    {
+     "id": "bed_double_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "bed",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "dining_table",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 1.6,
+    "depth_m": 0.9,
+    "height_m": 0.75
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [
+    "kitchen",
+    "break_room"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "dining_table",
+   "render_kind": "table",
+   "lod_fallback": "table",
+   "variants": [
+    {
+     "id": "dining_table_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "table",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "chair_dining",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 0.45,
+    "depth_m": 0.45,
+    "height_m": 0.9
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "sit",
+   "material_family": null,
+   "room_tags": [
+    "kitchen",
+    "break_room",
+    "office"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "chair_dining",
+   "render_kind": "chair",
+   "lod_fallback": "chair",
+   "variants": [
+    {
+     "id": "chair_dining_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "chair",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "stove",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 0.75,
+    "depth_m": 0.65,
+    "height_m": 0.9
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "cook",
+   "material_family": null,
+   "room_tags": [
+    "kitchen"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "stove",
+   "render_kind": "stove",
+   "lod_fallback": "stove",
+   "variants": [
+    {
+     "id": "stove_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "stove",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "stool",
+   "category": "furniture",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 0.4,
+    "depth_m": 0.4,
+    "height_m": 0.8
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "sit",
+   "material_family": null,
+   "room_tags": [
+    "exam",
+    "shop"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "stool",
+   "render_kind": "stool",
+   "lod_fallback": "stool",
+   "variants": [
+    {
+     "id": "stool_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "stool",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "retail_rack",
+   "category": "commercial_equipment",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 1.2,
+    "depth_m": 0.5,
+    "height_m": 1.8
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "stock_shelf",
+   "material_family": null,
+   "room_tags": [
+    "shop"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "retail_rack",
+   "render_kind": "rack",
+   "lod_fallback": "rack",
+   "variants": [
+    {
+     "id": "retail_rack_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "rack",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  },
+  {
+   "semantic_id": "retail_display",
+   "category": "commercial_equipment",
+   "placement": "floor",
+   "outdoor": false,
+   "dimensions": {
+    "width_m": 1.0,
+    "depth_m": 1.0,
+    "height_m": 1.0
+   },
+   "clearance": {},
+   "collision": "simple",
+   "interaction": "none",
+   "material_family": null,
+   "room_tags": [
+    "shop"
+   ],
+   "parcel_tags": [],
+   "building_tags": [],
+   "climate_tags": [],
+   "seed_tag": "retail_display",
+   "render_kind": "display",
+   "lod_fallback": "display",
+   "variants": [
+    {
+     "id": "retail_display_00",
+     "weight": 1.0,
+     "resource": null,
+     "procedural": "display",
+     "conditions": [
+      "NORMAL"
+     ]
+    }
+   ]
+  }
+ ]
+}

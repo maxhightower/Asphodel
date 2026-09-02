@@ -33,46 +33,49 @@ def fam(sid, cat, proc, dims, placement="ground", outdoor=True, collision="simpl
         "material_family": material, "room_tags": list(room),
         "parcel_tags": list(parcel), "building_tags": list(building),
         "climate_tags": list(climate), "seed_tag": sid,
+        "render_kind": proc,          # procedural mesh kind PropMeshes draws
         "lod_fallback": lod or proc, "variants": vlist,
     })
 
 
 # ---- utility / infrastructure -------------------------------------------------
 fam("utility_pole", "utility", "utility_pole", (0.4, 0.4, 8.0), interaction="none")
-fam("utility_cabinet", "utility", "utility_cabinet", (0.9, 0.5, 1.3))
-fam("transformer_box", "utility", "transformer_box", (1.2, 1.0, 1.1))
-fam("electrical_meter", "utility", "utility_cabinet", (0.4, 0.2, 0.5))       # planned art; falls back
-fam("telecom_box", "utility", "utility_cabinet", (0.8, 0.4, 1.0))
+fam("utility_cabinet", "utility", "utility_cabinet", (0.9, 0.5, 1.3), variants=3)
+fam("transformer_box", "utility", "transformer_box", (1.2, 1.0, 1.1), variants=2)
+fam("electrical_meter", "utility", "utility_cabinet", (0.4, 0.2, 0.5), variants=3)  # planned art; falls back
+fam("telecom_box", "utility", "utility_cabinet", (0.8, 0.4, 1.0), variants=3)
 fam("ac_condenser", "utility", "ac_condenser", (0.9, 0.9, 0.8), building=("residential",))
 fam("rooftop_hvac", "utility", "rooftop_hvac", (1.8, 1.4, 1.0), placement="roof",
     building=("commercial", "industrial"))
-fam("fire_hydrant", "utility", "fire_hydrant", (0.3, 0.3, 0.8))
+fam("fire_hydrant", "utility", "fire_hydrant", (0.3, 0.3, 0.8), variants=3)
 
 # ---- street furniture ---------------------------------------------------------
-fam("streetlight", "street_furniture", "streetlight", (0.3, 0.3, 7.0))
+fam("streetlight", "street_furniture", "streetlight", (0.3, 0.3, 7.0), variants=3)
 fam("traffic_sign", "street_furniture", "traffic_sign", (0.6, 0.1, 2.4))
 fam("traffic_signal", "street_furniture", "traffic_signal", (0.4, 0.4, 5.5))
-fam("bollard", "street_furniture", "bollard", (0.2, 0.2, 0.9))
-fam("bench", "street_furniture", "bench", (1.6, 0.5, 0.8), interaction="sit")
+fam("bollard", "street_furniture", "bollard", (0.2, 0.2, 0.9), variants=3)
+fam("bench", "street_furniture", "bench", (1.6, 0.5, 0.8), interaction="sit", variants=3)
 fam("bus_shelter", "street_furniture", "bus_shelter", (3.0, 1.2, 2.4))
 fam("parking_stop", "street_furniture", "parking_stop", (1.8, 0.15, 0.15))
-fam("parking_meter", "street_furniture", "bollard", (0.2, 0.2, 1.2))          # planned art
-fam("bike_rack", "street_furniture", "bollard", (1.6, 0.1, 0.8))              # planned art
-fam("trash_can_public", "street_furniture", "garbage_bin", (0.5, 0.5, 1.0))
-fam("newspaper_box", "street_furniture", "utility_cabinet", (0.4, 0.5, 1.2))  # planned art
+fam("parking_meter", "street_furniture", "bollard", (0.2, 0.2, 1.2), variants=3)   # planned art
+fam("bike_rack", "street_furniture", "bollard", (1.6, 0.1, 0.8), variants=3)        # planned art
+fam("trash_can_public", "street_furniture", "garbage_bin", (0.5, 0.5, 1.0), variants=3)
+fam("newspaper_box", "street_furniture", "utility_cabinet", (0.4, 0.5, 1.2), variants=3)  # planned art
 
 # ---- residential exterior -----------------------------------------------------
 fam("mailbox_suburban", "residential", "mailbox", (0.4, 0.2, 1.2),
-    parcel=("residential",))
-fam("garbage_bin", "residential", "garbage_bin", (0.6, 0.6, 1.1), parcel=("residential",))
-fam("recycling_bin", "residential", "recycling_bin", (0.6, 0.6, 1.1), parcel=("residential",))
+    parcel=("residential",), variants=4)
+fam("garbage_bin", "residential", "garbage_bin", (0.6, 0.6, 1.1), parcel=("residential",),
+    variants=3)
+fam("recycling_bin", "residential", "recycling_bin", (0.6, 0.6, 1.1), parcel=("residential",),
+    variants=3)
 fam("wood_fence", "residential", "wood_fence", (2.0, 0.2, 1.3), collision="simple",
     parcel=("residential",))
 fam("chainlink_fence", "residential", "chainlink_fence", (2.0, 0.1, 1.8))
 
 # ---- commercial / industrial exterior ----------------------------------------
 fam("dumpster", "commercial_equipment", "dumpster", (1.8, 1.2, 1.4),
-    building=("commercial", "industrial"))
+    building=("commercial", "industrial"), variants=3)
 fam("pallet", "commercial_equipment", "pallet", (1.2, 1.0, 0.15), building=("industrial",))
 fam("road_barrier", "infrastructure", "road_barrier", (1.5, 0.5, 0.8))
 fam("guardrail", "infrastructure", "guardrail", (2.0, 0.1, 0.7))
@@ -144,16 +147,31 @@ fam("retail_display", "commercial_equipment", "display", (1.0, 1.0, 1.0),
 
 
 def main():
-    out = os.path.join(os.path.dirname(__file__), "..", "asphodel", "city_visual",
-                       "catalog_v1.yaml")
+    import json
+    base = os.path.join(os.path.dirname(__file__), "..", "asphodel", "city_visual")
+    # render_kind -> max variant count, the renderer's authority for how many
+    # procedural variants to spread instances across.
+    render_variants = {}
+    for f in F:
+        rk = f["render_kind"]
+        render_variants[rk] = max(render_variants.get(rk, 0), len(f["variants"]))
     doc = {"version": 1,
            "note": "AssetCatalogV1 seed: semantic families over existing procedural"
                    " meshes. V1 variants are procedural fallbacks; add resource:"
                    " authored assets in later packages.",
+           "render_variants": render_variants,
            "families": F}
-    with open(out, "w") as fh:
+    with open(os.path.join(base, "catalog_v1.yaml"), "w") as fh:
         yaml.safe_dump(doc, fh, sort_keys=False, width=100)
-    print(f"wrote {os.path.normpath(out)} with {len(F)} families")
+    # Godot has no YAML parser; emit a JSON twin the renderer loads. Written both
+    # next to the YAML (Python authority) and into the Godot res:// tree.
+    for path in (os.path.join(base, "catalog_v1.json"),
+                 os.path.join(os.path.dirname(__file__), "..", "godot",
+                              "catalog_v1.json")):
+        with open(path, "w") as fh:
+            json.dump(doc, fh, indent=1)
+    print(f"wrote catalog_v1.yaml + catalog_v1.json (x2) with {len(F)} families, "
+          f"{len(render_variants)} render kinds")
 
 
 if __name__ == "__main__":

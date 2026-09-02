@@ -575,6 +575,29 @@ func _mass_building(st: SurfaceTool, b: Dictionary) -> int:
 	return verts
 
 
+## AssetCatalogV1 render-variant table (render_kind -> variant count), loaded once
+## from the catalog JSON so the renderer never hardcodes how many variants a
+## family has. Unknown kinds default to 1 (single mesh).
+static var _render_variants_cache: Dictionary = {}
+static var _render_variants_loaded := false
+
+
+static func _render_variant_count(kind: String) -> int:
+	if not _render_variants_loaded:
+		_render_variants_loaded = true
+		var f := FileAccess.open("res://catalog_v1.json", FileAccess.READ)
+		if f != null:
+			var doc: Variant = JSON.parse_string(f.get_as_text())
+			if typeof(doc) == TYPE_DICTIONARY and doc.has("render_variants"):
+				_render_variants_cache = doc["render_variants"]
+	return int(_render_variants_cache.get(kind, 1))
+
+
+func _pos_variant(x: float, z: float) -> int:
+	## Deterministic per-instance variant index from a continuous position.
+	return _stable_hash(int(round(x * 4.0)), int(round(z * 4.0)))
+
+
 static func _stable_hash(a: int, b: int) -> int:
 	var x: int = (a * 0x9E3779B1) ^ (b * 0x85EBCA6B)
 	x = x & 0x7FFFFFFF
@@ -1598,8 +1621,16 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 				var sc := _surface_class(cells, origin, x, z)
 				if sc == S_ROAD or sc == S_PARKING or sc == S_SIDEWALK:
 					continue
+			# Resolve the render variant via AssetCatalogV1. Vehicles/foliage carry a
+			# baked data variant (colour); other families with >1 catalog variant get
+			# a deterministic position-derived variant so repeated street props are
+			# not identical placeholders. One MultiMesh per kind:variant preserves
+			# batching.
+			var rv := _render_variant_count(kind)
+			if not variant_kinds.has(kind) and rv > 1:
+				variant = _pos_variant(x, z) % rv
 			var gkey := kind
-			if variant_kinds.has(kind):
+			if variant_kinds.has(kind) or rv > 1:
 				gkey = "%s:%d" % [kind, variant]
 			if not groups.has(gkey):
 				groups[gkey] = {"kind": kind, "variant": variant, "xforms": []}
