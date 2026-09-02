@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0asphisoposshot1"]
+
+[ext_resource type="Script" path="res://tests/iso_pos_shot.gd" id="1_ps"]
+
+[node name="IsoPosShot" type="Node"]
+script = ExtResource("1_ps")

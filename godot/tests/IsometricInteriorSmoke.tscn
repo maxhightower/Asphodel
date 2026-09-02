@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0asphisointerior1"]
+
+[ext_resource type="Script" path="res://tests/iso_interior_smoke.gd" id="1_s"]
+
+[node name="IsometricInteriorSmoke" type="Node"]
+script = ExtResource("1_s")

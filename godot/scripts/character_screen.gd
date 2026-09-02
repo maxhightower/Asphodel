@@ -64,7 +64,10 @@ func _ready() -> void:
 		vb.add_child(_paragraph(", ".join(items)))
 
 	vb.add_child(_gap(20))
-	vb.add_child(_button("Continue", func(): get_tree().change_scene_to_file("res://StreetScene.tscn")))
+	# Isometric presentation is the default gameplay scene (ISO V1). The legacy
+	# first-person path stays accessible but is frozen/deprecated.
+	vb.add_child(_button("Continue", func(): get_tree().change_scene_to_file("res://IsometricWorld.tscn")))
+	vb.add_child(_button("First-person (legacy)", func(): get_tree().change_scene_to_file("res://StreetScene.tscn")))
 	vb.add_child(_button("Back", func(): get_tree().change_scene_to_file("res://CitySelect.tscn")))
 
 

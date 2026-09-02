@@ -749,7 +749,7 @@ func _build_road_markings(chunk: Dictionary, root: Node3D) -> int:
 
 
 func _dashed_line(st: SurfaceTool, pts_raw: Array, offset: float, width: float,
-		dash_len: float, gap_len: float) -> int:
+		dash_len: float, gap_len: float, y_level: float = 0.06) -> int:
 	var pts: Array = []
 	for p in pts_raw:
 		pts.append(Vector2(float(p[0]), float(p[1])))
@@ -783,8 +783,8 @@ func _dashed_line(st: SurfaceTool, pts_raw: Array, offset: float, width: float,
 			var p1 := pb - n * half_w
 			var p2 := pb + n * half_w
 			var p3 := pa + n * half_w
-			for v in [Vector3(p0.x, 0.06, p0.y), Vector3(p1.x, 0.06, p1.y), Vector3(p2.x, 0.06, p2.y),
-					Vector3(p0.x, 0.06, p0.y), Vector3(p2.x, 0.06, p2.y), Vector3(p3.x, 0.06, p3.y)]:
+			for v in [Vector3(p0.x, y_level, p0.y), Vector3(p1.x, y_level, p1.y), Vector3(p2.x, y_level, p2.y),
+					Vector3(p0.x, y_level, p0.y), Vector3(p2.x, y_level, p2.y), Vector3(p3.x, y_level, p3.y)]:
 				st.set_normal(Vector3.UP)
 				st.add_vertex(v)
 			verts += 6
@@ -823,6 +823,17 @@ func _build_elevated_roads(chunk: Dictionary, root: Node3D) -> int:
 				var t := (float(s) + 0.5) / float(steps)
 				var c := a.lerp(b, t)
 				verts += _pillar(st, c, 3.0, DECK_Y - DECK_T)
+		# Lane markings ON the deck surface (freeways read as freeways at iso scale):
+		# a dashed centre line, plus lane divider lines across the carriageway.
+		verts += _dashed_line(st, pts_raw, 0.0, 0.2, 3.0, 4.0, DECK_Y + 0.02)
+		var lanes := int(r.get("lanes", 4))
+		if lanes >= 4:
+			var lane_w := deck_w / float(lanes)
+			var li := 1
+			while li < lanes:
+				var off := -hw + lane_w * float(li)
+				verts += _dashed_line(st, pts_raw, off, 0.15, 4.0, 6.0, DECK_Y + 0.02)
+				li += 1
 	if not any:
 		return 0
 	var mesh := st.commit()

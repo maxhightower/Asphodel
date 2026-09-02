@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0asphisoperf001"]
+
+[ext_resource type="Script" path="res://tests/iso_perf_bench.gd" id="1_perf"]
+
+[node name="IsometricPerfBench" type="Node"]
+script = ExtResource("1_perf")

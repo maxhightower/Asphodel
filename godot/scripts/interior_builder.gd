@@ -31,6 +31,41 @@ const FIXTURE_COL := Color(0.55, 0.42, 0.30)
 const FLOOR_COL := Color(0.30, 0.30, 0.34)
 const WALL_COL := Color(0.72, 0.72, 0.76)
 
+# Presentation-only decor furniture (from descriptor["decor"], no containers). Sizes
+# in metres by kind; colours give the room a legible, varied dressing at iso scale.
+const DECOR_SIZE := {
+	"sofa": Vector3(2.0, 0.8, 0.9), "coffee_table": Vector3(1.1, 0.4, 0.6),
+	"tv": Vector3(1.2, 0.7, 0.2), "armchair": Vector3(0.9, 0.9, 0.9),
+	"bookshelf": Vector3(1.2, 1.9, 0.4), "counter": Vector3(1.8, 0.9, 0.6),
+	"stove": Vector3(0.8, 0.9, 0.7), "table": Vector3(1.4, 0.75, 1.0),
+	"chair": Vector3(0.5, 0.9, 0.5), "bed": Vector3(1.5, 0.6, 2.0),
+	"nightstand": Vector3(0.5, 0.6, 0.5), "wardrobe": Vector3(1.2, 2.0, 0.6),
+	"bathtub": Vector3(1.7, 0.6, 0.8), "sink": Vector3(0.6, 0.9, 0.5),
+	"toilet": Vector3(0.6, 0.8, 0.7), "bench": Vector3(1.6, 0.5, 0.5),
+	"sideboard": Vector3(1.4, 0.9, 0.5), "rack": Vector3(1.6, 1.8, 0.6),
+	"display": Vector3(1.0, 1.1, 1.0), "desk": Vector3(1.4, 0.8, 0.7),
+	"stool": Vector3(0.5, 0.7, 0.5), "cabinet": Vector3(1.0, 1.0, 0.6),
+	"shelf": Vector3(1.2, 1.8, 0.4), "crate": Vector3(0.8, 0.8, 0.8),
+	"fridge": Vector3(0.8, 1.8, 0.8), "dresser": Vector3(1.2, 0.9, 0.6),
+}
+const DECOR_COL := {
+	"sofa": Color(0.36, 0.44, 0.55), "coffee_table": Color(0.52, 0.38, 0.26),
+	"tv": Color(0.12, 0.12, 0.14), "armchair": Color(0.42, 0.48, 0.56),
+	"bookshelf": Color(0.55, 0.40, 0.28), "counter": Color(0.75, 0.75, 0.78),
+	"stove": Color(0.30, 0.30, 0.33), "table": Color(0.60, 0.45, 0.30),
+	"chair": Color(0.50, 0.38, 0.26), "bed": Color(0.70, 0.72, 0.80),
+	"nightstand": Color(0.55, 0.40, 0.28), "wardrobe": Color(0.50, 0.36, 0.24),
+	"bathtub": Color(0.90, 0.92, 0.95), "sink": Color(0.85, 0.87, 0.90),
+	"toilet": Color(0.90, 0.92, 0.94), "bench": Color(0.55, 0.42, 0.30),
+	"sideboard": Color(0.52, 0.38, 0.26), "rack": Color(0.60, 0.60, 0.64),
+	"display": Color(0.40, 0.55, 0.65), "desk": Color(0.50, 0.38, 0.28),
+	"stool": Color(0.50, 0.38, 0.26), "cabinet": Color(0.55, 0.42, 0.30),
+	"shelf": Color(0.58, 0.44, 0.30), "crate": Color(0.62, 0.50, 0.34),
+	"fridge": Color(0.86, 0.88, 0.90), "dresser": Color(0.52, 0.38, 0.26),
+}
+const DECOR_DEFAULT_SIZE := Vector3(0.8, 0.8, 0.6)
+const DECOR_DEFAULT_COL := Color(0.55, 0.45, 0.35)
+
 
 ## Build the interior. `descriptor` is the "interior" dict from GET_INTERIOR.
 ## `offset` translates the whole cell (default: a far staging area). Returns the
@@ -73,9 +108,10 @@ static func build(descriptor: Dictionary, offset: Vector3 = Vector3(0, 0, 0)) ->
 	var body := StaticBody3D.new()
 	body.name = "InteriorCollision"
 	root.add_child(body)
-	for r in rooms:
+	for ri in range(rooms.size()):
+		var r = rooms[ri]
 		_room_walls(body, float(r["x0"]), float(r["y0"]),
-			float(r["x1"]), float(r["y1"]), gaps)
+			float(r["x1"]), float(r["y1"]), gaps, int(r.get("id", ri)))
 
 	# --- searchable fixtures ------------------------------------------------
 	var fx_root := Node3D.new()
@@ -83,6 +119,15 @@ static func build(descriptor: Dictionary, offset: Vector3 = Vector3(0, 0, 0)) ->
 	root.add_child(fx_root)
 	for f in fixtures:
 		fx_root.add_child(_fixture(descriptor, f))
+
+	# --- presentation-only decor furniture (no containers) -----------------
+	var decor: Array = descriptor.get("decor", [])
+	if decor.size() > 0:
+		var decor_root := Node3D.new()
+		decor_root.name = "Decor"
+		root.add_child(decor_root)
+		for d in decor:
+			decor_root.add_child(_decor(d))
 
 	# --- interior NPC occupants (Package 5) --------------------------------
 	var occupants: Array = descriptor.get("occupants", [])
@@ -132,6 +177,19 @@ static func _occupant(o: Dictionary) -> Node3D:
 	return n
 
 
+static func _decor(d: Dictionary) -> MeshInstance3D:
+	## A presentation-only furniture piece: a coloured box sized by kind at the decor
+	## anchor. No collision (interiors stay walkable) and no container metadata.
+	var kind := str(d.get("kind", "crate"))
+	var size: Vector3 = DECOR_SIZE.get(kind, DECOR_DEFAULT_SIZE)
+	var col: Color = DECOR_COL.get(kind, DECOR_DEFAULT_COL)
+	var mi := _box(size, col)
+	mi.name = "Decor_%s" % kind
+	mi.position = Vector3(float(d.get("x", 0.0)), FLOOR_Y + size.y * 0.5, float(d.get("y", 0.0)))
+	mi.rotation.y = float(d.get("facing", 0.0))
+	return mi
+
+
 static func _box(size: Vector3, col: Color) -> MeshInstance3D:
 	var mesh := BoxMesh.new()
 	mesh.size = size
@@ -170,15 +228,18 @@ static func _ceiling(x0: float, y0: float, x1: float, y1: float) -> Node3D:
 
 
 static func _room_walls(body: StaticBody3D, x0: float, y0: float,
-		x1: float, y1: float, gaps: Array) -> void:
-	# four edges; each cut by any gap centre lying on it
-	_wall_run(body, Vector2(x0, y0), Vector2(x1, y0), gaps)   # south
-	_wall_run(body, Vector2(x0, y1), Vector2(x1, y1), gaps)   # north
-	_wall_run(body, Vector2(x0, y0), Vector2(x0, y1), gaps)   # west
-	_wall_run(body, Vector2(x1, y0), Vector2(x1, y1), gaps)   # east
+		x1: float, y1: float, gaps: Array, room_id: int = -1) -> void:
+	# four edges; each cut by any gap centre lying on it. The outward normal (away
+	# from the room centre) is recorded per wall so the isometric cutaway can decide
+	# which walls face the camera and hide them (ISO-5). Presentation metadata only.
+	_wall_run(body, Vector2(x0, y0), Vector2(x1, y0), gaps, Vector2(0, -1), room_id)   # south
+	_wall_run(body, Vector2(x0, y1), Vector2(x1, y1), gaps, Vector2(0, 1), room_id)    # north
+	_wall_run(body, Vector2(x0, y0), Vector2(x0, y1), gaps, Vector2(-1, 0), room_id)   # west
+	_wall_run(body, Vector2(x1, y0), Vector2(x1, y1), gaps, Vector2(1, 0), room_id)    # east
 
 
-static func _wall_run(body: StaticBody3D, a: Vector2, b: Vector2, gaps: Array) -> void:
+static func _wall_run(body: StaticBody3D, a: Vector2, b: Vector2, gaps: Array,
+		outward: Vector2 = Vector2.ZERO, room_id: int = -1) -> void:
 	# Build a wall from a->b, leaving a DOOR_W gap wherever a gap centre lies on it.
 	var horiz := absf(b.x - a.x) > absf(b.y - a.y)
 	var length := a.distance_to(b)
@@ -220,6 +281,15 @@ static func _wall_run(body: StaticBody3D, a: Vector2, b: Vector2, gaps: Array) -
 		var pos := Vector3(mid2.x, FLOOR_Y + WALL_H * 0.5, mid2.y)
 		var mi := _box(size, WALL_COL)
 		mi.position = pos
+		mi.name = "Wall"
+		# Presentation metadata for the isometric cutaway (ISO-5): the outward
+		# normal (world XZ, pointing away from the room), the room it bounds, and a
+		# stable segment id. Additive only — the first-person path ignores it.
+		mi.set_meta("is_wall", true)
+		mi.set_meta("wall_normal", outward)
+		mi.set_meta("room_id", room_id)
+		mi.set_meta("segment_id", body.get_child_count())
+		mi.add_to_group("interior_walls")
 		body.add_child(mi)
 		var cs := CollisionShape3D.new()
 		var shape := BoxShape3D.new()

@@ -120,6 +120,25 @@ class Fixture:
 
 
 @dataclass
+class Decor:
+    """A PRESENTATION-ONLY furniture item — richer room dressing that is NOT a
+    container and carries no loot. Decor exists so interiors read as furnished
+    (beds, sofas, tables, …) without touching the authoritative container model:
+    the ``fixtures`` list stays 1:1 with real containers, so loot / save-load /
+    survival are byte-for-byte unchanged. Renderers draw decor; gameplay ignores it.
+    """
+    decor_id: int
+    room_id: int
+    x: float
+    y: float
+    kind: str            # bed / sofa / table / chair / toilet / rack / ...
+    facing: float        # radians
+
+    def to_dict(self):
+        return asdict(self)
+
+
+@dataclass
 class InteriorDescriptor:
     """Everything needed to reconstruct an unloaded interior — immutable base only.
 
@@ -139,6 +158,7 @@ class InteriorDescriptor:
     rooms: list                    # list[Room]
     doorways: list                 # list[Doorway]
     fixtures: list                 # list[Fixture]
+    decor: list = field(default_factory=list)   # list[Decor] — presentation only
     notes: list = field(default_factory=list)
 
     def to_dict(self) -> dict:
@@ -155,6 +175,7 @@ class InteriorDescriptor:
             "rooms": [r.to_dict() for r in self.rooms],
             "doorways": [d.to_dict() for d in self.doorways],
             "fixtures": [f.to_dict() for f in self.fixtures],
+            "decor": [d.to_dict() for d in self.decor],
             "notes": list(self.notes),
         }
 
@@ -192,6 +213,29 @@ _ARCH_ROOMS = {
     "office": ["open_office", "meeting", "break_room", "storeroom"],
     "clinic": ["waiting", "exam", "supply", "office"],
     "generic": ["room"],
+}
+
+# Presentation-only furniture per ROOM KIND. Purely visual dressing (no containers,
+# no loot) so interiors read as furnished. Rendered by InteriorBuilder; ignored by
+# gameplay. Kept modest so it stays legible at isometric scale.
+_ROOM_DECOR = {
+    "living": ["sofa", "coffee_table", "tv", "armchair", "bookshelf"],
+    "kitchen": ["counter", "stove", "table", "chair", "chair"],
+    "bedroom": ["bed", "nightstand", "wardrobe"],
+    "bathroom": ["bathtub", "sink", "toilet"],
+    "hall": ["bench", "sideboard"],
+    "shop_floor": ["rack", "rack", "rack", "display"],
+    "back_room": ["shelf", "crate", "crate"],
+    "storeroom": ["shelf", "shelf", "crate"],
+    "open_office": ["desk", "desk", "desk", "chair"],
+    "meeting": ["table", "chair", "chair", "chair", "chair"],
+    "break_room": ["counter", "table", "chair"],
+    "waiting": ["bench", "bench", "chair"],
+    "exam": ["bed", "counter", "stool"],
+    "supply": ["shelf", "cabinet", "crate"],
+    "office": ["desk", "chair", "cabinet"],
+    "shop": ["rack", "counter", "display"],
+    "room": ["table", "chair", "shelf"],
 }
 
 
@@ -371,12 +415,60 @@ def build_interior(building_id: int, world_seed: int, footprint_poly,
         fixtures.append(Fixture(fixture_id=ci, room_id=room.room_id, x=fx, y=fy,
                                 kind=kind, facing=facing, container_index=ci))
 
+    # Presentation-only furniture dressing per room (does NOT affect fixtures /
+    # containers / loot — see Decor). Generated after fixtures so the authoritative
+    # fixture placement (and its rng draws) is unchanged.
+    decor = _place_decor(rng, rooms, fixtures)
+
     return InteriorDescriptor(
         schema_version=INTERIOR_SCHEMA_VERSION, gen_version=gen_version,
         building_id=int(building_id), seed=seed, archetype=archetype,
         floor_count=1, simplified_hull=simplified, hull=hull,
         entrances=entrances, rooms=rooms, doorways=doorways, fixtures=fixtures,
-        notes=notes)
+        decor=decor, notes=notes)
+
+
+def _place_decor(rng, rooms, fixtures) -> list:
+    """Deterministically dress each room with presentation-only furniture from
+    ``_ROOM_DECOR[room.kind]``, spread over interior anchor slots and kept clear of
+    the room's authoritative container fixtures. Returns list[Decor]."""
+    decor: list = []
+    did = 0
+    for room in rooms:
+        kinds = _ROOM_DECOR.get(room.kind, _ROOM_DECOR["room"])
+        m = FIXTURE_MARGIN + 0.3
+        rx0, ry0 = room.x0 + m, room.y0 + m
+        rx1, ry1 = room.x1 - m, room.y1 - m
+        if rx1 <= rx0 or ry1 <= ry0:
+            continue
+        cx, cy = room.center()
+        slots = [
+            (rx0, ry0), (rx1, ry0), (rx0, ry1), (rx1, ry1),
+            (cx, ry0), (cx, ry1), (rx0, cy), (rx1, cy), (cx, cy),
+        ]
+        room_fx = [(f.x, f.y) for f in fixtures if f.room_id == room.room_id]
+        placed = list(room_fx)
+        si = 0
+        for kind in kinds:
+            # find the next slot at least ~1m from anything already placed
+            chosen = None
+            tries = 0
+            while si < len(slots) and tries < len(slots):
+                sx, sy = slots[si]
+                si += 1
+                tries += 1
+                if all((sx - px) ** 2 + (sy - py) ** 2 > 1.0 for px, py in placed):
+                    chosen = (sx, sy)
+                    break
+            if chosen is None:
+                break
+            facing = math.atan2(cy - chosen[1], cx - chosen[0])
+            decor.append(Decor(decor_id=did, room_id=room.room_id,
+                               x=float(chosen[0]), y=float(chosen[1]),
+                               kind=kind, facing=float(facing)))
+            did += 1
+            placed.append(chosen)
+    return decor
 
 
 def _make_entrance(hull, rooms, road_xy) -> Entrance:
