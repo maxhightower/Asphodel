@@ -91,6 +91,8 @@ const CHIMNEY_COL := Color(0.40, 0.30, 0.26)
 const PATIO_COL := Color(0.58, 0.56, 0.53)
 const PARAPET_COL := Color(0.26, 0.27, 0.30)
 const PARAPET_H := 0.8
+const MECH_COL := Color(0.55, 0.56, 0.58)       # rooftop mechanical units
+const PENTHOUSE_COL := Color(0.44, 0.45, 0.48)  # stair/lift penthouse
 const LANE_COL := Color(0.90, 0.90, 0.85)
 const DECK_COL := Color(0.32, 0.32, 0.35)
 const PILLAR_COL := Color(0.42, 0.42, 0.45)
@@ -422,6 +424,11 @@ func _build_t1(chunk: Dictionary, root: Node3D) -> Dictionary:
 	var origin := Vector2(float(origin_arr[0]), float(origin_arr[1]))
 	var runs: Array = chunk.get("surface", [])
 	var cells := _decode_rle(runs, CELLS * CELLS)
+	# Roads and sidewalks are drawn as smooth continuous ribbons (see
+	# _build_road_surfaces); erase their blocky raster cells by bleeding the
+	# surrounding cover into them, so the ground under/around a ribbon matches its
+	# neighbourhood and the green meets the ribbon on a smooth curve, not a grid.
+	cells = _erase_paved_cells(cells)
 
 	var quads := 0
 	var st := SurfaceTool.new()
@@ -466,6 +473,37 @@ func _build_t1(chunk: Dictionary, root: Node3D) -> Dictionary:
 
 	return {"quads": quads, "verts": quads * 6 + bverts, "buildings": buildings.size(),
 		"mm_instances": 0, "collisions": 0}
+
+
+func _erase_paved_cells(cells: PackedByteArray) -> PackedByteArray:
+	## Replace S_ROAD / S_SIDEWALK cells with the nearest non-road, non-sidewalk,
+	## non-building cover (grass, verge, parking, plaza…), defaulting to grass.
+	## The smooth road/sidewalk ribbons are drawn on top, so this only governs what
+	## shows at the ribbon's edge — giving a smooth green (or plaza) boundary.
+	var out := cells.duplicate()
+	for row in range(CELLS):
+		for col in range(CELLS):
+			var t := cells[row * CELLS + col]
+			if t != S_ROAD and t != S_SIDEWALK:
+				continue
+			var fill := S_MAINTAINED_GRASS
+			var found := false
+			for d in range(1, 5):
+				for dir in [Vector2i(d, 0), Vector2i(-d, 0), Vector2i(0, d), Vector2i(0, -d)]:
+					var dv: Vector2i = dir
+					var rr := row + dv.y
+					var cc := col + dv.x
+					if rr < 0 or rr >= CELLS or cc < 0 or cc >= CELLS:
+						continue
+					var nt := cells[rr * CELLS + cc]
+					if nt != S_ROAD and nt != S_SIDEWALK and nt != S_BUILDING:
+						fill = nt
+						found = true
+						break
+				if found:
+					break
+			out[row * CELLS + col] = fill
+	return out
 
 
 func _mass_building(st: SurfaceTool, b: Dictionary) -> int:
@@ -796,13 +834,11 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array,
 			verts += _facade_box(st, mid3 + nrm3 * (patio_d * 0.5) + Vector3(0.0, 0.06, 0.0),
 				Vector3(dir.x, 0.0, dir.y), nrm3, patio_w * 0.5, patio_d * 0.5, 0.06, PATIO_COL)
 
-	# A single gable only fits a roughly-rectangular footprint; for L-shaped/complex
-	# polygons the oriented bbox overhangs, so keep the flat roof (which follows the
-	# real polygon) instead of an oversized gable.
-	if roof == "pitched" and not _is_roughly_rectangular(ring):
-		roof = "flat"
+	# Roof: elongated rectangles read best as a simple gable; square rectangles and
+	# L/T/complex footprints get a hip roof that follows the real outline (so
+	# complicated buildings still get a sloped roof); flat roofs get detailed.
+	var roof_shape := "flat"
 	if roof == "pitched":
-		# Per-building roof colour for variety (shingle browns / slate blues / greys).
 		var roof_col := ROOF_COL
 		match _stable_hash(bid, 23) % 5:
 			0: roof_col = Color(0.30, 0.30, 0.34)   # charcoal
@@ -810,13 +846,31 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array,
 			2: roof_col = Color(0.27, 0.31, 0.38)   # slate blue
 			3: roof_col = Color(0.31, 0.34, 0.31)   # grey-green
 			4: roof_col = Color(0.40, 0.32, 0.28)   # terracotta-ish
-		verts += _pitched_roof(st, ring, h, roof_col)
-	elif "parapet" in feat:
-		verts += _parapet(st, ring, h)
+		var rect := _is_roughly_rectangular(ring)
+		var oh := _obb_half(ring)
+		var minhalf := minf(oh.x, oh.y)
+		var aspect := maxf(oh.x, oh.y) / maxf(minhalf, 0.01)
+		if rect and aspect >= 1.7:
+			verts += _pitched_roof(st, ring, h, roof_col)
+			roof_shape = "gable"
+		else:
+			var rise := clampf(minhalf * 0.85, 1.2, 4.5)
+			var inset := clampf(minhalf * 0.5, 0.7, 3.0)
+			var hv := _hip_roof(st, ring, h, rise, inset, roof_col)
+			if hv > 0:
+				verts += hv
+				roof_shape = "hip"
+			elif rect:
+				verts += _pitched_roof(st, ring, h, roof_col)
+				roof_shape = "gable"
+			else:
+				verts += _flat_roof_detail(st, ring, h, bid, not is_residential)
+	else:
+		verts += _flat_roof_detail(st, ring, h, bid, not is_residential)
 
 	# Brick chimney poking through a house roof (only on the rectangular gables that
 	# kept a pitched roof, so the OBB matches the ridge).
-	if want_chimney and roof == "pitched":
+	if want_chimney and roof_shape != "flat":
 		var cen := Vector2.ZERO
 		for p in ring:
 			cen += p
@@ -1023,6 +1077,139 @@ func _parapet(st: SurfaceTool, ring: PackedVector2Array, h: float) -> int:
 		var a2 := Vector3(a.x, h + PARAPET_H, a.y)
 		var c2 := Vector3(c.x, h + PARAPET_H, c.y)
 		verts += _quad_v(st, a1, c1, c2, a2, nrm, PARAPET_COL)
+	return verts
+
+
+## Half-extents of a footprint's oriented bounding box (u = longest-edge axis).
+func _obb_half(ring: PackedVector2Array) -> Vector2:
+	var n := ring.size()
+	if n < 3:
+		return Vector2(1.0, 1.0)
+	var axis := Vector2(1.0, 0.0)
+	var best := 0.0
+	for i in range(n):
+		var e := ring[(i + 1) % n] - ring[i]
+		var l := e.length()
+		if l > best:
+			best = l
+			axis = e / l
+	var perp := Vector2(-axis.y, axis.x)
+	var minu := INF; var maxu := -INF; var minv := INF; var maxv := -INF
+	for p in ring:
+		var u := p.dot(axis); var v := p.dot(perp)
+		minu = minf(minu, u); maxu = maxf(maxu, u)
+		minv = minf(minv, v); maxv = maxf(maxv, v)
+	return Vector2((maxu - minu) * 0.5, (maxv - minv) * 0.5)
+
+
+## Inset a polygon inward by `dist` metres along each vertex's angle bisector.
+func _inset_ring(ring: PackedVector2Array, dist: float) -> PackedVector2Array:
+	var n := ring.size()
+	var out := PackedVector2Array()
+	if n < 3:
+		return out
+	var area2 := 0.0
+	for i in range(n):
+		var a := ring[i]; var b := ring[(i + 1) % n]
+		area2 += a.x * b.y - b.x * a.y
+	var ccw := area2 > 0.0
+	for i in range(n):
+		var prev := ring[(i - 1 + n) % n]
+		var cur := ring[i]
+		var nxt := ring[(i + 1) % n]
+		var din := cur - prev
+		var dout := nxt - cur
+		if din.length() < 0.0001 or dout.length() < 0.0001:
+			out.append(cur)
+			continue
+		din = din.normalized(); dout = dout.normalized()
+		var nin := Vector2(-din.y, din.x) if ccw else Vector2(din.y, -din.x)
+		var nout := Vector2(-dout.y, dout.x) if ccw else Vector2(dout.y, -dout.x)
+		var mm := nin + nout
+		if mm.length() < 0.0001:
+			out.append(cur + nout * dist)
+			continue
+		mm = mm.normalized()
+		var denom := maxf(0.35, mm.dot(nout))
+		out.append(cur + mm * (dist / denom))
+	return out
+
+
+## A hip roof that follows ANY footprint: slope every wall up to an inset ridge
+## ring, then cap the ridge flat. Returns <= 0 if the inset collapsed/inverted so
+## the caller can fall back. Works for rectangles (true hip) and L/T shapes alike.
+func _hip_roof(st: SurfaceTool, ring: PackedVector2Array, h: float, rise: float,
+		inset: float, col: Color) -> int:
+	var n := ring.size()
+	if n < 3:
+		return -1
+	var inner := _inset_ring(ring, inset)
+	if inner.size() != n:
+		return -1
+	var oarea := 0.0
+	var iarea := 0.0
+	for i in range(n):
+		oarea += ring[i].x * ring[(i + 1) % n].y - ring[(i + 1) % n].x * ring[i].y
+		iarea += inner[i].x * inner[(i + 1) % n].y - inner[(i + 1) % n].x * inner[i].y
+	if signf(iarea) != signf(oarea) or absf(iarea) * 0.5 < 1.0:
+		return -1                                   # collapsed / self-intersected
+	var ridge_y := h + rise
+	var verts := 0
+	for i in range(n):
+		var o0 := ring[i]; var o1 := ring[(i + 1) % n]
+		var i0 := inner[i]; var i1 := inner[(i + 1) % n]
+		verts += _quad_auto(st, Vector3(o0.x, h, o0.y), Vector3(o1.x, h, o1.y),
+			Vector3(i1.x, ridge_y, i1.y), Vector3(i0.x, ridge_y, i0.y), col)
+	var top_col := col.lightened(0.05)
+	var tris := Geometry2D.triangulate_polygon(inner)
+	for k in range(0, tris.size(), 3):
+		st.set_color(top_col)
+		for m in [tris[k], tris[k + 1], tris[k + 2]]:
+			st.set_normal(Vector3.UP)
+			st.add_vertex(Vector3(inner[m].x, ridge_y, inner[m].y))
+		verts += 3
+	return verts
+
+
+## A quad with an auto-computed (upward-biased) face normal.
+func _quad_auto(st: SurfaceTool, p0: Vector3, p1: Vector3, p2: Vector3, p3: Vector3,
+		col: Color) -> int:
+	var nrm := (p1 - p0).cross(p2 - p0).normalized()
+	if nrm.y < 0.0:
+		nrm = -nrm
+	return _quad_v(st, p0, p1, p2, p3, nrm, col)
+
+
+## Detail a flat roof: a perimeter parapet plus (for non-residential) a few rooftop
+## mechanical units and, on larger roofs, a stair penthouse — so flat tops aren't bare.
+func _flat_roof_detail(st: SurfaceTool, ring: PackedVector2Array, h: float,
+		bid: int, mech: bool) -> int:
+	var n := ring.size()
+	if n < 3:
+		return 0
+	var verts := 0
+	var min_x := INF; var min_z := INF; var max_x := -INF; var max_z := -INF
+	for p in ring:
+		min_x = minf(min_x, p.x); max_x = maxf(max_x, p.x)
+		min_z = minf(min_z, p.y); max_z = maxf(max_z, p.y)
+	var area := (max_x - min_x) * (max_z - min_z)
+	if area >= 20.0:
+		verts += _parapet(st, ring, h)
+	if not mech or area < 40.0:
+		return verts
+	var units := clampi(int(area / 220.0), 1, 4)
+	var xa := Vector3(1.0, 0.0, 0.0)
+	var za := Vector3(0.0, 0.0, 1.0)
+	for u in range(units):
+		var fx := float(_stable_hash(bid, 61 + u * 3) % 1000) / 1000.0
+		var fz := float(_stable_hash(bid, 62 + u * 3) % 1000) / 1000.0
+		var ux := lerpf(min_x + 2.0, max_x - 2.0, fx)
+		var uz := lerpf(min_z + 2.0, max_z - 2.0, fz)
+		verts += _facade_box(st, Vector3(ux, h + 0.45, uz), xa, za, 0.9, 0.65, 0.45, MECH_COL)
+	if area >= 300.0:
+		var cx := (min_x + max_x) * 0.5
+		var cz := (min_z + max_z) * 0.5
+		verts += _facade_box(st, Vector3(cx, h + 1.1, cz), xa, za, 1.5, 1.2, 1.1, PENTHOUSE_COL)
 	return verts
 
 
