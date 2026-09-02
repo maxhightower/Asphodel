@@ -97,6 +97,15 @@ def _hash(*ints: int) -> int:
     return h
 
 
+def _shash(s: str) -> int:
+    """Stable FNV-1a hash of a string. Python's built-in hash() is randomized per
+    process (PYTHONHASHSEED), so it must never key deterministic appearance."""
+    h = 1469598103934665603
+    for ch in s.encode("utf-8"):
+        h = (h ^ ch) * 1099511628211 & 0xFFFFFFFFFFFFFFFF
+    return h
+
+
 def _h01(*ints: int) -> float:
     return (_hash(*ints) % 1000000) / 1000000.0
 
@@ -174,7 +183,7 @@ def infer_building(bid: int, key: str, cx: float, cz: float, arch: str,
     prior = _PRIOR.get(arch, _PRIOR["GENERIC_UNKNOWN"])
     is_fallback = arch not in _PRIOR
     infer_cls = PROCEDURAL   # honest: prior-based, no observed basis nearby
-    kh = hash(key) & 0xFFFFFFFF
+    kh = _shash(key) & 0xFFFFFFFF
 
     # ---- facade material ----
     fmat = appearance["facade"]["material"]

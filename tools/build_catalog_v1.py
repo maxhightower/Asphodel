@@ -20,12 +20,17 @@ F = []
 
 def fam(sid, cat, proc, dims, placement="ground", outdoor=True, collision="simple",
         interaction="none", material=None, room=(), parcel=(), building=(),
-        climate=(), variants=1, lod=None):
+        climate=(), variants=1, lod=None, render_kind=True):
     w, d, h = dims
     vlist = []
     for i in range(variants):
         vlist.append({"id": f"{sid}_{i:02d}", "weight": 1.0, "resource": None,
                       "procedural": proc, "conditions": ["NORMAL"]})
+    # render_kind=True -> a PropMeshes MultiMesh builder draws this. False ->
+    # the concept is realized elsewhere (building-integrated signage, Package H)
+    # so it carries no standalone render kind; `procedural` still documents the
+    # realizing builder for the registry.
+    rk = proc if render_kind is True else (render_kind or None)
     F.append({
         "semantic_id": sid, "category": cat, "placement": placement,
         "outdoor": outdoor, "dimensions": {"width_m": w, "depth_m": d, "height_m": h},
@@ -33,8 +38,8 @@ def fam(sid, cat, proc, dims, placement="ground", outdoor=True, collision="simpl
         "material_family": material, "room_tags": list(room),
         "parcel_tags": list(parcel), "building_tags": list(building),
         "climate_tags": list(climate), "seed_tag": sid,
-        "render_kind": proc,          # procedural mesh kind PropMeshes draws
-        "lod_fallback": lod or proc, "variants": vlist,
+        "render_kind": rk,            # procedural mesh kind PropMeshes draws
+        "lod_fallback": (lod or proc) if rk else None, "variants": vlist,
     })
 
 
@@ -117,6 +122,29 @@ fam("tall_grass", "vegetation", "tall_grass", (0.6, 0.6, 1.1), collision="none",
     climate=("gulf", "riparian", "temperate", "arid"), variants=5)
 fam("native_scrub", "vegetation", "native_scrub", (1.6, 1.6, 0.7),
     collision="none", climate=("arid", "gulf", "temperate"), variants=5)
+
+# ---- signage / business identity (Package H) ---------------------------------
+# Sign hardware is realized as building-integrated geometry driven by each
+# building's business identity (fascia band, wall plaque, monument, pole),
+# tinted from the business palette -- not standalone MultiMesh props -- so these
+# families carry no standalone render_kind (render_kind=False).
+fam("storefront_fascia", "sign", "storefront_fascia", (4.0, 0.4, 1.0),
+    placement="wall", building=("commercial",), material="signage", render_kind=False)
+fam("wall_sign", "sign", "wall_sign", (2.0, 0.2, 0.9), placement="wall",
+    building=("commercial", "office", "civic", "industrial"), material="signage",
+    render_kind=False)
+fam("pole_sign", "sign", "pole_sign", (2.2, 0.3, 6.0), placement="ground",
+    building=("commercial",), material="signage", render_kind=False)
+fam("monument_sign", "sign", "monument_sign", (2.4, 0.6, 1.6), placement="ground",
+    building=("commercial", "civic"), material="signage", render_kind=False)
+fam("hanging_sign", "sign", "hanging_sign", (1.0, 0.1, 0.6), placement="wall",
+    building=("commercial",), material="signage", render_kind=False)
+fam("roadside_sign", "sign", "roadside_sign", (2.0, 0.2, 3.0), placement="ground",
+    building=("commercial",), material="signage", render_kind=False)
+fam("directory_sign", "sign", "directory_sign", (1.2, 0.2, 2.0), placement="ground",
+    building=("office", "civic"), material="signage", render_kind=False)
+fam("building_number", "sign", "building_number", (0.5, 0.05, 0.3),
+    placement="wall", material="signage", render_kind=False)
 
 # ---- interior authoritative fixtures (searchable containers) ------------------
 fam("storage_cabinet", "furniture", "cabinet", (0.9, 0.5, 0.9), placement="floor",

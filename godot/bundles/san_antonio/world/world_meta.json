@@ -1,0 +1,48 @@
+{
+ "attribution": [
+  "Map data \u00a9 OpenStreetMap contributors, Overture Maps Foundation (ODbL)",
+  "Place data \u00a9 Overture Maps Foundation (CDLA-Permissive-2.0)"
+ ],
+ "bounds_m": [
+  -2907.827102441019,
+  -3316.200000000126,
+  2907.827102441019,
+  3316.200000000126
+ ],
+ "chunk_grid": {
+  "cols": 23,
+  "rows": 26
+ },
+ "chunk_size_m": 256.0,
+ "city": "san_antonio",
+ "compiler_version": 1,
+ "counts": {
+  "anchors": 125905,
+  "blocks": 2159,
+  "buildings": 35658,
+  "chunks": 598,
+  "parcels": 36054,
+  "placements": 701280,
+  "props": 586967,
+  "road_km": 1350.71,
+  "road_segments": 11228,
+  "trees": 64597,
+  "vehicles": 49716
+ },
+ "license_note": "world/ contains only geographic database content derived from ODbL/CDLA-Permissive sources plus procedural derivations; no proprietary gameplay data lives here.",
+ "seed": 0,
+ "source_release": "2026-08-19.0",
+ "surface_census_cells": {
+  "BARE_GROUND": 0,
+  "BUILDING": 1722936,
+  "MAINTAINED_GRASS": 4854462,
+  "OTHER_IMPERVIOUS": 533139,
+  "PARKING": 572670,
+  "ROAD": 1394796,
+  "ROUGH_VEGETATION": 140176,
+  "SIDEWALK": 546342,
+  "TREE_CANOPY": 32842,
+  "WATER": 269
+ },
+ "version": 1
+}

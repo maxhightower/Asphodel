@@ -181,3 +181,47 @@ Persistence classes (Section 11) preserved: DECORATIVE (regenerated, no save),
 AFFORDANCE (regenerated, function exposed, delta only if changed), AUTHORITATIVE
 (searchable containers etc., persistent when changed). AssetCatalog interaction
 class + the existing fixture/decor split already encode this distinction.
+
+---
+
+## 7. Shipped: Package H — Signage + business identity (Section 9)
+
+`asphodel/city_visual/business_identity.py` (`BusinessIdentityV1`) generates a
+**deterministic fictional business identity** for every non-residential building
+(`business_id`, `category` from a 34-member taxonomy, `display_name`, a sign
+`palette` primary/secondary/accent, `logo_glyph`, `sign_family`, `hours`). The
+category is drawn from an archetype-weighted pool; palette hue is nudged by a
+coarse spatial field so a strip shares a tone. Attached in the compiler
+(`compile.py` → `assign_records`) onto `BuildingRecord.identity` and serialized
+into the chunk building dict alongside `appearance` (`chunks.py`).
+
+Hard rules honoured:
+- **Provenance honesty:** an invented identity is always `PROCEDURAL`; nothing
+  is ever labelled OBSERVED. Real public place names are *not* adopted in V1 (to
+  stay clear of trademarks); the door is left open for later where licensing
+  permits (Section 9).
+- **No real trademarks:** names are built from generic surname/adjective/noun
+  pools and rotated past a curated real-brand blocklist, so a random draw can
+  never coincide with a real brand (test-guaranteed).
+- **No city-name special cases:** identity is a pure function of
+  `(stable_key, centroid, archetype, seed)`.
+- **Determinism:** identity uses a stable FNV-1a string hash, never Python's
+  randomized built-in `hash()`. Cross-`PYTHONHASHSEED` recompile of Houston is
+  identity-identical (3378 identities, 0 mismatches). *This pass also fixed a
+  latent Package-C bug: `appearance_infer.py` had keyed off built-in `hash()`,
+  making inferred appearance non-deterministic across processes; it now uses the
+  same stable hash.*
+
+Rendering is **building-integrated** (`exterior_world.gd::_render_signage`), not
+standalone MultiMesh props, so batching is untouched: storefronts get a fascia
+band; other non-residential buildings a wall plaque; `pole_sign` categories a
+raised parapet marquee; `monument_sign` categories a low ground monument placed
+only where the frontage cell is a concrete apron (no road/lawn collision). Each
+sign is tinted from the business palette with a cheap logo-glyph emblem. Sign
+hardware is registered in the catalog as the `sign` category (fascia, wall,
+pole, monument, hanging, roadside, directory, building-number) with no standalone
+`render_kind` (realized by the building-integrated generator).
+
+Tests: `tests/test_business_identity.py` (13, incl. the cross-`PYTHONHASHSEED`
+determinism gate and the no-real-brand gate). The Godot `AssetCatalogSmoke`
+no-magenta gate stays green.

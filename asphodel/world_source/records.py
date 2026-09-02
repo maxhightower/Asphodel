@@ -56,6 +56,10 @@ class BuildingRecord:
     # Package B: BuildingAppearanceV1.to_dict() — facade/roof colour+material+
     # shape with OBSERVED/DERIVED/PROCEDURAL provenance. None until assembled.
     appearance: dict | None = None
+    # Package H: BusinessIdentityV1.to_dict() for non-residential buildings —
+    # fictional name/category/palette/sign_family (always PROCEDURAL). None for
+    # residential and until assigned.
+    identity: dict | None = None
 
 
 @dataclass

@@ -1,0 +1,48 @@
+{
+ "attribution": [
+  "Map data \u00a9 OpenStreetMap contributors, Overture Maps Foundation (ODbL)",
+  "Place data \u00a9 Overture Maps Foundation (CDLA-Permissive-2.0)"
+ ],
+ "bounds_m": [
+  -2883.173159199043,
+  -3316.200000000126,
+  2883.173159199043,
+  3316.200000000126
+ ],
+ "chunk_grid": {
+  "cols": 23,
+  "rows": 26
+ },
+ "chunk_size_m": 256.0,
+ "city": "austin",
+ "compiler_version": 1,
+ "counts": {
+  "anchors": 94653,
+  "blocks": 1498,
+  "buildings": 29205,
+  "chunks": 598,
+  "parcels": 29523,
+  "placements": 628201,
+  "props": 515660,
+  "road_km": 1246.37,
+  "road_segments": 12721,
+  "trees": 56359,
+  "vehicles": 56182
+ },
+ "license_note": "world/ contains only geographic database content derived from ODbL/CDLA-Permissive sources plus procedural derivations; no proprietary gameplay data lives here.",
+ "seed": 0,
+ "source_release": "2026-08-19.0",
+ "surface_census_cells": {
+  "BARE_GROUND": 64,
+  "BUILDING": 1742968,
+  "MAINTAINED_GRASS": 4716672,
+  "OTHER_IMPERVIOUS": 384682,
+  "PARKING": 1044864,
+  "ROAD": 1122431,
+  "ROUGH_VEGETATION": 171060,
+  "SIDEWALK": 501294,
+  "TREE_CANOPY": 113510,
+  "WATER": 87
+ },
+ "version": 1
+}

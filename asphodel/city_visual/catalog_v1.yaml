@@ -44,6 +44,7 @@ render_variants:
   flowering_shrub: 5
   tall_grass: 5
   native_scrub: 5
+  null: 1
   cabinet: 1
   fridge: 1
   shelf: 1
@@ -2039,6 +2040,226 @@ families:
     weight: 1.0
     resource: null
     procedural: native_scrub
+    conditions:
+    - NORMAL
+- semantic_id: storefront_fascia
+  category: sign
+  placement: wall
+  outdoor: true
+  dimensions:
+    width_m: 4.0
+    depth_m: 0.4
+    height_m: 1.0
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: signage
+  room_tags: []
+  parcel_tags: []
+  building_tags:
+  - commercial
+  climate_tags: []
+  seed_tag: storefront_fascia
+  render_kind: null
+  lod_fallback: null
+  variants:
+  - id: storefront_fascia_00
+    weight: 1.0
+    resource: null
+    procedural: storefront_fascia
+    conditions:
+    - NORMAL
+- semantic_id: wall_sign
+  category: sign
+  placement: wall
+  outdoor: true
+  dimensions:
+    width_m: 2.0
+    depth_m: 0.2
+    height_m: 0.9
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: signage
+  room_tags: []
+  parcel_tags: []
+  building_tags:
+  - commercial
+  - office
+  - civic
+  - industrial
+  climate_tags: []
+  seed_tag: wall_sign
+  render_kind: null
+  lod_fallback: null
+  variants:
+  - id: wall_sign_00
+    weight: 1.0
+    resource: null
+    procedural: wall_sign
+    conditions:
+    - NORMAL
+- semantic_id: pole_sign
+  category: sign
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 2.2
+    depth_m: 0.3
+    height_m: 6.0
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: signage
+  room_tags: []
+  parcel_tags: []
+  building_tags:
+  - commercial
+  climate_tags: []
+  seed_tag: pole_sign
+  render_kind: null
+  lod_fallback: null
+  variants:
+  - id: pole_sign_00
+    weight: 1.0
+    resource: null
+    procedural: pole_sign
+    conditions:
+    - NORMAL
+- semantic_id: monument_sign
+  category: sign
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 2.4
+    depth_m: 0.6
+    height_m: 1.6
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: signage
+  room_tags: []
+  parcel_tags: []
+  building_tags:
+  - commercial
+  - civic
+  climate_tags: []
+  seed_tag: monument_sign
+  render_kind: null
+  lod_fallback: null
+  variants:
+  - id: monument_sign_00
+    weight: 1.0
+    resource: null
+    procedural: monument_sign
+    conditions:
+    - NORMAL
+- semantic_id: hanging_sign
+  category: sign
+  placement: wall
+  outdoor: true
+  dimensions:
+    width_m: 1.0
+    depth_m: 0.1
+    height_m: 0.6
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: signage
+  room_tags: []
+  parcel_tags: []
+  building_tags:
+  - commercial
+  climate_tags: []
+  seed_tag: hanging_sign
+  render_kind: null
+  lod_fallback: null
+  variants:
+  - id: hanging_sign_00
+    weight: 1.0
+    resource: null
+    procedural: hanging_sign
+    conditions:
+    - NORMAL
+- semantic_id: roadside_sign
+  category: sign
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 2.0
+    depth_m: 0.2
+    height_m: 3.0
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: signage
+  room_tags: []
+  parcel_tags: []
+  building_tags:
+  - commercial
+  climate_tags: []
+  seed_tag: roadside_sign
+  render_kind: null
+  lod_fallback: null
+  variants:
+  - id: roadside_sign_00
+    weight: 1.0
+    resource: null
+    procedural: roadside_sign
+    conditions:
+    - NORMAL
+- semantic_id: directory_sign
+  category: sign
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 1.2
+    depth_m: 0.2
+    height_m: 2.0
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: signage
+  room_tags: []
+  parcel_tags: []
+  building_tags:
+  - office
+  - civic
+  climate_tags: []
+  seed_tag: directory_sign
+  render_kind: null
+  lod_fallback: null
+  variants:
+  - id: directory_sign_00
+    weight: 1.0
+    resource: null
+    procedural: directory_sign
+    conditions:
+    - NORMAL
+- semantic_id: building_number
+  category: sign
+  placement: wall
+  outdoor: true
+  dimensions:
+    width_m: 0.5
+    depth_m: 0.05
+    height_m: 0.3
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: signage
+  room_tags: []
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: building_number
+  render_kind: null
+  lod_fallback: null
+  variants:
+  - id: building_number_00
+    weight: 1.0
+    resource: null
+    procedural: building_number
     conditions:
     - NORMAL
 - semantic_id: storage_cabinet

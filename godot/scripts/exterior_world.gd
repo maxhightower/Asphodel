@@ -913,6 +913,11 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array,
 			verts += _facade_box(st, mid3 + nrm3 * (patio_d * 0.5) + Vector3(0.0, 0.06, 0.0),
 				Vector3(dir.x, 0.0, dir.y), nrm3, patio_w * 0.5, patio_d * 0.5, 0.06, PATIO_COL)
 
+	# Package H: business signage (fascia/wall plaque/marquee/monument) tinted
+	# from the building's fictional business identity. Non-residential only
+	# (identity is absent on homes), a few quads each.
+	verts += _render_signage(st, b, ring, floor_h, is_storefront, cells, origin)
+
 	# Roof: elongated rectangles read best as a simple gable; square rectangles and
 	# L/T/complex footprints get a hip roof that follows the real outline (so
 	# complicated buildings still get a sloped roof); flat roofs get detailed.
@@ -1033,6 +1038,161 @@ func _facade_box(st: SurfaceTool, center: Vector3, along: Vector3, out: Vector3,
 	verts += _quad_v(st, mmm, pmm, ppm, mpm, Vector3.DOWN, col) # bottom
 	verts += _quad_v(st, pmm, ppm, ppp, pmp, along, col)        # +a end
 	verts += _quad_v(st, mpm, mmm, mmp, mpp, -along, col)       # -a end
+	return verts
+
+
+## A palette colour from a business identity, or a fallback when absent/malformed.
+static func _sign_hex(pal: Dictionary, key: String, fallback: Color) -> Color:
+	var v: String = String(pal.get(key, ""))
+	return Color.html(v) if _is_hex6(v) else fallback
+
+
+## A small logo emblem on a sign face: an accent plate plus a cheap glyph mark so
+## businesses read as distinct at iso scale. `c` is the plate centre, `along`/`out`
+## the sign's tangent/outward unit vectors, `r` the plate half-size. Kept to a
+## handful of quads (only non-residential buildings emit signage).
+func _sign_emblem(st: SurfaceTool, c: Vector3, along: Vector3, out: Vector3,
+		glyph: String, accent: Color, secondary: Color, r: float) -> int:
+	var f := out * 0.03
+	var up := Vector3(0.0, 1.0, 0.0)
+	var verts := 0
+	# accent plate
+	var p0 := c + f - along * r - up * r
+	var p1 := c + f + along * r - up * r
+	var p2 := c + f + along * r + up * r
+	var p3 := c + f - along * r + up * r
+	verts += _quad_v(st, p0, p1, p2, p3, out, accent)
+	var f2 := out * 0.05
+	match glyph:
+		"bars":
+			for s in [-0.5, 0.5]:
+				var sf := float(s)
+				var b0 := c + f2 + along * (sf * r - r * 0.14) - up * r * 0.7
+				var b1 := c + f2 + along * (sf * r + r * 0.14) - up * r * 0.7
+				var b2 := c + f2 + along * (sf * r + r * 0.14) + up * r * 0.7
+				var b3 := c + f2 + along * (sf * r - r * 0.14) + up * r * 0.7
+				verts += _quad_v(st, b0, b1, b2, b3, out, secondary)
+		"cross":
+			var h0 := c + f2 - along * r * 0.7 - up * r * 0.18
+			var h1 := c + f2 + along * r * 0.7 - up * r * 0.18
+			var h2 := c + f2 + along * r * 0.7 + up * r * 0.18
+			var h3 := c + f2 - along * r * 0.7 + up * r * 0.18
+			verts += _quad_v(st, h0, h1, h2, h3, out, secondary)
+			var v0 := c + f2 - along * r * 0.18 - up * r * 0.7
+			var v1 := c + f2 + along * r * 0.18 - up * r * 0.7
+			var v2 := c + f2 + along * r * 0.18 + up * r * 0.7
+			var v3 := c + f2 - along * r * 0.18 + up * r * 0.7
+			verts += _quad_v(st, v0, v1, v2, v3, out, secondary)
+		"chevron", "triangle", "arch":
+			var t0 := c + f2 - along * r * 0.7 - up * r * 0.5
+			var t1 := c + f2 + along * r * 0.7 - up * r * 0.5
+			var t2 := c + f2 + up * r * 0.6
+			verts += _tri_v(st, t0, t1, t2, secondary)
+		"ring", "disc":
+			var g := r * 0.5
+			var d0 := c + f2 - along * g - up * g
+			var d1 := c + f2 + along * g - up * g
+			var d2 := c + f2 + along * g + up * g
+			var d3 := c + f2 - along * g + up * g
+			verts += _quad_v(st, d0, d1, d2, d3, out, secondary)
+		_:
+			var g2 := r * 0.42
+			var e0 := c + f2 - along * g2 - up * g2
+			var e1 := c + f2 + along * g2 - up * g2
+			var e2 := c + f2 + along * g2 + up * g2
+			var e3 := c + f2 - along * g2 + up * g2
+			verts += _quad_v(st, e0, e1, e2, e3, out, secondary)
+	return verts
+
+
+## Package H: building-integrated business signage. Reads the building's fictional
+## business identity and tints sign hardware from its palette. Storefronts get a
+## fascia band; other non-residential buildings get a wall plaque; big-box/pole
+## and monument categories add a raised marquee or a ground monument where a
+## frontage pad exists. All emitted into the shared building mesh (batching kept).
+func _render_signage(st: SurfaceTool, b: Dictionary, ring: PackedVector2Array,
+		floor_h: float, is_storefront: bool, cells: PackedByteArray,
+		origin: Vector2) -> int:
+	var ident: Dictionary = b.get("identity", {})
+	if ident.is_empty():
+		return 0
+	var pal: Dictionary = ident.get("palette", {})
+	var primary := _sign_hex(pal, "primary", Color(0.55, 0.30, 0.20))
+	var secondary := _sign_hex(pal, "secondary", primary.lightened(0.25))
+	var accent := _sign_hex(pal, "accent", Color(0.92, 0.92, 0.86))
+	var glyph := String(ident.get("logo_glyph", "disc"))
+	var sign_family := String(ident.get("sign_family", "wall_sign"))
+	var h := float(b.get("h", 3.0))
+	var n := ring.size()
+	var ent: Dictionary = b.get("entrance", {})
+	var ent_edge := int(ent.get("edge", -1))
+	var ent_t := float(ent.get("t", 0.5))
+	var ent_w := float(ent.get("w", 1.6))
+	if ent_edge < 0 or ent_edge >= n:
+		ent_edge = 0
+	var a := ring[ent_edge]
+	var c := ring[(ent_edge + 1) % n]
+	var seg := c - a
+	var length := seg.length()
+	if length < 3.0:
+		return 0
+	var dir := seg / length
+	var nrm2 := Vector2(seg.y, -seg.x).normalized()
+	var nrm3 := Vector3(nrm2.x, 0.0, nrm2.y)
+	var along3 := Vector3(dir.x, 0.0, dir.y)
+	var center := a.lerp(c, ent_t)
+	var verts := 0
+
+	if is_storefront:
+		# fascia band spanning the shopfront, just above the glazing.
+		var inset := minf(0.7, length * 0.12)
+		var band_h := clampf(floor_h * 0.5, 0.7, 1.1)
+		var band_y := floor_h * 1.3 + 0.05 + band_h * 0.5
+		var mid := a.lerp(c, 0.5)
+		var fc := Vector3(mid.x, band_y, mid.y) + nrm3 * 0.10
+		verts += _facade_box(st, fc, along3, nrm3, (length - 2.0 * inset) * 0.5,
+			0.12, band_h * 0.5, primary)
+		verts += _sign_emblem(st, fc + nrm3 * 0.14, along3, nrm3, glyph, accent,
+			secondary, band_h * 0.30)
+	else:
+		# wall plaque above the entrance for offices/civic/industrial and
+		# non-storefront commercial.
+		var py := clampf(h * 0.5, 2.6, 4.2)
+		var pw := clampf(ent_w * 1.4, 1.8, 3.2)
+		var wc := Vector3(center.x, py, center.y) + nrm3 * 0.10
+		verts += _facade_box(st, wc, along3, nrm3, pw * 0.5, 0.09, 0.45, primary)
+		verts += _sign_emblem(st, wc + nrm3 * 0.12, along3, nrm3, glyph, accent,
+			secondary, 0.30)
+
+	# Big-box / pole categories: a raised parapet marquee above the entrance —
+	# collision-free, reads as a tall storefront sign at distance.
+	if sign_family == "pole_sign":
+		var mw := clampf(length * 0.4, 2.4, 6.0)
+		var my := h + 0.9
+		var mc := Vector3(center.x, my, center.y) + nrm3 * 0.20
+		verts += _facade_box(st, mc, along3, nrm3, mw * 0.5, 0.14, 0.9, primary)
+		# short posts down to the parapet
+		for s in [-1.0, 1.0]:
+			var sf := float(s)
+			var pc := Vector3(center.x, h + 0.45, center.y) + nrm3 * 0.20 \
+				+ along3 * (sf * mw * 0.4)
+			verts += _facade_box(st, pc, along3, nrm3, 0.08, 0.08, 0.45, secondary)
+		verts += _sign_emblem(st, mc + nrm3 * 0.16, along3, nrm3, glyph, accent,
+			secondary, 0.5)
+	# Monument categories: a low ground sign on a frontage pad, only where the
+	# ground just outside the entrance is a concrete apron (no road/lawn collide).
+	elif sign_family == "monument_sign":
+		var out_pt := center + nrm2 * 1.9
+		if cells.is_empty() or _surface_class(cells, origin, out_pt.x, out_pt.y) == S_OTHER_IMPERVIOUS:
+			var oc := Vector3(out_pt.x, 0.0, out_pt.y)
+			verts += _facade_box(st, oc + Vector3(0.0, 0.12, 0.0), along3, nrm3,
+				1.1, 0.35, 0.12, secondary)
+			var panel := oc + Vector3(0.0, 0.85, 0.0)
+			verts += _facade_box(st, panel, along3, nrm3, 1.1, 0.16, 0.7, primary)
+			verts += _sign_emblem(st, panel - nrm3 * 0.18, along3, -nrm3, glyph,
+				accent, secondary, 0.42)
+			verts += _sign_emblem(st, panel + nrm3 * 0.18, along3, nrm3, glyph,
+				accent, secondary, 0.42)
 	return verts
 
 

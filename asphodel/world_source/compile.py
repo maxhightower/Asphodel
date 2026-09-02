@@ -13,6 +13,7 @@ import json
 import os
 import time
 
+from ..city_visual import business_identity
 from . import appearance_infer, buildings_grammar, detail, identity, normalize, streets
 from . import parcels as parcels_mod
 from .chunkgrid import ChunkGrid
@@ -117,6 +118,10 @@ def compile_city(city: str, release: str, seed: int,
     # carry no observed values, deterministically + spatially coherently. Never
     # overwrites observed truth; provenance stays honest (mostly PROCEDURAL).
     appearance_infer.infer_records(brecords, seed)
+    # Package H: attach a deterministic fictional business identity to every
+    # non-residential building (name/category/palette/sign_family, always
+    # PROCEDURAL). Serialized into the chunk building dict for the renderer.
+    business_identity.assign_records(brecords, seed)
 
     det = detail.compile_detail(parcel_list, brecords, segments, seed)
     curb = detail.curb_vehicles(segments, parcel_list, seed)

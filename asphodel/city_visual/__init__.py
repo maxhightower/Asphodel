@@ -25,6 +25,9 @@ from .building_appearance import (
 )
 from .asset_catalog import AssetCatalogV1, AssetFamily, AssetVariant
 from .city_profile import CityVisualProfileV1
+from .business_identity import (
+    BusinessIdentityV1, BUSINESS_CATEGORIES, SIGN_FAMILIES, LOGO_GLYPHS,
+)
 
 __all__ = [
     "OBSERVED", "DERIVED", "PROCEDURAL", "PROVENANCE_CLASSES",
@@ -32,4 +35,5 @@ __all__ = [
     "AppearanceValue",
     "AssetCatalogV1", "AssetFamily", "AssetVariant",
     "CityVisualProfileV1",
+    "BusinessIdentityV1", "BUSINESS_CATEGORIES", "SIGN_FAMILIES", "LOGO_GLYPHS",
 ]
