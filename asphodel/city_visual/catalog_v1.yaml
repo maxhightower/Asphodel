@@ -56,6 +56,31 @@ render_variants:
   stool: 1
   rack: 1
   display: 1
+  gondola: 1
+  checkout: 1
+  fridge_case: 1
+  freezer_case: 1
+  cubicle: 1
+  filing_cabinet: 1
+  printer: 1
+  water_cooler: 1
+  hospital_bed: 1
+  exam_table: 1
+  med_cart: 1
+  iv_pole: 1
+  locker: 1
+  workbench: 1
+  machine: 1
+  forklift: 1
+  pallet_rack: 1
+  drum: 1
+  student_desk: 1
+  teacher_desk: 1
+  chalkboard: 1
+  library_shelf: 1
+  cafeteria_table: 1
+  lectern: 1
+  pew: 1
 families:
 - semantic_id: utility_pole
   category: utility
@@ -2175,5 +2200,694 @@ families:
     weight: 1.0
     resource: null
     procedural: display
+    conditions:
+    - NORMAL
+- semantic_id: gondola
+  category: commercial_equipment
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 1.8
+    depth_m: 0.9
+    height_m: 1.6
+  clearance: {}
+  collision: simple
+  interaction: stock_shelf
+  material_family: null
+  room_tags:
+  - shop_floor
+  - shop
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: gondola
+  render_kind: gondola
+  lod_fallback: gondola
+  variants:
+  - id: gondola_00
+    weight: 1.0
+    resource: null
+    procedural: gondola
+    conditions:
+    - NORMAL
+- semantic_id: checkout
+  category: commercial_equipment
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 1.6
+    depth_m: 0.9
+    height_m: 1.0
+  clearance: {}
+  collision: simple
+  interaction: use_register
+  material_family: null
+  room_tags:
+  - shop_floor
+  - shop
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: checkout
+  render_kind: checkout
+  lod_fallback: checkout
+  variants:
+  - id: checkout_00
+    weight: 1.0
+    resource: null
+    procedural: checkout
+    conditions:
+    - NORMAL
+- semantic_id: fridge_case
+  category: commercial_equipment
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 1.8
+    depth_m: 0.8
+    height_m: 2.0
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: null
+  room_tags:
+  - shop_floor
+  - shop
+  - back_room
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: fridge_case
+  render_kind: fridge_case
+  lod_fallback: fridge_case
+  variants:
+  - id: fridge_case_00
+    weight: 1.0
+    resource: null
+    procedural: fridge_case
+    conditions:
+    - NORMAL
+- semantic_id: freezer_case
+  category: commercial_equipment
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 1.8
+    depth_m: 0.9
+    height_m: 0.9
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: null
+  room_tags:
+  - shop_floor
+  - back_room
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: freezer_case
+  render_kind: freezer_case
+  lod_fallback: freezer_case
+  variants:
+  - id: freezer_case_00
+    weight: 1.0
+    resource: null
+    procedural: freezer_case
+    conditions:
+    - NORMAL
+- semantic_id: cubicle
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 1.6
+    depth_m: 1.6
+    height_m: 1.3
+  clearance: {}
+  collision: simple
+  interaction: work_at_desk
+  material_family: null
+  room_tags:
+  - open_office
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: cubicle
+  render_kind: cubicle
+  lod_fallback: cubicle
+  variants:
+  - id: cubicle_00
+    weight: 1.0
+    resource: null
+    procedural: cubicle
+    conditions:
+    - NORMAL
+- semantic_id: filing_cabinet
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 0.5
+    depth_m: 0.6
+    height_m: 1.3
+  clearance: {}
+  collision: simple
+  interaction: search
+  material_family: null
+  room_tags:
+  - office
+  - open_office
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: filing_cabinet
+  render_kind: filing_cabinet
+  lod_fallback: filing_cabinet
+  variants:
+  - id: filing_cabinet_00
+    weight: 1.0
+    resource: null
+    procedural: filing_cabinet
+    conditions:
+    - NORMAL
+- semantic_id: printer
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 0.6
+    depth_m: 0.6
+    height_m: 0.9
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: null
+  room_tags:
+  - open_office
+  - office
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: printer
+  render_kind: printer
+  lod_fallback: printer
+  variants:
+  - id: printer_00
+    weight: 1.0
+    resource: null
+    procedural: printer
+    conditions:
+    - NORMAL
+- semantic_id: water_cooler
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 0.4
+    depth_m: 0.4
+    height_m: 1.3
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: null
+  room_tags:
+  - break_room
+  - waiting
+  - lobby
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: water_cooler
+  render_kind: water_cooler
+  lod_fallback: water_cooler
+  variants:
+  - id: water_cooler_00
+    weight: 1.0
+    resource: null
+    procedural: water_cooler
+    conditions:
+    - NORMAL
+- semantic_id: hospital_bed
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 1.0
+    depth_m: 2.1
+    height_m: 1.0
+  clearance: {}
+  collision: simple
+  interaction: examine_patient
+  material_family: null
+  room_tags:
+  - exam
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: hospital_bed
+  render_kind: hospital_bed
+  lod_fallback: hospital_bed
+  variants:
+  - id: hospital_bed_00
+    weight: 1.0
+    resource: null
+    procedural: hospital_bed
+    conditions:
+    - NORMAL
+- semantic_id: exam_table
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 0.8
+    depth_m: 1.9
+    height_m: 0.8
+  clearance: {}
+  collision: simple
+  interaction: examine_patient
+  material_family: null
+  room_tags:
+  - exam
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: exam_table
+  render_kind: exam_table
+  lod_fallback: exam_table
+  variants:
+  - id: exam_table_00
+    weight: 1.0
+    resource: null
+    procedural: exam_table
+    conditions:
+    - NORMAL
+- semantic_id: med_cart
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 0.6
+    depth_m: 0.5
+    height_m: 1.0
+  clearance: {}
+  collision: simple
+  interaction: search
+  material_family: null
+  room_tags:
+  - exam
+  - supply
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: med_cart
+  render_kind: med_cart
+  lod_fallback: med_cart
+  variants:
+  - id: med_cart_00
+    weight: 1.0
+    resource: null
+    procedural: med_cart
+    conditions:
+    - NORMAL
+- semantic_id: iv_pole
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 0.4
+    depth_m: 0.4
+    height_m: 1.9
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: null
+  room_tags:
+  - exam
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: iv_pole
+  render_kind: iv_pole
+  lod_fallback: iv_pole
+  variants:
+  - id: iv_pole_00
+    weight: 1.0
+    resource: null
+    procedural: iv_pole
+    conditions:
+    - NORMAL
+- semantic_id: locker
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 1.2
+    depth_m: 0.5
+    height_m: 1.9
+  clearance: {}
+  collision: simple
+  interaction: search
+  material_family: null
+  room_tags:
+  - workshop
+  - hallway
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: locker
+  render_kind: locker
+  lod_fallback: locker
+  variants:
+  - id: locker_00
+    weight: 1.0
+    resource: null
+    procedural: locker
+    conditions:
+    - NORMAL
+- semantic_id: workbench
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 1.8
+    depth_m: 0.7
+    height_m: 0.95
+  clearance: {}
+  collision: simple
+  interaction: use_machine
+  material_family: null
+  room_tags:
+  - workshop
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: workbench
+  render_kind: workbench
+  lod_fallback: workbench
+  variants:
+  - id: workbench_00
+    weight: 1.0
+    resource: null
+    procedural: workbench
+    conditions:
+    - NORMAL
+- semantic_id: machine
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 1.6
+    depth_m: 1.2
+    height_m: 1.6
+  clearance: {}
+  collision: simple
+  interaction: use_machine
+  material_family: null
+  room_tags:
+  - workshop
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: machine
+  render_kind: machine
+  lod_fallback: machine
+  variants:
+  - id: machine_00
+    weight: 1.0
+    resource: null
+    procedural: machine
+    conditions:
+    - NORMAL
+- semantic_id: forklift
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 1.2
+    depth_m: 2.4
+    height_m: 2.1
+  clearance: {}
+  collision: simple
+  interaction: use_machine
+  material_family: null
+  room_tags:
+  - warehouse
+  - loading
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: forklift
+  render_kind: forklift
+  lod_fallback: forklift
+  variants:
+  - id: forklift_00
+    weight: 1.0
+    resource: null
+    procedural: forklift
+    conditions:
+    - NORMAL
+- semantic_id: pallet_rack
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 2.0
+    depth_m: 0.9
+    height_m: 2.4
+  clearance: {}
+  collision: simple
+  interaction: stock_shelf
+  material_family: null
+  room_tags:
+  - warehouse
+  - storeroom
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: pallet_rack
+  render_kind: pallet_rack
+  lod_fallback: pallet_rack
+  variants:
+  - id: pallet_rack_00
+    weight: 1.0
+    resource: null
+    procedural: pallet_rack
+    conditions:
+    - NORMAL
+- semantic_id: drum
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 0.6
+    depth_m: 0.6
+    height_m: 0.9
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: null
+  room_tags:
+  - warehouse
+  - workshop
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: drum
+  render_kind: drum
+  lod_fallback: drum
+  variants:
+  - id: drum_00
+    weight: 1.0
+    resource: null
+    procedural: drum
+    conditions:
+    - NORMAL
+- semantic_id: student_desk
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 0.7
+    depth_m: 0.9
+    height_m: 0.75
+  clearance: {}
+  collision: simple
+  interaction: sit
+  material_family: null
+  room_tags:
+  - classroom
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: student_desk
+  render_kind: student_desk
+  lod_fallback: student_desk
+  variants:
+  - id: student_desk_00
+    weight: 1.0
+    resource: null
+    procedural: student_desk
+    conditions:
+    - NORMAL
+- semantic_id: teacher_desk
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 1.5
+    depth_m: 0.75
+    height_m: 0.78
+  clearance: {}
+  collision: simple
+  interaction: work_at_desk
+  material_family: null
+  room_tags:
+  - classroom
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: teacher_desk
+  render_kind: teacher_desk
+  lod_fallback: teacher_desk
+  variants:
+  - id: teacher_desk_00
+    weight: 1.0
+    resource: null
+    procedural: teacher_desk
+    conditions:
+    - NORMAL
+- semantic_id: chalkboard
+  category: workplace
+  placement: wall
+  outdoor: false
+  dimensions:
+    width_m: 2.4
+    depth_m: 0.15
+    height_m: 1.5
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: null
+  room_tags:
+  - classroom
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: chalkboard
+  render_kind: chalkboard
+  lod_fallback: chalkboard
+  variants:
+  - id: chalkboard_00
+    weight: 1.0
+    resource: null
+    procedural: chalkboard
+    conditions:
+    - NORMAL
+- semantic_id: library_shelf
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 1.6
+    depth_m: 0.5
+    height_m: 2.0
+  clearance: {}
+  collision: simple
+  interaction: search
+  material_family: null
+  room_tags:
+  - library
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: library_shelf
+  render_kind: library_shelf
+  lod_fallback: library_shelf
+  variants:
+  - id: library_shelf_00
+    weight: 1.0
+    resource: null
+    procedural: library_shelf
+    conditions:
+    - NORMAL
+- semantic_id: cafeteria_table
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 2.4
+    depth_m: 1.4
+    height_m: 0.78
+  clearance: {}
+  collision: simple
+  interaction: sit
+  material_family: null
+  room_tags:
+  - cafeteria
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: cafeteria_table
+  render_kind: cafeteria_table
+  lod_fallback: cafeteria_table
+  variants:
+  - id: cafeteria_table_00
+    weight: 1.0
+    resource: null
+    procedural: cafeteria_table
+    conditions:
+    - NORMAL
+- semantic_id: lectern
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 0.6
+    depth_m: 0.5
+    height_m: 1.2
+  clearance: {}
+  collision: simple
+  interaction: none
+  material_family: null
+  room_tags:
+  - assembly
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: lectern
+  render_kind: lectern
+  lod_fallback: lectern
+  variants:
+  - id: lectern_00
+    weight: 1.0
+    resource: null
+    procedural: lectern
+    conditions:
+    - NORMAL
+- semantic_id: pew
+  category: workplace
+  placement: floor
+  outdoor: false
+  dimensions:
+    width_m: 2.2
+    depth_m: 0.5
+    height_m: 0.9
+  clearance: {}
+  collision: simple
+  interaction: sit
+  material_family: null
+  room_tags:
+  - assembly
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: pew
+  render_kind: pew
+  lod_fallback: pew
+  variants:
+  - id: pew_00
+    weight: 1.0
+    resource: null
+    procedural: pew
     conditions:
     - NORMAL

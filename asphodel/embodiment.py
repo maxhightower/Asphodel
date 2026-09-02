@@ -128,7 +128,8 @@ class CitySpatialContext:
                  zone_ids: np.ndarray, zone_centers: np.ndarray,
                  bbox: Optional[tuple] = None, name: str = "", cell_m: float = 0.0,
                  building_polys: Optional[list] = None,
-                 building_heights: Optional[list] = None):
+                 building_heights: Optional[list] = None,
+                 building_archs: Optional[list] = None):
         self.name = name
         self.building_centroids = building_centroids       # (B, 2) or (0, 2)
         # Full footprint polygons + heights, index-aligned with building_centroids
@@ -136,6 +137,7 @@ class CitySpatialContext:
         # interiors); None-safe for older callers.
         self.building_polys = building_polys or []         # list[list[[x,y]]]
         self.building_heights = building_heights or []     # list[float]
+        self.building_archs = building_archs or []         # list[str] exterior arch
         self.road_vertices = road_vertices                 # (V, 2) or (0, 2)
         self.zone_ids = zone_ids                           # (Z,)
         self.zone_centers = zone_centers                   # (Z, 2)
@@ -168,10 +170,12 @@ class CitySpatialContext:
             building_polys = [[[float(p[0]), float(p[1])] for p in b.get("poly", [])]
                               for b in blist]
             building_heights = [float(b.get("height", 6.0)) for b in blist]
+            building_archs = [str(b.get("arch", "")) for b in blist]
         else:
             centroids = np.zeros((0, 2), dtype=float)
             building_polys = []
             building_heights = []
+            building_archs = []
 
         roads_doc = _load("roads.json") or {}
         verts = []
@@ -205,7 +209,14 @@ class CitySpatialContext:
         return cls(building_centroids=centroids, road_vertices=road_vertices,
                    zone_ids=zone_ids, zone_centers=zone_centers, bbox=bbox,
                    cell_m=cell_m, name=meta.get("name", os.path.basename(bundle_dir)),
-                   building_polys=building_polys, building_heights=building_heights)
+                   building_polys=building_polys, building_heights=building_heights,
+                   building_archs=building_archs)
+
+    def building_arch(self, building_id: int) -> Optional[str]:
+        """Exterior building archetype (BUILDING_ARCHETYPES member) or None."""
+        if 0 <= building_id < len(self.building_archs):
+            return self.building_archs[building_id] or None
+        return None
 
     def building_poly(self, building_id: int):
         """Footprint polygon (list of [x,y]) for a building, or None."""

@@ -206,6 +206,9 @@ _ARCH_FIXTURES = {
     "retail": ["shelf", "fridge", "crate", "counter"],
     "office": ["desk", "cabinet", "shelf", "crate"],
     "clinic": ["cabinet", "shelf", "fridge", "crate"],
+    "industrial": ["shelf", "crate", "cabinet", "locker"],
+    "school": ["cabinet", "shelf", "desk", "crate"],
+    "civic": ["cabinet", "shelf", "desk", "crate"],
     "generic": ["shelf", "cabinet", "crate"],
 }
 _ARCH_ROOMS = {
@@ -213,6 +216,9 @@ _ARCH_ROOMS = {
     "retail": ["shop_floor", "back_room", "storeroom"],
     "office": ["open_office", "meeting", "break_room", "storeroom"],
     "clinic": ["waiting", "exam", "supply", "office"],
+    "industrial": ["warehouse", "workshop", "loading", "office"],
+    "school": ["classroom", "classroom", "hallway", "cafeteria", "library"],
+    "civic": ["lobby", "assembly", "office", "meeting"],
     "generic": ["room"],
 }
 
@@ -226,17 +232,30 @@ _ROOM_DECOR = {
     "bathroom": ["toilet", "sink", "bathtub"],
     "hall": ["bench", "sideboard"],
     "garage": ["workbench", "tool_cabinet", "washer", "dryer", "water_heater", "shelf"],
-    "shop_floor": ["rack", "rack", "rack", "display"],
-    "back_room": ["shelf", "crate", "crate"],
-    "storeroom": ["shelf", "shelf", "crate"],
-    "open_office": ["desk", "desk", "desk", "chair"],
-    "meeting": ["table", "chair", "chair", "chair", "chair"],
-    "break_room": ["counter", "table", "chair"],
-    "waiting": ["bench", "bench", "chair"],
-    "exam": ["bed", "counter", "stool"],
-    "supply": ["shelf", "cabinet", "crate"],
-    "office": ["desk", "chair", "cabinet"],
-    "shop": ["rack", "counter", "display"],
+    "shop_floor": ["gondola", "gondola", "checkout", "fridge_case", "display"],
+    "back_room": ["pallet_rack", "shelf", "crate", "freezer_case"],
+    "storeroom": ["pallet_rack", "shelf", "crate"],
+    "open_office": ["cubicle", "cubicle", "cubicle", "printer", "filing_cabinet"],
+    "meeting": ["table", "chair", "chair", "chair", "chair", "monitor"],
+    "break_room": ["counter", "table", "chair", "water_cooler"],
+    "waiting": ["bench", "bench", "water_cooler", "sideboard"],
+    "exam": ["exam_table", "med_cart", "iv_pole", "monitor", "stool"],
+    "supply": ["cabinet", "shelf", "med_cart"],
+    "office": ["desk", "chair", "filing_cabinet"],
+    "shop": ["gondola", "checkout", "fridge_case"],
+    # --- industrial ---
+    "warehouse": ["pallet_rack", "pallet_rack", "forklift", "drum"],
+    "workshop": ["workbench", "tool_cabinet", "machine", "locker"],
+    "loading": ["pallet_rack", "drum", "forklift"],
+    # --- school ---
+    "classroom": ["chalkboard", "teacher_desk", "student_desk", "student_desk",
+                  "student_desk", "student_desk"],
+    "hallway": ["locker", "locker", "bench"],
+    "cafeteria": ["cafeteria_table", "cafeteria_table", "counter"],
+    "library": ["library_shelf", "library_shelf", "table", "chair"],
+    # --- civic ---
+    "lobby": ["bench", "water_cooler", "display"],
+    "assembly": ["pew", "pew", "pew", "lectern"],
     "room": ["table", "chair", "shelf"],
 }
 
@@ -251,13 +270,37 @@ _ROOM_DECOR_EXTRAS = {
 }
 
 
+# Exterior building archetype -> interior archetype, when the caller can supply
+# the building's exterior archetype (arch_hint). Medical loot flavour still wins
+# (a clinic in any shell loots + lays out medical).
+_ARCH_HINT_MAP = {
+    "INDUSTRIAL": "industrial",
+    "CIVIC_SPECIAL": "civic",
+    "OFFICE_HIGHRISE": "office",
+    "BIG_BOX_COMMERCIAL": "retail",
+    "SMALL_COMMERCIAL": "retail",
+    "MULTIFAMILY": "house",
+    "DETACHED_RESIDENTIAL": "house",
+    # normalized interior archetype names may be passed through directly:
+    "industrial": "industrial", "school": "school", "civic": "civic",
+    "office": "office", "retail": "retail", "clinic": "clinic", "house": "house",
+}
+
+
 def archetype_for(world_seed: int, building_id: int, footprint_area: float,
-                  height: float) -> str:
+                  height: float, arch_hint: Optional[str] = None) -> str:
     """Deterministic interior archetype. Aligned with the container loot flavour so
-    a medical building loots medical and lays out like a clinic, etc."""
+    a medical building loots medical and lays out like a clinic, etc. When the
+    building's exterior archetype is known (arch_hint), it selects industrial /
+    civic / school / office / retail shells that flavour alone can't distinguish;
+    a medical loot flavour still overrides to a clinic."""
     flavour = items.container_flavour(world_seed, building_id)
     if flavour == "medical":
         return "clinic"
+    if arch_hint is not None and arch_hint in _ARCH_HINT_MAP:
+        mapped = _ARCH_HINT_MAP[arch_hint]
+        if mapped != "house" or flavour == "residential":
+            return mapped
     if flavour == "commercial":
         # taller/bigger commercial reads as office; low/wide as retail.
         return "office" if height >= 9.0 or footprint_area >= 1200.0 else "retail"
@@ -354,7 +397,8 @@ def _room_containing(rooms, x, y):
 def build_interior(building_id: int, world_seed: int, footprint_poly,
                    height: float = 6.0, road_xy=None,
                    gen_version: int = INTERIOR_GEN_VERSION,
-                   n_containers: Optional[int] = None) -> InteriorDescriptor:
+                   n_containers: Optional[int] = None,
+                   arch_hint: Optional[str] = None) -> InteriorDescriptor:
     """Reconstruct a building's immutable interior. Pure + deterministic.
 
     ``footprint_poly`` is the building's real footprint (list of [x,y], world
@@ -385,7 +429,7 @@ def build_interior(building_id: int, world_seed: int, footprint_poly,
     hull = [[hx0, hy0], [hx1, hy0], [hx1, hy1], [hx0, hy1]]
 
     area = (xmax - xmin) * (ymax - ymin)
-    archetype = archetype_for(world_seed, building_id, area, height)
+    archetype = archetype_for(world_seed, building_id, area, height, arch_hint)
 
     # target room count by archetype, bounded by what fits
     room_names = _ARCH_ROOMS.get(archetype, _ARCH_ROOMS["generic"])
@@ -460,22 +504,38 @@ def _place_decor(rng, rooms, fixtures) -> list:
         if rx1 <= rx0 or ry1 <= ry0:
             continue
         cx, cy = room.center()
-        slots = [
-            (rx0, ry0), (rx1, ry0), (rx0, ry1), (rx1, ry1),
-            (cx, ry0), (cx, ry1), (rx0, cy), (rx1, cy), (cx, cy),
-        ]
+        # Candidate slots: a grid at ~3 m spacing, perimeter (against walls) first
+        # so furniture lines the room, then interior rows. Larger rooms therefore
+        # offer more slots and read as furnished rather than empty.
+        step = 3.0
+        gx = [rx0 + step * i for i in range(int((rx1 - rx0) / step) + 1)]
+        gy = [ry0 + step * i for i in range(int((ry1 - ry0) / step) + 1)]
+        if not gx:
+            gx = [cx]
+        if not gy:
+            gy = [cy]
+        perim, inner = [], []
+        for i, sx in enumerate(gx):
+            for j, sy in enumerate(gy):
+                if i == 0 or j == 0 or i == len(gx) - 1 or j == len(gy) - 1:
+                    perim.append((sx, sy))
+                else:
+                    inner.append((sx, sy))
+        slots = perim + inner
+        # How many pieces to place: scale with room area, bounded, and never fewer
+        # than the room's base kind list.
+        area = max((rx1 - rx0) * (ry1 - ry0), 1.0)
+        target = max(len(kinds), min(len(slots), int(area / 12.0)))
         room_fx = [(f.x, f.y) for f in fixtures if f.room_id == room.room_id]
         placed = list(room_fx)
         si = 0
-        for kind in kinds:
-            # find the next slot at least ~1m from anything already placed
+        for n in range(target):
+            kind = kinds[n % len(kinds)]   # cycle the room's palette to fill space
             chosen = None
-            tries = 0
-            while si < len(slots) and tries < len(slots):
+            while si < len(slots):
                 sx, sy = slots[si]
                 si += 1
-                tries += 1
-                if all((sx - px) ** 2 + (sy - py) ** 2 > 1.0 for px, py in placed):
+                if all((sx - px) ** 2 + (sy - py) ** 2 > 1.44 for px, py in placed):
                     chosen = (sx, sy)
                     break
             if chosen is None:

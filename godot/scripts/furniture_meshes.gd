@@ -43,6 +43,20 @@ const FOOTPRINT := {
 	"bench": Vector3(1.6, 0.5, 0.45), "sideboard": Vector3(1.4, 0.9, 0.5),
 	"stool": Vector3(0.42, 0.75, 0.42), "lamp": Vector3(0.4, 1.6, 0.4),
 	"tv_stand": Vector3(1.4, 0.5, 0.4),
+	# --- workplace (Package G) ---
+	"gondola": Vector3(1.8, 1.6, 0.9), "checkout": Vector3(1.6, 1.0, 0.9),
+	"fridge_case": Vector3(1.8, 2.0, 0.8), "freezer_case": Vector3(1.8, 0.9, 0.9),
+	"cubicle": Vector3(1.6, 1.3, 1.6), "filing_cabinet": Vector3(0.5, 1.3, 0.6),
+	"printer": Vector3(0.6, 0.9, 0.6), "water_cooler": Vector3(0.4, 1.3, 0.4),
+	"hospital_bed": Vector3(1.0, 1.0, 2.1), "exam_table": Vector3(0.8, 0.8, 1.9),
+	"iv_pole": Vector3(0.4, 1.9, 0.4), "med_cart": Vector3(0.6, 1.0, 0.5),
+	"monitor": Vector3(0.5, 1.5, 0.5), "locker": Vector3(1.2, 1.9, 0.5),
+	"drum": Vector3(0.6, 0.9, 0.6), "forklift": Vector3(1.2, 2.1, 2.4),
+	"machine": Vector3(1.6, 1.6, 1.2), "pallet_rack": Vector3(2.0, 2.4, 0.9),
+	"student_desk": Vector3(0.7, 0.75, 0.9), "teacher_desk": Vector3(1.5, 0.78, 0.75),
+	"chalkboard": Vector3(2.4, 1.5, 0.15), "library_shelf": Vector3(1.6, 2.0, 0.5),
+	"cafeteria_table": Vector3(2.4, 0.78, 1.4), "lectern": Vector3(0.6, 1.2, 0.5),
+	"pew": Vector3(2.2, 0.9, 0.5),
 }
 
 const SUPPORTED := [
@@ -52,6 +66,11 @@ const SUPPORTED := [
 	"bathtub", "shower", "vanity", "washer", "dryer", "water_heater",
 	"workbench", "tool_cabinet", "shelf", "crate", "cabinet", "rack",
 	"display", "bench", "sideboard", "stool", "lamp",
+	"gondola", "checkout", "fridge_case", "freezer_case", "cubicle",
+	"filing_cabinet", "printer", "water_cooler", "hospital_bed", "exam_table",
+	"iv_pole", "med_cart", "monitor", "locker", "drum", "forklift", "machine",
+	"pallet_rack", "student_desk", "teacher_desk", "chalkboard",
+	"library_shelf", "cafeteria_table", "lectern", "pew",
 ]
 
 
@@ -250,8 +269,144 @@ static func _build(st: SurfaceTool, kind: String, variant: int) -> void:
 		"lamp":
 			_b(st, 0, 0.75, 0, 0.05, 1.5, 0.05, DARK)
 			_b(st, 0, 1.5, 0, 0.4, 0.3, 0.4, Color(0.9, 0.85, 0.6))  # shade
+		# ---- retail ----
+		"gondola":
+			_b(st, 0, 0.8, 0, 1.8, 1.6, 0.9, METAL)
+			_b(st, 0, 0.8, 0, 0.06, 1.6, 0.9, METAL.darkened(0.15))  # centre spine
+			var goods: Color = [Color(0.7, 0.4, 0.3), Color(0.4, 0.6, 0.7), Color(0.8, 0.7, 0.4)][variant % 3]
+			for i in range(3):
+				var gy := 0.5 + float(i) * 0.45
+				for sgn in [-1.0, 1.0]:
+					_b(st, 0, gy - 0.06, sgn * 0.23, 1.7, 0.05, 0.4, METAL.darkened(0.1))
+					_b(st, 0, gy + 0.12, sgn * 0.28, 1.6, 0.28, 0.32, goods)  # merchandise
+		"checkout":
+			_b(st, 0, 0.45, 0, 1.6, 0.9, 0.9, Color(0.55, 0.57, 0.6))
+			_b(st, 0, 0.92, 0, 1.64, 0.06, 0.94, DARK.lightened(0.1))
+			_b(st, 0.5, 1.1, 0, 0.35, 0.3, 0.3, Color(0.2, 0.22, 0.26))   # register
+			_b(st, 0.5, 1.28, -0.1, 0.3, 0.22, 0.03, Color(0.2, 0.5, 0.6))  # screen
+		"fridge_case":
+			_b(st, 0, 1.0, 0, 1.8, 2.0, 0.8, Color(0.8, 0.82, 0.85))
+			_b(st, 0, 1.1, 0.36, 1.6, 1.6, 0.05, Color(0.6, 0.75, 0.82, 1.0))  # glass front
+			for i in range(3):
+				_b(st, 0, 0.5 + float(i) * 0.55, 0.1, 1.6, 0.05, 0.6, Color(0.75, 0.5, 0.4))
+		"freezer_case":
+			_b(st, 0, 0.45, 0, 1.8, 0.9, 0.9, Color(0.78, 0.82, 0.86))
+			_b(st, 0, 0.92, 0, 1.6, 0.06, 0.7, Color(0.7, 0.85, 0.92, 1.0))  # glass top
+		# ---- office ----
+		"cubicle":
+			_b(st, 0, 0.74, 0.5, 1.5, 0.05, 0.6, WOOD)                # desk
+			_b(st, 0, 0.6, -0.2, 1.6, 1.2, 0.05, Color(0.5, 0.55, 0.5))  # back panel
+			_b(st, -0.78, 0.6, 0.4, 0.05, 1.2, 1.4, Color(0.5, 0.55, 0.5))  # side panel
+			_b(st, 0.3, 0.9, 0.4, 0.4, 0.28, 0.05, DARK)             # monitor
+		"filing_cabinet":
+			_b(st, 0, 0.65, 0, 0.5, 1.3, 0.6, Color(0.5, 0.52, 0.55))
+			for i in range(4):
+				_b(st, 0, 0.25 + float(i) * 0.3, 0.31, 0.42, 0.22, 0.02, DARK)
+		"printer":
+			_b(st, 0, 0.45, 0, 0.6, 0.5, 0.6, Color(0.3, 0.32, 0.35))  # base cabinet
+			_b(st, 0, 0.78, 0, 0.56, 0.35, 0.56, Color(0.85, 0.86, 0.88))  # printer body
+		"water_cooler":
+			_b(st, 0, 0.5, 0, 0.35, 1.0, 0.35, WHITE)
+			_cyl(st, 0.16, 0.4, 10, Color(0.6, 0.78, 0.85, 1.0))      # bottle
+			_b(st, 0, 1.3, 0, 0.34, 0.4, 0.34, Color(0.6, 0.78, 0.85))
+		# ---- clinic / medical ----
+		"hospital_bed":
+			_b(st, 0, 0.55, 0, 1.0, 0.2, 2.1, METAL)                  # frame
+			_b(st, 0, 0.68, 0.1, 0.92, 0.14, 1.9, Color(0.7, 0.78, 0.82))  # mattress
+			_b(st, 0, 0.55, -1.0, 1.0, 0.5, 0.06, METAL.lightened(0.1))    # head rail
+			_b(st, 0, 0.9, -0.85, 0.9, 0.45, 0.08, Color(0.75, 0.8, 0.84)) # raised head
+			for sgn in [-1.0, 1.0]:
+				_b(st, sgn * 0.48, 0.85, 0.3, 0.05, 0.4, 1.0, METAL.lightened(0.1))  # side rails
+		"exam_table":
+			_b(st, 0, 0.55, 0, 0.8, 0.6, 1.9, Color(0.6, 0.62, 0.66))
+			_b(st, 0, 0.9, 0, 0.76, 0.12, 1.85, Color(0.35, 0.5, 0.6))  # padded top
+		"iv_pole":
+			_cyl(st, 0.03, 1.7, 6, METAL)
+			_b(st, 0.12, 1.7, 0, 0.28, 0.04, 0.04, METAL)
+			_b(st, 0.24, 1.5, 0, 0.14, 0.28, 0.06, Color(0.8, 0.85, 0.8, 1.0))  # bag
+		"med_cart":
+			_b(st, 0, 0.5, 0, 0.6, 0.9, 0.5, Color(0.85, 0.7, 0.3))   # coloured drawers
+			for i in range(4):
+				_b(st, 0, 0.2 + float(i) * 0.22, 0.26, 0.54, 0.16, 0.02, DARK)
+			_b(st, 0, 0.96, 0, 0.62, 0.04, 0.52, WHITE)
+		"monitor":
+			_cyl(st, 0.03, 1.2, 6, METAL)
+			_b(st, 0, 1.35, 0, 0.4, 0.3, 0.12, DARK)
+			_b(st, 0, 1.35, 0.07, 0.34, 0.24, 0.02, Color(0.15, 0.4, 0.3))
+		# ---- industrial ----
+		"locker":
+			_b(st, 0, 0.95, 0, 1.2, 1.9, 0.5, Color(0.4, 0.5, 0.6))
+			for i in range(3):
+				_b(st, -0.4 + float(i) * 0.4, 0.95, 0.26, 0.03, 1.85, 0.02, DARK)  # door splits
+		"drum":
+			_cyl(st, 0.28, 0.9, 12, [Color(0.2, 0.35, 0.5), Color(0.5, 0.3, 0.2), Color(0.3, 0.45, 0.3)][variant % 3])
+			_b(st, 0, 0.9, 0, 0.58, 0.05, 0.58, DARK)
+		"forklift":
+			_b(st, 0, 0.6, -0.3, 1.1, 1.0, 1.6, Color(0.85, 0.6, 0.1))  # body
+			_b(st, 0, 1.5, -0.6, 1.0, 1.2, 0.1, Color(0.3, 0.3, 0.33))  # mast
+			_b(st, 0, 0.15, 0.7, 0.9, 0.1, 0.9, DARK)                   # forks
+			for sgn in [-1.0, 1.0]:
+				_cyl_at(st, sgn * 0.5, -0.9, 0.28, 0.2, DARK)           # wheels
+		"machine":
+			_b(st, 0, 0.8, 0, 1.6, 1.6, 1.2, Color(0.45, 0.48, 0.52))
+			_b(st, 0, 1.7, 0, 0.4, 0.4, 0.4, Color(0.55, 0.2, 0.15))    # motor housing
+			_cyl_at(st, 0.6, 0, 0.08, 1.2, METAL)                       # pipe
+		"pallet_rack":
+			for sgn in [-1.0, 1.0]:
+				_b(st, sgn * 0.95, 1.2, 0, 0.1, 2.4, 0.9, Color(0.75, 0.4, 0.2))  # uprights
+			for i in range(3):
+				_b(st, 0, 0.05 + float(i) * 1.1, 0, 1.9, 0.08, 0.85, Color(0.6, 0.32, 0.16))  # beams
+				_b(st, 0, 0.35 + float(i) * 1.1, 0, 1.7, 0.5, 0.75, WOOD.darkened(0.05))       # pallet load
+		# ---- school / civic ----
+		"student_desk":
+			_b(st, 0, 0.72, 0.1, 0.7, 0.05, 0.5, Color(0.8, 0.78, 0.6))
+			_legs(st, 0.7, 0.5, 0.72, 0.06, METAL)
+			_b(st, 0, 0.42, -0.28, 0.42, 0.04, 0.4, WOOD)              # attached seat
+			_b(st, 0, 0.62, -0.46, 0.42, 0.35, 0.04, WOOD)            # seat back
+		"teacher_desk":
+			_b(st, 0, 0.76, 0, 1.5, 0.06, 0.75, WOOD)
+			_b(st, -0.55, 0.38, 0, 0.4, 0.72, 0.7, WOOD.darkened(0.05))
+			_b(st, 0, 0.4, 0.34, 1.5, 0.7, 0.05, WOOD.darkened(0.08))  # modesty panel
+		"chalkboard":
+			_b(st, 0, 1.4, 0, 2.4, 1.3, 0.08, Color(0.16, 0.28, 0.22))
+			_b(st, 0, 0.75, 0.06, 2.4, 0.08, 0.12, WOOD)              # chalk tray
+		"library_shelf":
+			_b(st, -0.75, 1.0, 0, 0.1, 2.0, 0.5, WOOD.darkened(0.05))
+			_b(st, 0.75, 1.0, 0, 0.1, 2.0, 0.5, WOOD.darkened(0.05))
+			_b(st, 0, 1.0, -0.23, 1.6, 2.0, 0.05, WOOD.darkened(0.12))
+			for i in range(5):
+				_b(st, 0, 0.25 + float(i) * 0.42, 0, 1.5, 0.05, 0.46, WOOD)
+				_b(st, 0, 0.42 + float(i) * 0.42, 0, 1.4, 0.28, 0.4,
+					[Color(0.5, 0.3, 0.3), Color(0.3, 0.4, 0.5), Color(0.4, 0.5, 0.35)][i % 3])  # books
+		"cafeteria_table":
+			_b(st, 0, 0.76, 0, 2.4, 0.06, 0.7, Color(0.7, 0.72, 0.66))
+			_legs(st, 2.4, 0.7, 0.72, 0.12, METAL)
+			for sgn in [-1.0, 1.0]:
+				_b(st, 0, 0.45, sgn * 0.55, 2.4, 0.05, 0.3, Color(0.55, 0.58, 0.5))  # benches
+		"lectern":
+			_b(st, 0, 0.55, 0, 0.5, 1.1, 0.4, WOOD)
+			_b(st, 0, 1.15, 0.05, 0.55, 0.08, 0.4, WOOD.darkened(0.08))  # slanted top
+		"pew":
+			_b(st, 0, 0.45, 0, 2.2, 0.06, 0.42, WOOD)
+			_b(st, 0, 0.7, -0.18, 2.2, 0.5, 0.05, WOOD)
+			for ex in [-1.0, 1.0]:
+				_b(st, ex, 0.22, 0, 0.08, 0.45, 0.42, WOOD.darkened(0.08))
 		_:
 			_b(st, 0, 0.4, 0, 0.7, 0.8, 0.6, Color(1.0, 0.0, 1.0))   # magenta unknown
+
+
+static func _cyl_at(st: SurfaceTool, cx: float, cz: float, r: float, h: float,
+		col: Color) -> void:
+	st.set_color(col)
+	for i in range(10):
+		var a0 := TAU * float(i) / 10.0
+		var a1 := TAU * float(i + 1) / 10.0
+		var p0 := Vector3(cx + cos(a0) * r, 0, cz + sin(a0) * r)
+		var p1 := Vector3(cx + cos(a1) * r, 0, cz + sin(a1) * r)
+		var u0 := p0 + Vector3(0, h, 0)
+		var u1 := p1 + Vector3(0, h, 0)
+		for vtx in [p0, p1, u1, p0, u1, u0]:
+			st.add_vertex(vtx)
 
 
 static func _cyl(st: SurfaceTool, r: float, h: float, seg: int, col: Color) -> void:

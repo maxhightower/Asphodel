@@ -147,6 +147,58 @@ fam("retail_rack", "commercial_equipment", "rack", (1.2, 0.5, 1.8), placement="f
 fam("retail_display", "commercial_equipment", "display", (1.0, 1.0, 1.0),
     placement="floor", outdoor=False, room=("shop",))
 
+# ---- workplace families with semantic affordances (Package G) ----------------
+fam("gondola", "commercial_equipment", "gondola", (1.8, 0.9, 1.6), placement="floor",
+    outdoor=False, interaction="stock_shelf", room=("shop_floor", "shop"))
+fam("checkout", "commercial_equipment", "checkout", (1.6, 0.9, 1.0), placement="floor",
+    outdoor=False, interaction="use_register", room=("shop_floor", "shop"))
+fam("fridge_case", "commercial_equipment", "fridge_case", (1.8, 0.8, 2.0),
+    placement="floor", outdoor=False, room=("shop_floor", "shop", "back_room"))
+fam("freezer_case", "commercial_equipment", "freezer_case", (1.8, 0.9, 0.9),
+    placement="floor", outdoor=False, room=("shop_floor", "back_room"))
+fam("cubicle", "workplace", "cubicle", (1.6, 1.6, 1.3), placement="floor",
+    outdoor=False, interaction="work_at_desk", room=("open_office",))
+fam("filing_cabinet", "workplace", "filing_cabinet", (0.5, 0.6, 1.3), placement="floor",
+    outdoor=False, interaction="search", room=("office", "open_office"))
+fam("printer", "workplace", "printer", (0.6, 0.6, 0.9), placement="floor",
+    outdoor=False, room=("open_office", "office"))
+fam("water_cooler", "workplace", "water_cooler", (0.4, 0.4, 1.3), placement="floor",
+    outdoor=False, room=("break_room", "waiting", "lobby"))
+fam("hospital_bed", "workplace", "hospital_bed", (1.0, 2.1, 1.0), placement="floor",
+    outdoor=False, interaction="examine_patient", room=("exam",))
+fam("exam_table", "workplace", "exam_table", (0.8, 1.9, 0.8), placement="floor",
+    outdoor=False, interaction="examine_patient", room=("exam",))
+fam("med_cart", "workplace", "med_cart", (0.6, 0.5, 1.0), placement="floor",
+    outdoor=False, interaction="search", room=("exam", "supply"))
+fam("iv_pole", "workplace", "iv_pole", (0.4, 0.4, 1.9), placement="floor",
+    outdoor=False, room=("exam",))
+fam("locker", "workplace", "locker", (1.2, 0.5, 1.9), placement="floor",
+    outdoor=False, interaction="search", room=("workshop", "hallway"))
+fam("workbench", "workplace", "workbench", (1.8, 0.7, 0.95), placement="floor",
+    outdoor=False, interaction="use_machine", room=("workshop",))
+fam("machine", "workplace", "machine", (1.6, 1.2, 1.6), placement="floor",
+    outdoor=False, interaction="use_machine", room=("workshop",))
+fam("forklift", "workplace", "forklift", (1.2, 2.4, 2.1), placement="floor",
+    outdoor=False, interaction="use_machine", room=("warehouse", "loading"))
+fam("pallet_rack", "workplace", "pallet_rack", (2.0, 0.9, 2.4), placement="floor",
+    outdoor=False, interaction="stock_shelf", room=("warehouse", "storeroom"))
+fam("drum", "workplace", "drum", (0.6, 0.6, 0.9), placement="floor",
+    outdoor=False, room=("warehouse", "workshop"))
+fam("student_desk", "workplace", "student_desk", (0.7, 0.9, 0.75), placement="floor",
+    outdoor=False, interaction="sit", room=("classroom",))
+fam("teacher_desk", "workplace", "teacher_desk", (1.5, 0.75, 0.78), placement="floor",
+    outdoor=False, interaction="work_at_desk", room=("classroom",))
+fam("chalkboard", "workplace", "chalkboard", (2.4, 0.15, 1.5), placement="wall",
+    outdoor=False, room=("classroom",))
+fam("library_shelf", "workplace", "library_shelf", (1.6, 0.5, 2.0), placement="floor",
+    outdoor=False, interaction="search", room=("library",))
+fam("cafeteria_table", "workplace", "cafeteria_table", (2.4, 1.4, 0.78),
+    placement="floor", outdoor=False, interaction="sit", room=("cafeteria",))
+fam("lectern", "workplace", "lectern", (0.6, 0.5, 1.2), placement="floor",
+    outdoor=False, room=("assembly",))
+fam("pew", "workplace", "pew", (2.2, 0.5, 0.9), placement="floor",
+    outdoor=False, interaction="sit", room=("assembly",))
+
 
 def main():
     import json

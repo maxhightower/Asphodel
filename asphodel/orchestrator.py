@@ -206,11 +206,14 @@ class World:
         poly = ctx.building_poly(building_id) if ctx is not None else None
         height = ctx.building_height(building_id) if ctx is not None else 6.0
         road_xy = None
+        arch_hint = None
         if ctx is not None and 0 <= building_id < ctx.building_centroids.shape[0]:
             road_xy = ctx.nearest_road_xy(ctx.building_centroids[building_id])
+            if hasattr(ctx, "building_arch"):
+                arch_hint = ctx.building_arch(building_id)
         return interiors.build_interior(
             building_id, self._seed, poly, height=height, road_xy=road_xy,
-            gen_version=gv)
+            gen_version=gv, arch_hint=arch_hint)
 
     def interior_state(self, building_id: int, gen_version: int | None = None) -> dict:
         """Interior descriptor + the per-fixture *persistent delta* overlay (which
