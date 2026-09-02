@@ -73,7 +73,22 @@ const BUILDING_ARCH_COLORS := {
 const GLASS_COL := Color(0.10, 0.13, 0.18)
 const STOREFRONT_GLASS_COL := Color(0.14, 0.20, 0.24)
 const DOOR_COL := Color(0.06, 0.06, 0.07)
+# Facade trim (protruding relief so faces catch light + cast shadow at iso scale).
+const SILL_COL := Color(0.80, 0.79, 0.76)      # light sills / string courses
+const FRAME_COL := Color(0.32, 0.31, 0.30)     # window headers / reveals
+const SHUTTER_COLS := [
+	Color(0.30, 0.36, 0.42), Color(0.34, 0.30, 0.26), Color(0.28, 0.40, 0.34),
+	Color(0.42, 0.34, 0.30), Color(0.30, 0.30, 0.34),
+]
 const ROOF_COL := Color(0.32, 0.33, 0.36)
+# Residential massing (porch, garage, chimney, patio) so houses read as volumes
+# instead of flat extruded footprints.
+const PORCH_ROOF_COL := Color(0.34, 0.30, 0.27)
+const PORCH_POST_COL := Color(0.82, 0.80, 0.75)
+const PLATFORM_COL := Color(0.68, 0.66, 0.62)
+const GARAGE_COL := Color(0.60, 0.58, 0.55)
+const CHIMNEY_COL := Color(0.40, 0.30, 0.26)
+const PATIO_COL := Color(0.58, 0.56, 0.53)
 const PARAPET_COL := Color(0.26, 0.27, 0.30)
 const PARAPET_H := 0.8
 const LANE_COL := Color(0.90, 0.90, 0.85)
@@ -82,6 +97,13 @@ const PILLAR_COL := Color(0.42, 0.42, 0.45)
 const BARRIER_COL := Color(0.72, 0.70, 0.62)
 const DECK_Y := 7.0
 const DECK_T := 0.7
+# Continuous road/sidewalk ribbons drawn from the real polylines (with mitered
+# joins) so curving streets read as smooth ribbons instead of the axis-aligned
+# raster cells underneath. A raised curb gives a clear yard/street boundary.
+const CURB_COL := Color(0.60, 0.60, 0.58)
+const ROAD_RIBBON_Y := 0.035      # above the 0.02 raster ground, below markings (0.06)
+const SIDEWALK_Y := 0.14          # raised sidewalk deck
+const PATH_Y := 0.05
 
 static var _ground_mat: StandardMaterial3D = null
 static var _opaque_mat: StandardMaterial3D = null
@@ -545,10 +567,11 @@ func _build_t2(chunk: Dictionary, root: Node3D) -> Dictionary:
 		root.add_child(mmi)
 		mm_count += hvac_xforms.size()
 
+	var sverts := _build_road_surfaces(chunk, root)
 	var rverts := _build_road_markings(chunk, root)
 	var everts := _build_elevated_roads(chunk, root)
 
-	return {"quads": 0, "verts": dverts + rverts + everts, "buildings": buildings.size(),
+	return {"quads": 0, "verts": dverts + rverts + everts + sverts, "buildings": buildings.size(),
 		"mm_instances": mm_count, "collisions": collisions}
 
 
@@ -569,6 +592,18 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array) -> int
 	var ent_w := float(ent.get("w", 1.6))
 
 	var is_storefront := ("storefront" in feat) and (arch == "SMALL_COMMERCIAL" or arch == "BIG_BOX_COMMERCIAL")
+	var is_residential := arch == "DETACHED_RESIDENTIAL" or arch == "MULTIFAMILY"
+	var is_house := arch == "DETACHED_RESIDENTIAL"
+	var shutter_col: Color = SHUTTER_COLS[_stable_hash(bid, 29) % SHUTTER_COLS.size()]
+	# Per-house massing is picked deterministically so a subdivision reads as varied
+	# homes (some with a porch, some a garage, etc.) instead of copy-paste — and so a
+	# dense chunk isn't every-house-everything.
+	var want_porch := is_house and (_stable_hash(bid, 41) % 100) < 62
+	var want_garage := is_house and (_stable_hash(bid, 43) % 100) < 52
+	var want_patio := is_house and (_stable_hash(bid, 47) % 100) < 45
+	var want_chimney := is_house and (_stable_hash(bid, 53) % 100) < 58
+	# The edge roughly across from the entrance gets a small rear patio slab.
+	var back_edge := ((ent_edge + poly.size() / 2) % poly.size()) if ent_edge >= 0 else -1
 
 	var ring := PackedVector2Array()
 	for p in poly:
@@ -587,6 +622,33 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array) -> int
 		var nrm2 := Vector2(seg.y, -seg.x).normalized()
 		var nrm3 := Vector3(nrm2.x, 0.0, nrm2.y)
 		var is_entrance_edge := (i == ent_edge)
+		# Facade relief (sills, shutters, ledges) is a close-up, human-scale detail
+		# that matters on homes. Restricting it to low-rise residential edges keeps
+		# it affordable — commercial mid-rises and towers would emit hundreds of
+		# thousands of verts per chunk, so they keep cheap flat window quads, which
+		# read fine at iso distance.
+		var edge_relief := is_house and length <= 30.0
+
+		# Openings that windows must not overlap on the ground floor: the entrance
+		# door and, for houses with room for one, an attached garage door.
+		var door_lo := 0.0
+		var door_hi := -1.0
+		var has_garage := false
+		var gar_t := 0.5
+		var gar_lo := 0.0
+		var gar_hi := -1.0
+		if is_entrance_edge:
+			var dt := (ent_w * 0.5 + 0.6) / length
+			door_lo = ent_t - dt
+			door_hi = ent_t + dt
+			if want_garage and length >= ent_w + 6.5:
+				var gw := 2.8
+				var side := 1.0 if ent_t < 0.5 else -1.0
+				gar_t = clampf(ent_t + side * (ent_w * 0.5 + 0.5 + gw * 0.5) / length, 0.14, 0.86)
+				var gg := (gw * 0.5 + 0.4) / length
+				gar_lo = gar_t - gg
+				gar_hi = gar_t + gg
+				has_garage = true
 
 		for f in range(floors):
 			var y0 := float(f) * floor_h
@@ -607,9 +669,17 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array) -> int
 				continue
 			var win_h := floor_h * 0.55
 			var win_y := y0 + floor_h * 0.3
-			var n_windows := int(floor(length / 2.5))
+			# Punched openings, not full glazing: wider spacing (houses widest) so
+			# facades read as walls with windows rather than glass boxes.
+			var win_spacing := 4.2 if is_house else (3.6 if is_residential else 3.0)
+			var n_windows := maxi(1, int(round(length / win_spacing)))
+			var along3 := Vector3(dir.x, 0.0, dir.y)
 			for wi in range(n_windows):
 				var t := (float(wi) + 0.5) / float(n_windows)
+				# Keep windows off the ground-floor door and garage openings.
+				if f == 0 and ((t >= door_lo and t <= door_hi)
+						or (has_garage and t >= gar_lo and t <= gar_hi)):
+					continue
 				var center := a.lerp(c, t)
 				var win_w := minf(1.2, length / float(n_windows) * 0.6)
 				var half_w := win_w * 0.5
@@ -618,6 +688,17 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array) -> int
 				verts += _quad_v(st, Vector3(w0.x, win_y, w0.y), Vector3(w1.x, win_y, w1.y),
 					Vector3(w1.x, win_y + win_h, w1.y), Vector3(w0.x, win_y + win_h, w0.y),
 					nrm3, GLASS_COL)
+				# --- Ground-floor flanking shutters on houses for residential
+				# character. Deliberately lean (houses, ground floor only, 2 small
+				# boxes/window) so dense subdivisions stay within frame budget. ---
+				if not (edge_relief and f < 1):
+					continue
+				var cwin := Vector3(center.x, 0.0, center.y)
+				var jy := win_y + win_h * 0.5
+				verts += _facade_box(st, cwin + Vector3(0.0, jy, 0.0) + along3 * (half_w + 0.18) + nrm3 * 0.05,
+					along3, nrm3, 0.10, 0.05, win_h * 0.5, shutter_col)
+				verts += _facade_box(st, cwin + Vector3(0.0, jy, 0.0) - along3 * (half_w + 0.18) + nrm3 * 0.05,
+					along3, nrm3, 0.10, 0.05, win_h * 0.5, shutter_col)
 
 		if is_entrance_edge and not is_storefront:
 			var dc := a.lerp(c, ent_t)
@@ -626,6 +707,43 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array) -> int
 			var e1 := dc + dir * hw + nrm2 * 0.06
 			verts += _quad_v(st, Vector3(e0.x, 0.0, e0.y), Vector3(e1.x, 0.0, e1.y),
 				Vector3(e1.x, 2.2, e1.y), Vector3(e0.x, 2.2, e0.y), nrm3, DOOR_COL)
+			var along3e := Vector3(dir.x, 0.0, dir.y)
+			# Garage door: a recessed panel with a raised frame (depth, not a decal).
+			if has_garage:
+				var gc := a.lerp(c, gar_t)
+				var gc3 := Vector3(gc.x, 0.0, gc.y)
+				var gh := 2.1
+				var ghw := 1.4
+				var gp0 := gc - dir * ghw + nrm2 * 0.02
+				var gp1 := gc + dir * ghw + nrm2 * 0.02
+				verts += _quad_v(st, Vector3(gp0.x, 0.05, gp0.y), Vector3(gp1.x, 0.05, gp1.y),
+					Vector3(gp1.x, gh, gp1.y), Vector3(gp0.x, gh, gp0.y), nrm3, GARAGE_COL)
+				verts += _facade_box(st, gc3 + Vector3(0.0, gh + 0.08, 0.0) + nrm3 * 0.05,
+					along3e, nrm3, ghw + 0.12, 0.09, 0.08, FRAME_COL)
+			# Front porch: a real covered volume (platform + posts + roof) out front.
+			if want_porch:
+				var pw := minf(ent_w + 2.6, length * 0.7)
+				var pdepth := 2.2
+				var dc3 := Vector3(dc.x, 0.0, dc.y)
+				var pc := dc3 + nrm3 * (pdepth * 0.5)
+				verts += _facade_box(st, pc + Vector3(0.0, 0.09, 0.0),
+					along3e, nrm3, pw * 0.5, pdepth * 0.5, 0.09, PLATFORM_COL)
+				verts += _facade_box(st, dc3 + nrm3 * (pdepth * 0.5) + Vector3(0.0, 2.5, 0.0),
+					along3e, nrm3, pw * 0.5 + 0.25, pdepth * 0.5 + 0.25, 0.08, PORCH_ROOF_COL)
+				for ps in [-1.0, 1.0]:
+					var psf := float(ps)
+					var post := dc3 + along3e * (psf * (pw * 0.5 - 0.15)) + nrm3 * (pdepth - 0.2)
+					verts += _facade_box(st, post + Vector3(0.0, 1.28, 0.0),
+						along3e, nrm3, 0.09, 0.09, 1.2, PORCH_POST_COL)
+
+		# Rear patio slab: a low ground deck behind the house.
+		if want_patio and i == back_edge and length > 4.0:
+			var mid := a.lerp(c, 0.5)
+			var mid3 := Vector3(mid.x, 0.0, mid.y)
+			var patio_d := 2.6
+			var patio_w := minf(4.0, length * 0.55)
+			verts += _facade_box(st, mid3 + nrm3 * (patio_d * 0.5) + Vector3(0.0, 0.06, 0.0),
+				Vector3(dir.x, 0.0, dir.y), nrm3, patio_w * 0.5, patio_d * 0.5, 0.06, PATIO_COL)
 
 	# A single gable only fits a roughly-rectangular footprint; for L-shaped/complex
 	# polygons the oriented bbox overhangs, so keep the flat roof (which follows the
@@ -644,6 +762,41 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array) -> int
 		verts += _pitched_roof(st, ring, h, roof_col)
 	elif "parapet" in feat:
 		verts += _parapet(st, ring, h)
+
+	# Brick chimney poking through a house roof (only on the rectangular gables that
+	# kept a pitched roof, so the OBB matches the ridge).
+	if want_chimney and roof == "pitched":
+		var cen := Vector2.ZERO
+		for p in ring:
+			cen += p
+		cen /= float(ring.size())
+		var axis := Vector2(1.0, 0.0)
+		var best := 0.0
+		for i2 in range(ring.size()):
+			var e := ring[(i2 + 1) % ring.size()] - ring[i2]
+			var l := e.length()
+			if l > best:
+				best = l
+				axis = e / l
+		var perp := Vector2(-axis.y, axis.x)
+		var minu := INF; var maxu := -INF; var minv := INF; var maxv := -INF
+		for p in ring:
+			var d := p - cen
+			var u := d.dot(axis); var v := d.dot(perp)
+			minu = minf(minu, u); maxu = maxf(maxu, u)
+			minv = minf(minv, v); maxv = maxf(maxv, v)
+		var half_u := (maxu - minu) * 0.5
+		var half_v := (maxv - minv) * 0.5
+		var ridge_h := h + minf(half_u, half_v) * 0.7
+		var side := 1.0 if (_stable_hash(bid, 31) % 2) == 0 else -1.0
+		var cu := (minu + maxu) * 0.5 + (maxu - minu) * 0.24 * side
+		var cv := (minv + maxv) * 0.5 + (maxv - minv) * 0.16
+		var base_y := h - 0.3
+		var top_y := ridge_h + 0.7
+		var pos := cen + axis * cu + perp * cv
+		verts += _facade_box(st, Vector3(pos.x, (base_y + top_y) * 0.5, pos.y),
+			Vector3(axis.x, 0.0, axis.y), Vector3(perp.x, 0.0, perp.y),
+			0.35, 0.35, (top_y - base_y) * 0.5, CHIMNEY_COL)
 
 	if "rooftop_hvac" in feat:
 		var min_x := INF; var min_z := INF; var max_x := -INF; var max_z := -INF
@@ -666,6 +819,34 @@ func _quad_v(st: SurfaceTool, p0: Vector3, p1: Vector3, p2: Vector3, p3: Vector3
 		st.set_normal(nrm)
 		st.add_vertex(v)
 	return 6
+
+
+## An oriented box protruding from a wall, for facade trim (sills, headers, shutters,
+## string courses). `center` is the box centre; `along` is the unit edge tangent and
+## `out` the unit outward wall normal (both XZ). Half-sizes: hw along the edge, hd
+## outward, hh vertical. Emits 6 faces with correct outward normals.
+func _facade_box(st: SurfaceTool, center: Vector3, along: Vector3, out: Vector3,
+		hw: float, hd: float, hh: float, col: Color) -> int:
+	var up := Vector3(0.0, hh, 0.0)
+	var a := along * hw
+	var b := out * hd
+	# 8 corners keyed (sa, sb, su)
+	var ppp := center + a + b + up
+	var ppm := center + a + b - up
+	var pmp := center + a - b + up
+	var pmm := center + a - b - up
+	var mpp := center - a + b + up
+	var mpm := center - a + b - up
+	var mmp := center - a - b + up
+	var mmm := center - a - b - up
+	var verts := 0
+	verts += _quad_v(st, mpm, ppm, ppp, mpp, out, col)          # outward (+b)
+	verts += _quad_v(st, pmm, mmm, mmp, pmp, -out, col)         # inward (-b)
+	verts += _quad_v(st, mmp, mpp, ppp, pmp, Vector3.UP, col)   # top
+	verts += _quad_v(st, mmm, pmm, ppm, mpm, Vector3.DOWN, col) # bottom
+	verts += _quad_v(st, pmm, ppm, ppp, pmp, along, col)        # +a end
+	verts += _quad_v(st, mpm, mmm, mmp, mpp, -along, col)       # -a end
+	return verts
 
 
 func _pitched_roof(st: SurfaceTool, ring: PackedVector2Array, h: float,
@@ -791,6 +972,140 @@ func _parapet(st: SurfaceTool, ring: PackedVector2Array, h: float) -> int:
 		var a2 := Vector3(a.x, h + PARAPET_H, a.y)
 		var c2 := Vector3(c.x, h + PARAPET_H, c.y)
 		verts += _quad_v(st, a1, c1, c2, a2, nrm, PARAPET_COL)
+	return verts
+
+
+## Continuous road/sidewalk/curb ribbons built from each road's real polyline
+## with mitered joins, laid over the rasterized ground so curves read smoothly.
+## Widths, curbs and sidewalks are data-driven (carriage_w / curb / sidewalk_w /
+## verge_w from the world source), not tiles.
+func _build_road_surfaces(chunk: Dictionary, root: Node3D) -> int:
+	var roads: Array = chunk.get("roads", [])
+	if roads.is_empty():
+		return 0
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var verts := 0
+	var any := false
+	for r in roads:
+		if bool(r.get("elevated", false)):
+			continue                                   # decks handled by _build_elevated_roads
+		var pts_raw: Array = r.get("pts", [])
+		if pts_raw.size() < 2:
+			continue
+		var pts: Array = []
+		for p in pts_raw:
+			pts.append(Vector2(float(p[0]), float(p[1])))
+		if bool(r.get("path_only", false)):
+			# Footpath/trail: a thin light ribbon, gently raised.
+			var phw := maxf(0.6, float(r.get("carriage_w", 1.6)) * 0.5)
+			var pl := _offset_polyline(pts, -phw)
+			var pr := _offset_polyline(pts, phw)
+			verts += _ribbon_flat(st, pl, pr, PATH_Y, SURFACE_COLORS[S_SIDEWALK])
+			any = true
+			continue
+		var carriage_w := float(r.get("carriage_w", 6.0))
+		if carriage_w < 0.5:
+			continue
+		var hw := carriage_w * 0.5
+		var edge_l := _offset_polyline(pts, -hw)
+		var edge_r := _offset_polyline(pts, hw)
+		verts += _ribbon_flat(st, edge_l, edge_r, ROAD_RIBBON_Y, SURFACE_COLORS[S_ROAD])
+		any = true
+		var has_curb := bool(r.get("curb", false))
+		var sidewalk_w := float(r.get("sidewalk_w", 0.0))
+		var verge_w := float(r.get("verge_w", 0.0))
+		if not has_curb and sidewalk_w <= 0.0:
+			continue
+		# Curb + sidewalk on both sides. The curb is a short vertical lip at the
+		# carriageway edge (the yard/street boundary); the sidewalk is a raised
+		# slab set back past an optional grass verge.
+		for side in [-1.0, 1.0]:
+			var edge := edge_r if side > 0.0 else edge_l
+			if has_curb:
+				verts += _ribbon_wall(st, edge, ROAD_RIBBON_Y, SIDEWALK_Y, CURB_COL)
+			var swidth: float = sidewalk_w if sidewalk_w > 0.0 else (1.5 if has_curb else 0.0)
+			if swidth <= 0.0:
+				continue
+			var inner := _offset_polyline(pts, side * (hw + verge_w))
+			var outer := _offset_polyline(pts, side * (hw + verge_w + swidth))
+			# grass verge (if any) sits between curb and sidewalk at ground level
+			verts += _ribbon_flat(st, inner, outer, SIDEWALK_Y, SURFACE_COLORS[S_SIDEWALK])
+			verts += _ribbon_wall(st, outer, 0.03, SIDEWALK_Y, CURB_COL)   # outer drop to yard
+	if not any:
+		return 0
+	var mesh := st.commit()
+	var mi := MeshInstance3D.new()
+	mi.mesh = mesh
+	mi.material_override = _shared_opaque_material()
+	root.add_child(mi)
+	return verts
+
+
+## Offset a polyline sideways by `offset` metres (right-hand normal is +) with
+## mitered joins, so parallel ribbon edges stay continuous around bends.
+func _offset_polyline(pts: Array, offset: float) -> Array:
+	var out: Array = []
+	var n := pts.size()
+	for i in range(n):
+		var p: Vector2 = pts[i]
+		var nin := Vector2.ZERO
+		var nout := Vector2.ZERO
+		if i > 0:
+			var din: Vector2 = (pts[i] - pts[i - 1])
+			if din.length() > 0.0001:
+				din = din.normalized()
+				nin = Vector2(din.y, -din.x)
+		if i < n - 1:
+			var dout: Vector2 = (pts[i + 1] - pts[i])
+			if dout.length() > 0.0001:
+				dout = dout.normalized()
+				nout = Vector2(dout.y, -dout.x)
+		var m: Vector2
+		if nin == Vector2.ZERO:
+			m = nout
+		elif nout == Vector2.ZERO:
+			m = nin
+		else:
+			var mm := (nin + nout)
+			if mm.length() < 0.0001:
+				m = nout
+			else:
+				mm = mm.normalized()
+				var denom := maxf(0.35, mm.dot(nout))   # clamp miter length at sharp bends
+				m = mm / denom
+		out.append(p + m * offset)
+	return out
+
+
+## Flat strip between two equal-length polylines at height `y`.
+func _ribbon_flat(st: SurfaceTool, left: Array, right: Array, y: float, col: Color) -> int:
+	var n := mini(left.size(), right.size())
+	var verts := 0
+	for i in range(n - 1):
+		var l0: Vector2 = left[i]
+		var l1: Vector2 = left[i + 1]
+		var r0: Vector2 = right[i]
+		var r1: Vector2 = right[i + 1]
+		verts += _quad_v(st, Vector3(l0.x, y, l0.y), Vector3(r0.x, y, r0.y),
+			Vector3(r1.x, y, r1.y), Vector3(l1.x, y, l1.y), Vector3.UP, col)
+	return verts
+
+
+## Vertical strip along a single polyline from y0 to y1 (curb faces / sidewalk drops).
+func _ribbon_wall(st: SurfaceTool, poly: Array, y0: float, y1: float, col: Color) -> int:
+	var n := poly.size()
+	var verts := 0
+	for i in range(n - 1):
+		var a: Vector2 = poly[i]
+		var b: Vector2 = poly[i + 1]
+		var seg := b - a
+		if seg.length() < 0.0001:
+			continue
+		var nrm2 := seg.orthogonal().normalized()
+		var nrm3 := Vector3(nrm2.x, 0.0, nrm2.y)
+		verts += _quad_v(st, Vector3(a.x, y0, a.y), Vector3(b.x, y0, b.y),
+			Vector3(b.x, y1, b.y), Vector3(a.x, y1, a.y), nrm3, col)
 	return verts
 
 
@@ -964,7 +1279,20 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 	# further split by variant since PropMeshes bakes vehicle colour per mesh.
 	var groups: Dictionary = {}   # "kind" or "kind:variant" -> {kind, variant, xforms:Array[Transform3D]}
 	var lists := [chunk.get("props", []), chunk.get("vehicles", []), chunk.get("trees", [])]
+	# Decode the land-cover raster once (shared by fence-on-road culling and the
+	# vegetation scatter below).
+	var origin_arr: Array = chunk.get("origin", [0.0, 0.0])
+	var origin := Vector2(float(origin_arr[0]), float(origin_arr[1]))
+	var runs: Array = chunk.get("surface", [])
+	var cells := _decode_rle(runs, CELLS * CELLS) if not runs.is_empty() else PackedByteArray()
+	# Yard fences must stop at the property line, not march across the carriageway.
+	var yard_fence := {"wood_fence": true, "chainlink_fence": true}
 	var vehicle_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true, "box_truck": true}
+	# Kinds whose per-instance `variant` selects a distinct baked mesh (vehicle colour
+	# or foliage colour), so they must be grouped by kind:variant.
+	var variant_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true,
+		"box_truck": true, "tree_round": true, "tree_oak": true, "tree_conical": true,
+		"tree_columnar": true, "tree_palm": true, "bush_round": true, "bush_low": true}
 	var total := 0
 	for lst in lists:
 		for row in lst:
@@ -975,8 +1303,13 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 			var z := float(row[2])
 			var rot := float(row[3])
 			var variant := int(row[4])
+			# Drop yard fences that fall on the carriageway / parking apron.
+			if yard_fence.has(kind):
+				var sc := _surface_class(cells, origin, x, z)
+				if sc == S_ROAD or sc == S_PARKING:
+					continue
 			var gkey := kind
-			if vehicle_kinds.has(kind):
+			if variant_kinds.has(kind):
 				gkey = "%s:%d" % [kind, variant]
 			if not groups.has(gkey):
 				groups[gkey] = {"kind": kind, "variant": variant, "xforms": []}
@@ -992,10 +1325,11 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 	# trees on canopy cells, bushes on rough vegetation, occasional lawn trees. This
 	# fills the world with greenery without any tile authority — positions are
 	# continuous (cell centre + deterministic jitter) and resolve back to metres.
-	_scatter_vegetation(chunk, groups)
+	_scatter_vegetation(chunk, groups, cells, origin)
 
 	var shadow_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true,
-		"box_truck": true, "tree_round": true, "tree_conical": true, "tree_columnar": true}
+		"box_truck": true, "tree_round": true, "tree_oak": true, "tree_conical": true,
+		"tree_columnar": true, "tree_palm": true}
 	var mm_count := 0
 	for gkey in groups.keys():
 		var g: Dictionary = groups[gkey]
@@ -1011,53 +1345,90 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 	return {"quads": 0, "verts": 0, "buildings": 0, "mm_instances": mm_count, "collisions": 0}
 
 
-func _scatter_vegetation(chunk: Dictionary, groups: Dictionary) -> void:
-	var origin_arr: Array = chunk.get("origin", [0.0, 0.0])
-	var origin := Vector2(float(origin_arr[0]), float(origin_arr[1]))
-	var runs: Array = chunk.get("surface", [])
-	if runs.is_empty():
+func _surface_class(cells: PackedByteArray, origin: Vector2, wx: float, wz: float) -> int:
+	## Land-cover class at a continuous world position (or -1 out of chunk / no raster).
+	if cells.is_empty():
+		return -1
+	var col := int((wx - origin.x) / CELL_M)
+	var row := int((wz - origin.y) / CELL_M)
+	if col < 0 or col >= CELLS or row < 0 or row >= CELLS:
+		return -1
+	return cells[row * CELLS + col]
+
+
+func _near_building(cells: PackedByteArray, row: int, col: int, radius: int) -> bool:
+	## True if any raster cell within `radius` cells of (row,col) is a building —
+	## used to keep tree canopies from overhanging/clipping into walls.
+	for dr in range(-radius, radius + 1):
+		var rr := row + dr
+		if rr < 0 or rr >= CELLS:
+			continue
+		for dc in range(-radius, radius + 1):
+			var cc := col + dc
+			if cc < 0 or cc >= CELLS:
+				continue
+			if cells[rr * CELLS + cc] == S_BUILDING:
+				return true
+	return false
+
+
+func _scatter_vegetation(chunk: Dictionary, groups: Dictionary,
+		cells: PackedByteArray, origin: Vector2) -> void:
+	if cells.is_empty():
 		return
-	var cells := _decode_rle(runs, CELLS * CELLS)
 	var cx := int(chunk.get("cx", 0))
 	var cz := int(chunk.get("cz", 0))
 	# Deterministic per-cell placement so reloads don't flicker. One candidate per
 	# STEP*STEP block of cells keeps density sane (STEP*CELL_M metres apart).
+	var canopy := ["tree_oak", "tree_round", "tree_conical", "tree_round", "tree_palm"]
+	var lawn := ["tree_round", "tree_conical", "tree_columnar", "tree_palm"]
 	var STEP := 3
 	for row in range(0, CELLS, STEP):
 		for col in range(0, CELLS, STEP):
 			var t := cells[row * CELLS + col]
+			var hsh := _stable_hash(cx * 131071 + row, cz * 8191 + col)
 			var kind := ""
-			var skip_mod := 1
+			var s_lo := 1.0
+			var s_hi := 1.6
 			if t == S_TREE_CANOPY:
-				kind = "tree_round"; skip_mod = 1
+				kind = canopy[hsh % canopy.size()]
+				s_lo = 1.2; s_hi = 2.2                 # big trees in canopy cover
 			elif t == S_ROUGH_VEGETATION:
-				kind = "bush_round"; skip_mod = 2
+				if (hsh % 3) != 0:
+					continue
+				kind = "bush_round" if (hsh % 2) == 0 else "bush_low"
+				s_lo = 0.9; s_hi = 1.7
 			elif t == S_MAINTAINED_GRASS:
-				kind = "tree_round"; skip_mod = 6      # sparse lawn trees
+				if (hsh % 6) != 0:
+					continue                            # sparse lawn/yard trees
+				kind = lawn[hsh % lawn.size()]
+				s_lo = 1.0; s_hi = 1.8
 			else:
 				continue
-			var hsh := _stable_hash(cx * 131071 + row, cz * 8191 + col)
-			if skip_mod > 1 and (hsh % skip_mod) != 0:
-				continue
-			# choose a tree/bush variant kind deterministically
-			if kind == "tree_round":
-				match hsh % 3:
-					0: kind = "tree_round"
-					1: kind = "tree_conical"
-					2: kind = "tree_columnar"
-			elif kind == "bush_round":
-				kind = "bush_round" if (hsh % 2) == 0 else "bush_low"
-			# continuous jitter within the block, deterministic
-			var jx := (float(hsh % 1000) / 1000.0 - 0.5) * CELL_M * float(STEP)
-			var jz := (float((hsh >> 10) % 1000) / 1000.0 - 0.5) * CELL_M * float(STEP)
+			var variant := (hsh >> 3) % 5
+			# continuous jitter within the block, deterministic (kept modest so trees
+			# don't wander out of their vegetation cell into a road or building).
+			var jx := (float(hsh % 1000) / 1000.0 - 0.5) * CELL_M * float(STEP - 1)
+			var jz := (float((hsh >> 10) % 1000) / 1000.0 - 0.5) * CELL_M * float(STEP - 1)
 			var wx := origin.x + (float(col) + 0.5) * CELL_M + jx
 			var wz := origin.y + (float(row) + 0.5) * CELL_M + jz
-			var s := 0.8 + float((hsh >> 5) % 100) / 100.0 * 0.6   # 0.8..1.4 scale
+			# Reject placements that landed on non-vegetation cover or too close to a
+			# building, so canopies never clip into walls or spill onto pavement.
+			var fcol := int((wx - origin.x) / CELL_M)
+			var frow := int((wz - origin.y) / CELL_M)
+			if fcol < 0 or fcol >= CELLS or frow < 0 or frow >= CELLS:
+				continue
+			var is_tree := kind.begins_with("tree_")
+			var clearance := 2 if is_tree else 1
+			if _near_building(cells, frow, fcol, clearance):
+				continue
+			var s := s_lo + float((hsh >> 5) % 100) / 100.0 * (s_hi - s_lo)
 			var yaw := float(hsh % 360)
-			if not groups.has(kind):
-				groups[kind] = {"kind": kind, "variant": 0, "xforms": []}
+			var gkey := "%s:%d" % [kind, variant]
+			if not groups.has(gkey):
+				groups[gkey] = {"kind": kind, "variant": variant, "xforms": []}
 			var basis := Basis(Vector3.UP, deg_to_rad(yaw)).scaled(Vector3(s, s, s))
-			(groups[kind]["xforms"] as Array).append(Transform3D(basis, Vector3(wx, 0.0, wz)))
+			(groups[gkey]["xforms"] as Array).append(Transform3D(basis, Vector3(wx, 0.0, wz)))
 
 
 # --------------------------------------------------------------- introspection

@@ -145,15 +145,19 @@ static func _build(kind: String, variant: int) -> ArrayMesh:
 		"sedan", "suv", "pickup", "van", "box_truck":
 			_build_vehicle(st, kind, variant)
 		"tree_round":
-			_build_tree_round(st)
+			_build_tree_round(st, variant)
+		"tree_oak":
+			_build_tree_oak(st, variant)
 		"tree_conical":
-			_build_tree_conical(st)
+			_build_tree_conical(st, variant)
 		"tree_columnar":
-			_build_tree_columnar(st)
+			_build_tree_columnar(st, variant)
+		"tree_palm":
+			_build_tree_palm(st, variant)
 		"bush_round":
-			_build_bush_round(st)
+			_build_bush_round(st, variant)
 		"bush_low":
-			_build_bush_low(st)
+			_build_bush_low(st, variant)
 		_:
 			# Unknown kind: an obvious magenta box rather than a silent crash.
 			_box(st, Vector3(0.0, 0.5, 0.0), Vector3(0.5, 1.0, 0.5), Color(1.0, 0.0, 1.0))
@@ -464,35 +468,79 @@ static func _build_vehicle(st: SurfaceTool, kind: String, variant: int) -> void:
 
 
 # ------------------------------------------------------------------------ vegetation
-static func _build_tree_round(st: SurfaceTool) -> void:
-	var trunk := Color(0.34, 0.24, 0.16)
-	_cylinder(st, Vector3.ZERO, 0.15, 2.0, 6, trunk, false, false)
-	# Three stacked, slightly offset boxes fake a round-ish canopy cheaply.
-	_box(st, Vector3(0.0, 2.6, 0.0), Vector3(1.8, 1.0, 1.8), Color(0.22, 0.40, 0.20))
-	_box(st, Vector3(0.15, 3.25, -0.1), Vector3(1.4, 0.9, 1.5), Color(0.25, 0.44, 0.22))
-	_box(st, Vector3(-0.1, 3.85, 0.1), Vector3(1.0, 0.7, 1.0), Color(0.28, 0.48, 0.24))
+# Canopy greens keyed by variant so a scatter can mix foliage colour cheaply
+# (get_mesh caches per kind:variant, so each colour is one shared mesh).
+const TREE_GREENS := [
+	Color(0.20, 0.38, 0.19), Color(0.26, 0.44, 0.22), Color(0.16, 0.34, 0.18),
+	Color(0.32, 0.46, 0.22), Color(0.22, 0.40, 0.26),
+]
+const TRUNK_COL := Color(0.34, 0.24, 0.16)
 
 
-static func _build_tree_conical(st: SurfaceTool) -> void:
-	var trunk := Color(0.32, 0.22, 0.15)
-	var leaf := Color(0.10, 0.24, 0.13)
-	_cylinder(st, Vector3.ZERO, 0.14, 1.2, 6, trunk, false, false)
-	_cone(st, Vector3(0.0, 1.1, 0.0), 1.5, 4.9, 8, leaf, true)
+static func _leaf(variant: int, shift: float = 0.0) -> Color:
+	var base: Color = TREE_GREENS[((variant % TREE_GREENS.size()) + TREE_GREENS.size()) % TREE_GREENS.size()]
+	if shift != 0.0:
+		base = base.lerp(Color.WHITE, shift) if shift > 0.0 else base.darkened(-shift)
+	return base
 
 
-static func _build_tree_columnar(st: SurfaceTool) -> void:
-	var trunk := Color(0.32, 0.22, 0.15)
-	var leaf := Color(0.16, 0.32, 0.17)
-	_cylinder(st, Vector3.ZERO, 0.13, 1.2, 6, trunk, false, false)
-	_cone(st, Vector3(0.0, 1.1, 0.0), 0.6, 5.9, 8, leaf, true)
+## Large broadleaf: a chunky multi-blob canopy on a stout trunk (the default
+## street/yard tree). Bigger than before so trees read at isometric distance.
+static func _build_tree_round(st: SurfaceTool, variant: int = 0) -> void:
+	_cylinder(st, Vector3.ZERO, 0.22, 3.0, 6, TRUNK_COL, false, false)
+	var c := _leaf(variant)
+	_box(st, Vector3(0.0, 3.7, 0.0), Vector3(3.0, 1.7, 3.0), c.darkened(0.06))
+	_box(st, Vector3(0.5, 4.5, -0.3), Vector3(2.4, 1.5, 2.3), c)
+	_box(st, Vector3(-0.4, 4.7, 0.4), Vector3(2.2, 1.4, 2.2), c.lerp(Color.WHITE, 0.05))
+	_box(st, Vector3(0.1, 5.4, 0.0), Vector3(1.5, 1.1, 1.5), c.lerp(Color.WHITE, 0.10))
 
 
-static func _build_bush_round(st: SurfaceTool) -> void:
-	var leaf := Color(0.22, 0.38, 0.20)
-	_box(st, Vector3(0.0, 0.32, 0.0), Vector3(0.8, 0.6, 0.8), leaf)
-	_box(st, Vector3(0.0, 0.68, 0.0), Vector3(0.5, 0.35, 0.5), leaf.lerp(Color.WHITE, 0.05))
+## Big spreading oak — widest canopy, for canopy-cover cells.
+static func _build_tree_oak(st: SurfaceTool, variant: int = 0) -> void:
+	_cylinder(st, Vector3.ZERO, 0.30, 3.2, 8, TRUNK_COL.darkened(0.05), false, false)
+	var c := _leaf(variant)
+	_box(st, Vector3(0.0, 4.0, 0.0), Vector3(4.4, 2.0, 4.4), c.darkened(0.08))
+	_box(st, Vector3(1.0, 4.8, 0.6), Vector3(3.2, 1.8, 3.0), c)
+	_box(st, Vector3(-1.0, 5.0, -0.6), Vector3(3.0, 1.7, 3.2), c.lerp(Color.WHITE, 0.04))
+	_box(st, Vector3(0.2, 5.9, 0.2), Vector3(2.2, 1.4, 2.2), c.lerp(Color.WHITE, 0.09))
 
 
-static func _build_bush_low(st: SurfaceTool) -> void:
-	var leaf := Color(0.24, 0.40, 0.22)
-	_box(st, Vector3(0.0, 0.25, 0.0), Vector3(1.2, 0.5, 0.7), leaf)
+static func _build_tree_conical(st: SurfaceTool, variant: int = 0) -> void:
+	_cylinder(st, Vector3.ZERO, 0.18, 1.4, 6, TRUNK_COL.darkened(0.05), false, false)
+	var leaf := _leaf(variant).darkened(0.05)
+	_cone(st, Vector3(0.0, 1.3, 0.0), 2.0, 6.6, 9, leaf, true)
+	_cone(st, Vector3(0.0, 3.6, 0.0), 1.5, 4.0, 9, leaf.lerp(Color.WHITE, 0.05), false)
+
+
+static func _build_tree_columnar(st: SurfaceTool, variant: int = 0) -> void:
+	_cylinder(st, Vector3.ZERO, 0.16, 1.4, 6, TRUNK_COL.darkened(0.05), false, false)
+	_cone(st, Vector3(0.0, 1.3, 0.0), 0.9, 7.8, 8, _leaf(variant), true)
+
+
+## Palm — a leaning trunk topped with radiating fronds (Houston flavour).
+static func _build_tree_palm(st: SurfaceTool, variant: int = 0) -> void:
+	var trunk := Color(0.40, 0.32, 0.20)
+	# a few stacked segments give a slight taper/lean
+	for i in range(5):
+		var y := float(i) * 1.3
+		var off := float(i) * 0.12
+		_cylinder(st, Vector3(off, y, 0.0), 0.20 - float(i) * 0.02, 1.35, 6, trunk, false, false)
+	var top := Vector3(0.6, 6.5, 0.0)
+	var frond := _leaf(variant, 0.08)
+	for k in range(7):
+		var a := TAU * float(k) / 7.0
+		var dir := Vector3(cos(a), -0.15, sin(a))
+		var tip := top + dir * 2.6 + Vector3(0.0, 0.2, 0.0)
+		var side := Vector3(-sin(a), 0.0, cos(a)) * 0.35
+		_quad(st, top - side, top + side, tip + side * 0.25, tip - side * 0.25, frond)
+
+
+static func _build_bush_round(st: SurfaceTool, variant: int = 0) -> void:
+	var leaf := _leaf(variant, 0.02)
+	_box(st, Vector3(0.0, 0.45, 0.0), Vector3(1.2, 0.9, 1.2), leaf)
+	_box(st, Vector3(0.15, 0.95, -0.1), Vector3(0.8, 0.6, 0.8), leaf.lerp(Color.WHITE, 0.05))
+
+
+static func _build_bush_low(st: SurfaceTool, variant: int = 0) -> void:
+	var leaf := _leaf(variant, 0.03)
+	_box(st, Vector3(0.0, 0.35, 0.0), Vector3(1.6, 0.7, 0.9), leaf)
