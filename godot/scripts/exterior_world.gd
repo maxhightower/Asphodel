@@ -1604,7 +1604,7 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 	# or foliage colour), so they must be grouped by kind:variant.
 	var variant_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true,
 		"box_truck": true, "tree_round": true, "tree_oak": true, "tree_conical": true,
-		"tree_columnar": true, "tree_palm": true, "bush_round": true, "bush_low": true}
+		"tree_columnar": true, "tree_palm": true, "tree_willow": true, "bush_round": true, "bush_low": true}
 	var total := 0
 	for lst in lists:
 		for row in lst:
@@ -1650,7 +1650,7 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 
 	var shadow_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true,
 		"box_truck": true, "tree_round": true, "tree_oak": true, "tree_conical": true,
-		"tree_columnar": true, "tree_palm": true}
+		"tree_columnar": true, "tree_palm": true, "tree_willow": true}
 	var mm_count := 0
 	for gkey in groups.keys():
 		var g: Dictionary = groups[gkey]
@@ -1701,8 +1701,8 @@ func _scatter_vegetation(chunk: Dictionary, groups: Dictionary,
 	var cz := int(chunk.get("cz", 0))
 	# Deterministic per-cell placement so reloads don't flicker. One candidate per
 	# STEP*STEP block of cells keeps density sane (STEP*CELL_M metres apart).
-	var canopy := ["tree_oak", "tree_round", "tree_conical", "tree_round", "tree_palm"]
-	var lawn := ["tree_round", "tree_conical", "tree_columnar", "tree_palm"]
+	var canopy := ["tree_oak", "tree_round", "tree_conical", "tree_willow", "tree_oak", "tree_palm"]
+	var lawn := ["tree_round", "tree_oak", "tree_conical", "tree_columnar", "tree_willow"]
 	var STEP := 3
 	for row in range(0, CELLS, STEP):
 		for col in range(0, CELLS, STEP):
@@ -1745,11 +1745,44 @@ func _scatter_vegetation(chunk: Dictionary, groups: Dictionary,
 				continue
 			var s := s_lo + float((hsh >> 5) % 100) / 100.0 * (s_hi - s_lo)
 			var yaw := float(hsh % 360)
+			# Per-species age + proportion: an age tier (sapling/young/mature/old)
+			# sets overall size and a width-vs-height split, then a per-species shape
+			# bias (pines tall, live oaks wide, cypress slim). MultiMesh instances
+			# carry their own transform, so this non-uniform scale is free.
+			var scl := _tree_scale(kind, s, hsh)
 			var gkey := "%s:%d" % [kind, variant]
 			if not groups.has(gkey):
 				groups[gkey] = {"kind": kind, "variant": variant, "xforms": []}
-			var basis := Basis(Vector3.UP, deg_to_rad(yaw)).scaled(Vector3(s, s, s))
+			var basis := Basis(Vector3.UP, deg_to_rad(yaw)).scaled(scl)
 			(groups[gkey]["xforms"] as Array).append(Transform3D(basis, Vector3(wx, 0.0, wz)))
+
+
+## Non-uniform tree scale = cover-size × age tier × per-species proportion.
+## Bushes stay near-uniform. `hsh` is the placement's stable hash.
+func _tree_scale(kind: String, base: float, hsh: int) -> Vector3:
+	if not kind.begins_with("tree_"):
+		return Vector3(base, base, base)
+	var age := float((hsh >> 12) % 1000) / 1000.0
+	var ow := 1.0    # overall width factor
+	var oh := 1.0    # overall height factor
+	if age < 0.16:
+		ow = 0.34; oh = 0.44         # sapling
+	elif age < 0.44:
+		ow = 0.62; oh = 0.72         # young
+	elif age < 0.82:
+		ow = 1.0; oh = 1.0           # mature
+	else:
+		ow = 1.26; oh = 1.12         # large / old
+	var spw := 1.0   # species width bias
+	var sph := 1.0   # species height bias
+	match kind:
+		"tree_conical": spw = 0.90; sph = 1.18       # loblolly pine: tall
+		"tree_columnar": spw = 0.72; sph = 1.24      # cypress/poplar: slim spire
+		"tree_oak": spw = 1.24; sph = 0.90           # live oak: broad, low
+		"tree_willow": spw = 1.06; sph = 1.02        # willow: full rounded
+		"tree_palm": spw = 0.95; sph = 1.12          # palm: tall trunk
+		_: pass                                      # tree_round: balanced
+	return Vector3(base * ow * spw, base * oh * sph, base * ow * spw)
 
 
 # --------------------------------------------------------------- introspection

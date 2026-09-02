@@ -21,7 +21,7 @@ PROP_MESHES_SUPPORTED = {
     "chainlink_fence", "pallet", "road_barrier",
     "sedan", "suv", "pickup", "van", "box_truck",
     "tree_round", "tree_oak", "tree_conical", "tree_columnar", "tree_palm",
-    "bush_round", "bush_low",
+    "tree_willow", "bush_round", "bush_low",
 }
 
 

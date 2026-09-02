@@ -22,12 +22,12 @@
   "buildings": 22525,
   "chunks": 598,
   "parcels": 23338,
-  "placements": 572087,
+  "placements": 571693,
   "props": 465893,
   "road_km": 958.77,
   "road_segments": 7977,
   "trees": 45220,
-  "vehicles": 60974
+  "vehicles": 60580
  },
  "license_note": "world/ contains only geographic database content derived from ODbL/CDLA-Permissive sources plus procedural derivations; no proprietary gameplay data lives here.",
  "seed": 0,

@@ -894,3 +894,79 @@ def _point_along(pts, dist):
     p0, p1 = pts[-2], pts[-1]
     hd = math.degrees(math.atan2(p1[0] - p0[0], p1[1] - p0[1]))
     return p1[0], p1[1], hd
+
+
+# ---------------------------------------------------------------------------
+# Vehicle de-overlap (Package E fix): curb / driveway / parking vehicles are
+# placed by independent passes and can intersect (e.g. a wide van in a 2.6 m
+# stall, or a curb car landing on a driveway car). Reject any vehicle whose
+# oriented footprint intersects an already-accepted one. Deterministic: process
+# in a stable spatial order, so the surviving set never depends on list order.
+# ---------------------------------------------------------------------------
+
+# (width_m, length_m) per vehicle kind, matching AssetCatalogV1 dimensions.
+_VEHICLE_FOOTPRINT = {
+    "sedan": (2.0, 4.6), "suv": (2.1, 4.8), "pickup": (2.1, 5.4),
+    "van": (2.2, 5.2), "box_truck": (2.5, 7.0),
+}
+_DEDUP_CELL = 8.0  # spatial-hash cell >= longest vehicle
+
+
+def _obb_axes(rot_deg):
+    # Matches the renderer: length axis = Basis(UP, rad - 90 deg) * +X.
+    th = math.radians(rot_deg) - math.pi / 2.0
+    length_axis = (math.cos(th), -math.sin(th))
+    width_axis = (-length_axis[1], length_axis[0])
+    return length_axis, width_axis
+
+
+def _obb_overlap(a, b):
+    (ax, az, arot, ahl, ahw) = a
+    (bx, bz, brot, bhl, bhw) = b
+    al, aw = _obb_axes(arot)
+    bl, bw = _obb_axes(brot)
+    dx, dz = bx - ax, bz - az
+    # SAT over the 4 face normals; a small negative slack lets bumpers kiss.
+    for (axis, ra) in ((al, ahl), (aw, ahw)):
+        pa = ra
+        pb = (abs(bl[0] * axis[0] + bl[1] * axis[1]) * bhl
+              + abs(bw[0] * axis[0] + bw[1] * axis[1]) * bhw)
+        if abs(dx * axis[0] + dz * axis[1]) > pa + pb - 0.15:
+            return False
+    for (axis, rb) in ((bl, bhl), (bw, bhw)):
+        pb = rb
+        pa = (abs(al[0] * axis[0] + al[1] * axis[1]) * ahl
+              + abs(aw[0] * axis[0] + aw[1] * axis[1]) * ahw)
+        if abs(dx * axis[0] + dz * axis[1]) > pa + pb - 0.15:
+            return False
+    return True
+
+
+def dedupe_vehicles(placements: list) -> list:
+    """Return `placements` with intersecting vehicles removed (non-vehicles kept)."""
+    vehicles = [p for p in placements if p.cat == "vehicle"]
+    others = [p for p in placements if p.cat != "vehicle"]
+    # stable order so acceptance is deterministic regardless of source ordering
+    vehicles.sort(key=lambda p: (round(p.x, 2), round(p.z, 2), p.kind, p.variant))
+    grid: dict = {}
+    kept = []
+    for p in vehicles:
+        w, ln = _VEHICLE_FOOTPRINT.get(p.kind, (2.1, 4.8))
+        box = (p.x, p.z, p.rot, ln / 2.0, w / 2.0)
+        gx, gz = int(p.x // _DEDUP_CELL), int(p.z // _DEDUP_CELL)
+        clash = False
+        for ox in (-1, 0, 1):
+            for oz in (-1, 0, 1):
+                for other in grid.get((gx + ox, gz + oz), ()):
+                    if _obb_overlap(box, other):
+                        clash = True
+                        break
+                if clash:
+                    break
+            if clash:
+                break
+        if clash:
+            continue
+        kept.append(p)
+        grid.setdefault((gx, gz), []).append(box)
+    return others + kept

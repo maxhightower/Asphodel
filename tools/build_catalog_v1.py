@@ -98,6 +98,8 @@ fam("columnar_tree", "vegetation", "tree_columnar", (2.5, 2.5, 9.0), collision="
     variants=5)
 fam("palm", "vegetation", "tree_palm", (5.0, 5.0, 9.0), collision="none",
     climate=("gulf", "subtropical"), variants=5)
+fam("willow", "vegetation", "tree_willow", (7.0, 7.0, 7.0), collision="none",
+    climate=("gulf", "riparian", "temperate"), variants=5)
 fam("shrub_round", "vegetation", "bush_round", (1.4, 1.4, 1.2), collision="none",
     variants=5)
 fam("shrub_low", "vegetation", "bush_low", (1.6, 1.6, 0.7), collision="none",

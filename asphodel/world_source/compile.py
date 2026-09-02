@@ -124,6 +124,9 @@ def compile_city(city: str, release: str, seed: int,
     ent_anchors = detail.entrance_anchors(brecords)
 
     placements = det.placements + curb + sprops
+    # Package E: remove vehicles whose footprints intersect (curb/driveway/parking
+    # passes are independent and can collide).
+    placements = detail.dedupe_vehicles(placements)
     anchors = _sanitize_anchors(det.anchors + sanchors + ent_anchors,
                                 brecords, bounds)
 

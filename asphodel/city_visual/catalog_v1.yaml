@@ -34,6 +34,7 @@ render_variants:
   tree_conical: 5
   tree_columnar: 5
   tree_palm: 5
+  tree_willow: 5
   bush_round: 5
   bush_low: 5
   cabinet: 1
@@ -1489,6 +1490,59 @@ families:
     weight: 1.0
     resource: null
     procedural: tree_palm
+    conditions:
+    - NORMAL
+- semantic_id: willow
+  category: vegetation
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 7.0
+    depth_m: 7.0
+    height_m: 7.0
+  clearance: {}
+  collision: none
+  interaction: none
+  material_family: null
+  room_tags: []
+  parcel_tags: []
+  building_tags: []
+  climate_tags:
+  - gulf
+  - riparian
+  - temperate
+  seed_tag: willow
+  render_kind: tree_willow
+  lod_fallback: tree_willow
+  variants:
+  - id: willow_00
+    weight: 1.0
+    resource: null
+    procedural: tree_willow
+    conditions:
+    - NORMAL
+  - id: willow_01
+    weight: 1.0
+    resource: null
+    procedural: tree_willow
+    conditions:
+    - NORMAL
+  - id: willow_02
+    weight: 1.0
+    resource: null
+    procedural: tree_willow
+    conditions:
+    - NORMAL
+  - id: willow_03
+    weight: 1.0
+    resource: null
+    procedural: tree_willow
+    conditions:
+    - NORMAL
+  - id: willow_04
+    weight: 1.0
+    resource: null
+    procedural: tree_willow
     conditions:
     - NORMAL
 - semantic_id: shrub_round

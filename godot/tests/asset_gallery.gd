@@ -19,7 +19,7 @@ const GROUPS := {
 		"road_barrier", "pallet", "wood_fence", "chainlink_fence"],
 	"vehicles": ["sedan", "suv", "pickup", "van", "box_truck"],
 	"veg": ["tree_oak", "tree_round", "tree_conical", "tree_columnar",
-		"tree_palm", "bush_round", "bush_low"],
+		"tree_palm", "tree_willow", "bush_round", "bush_low"],
 }
 
 

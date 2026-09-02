@@ -73,7 +73,7 @@ const SUPPORTED_KINDS := [
 	"chainlink_fence", "pallet", "road_barrier",
 	"sedan", "suv", "pickup", "van", "box_truck",
 	"tree_round", "tree_oak", "tree_conical", "tree_columnar", "tree_palm",
-	"bush_round", "bush_low",
+	"tree_willow", "bush_round", "bush_low",
 ]
 
 
@@ -176,6 +176,8 @@ static func _build(kind: String, variant: int) -> ArrayMesh:
 			_build_tree_columnar(st, variant)
 		"tree_palm":
 			_build_tree_palm(st, variant)
+		"tree_willow":
+			_build_tree_willow(st, variant)
 		"bush_round":
 			_build_bush_round(st, variant)
 		"bush_low":
@@ -578,35 +580,71 @@ static func _leaf(variant: int, shift: float = 0.0) -> Color:
 
 ## Large broadleaf: a chunky multi-blob canopy on a stout trunk (the default
 ## street/yard tree). Bigger than before so trees read at isometric distance.
+## Rounded shade tree (pecan / cedar elm) — a full ball canopy of overlapping
+## lobes on a clear trunk.
 static func _build_tree_round(st: SurfaceTool, variant: int = 0) -> void:
 	_cylinder(st, Vector3.ZERO, 0.22, 3.0, 6, TRUNK_COL, false, false)
 	var c := _leaf(variant)
-	_box(st, Vector3(0.0, 3.7, 0.0), Vector3(3.0, 1.7, 3.0), c.darkened(0.06))
-	_box(st, Vector3(0.5, 4.5, -0.3), Vector3(2.4, 1.5, 2.3), c)
-	_box(st, Vector3(-0.4, 4.7, 0.4), Vector3(2.2, 1.4, 2.2), c.lerp(Color.WHITE, 0.05))
-	_box(st, Vector3(0.1, 5.4, 0.0), Vector3(1.5, 1.1, 1.5), c.lerp(Color.WHITE, 0.10))
+	# lower wide band + rounded top built from several offset lobes
+	_box(st, Vector3(0.0, 3.6, 0.0), Vector3(3.2, 1.6, 3.2), c.darkened(0.08))
+	_box(st, Vector3(1.1, 4.2, 0.2), Vector3(2.2, 1.5, 2.2), c)
+	_box(st, Vector3(-1.0, 4.3, -0.4), Vector3(2.0, 1.4, 2.2), c.lerp(Color.WHITE, 0.04))
+	_box(st, Vector3(0.2, 4.4, 1.1), Vector3(2.0, 1.4, 2.0), c.lerp(Color.WHITE, 0.05))
+	_box(st, Vector3(0.0, 5.2, 0.0), Vector3(2.0, 1.3, 2.0), c.lerp(Color.WHITE, 0.10))
+	_box(st, Vector3(0.0, 5.9, 0.0), Vector3(1.2, 0.9, 1.2), c.lerp(Color.WHITE, 0.14))
 
 
-## Big spreading oak — widest canopy, for canopy-cover cells.
+## Live oak — short thick trunk and a broad, low, spreading crown (the classic
+## Gulf-coast silhouette): wider than tall, many lobes at similar height.
 static func _build_tree_oak(st: SurfaceTool, variant: int = 0) -> void:
-	_cylinder(st, Vector3.ZERO, 0.30, 3.2, 8, TRUNK_COL.darkened(0.05), false, false)
+	_cylinder(st, Vector3.ZERO, 0.36, 2.2, 8, TRUNK_COL.darkened(0.05), false, false)
 	var c := _leaf(variant)
-	_box(st, Vector3(0.0, 4.0, 0.0), Vector3(4.4, 2.0, 4.4), c.darkened(0.08))
-	_box(st, Vector3(1.0, 4.8, 0.6), Vector3(3.2, 1.8, 3.0), c)
-	_box(st, Vector3(-1.0, 5.0, -0.6), Vector3(3.0, 1.7, 3.2), c.lerp(Color.WHITE, 0.04))
-	_box(st, Vector3(0.2, 5.9, 0.2), Vector3(2.2, 1.4, 2.2), c.lerp(Color.WHITE, 0.09))
+	_box(st, Vector3(0.0, 3.0, 0.0), Vector3(5.4, 1.7, 5.4), c.darkened(0.10))
+	_box(st, Vector3(1.9, 3.3, 0.5), Vector3(3.2, 1.5, 3.0), c)
+	_box(st, Vector3(-1.9, 3.2, -0.6), Vector3(3.0, 1.5, 3.2), c.lerp(Color.WHITE, 0.04))
+	_box(st, Vector3(0.3, 3.5, 2.0), Vector3(2.8, 1.4, 2.6), c.lerp(Color.WHITE, 0.05))
+	_box(st, Vector3(-0.4, 3.6, -2.0), Vector3(2.6, 1.4, 2.6), c.lerp(Color.WHITE, 0.03))
+	_box(st, Vector3(0.0, 4.2, 0.0), Vector3(3.0, 1.4, 3.0), c.lerp(Color.WHITE, 0.09))
 
 
+## Loblolly pine — tall bare trunk, several stacked conical tiers of decreasing
+## radius with gaps between them (a real pine, not a teardrop).
 static func _build_tree_conical(st: SurfaceTool, variant: int = 0) -> void:
-	_cylinder(st, Vector3.ZERO, 0.18, 1.4, 6, TRUNK_COL.darkened(0.05), false, false)
-	var leaf := _leaf(variant).darkened(0.05)
-	_cone(st, Vector3(0.0, 1.3, 0.0), 2.0, 6.6, 9, leaf, true)
-	_cone(st, Vector3(0.0, 3.6, 0.0), 1.5, 4.0, 9, leaf.lerp(Color.WHITE, 0.05), false)
+	var trunk := TRUNK_COL.darkened(0.10)
+	_cylinder(st, Vector3.ZERO, 0.18, 3.2, 6, trunk, false, false)
+	var leaf := _leaf(variant).darkened(0.04)
+	# (base_radius, base_y, height) per tier
+	_cone(st, Vector3(0.0, 2.4, 0.0), 2.3, 2.4, 9, leaf, true)
+	_cone(st, Vector3(0.0, 4.0, 0.0), 1.9, 2.2, 9, leaf.lerp(Color.WHITE, 0.03), false)
+	_cone(st, Vector3(0.0, 5.4, 0.0), 1.4, 2.0, 9, leaf.lerp(Color.WHITE, 0.06), false)
+	_cone(st, Vector3(0.0, 6.7, 0.0), 0.9, 1.8, 9, leaf.lerp(Color.WHITE, 0.09), false)
 
 
+## Narrow columnar (Italian cypress / poplar) — a slim tapered spire.
 static func _build_tree_columnar(st: SurfaceTool, variant: int = 0) -> void:
-	_cylinder(st, Vector3.ZERO, 0.16, 1.4, 6, TRUNK_COL.darkened(0.05), false, false)
-	_cone(st, Vector3(0.0, 1.3, 0.0), 0.9, 7.8, 8, _leaf(variant), true)
+	_cylinder(st, Vector3.ZERO, 0.16, 1.2, 6, TRUNK_COL.darkened(0.05), false, false)
+	var leaf := _leaf(variant).darkened(0.03)
+	_cone(st, Vector3(0.0, 1.1, 0.0), 0.95, 5.2, 8, leaf, true)
+	_cone(st, Vector3(0.0, 4.6, 0.0), 0.6, 3.2, 8, leaf.lerp(Color.WHITE, 0.05), false)
+
+
+## Willow — rounded crown on a clear trunk with long drooping fronds hanging from
+## the canopy edge (unmistakable weeping silhouette).
+static func _build_tree_willow(st: SurfaceTool, variant: int = 0) -> void:
+	_cylinder(st, Vector3.ZERO, 0.26, 3.2, 6, TRUNK_COL, false, false)
+	var c := _leaf(variant, 0.08)   # willows read lighter / yellow-green
+	_box(st, Vector3(0.0, 4.0, 0.0), Vector3(3.8, 1.7, 3.8), c.darkened(0.06))
+	_box(st, Vector3(0.0, 4.7, 0.0), Vector3(2.8, 1.3, 2.8), c.lerp(Color.WHITE, 0.05))
+	_box(st, Vector3(0.0, 5.3, 0.0), Vector3(1.6, 0.9, 1.6), c.lerp(Color.WHITE, 0.10))
+	# drooping fronds around the crown edge
+	for k in range(12):
+		var a := TAU * float(k) / 12.0
+		var r := 1.9
+		var top := Vector3(cos(a) * r, 4.3, sin(a) * r)
+		var bot := top + Vector3(cos(a) * 0.5, -2.8, sin(a) * 0.5)
+		var side := Vector3(-sin(a), 0.0, cos(a)) * 0.32
+		_quad(st, top - side, top + side, bot + side * 0.6, bot - side * 0.6,
+			c.lerp(Color.WHITE, 0.03))
 
 
 ## Palm — a leaning trunk topped with radiating fronds (Houston flavour).
