@@ -1442,16 +1442,38 @@ func _flat_roof_detail(st: SurfaceTool, ring: PackedVector2Array, h: float,
 	var units := clampi(int(area / 220.0), 1, 4)
 	var xa := Vector3(1.0, 0.0, 0.0)
 	var za := Vector3(0.0, 0.0, 1.0)
-	for u in range(units):
-		var fx := float(_stable_hash(bid, 61 + u * 3) % 1000) / 1000.0
-		var fz := float(_stable_hash(bid, 62 + u * 3) % 1000) / 1000.0
+	# Equipment is rejection-sampled INSIDE the real footprint polygon, not just
+	# the AABB: an L-shaped / non-rectangular roof would otherwise place HVAC units
+	# and penthouses out over thin air past the actual roof edge. Sampling stays
+	# deterministic (stable-hash driven) so reloads reproduce the same layout.
+	var placed := 0
+	var attempt := 0
+	while placed < units and attempt < units * 8:
+		var fx := float(_stable_hash(bid, 61 + attempt * 7) % 1000) / 1000.0
+		var fz := float(_stable_hash(bid, 62 + attempt * 7) % 1000) / 1000.0
+		attempt += 1
 		var ux := lerpf(min_x + 2.0, max_x - 2.0, fx)
 		var uz := lerpf(min_z + 2.0, max_z - 2.0, fz)
+		if not Geometry2D.is_point_in_polygon(Vector2(ux, uz), ring):
+			continue
 		verts += _facade_box(st, Vector3(ux, h + 0.45, uz), xa, za, 0.9, 0.65, 0.45, MECH_COL)
+		placed += 1
 	if area >= 300.0:
 		var cx := (min_x + max_x) * 0.5
 		var cz := (min_z + max_z) * 0.5
-		verts += _facade_box(st, Vector3(cx, h + 1.1, cz), xa, za, 1.5, 1.2, 1.1, PENTHOUSE_COL)
+		var ok := Geometry2D.is_point_in_polygon(Vector2(cx, cz), ring)
+		if not ok:
+			# Concave footprint: the AABB centre fell outside the polygon. Find a
+			# guaranteed-interior spot before dropping the penthouse.
+			for k in range(24):
+				var px := lerpf(min_x + 2.0, max_x - 2.0,
+					float(_stable_hash(bid, 200 + k * 3) % 1000) / 1000.0)
+				var pz := lerpf(min_z + 2.0, max_z - 2.0,
+					float(_stable_hash(bid, 201 + k * 3) % 1000) / 1000.0)
+				if Geometry2D.is_point_in_polygon(Vector2(px, pz), ring):
+					cx = px; cz = pz; ok = true; break
+		if ok:
+			verts += _facade_box(st, Vector3(cx, h + 1.1, cz), xa, za, 1.5, 1.2, 1.1, PENTHOUSE_COL)
 	return verts
 
 
@@ -1913,21 +1935,24 @@ func _scatter_vegetation(chunk: Dictionary, groups: Dictionary,
 			var t := cells[row * CELLS + col]
 			var hsh := _stable_hash(cx * 131071 + row, cz * 8191 + col)
 			var kind := ""
-			var s_lo := 1.0
-			var s_hi := 1.6
+			# `base` is a gentle ≤1.0 cover trim (canopy = full mature stature, yard/
+			# rough a touch smaller). It is NOT a size multiplier — overall size comes
+			# from the age tier in _tree_scale, which caps at ~1.25×. Cover chiefly
+			# controls density (the modulo gates below) and species mix.
+			var base := 1.0
 			if t == S_TREE_CANOPY:
 				kind = canopy[hsh % canopy.size()]
-				s_lo = 1.2; s_hi = 2.2                 # big trees in canopy cover
+				base = 1.0
 			elif t == S_ROUGH_VEGETATION:
 				if (hsh % 3) != 0:
 					continue
 				kind = rough[hsh % rough.size()]
-				s_lo = 0.9; s_hi = 1.7
+				base = 0.8
 			elif t == S_MAINTAINED_GRASS:
 				if (hsh % 6) != 0:
 					continue                            # sparse lawn/yard trees
 				kind = lawn[hsh % lawn.size()]
-				s_lo = 1.0; s_hi = 1.8
+				base = 0.9
 			else:
 				continue
 			var variant := (hsh >> 3) % 5
@@ -1937,23 +1962,30 @@ func _scatter_vegetation(chunk: Dictionary, groups: Dictionary,
 			var jz := (float((hsh >> 10) % 1000) / 1000.0 - 0.5) * CELL_M * float(STEP - 1)
 			var wx := origin.x + (float(col) + 0.5) * CELL_M + jx
 			var wz := origin.y + (float(row) + 0.5) * CELL_M + jz
-			# Reject placements that landed on non-vegetation cover or too close to a
-			# building, so canopies never clip into walls or spill onto pavement.
 			var fcol := int((wx - origin.x) / CELL_M)
 			var frow := int((wz - origin.y) / CELL_M)
 			if fcol < 0 or fcol >= CELLS or frow < 0 or frow >= CELLS:
 				continue
+			# Hard final-surface rejection: after jitter the candidate may have moved
+			# off its vegetation cell. Vegetation must never land on pavement, water or
+			# a building footprint (the earlier comment claimed this but the check was
+			# missing — trees could end up standing in a road or on a roof).
+			var fclass := int(cells[frow * CELLS + fcol])
+			if fclass == S_ROAD or fclass == S_SIDEWALK or fclass == S_PARKING \
+					or fclass == S_BUILDING or fclass == S_WATER:
+				continue
 			var is_tree := kind.begins_with("tree_")
-			var clearance := 2 if is_tree else 1
+			var yaw := float(hsh % 360)
+			var scl := _tree_scale(kind, base, hsh)
+			# Building clearance scales with the actual crown radius so a broad live
+			# oak stays further from walls than a slim cypress, instead of a fixed
+			# two-cell check for every species.
+			var clearance := 1
+			if is_tree:
+				var crown_r := _crown_radius_m(kind) * maxf(scl.x, scl.z)
+				clearance = clampi(int(ceil(crown_r / CELL_M)), 1, 3)
 			if _near_building(cells, frow, fcol, clearance):
 				continue
-			var s := s_lo + float((hsh >> 5) % 100) / 100.0 * (s_hi - s_lo)
-			var yaw := float(hsh % 360)
-			# Per-species age + proportion: an age tier (sapling/young/mature/old)
-			# sets overall size and a width-vs-height split, then a per-species shape
-			# bias (pines tall, live oaks wide, cypress slim). MultiMesh instances
-			# carry their own transform, so this non-uniform scale is free.
-			var scl := _tree_scale(kind, s, hsh)
 			var gkey := "%s:%d" % [kind, variant]
 			if not groups.has(gkey):
 				groups[gkey] = {"kind": kind, "variant": variant, "xforms": []}
@@ -2011,22 +2043,28 @@ func _region_veg(region: String) -> Dictionary:
 			}
 
 
-## Non-uniform tree scale = cover-size × age tier × per-species proportion.
-## Bushes stay near-uniform. `hsh` is the placement's stable hash.
+## Tree scale = age-tier size × per-species proportion, with `base` a gentle ≤1.0
+## cover trim (never an inflator). The prop meshes are authored at *mature*
+## dimensions (a live-oak crown is already ~5.4 m across at scale 1.0), so the age
+## tier is the ONLY overall-size multiplier — the old model compounded a cover
+## scale (up to 2.2) × age × species and produced ~3.4× house-sized canopies.
+## The tier ranges below already carry the ±10–15% individual variance the design
+## calls for. Bushes/shrubs stay near-uniform. `hsh` is the placement's stable hash.
 func _tree_scale(kind: String, base: float, hsh: int) -> Vector3:
 	if not kind.begins_with("tree_"):
-		return Vector3(base, base, base)
+		var bv := 0.9 + float(hsh % 100) / 100.0 * 0.2   # 0.90–1.10, near-uniform
+		return Vector3(base * bv, base * bv, base * bv)
 	var age := float((hsh >> 12) % 1000) / 1000.0
-	var ow := 1.0    # overall width factor
-	var oh := 1.0    # overall height factor
+	var t := float((hsh >> 22) % 1000) / 1000.0          # within-tier interpolation
+	var sz := 1.0                                        # overall size factor
 	if age < 0.16:
-		ow = 0.34; oh = 0.44         # sapling
+		sz = lerpf(0.35, 0.50, t)    # sapling
 	elif age < 0.44:
-		ow = 0.62; oh = 0.72         # young
+		sz = lerpf(0.60, 0.80, t)    # young
 	elif age < 0.82:
-		ow = 1.0; oh = 1.0           # mature
+		sz = lerpf(0.90, 1.10, t)    # mature
 	else:
-		ow = 1.26; oh = 1.12         # large / old
+		sz = lerpf(1.10, 1.25, t)    # old (capped — never overwhelms a house lot)
 	var spw := 1.0   # species width bias
 	var sph := 1.0   # species height bias
 	match kind:
@@ -2039,7 +2077,24 @@ func _tree_scale(kind: String, base: float, hsh: int) -> Vector3:
 		"tree_baldcypress": spw = 0.82; sph = 1.20   # bald cypress: tall, narrow
 		"tree_crape_myrtle": spw = 0.9; sph = 0.85   # crape myrtle: small ornamental
 		_: pass                                      # tree_round: balanced
-	return Vector3(base * ow * spw, base * oh * sph, base * ow * spw)
+	return Vector3(base * sz * spw, base * sz * sph, base * sz * spw)
+
+
+## Approximate mature crown radius (metres, at scale 1.0) per species, taken from
+## the authored prop-mesh half-widths. Used to size building clearance so a broad
+## live oak keeps further from walls than a slim columnar cypress.
+func _crown_radius_m(kind: String) -> float:
+	match kind:
+		"tree_oak": return 2.7
+		"tree_round": return 1.6
+		"tree_willow": return 1.9
+		"tree_magnolia": return 1.7
+		"tree_conical": return 2.3
+		"tree_baldcypress": return 2.0
+		"tree_columnar": return 0.95
+		"tree_palm": return 2.6
+		"tree_crape_myrtle": return 1.0
+		_: return 1.5
 
 
 # --------------------------------------------------------------- introspection
