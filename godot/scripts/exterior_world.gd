@@ -1916,7 +1916,8 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 		"tree_round": true, "tree_oak": true, "tree_conical": true,
 		"tree_columnar": true, "tree_palm": true, "tree_willow": true, "bush_round": true, "bush_low": true,
 		"tree_magnolia": true, "tree_crape_myrtle": true, "tree_baldcypress": true,
-		"hedge": true, "flowering_shrub": true, "tall_grass": true, "native_scrub": true}
+		"hedge": true, "flowering_shrub": true, "tall_grass": true, "native_scrub": true,
+		"wood_fence": true}                        # fence STYLE rides in the baked variant
 	var total := 0
 	for lst in lists:
 		for row in lst:

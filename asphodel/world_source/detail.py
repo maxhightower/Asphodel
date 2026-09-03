@@ -558,62 +558,89 @@ def _building_props(seed, parcel, b, front_dir, walkway_dir, drive_strip, g,
 
 # ---- fences --------------------------------------------------------------
 
-def _fences(seed, parcel, front_edge, driveway_strips, placements, stats):
+def _fences(seed, parcel, buildings, front_dir, driveway_strips, placements, stats):
+    """Per-building yard fences.
+
+    Older versions traced the whole parcel-boundary polygon; parcels here are
+    block-level land-use shapes riddled with slivers and reflex notches, so that
+    produced fences spiking diagonally across yards. Instead each building gets a
+    tidy rectangular yard fence aligned to its own footprint (oriented bounding
+    box, expanded by a small margin), fenced on the three non-street sides and open
+    to the street. Residential yards pick a consistent style (picket / privacy /
+    split-rail / iron) baked into the panel variant.
+    """
     g = PARCEL_DETAIL_GRAMMAR[parcel.arch]
-    r = DetRand(seed, parcel.pid, "fence")
-    if not r.chance(g["fence"]):
-        return
     if parcel.arch == "RESIDENTIAL":
-        kind = "wood_fence"
+        kind, residential = "wood_fence", True
     elif parcel.arch == "INDUSTRIAL":
-        kind = "chainlink_fence"
+        kind, residential = "chainlink_fence", False
+    elif parcel.arch in ("SCHOOL", "CIVIC"):
+        kind, residential = "wood_fence", True
     else:
-        kind = "wood_fence" if parcel.arch in ("SCHOOL", "CIVIC") else None
-        if kind is None:
-            return
+        return
 
-    frontage_set = {tuple(e) for e in parcel.frontage}
-    edges = list(ring_edges(parcel.poly))
-    gate_edge = None
-    if parcel.arch == "INDUSTRIAL":
-        gate_edge = front_edge if front_edge else (edges[0] if edges else None)
+    for idx, bid in enumerate(parcel.building_bids):
+        if not (0 <= bid < len(buildings)):
+            continue
+        b = buildings[bid]
+        r = DetRand(seed, b.bid, "fence")
+        if not r.chance(g["fence"]):
+            continue
+        drive = driveway_strips[idx] if idx < len(driveway_strips) else None
+        _yard_fence(b, front_dir, kind, residential, drive, r, placements, stats)
 
-    panels = 0
-    for ei, (p0, p1) in enumerate(edges):
-        if panels >= _MAX_FENCE_PANELS:
-            break
-        is_frontage = (p0, p1) in frontage_set or (p1, p0) in frontage_set
-        if parcel.arch != "INDUSTRIAL" and is_frontage:
+
+def _yard_fence(b, front_dir, kind, residential, drive, r, placements, stats):
+    try:
+        coords = list(b.poly.minimum_rotated_rectangle.exterior.coords)[:-1]
+    except Exception:
+        return
+    if len(coords) != 4:
+        return
+    cx, cz = b.poly.centroid.x, b.poly.centroid.y
+    margin = r.uniform(1.5, 3.0)
+    exp = []
+    for (x, z) in coords:
+        dx, dz = x - cx, z - cz
+        d = math.hypot(dx, dz) or 1.0
+        exp.append((x + dx / d * margin, z + dz / d * margin))
+    edges = [(exp[i], exp[(i + 1) % 4]) for i in range(4)]
+    # Skip the street-facing edge (max projection along front_dir) so the yard
+    # opens toward the street; without a front_dir, skip the longest edge.
+    skip_i = -1
+    if front_dir is not None:
+        best = -1e18
+        for i, (a, c) in enumerate(edges):
+            mx, mz = (a[0] + c[0]) * 0.5, (a[1] + c[1]) * 0.5
+            proj = (mx - cx) * front_dir[0] + (mz - cz) * front_dir[1]
+            if proj > best:
+                best, skip_i = proj, i
+    else:
+        skip_i = max(range(4), key=lambda i: math.dist(edges[i][0], edges[i][1]))
+    style = r.randint(0, 3) if (residential and kind == "wood_fence") else 0
+    for i, (a, c) in enumerate(edges):
+        if i == skip_i:
             continue
-        dx, dz = p1[0] - p0[0], p1[1] - p0[1]
-        ln = math.hypot(dx, dz)
-        if ln <= 0:
+        _fence_run(a, c, kind, style, drive, placements, stats)
+
+
+def _fence_run(p0, p1, kind, style, drive, placements, stats):
+    dx, dz = p1[0] - p0[0], p1[1] - p0[1]
+    ln = math.hypot(dx, dz)
+    if ln < 1.0:
+        return
+    ux, uz = dx / ln, dz / ln
+    heading = _heading_deg(dx, dz)
+    n = min(_MAX_FENCE_PANELS, max(1, int(ln // _FENCE_SPACING)))
+    for i in range(n):
+        d = (i + 0.5) * _FENCE_SPACING
+        if d >= ln:
             continue
-        ux, uz = dx / ln, dz / ln
-        heading = _heading_deg(dx, dz)
-        n_panels = max(1, int(ln // _FENCE_SPACING))
-        gate_lo = gate_hi = None
-        if gate_edge is not None and (p0, p1) == gate_edge:
-            gate_lo, gate_hi = ln / 2.0 - 4.0, ln / 2.0 + 4.0
-        for i in range(n_panels):
-            if panels >= _MAX_FENCE_PANELS:
-                break
-            d = (i + 0.5) * _FENCE_SPACING
-            if d >= ln:
-                continue
-            if gate_lo is not None and gate_lo <= d <= gate_hi:
-                continue
-            px, pz = p0[0] + ux * d, p0[1] + uz * d
-            near_drive = False
-            for strip in driveway_strips:
-                if strip is not None and strip.distance(Point(px, pz)) < 2.0:
-                    near_drive = True
-                    break
-            if near_drive:
-                continue
-            placements.append(Placement(kind, px, pz, heading, 0, "prop"))
-            panels += 1
-            _bump(stats, "fences_m", _FENCE_SPACING)
+        px, pz = p0[0] + ux * d, p0[1] + uz * d
+        if drive is not None and drive.distance(Point(px, pz)) < 2.0:
+            continue
+        placements.append(Placement(kind, px, pz, heading, style, "prop"))
+        _bump(stats, "fences_m", _FENCE_SPACING)
 
 
 # ---- vegetation ------------------------------------------------------------
@@ -806,7 +833,7 @@ def compile_detail(parcels, buildings, segments, seed) -> DetailResult:
             _parking_lot(seed, parcel, open_area, building_polys, g,
                          placements, patches, anchors, stats, driveway_strips)
 
-        _fences(seed, parcel, front_edge, driveway_strips, placements, stats)
+        _fences(seed, parcel, buildings, front_dir, driveway_strips, placements, stats)
 
         building_union = None
         if building_polys:

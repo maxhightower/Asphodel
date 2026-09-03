@@ -166,7 +166,7 @@ static func _build(kind: String, variant: int) -> ArrayMesh:
 		"bus_shelter":
 			_build_bus_shelter(st)
 		"wood_fence":
-			_build_wood_fence(st)
+			_build_wood_fence(st, variant)
 		"pallet":
 			_build_pallet(st)
 		"road_barrier":
@@ -514,21 +514,51 @@ static func _build_bus_shelter(st: SurfaceTool) -> void:
 	_box(st, Vector3(0.0, 0.15, -hz), Vector3(3.0, 0.3, 0.06), frame)   # low back sill
 
 
-static func _build_wood_fence(st: SurfaceTool) -> void:
-	# A picket fence with real thickness: chunky end posts, two set-back rails, and
-	# vertical pickets standing slightly proud of the rails so the panel reads as a
-	# 3D object (not a flat billboard) at iso scale. Cost is paid once (MultiMesh).
-	var post := Color(0.34, 0.24, 0.14)
-	var rail := Color(0.46, 0.33, 0.19)
-	var plank := Color(0.57, 0.42, 0.25)
-	_box(st, Vector3(-1.0, 0.62, 0.0), Vector3(0.15, 1.24, 0.15), post)
-	_box(st, Vector3(1.0, 0.62, 0.0), Vector3(0.15, 1.24, 0.15), post)
-	_box(st, Vector3(0.0, 0.35, -0.02), Vector3(2.0, 0.11, 0.08), rail)
-	_box(st, Vector3(0.0, 0.92, -0.02), Vector3(2.0, 0.11, 0.08), rail)
-	var pickets := 9
-	for i in range(pickets):
-		var x := -0.88 + float(i) * (1.76 / float(pickets - 1))
-		_box(st, Vector3(x, 0.60, 0.04), Vector3(0.13, 1.16, 0.06), plank)
+## Residential fence panel (2 m wide, along X). `variant` selects the style so a
+## yard can pick a consistent look: 0 picket, 1 privacy board, 2 split rail,
+## 3 wrought iron. One panel is baked per style (MultiMesh), so a whole fence run
+## of one style is a single draw.
+static func _build_wood_fence(st: SurfaceTool, variant: int = 0) -> void:
+	match ((variant % 4) + 4) % 4:
+		1:  # privacy — a tall solid board panel with a capped top rail
+			var pp := Color(0.42, 0.31, 0.19)
+			var brd := Color(0.54, 0.41, 0.27)
+			_box(st, Vector3(-1.0, 0.9, 0.0), Vector3(0.17, 1.8, 0.17), pp.darkened(0.12))
+			_box(st, Vector3(1.0, 0.9, 0.0), Vector3(0.17, 1.8, 0.17), pp.darkened(0.12))
+			_box(st, Vector3(0.0, 0.88, 0.0), Vector3(2.0, 1.66, 0.07), brd)          # solid boards
+			_box(st, Vector3(0.0, 1.76, 0.0), Vector3(2.02, 0.12, 0.12), pp)          # top cap
+			for i in range(6):                                                        # board seams
+				_box(st, Vector3(-0.83 + float(i) * 0.33, 0.88, 0.045),
+					Vector3(0.05, 1.5, 0.02), brd.darkened(0.14))
+		2:  # split rail — chunky posts + two open rails (rustic ranch)
+			var wd := Color(0.46, 0.37, 0.27)
+			_box(st, Vector3(-1.0, 0.58, 0.0), Vector3(0.2, 1.16, 0.2), wd.darkened(0.1))
+			_box(st, Vector3(1.0, 0.58, 0.0), Vector3(0.2, 1.16, 0.2), wd.darkened(0.1))
+			_box(st, Vector3(0.0, 0.44, 0.0), Vector3(2.0, 0.13, 0.11), wd)
+			_box(st, Vector3(0.0, 0.86, 0.0), Vector3(2.0, 0.13, 0.11), wd.lerp(Color.WHITE, 0.05))
+		3:  # wrought iron — thin vertical bars, top/bottom rails, spear tops
+			var iron := Color(0.11, 0.11, 0.13)
+			_box(st, Vector3(-1.0, 0.72, 0.0), Vector3(0.12, 1.48, 0.12), iron)
+			_box(st, Vector3(1.0, 0.72, 0.0), Vector3(0.12, 1.48, 0.12), iron)
+			_box(st, Vector3(0.0, 0.32, 0.0), Vector3(2.0, 0.06, 0.06), iron)
+			_box(st, Vector3(0.0, 1.18, 0.0), Vector3(2.0, 0.06, 0.06), iron)
+			var nbar := 11
+			for i in range(nbar):
+				var bx := -0.9 + float(i) * (1.8 / float(nbar - 1))
+				_box(st, Vector3(bx, 0.74, 0.0), Vector3(0.04, 1.4, 0.04), iron)
+				_box(st, Vector3(bx, 1.42, 0.0), Vector3(0.055, 0.14, 0.055), iron)   # spear tip
+		_:  # 0 picket (the classic)
+			var post := Color(0.34, 0.24, 0.14)
+			var rail := Color(0.46, 0.33, 0.19)
+			var plank := Color(0.57, 0.42, 0.25)
+			_box(st, Vector3(-1.0, 0.62, 0.0), Vector3(0.15, 1.24, 0.15), post)
+			_box(st, Vector3(1.0, 0.62, 0.0), Vector3(0.15, 1.24, 0.15), post)
+			_box(st, Vector3(0.0, 0.35, -0.02), Vector3(2.0, 0.11, 0.08), rail)
+			_box(st, Vector3(0.0, 0.92, -0.02), Vector3(2.0, 0.11, 0.08), rail)
+			var pickets := 9
+			for i in range(pickets):
+				var x := -0.88 + float(i) * (1.76 / float(pickets - 1))
+				_box(st, Vector3(x, 0.60, 0.04), Vector3(0.13, 1.16, 0.06), plank)
 
 
 static func _build_chainlink_fence() -> ArrayMesh:
