@@ -105,6 +105,13 @@ const DECK_T := 0.7
 const CURB_COL := Color(0.60, 0.60, 0.58)
 const ROAD_RIBBON_Y := 0.035      # above the 0.02 raster ground, below markings (0.06)
 const SIDEWALK_Y := 0.14          # raised sidewalk deck
+# Per-surface-class ground height. The street is the low datum (0); sidewalk, grass,
+# medians and hardscape sit above it, and a curb skirt is drawn wherever a cell is
+# taller than its neighbour — so the ground has real vertical relief, not one flat
+# plane. Indexed by surface class (ROAD..BUILDING).
+const SURFACE_H := [0.0, 0.14, 0.03, 0.06, 0.15, 0.14, 0.14, 0.09, -0.15, 0.06]
+const ROAD_CORRIDOR_Y := 0.02     # road cells (+1 ring) held low so ribbons show
+const CURB_FACE_COL := Color(0.56, 0.56, 0.54)   # concrete curb faces
 const PATH_Y := 0.05
 
 static var _ground_mat: StandardMaterial3D = null
@@ -454,38 +461,86 @@ func _build_t1(chunk: Dictionary, root: Node3D) -> Dictionary:
 	var origin_arr: Array = chunk.get("origin", [0.0, 0.0])
 	var origin := Vector2(float(origin_arr[0]), float(origin_arr[1]))
 	var runs: Array = chunk.get("surface", [])
-	var cells := _decode_rle(runs, CELLS * CELLS)
+	var raw := _decode_rle(runs, CELLS * CELLS)
 	# Roads and sidewalks are drawn as smooth continuous ribbons (see
-	# _build_road_surfaces); erase their blocky raster cells by bleeding the
-	# surrounding cover into them, so the ground under/around a ribbon matches its
-	# neighbourhood and the green meets the ribbon on a smooth curve, not a grid.
-	cells = _erase_paved_cells(cells)
+	# _build_road_surfaces); erase their blocky raster cells so the green meets the
+	# ribbon on a smooth curve, not a grid.
+	var cells := _erase_paved_cells(raw)
+
+	# Per-cell ground height (see SURFACE_H) — but the ROAD CORRIDOR (every raw road
+	# cell, dilated one cell) is forced to the low datum so the raised grass never
+	# rises over the smooth road ribbon / lane markings on curves.
+	var heights := PackedFloat32Array()
+	heights.resize(CELLS * CELLS)
+	for i in range(CELLS * CELLS):
+		heights[i] = _cell_h(cells[i])
+	for row in range(CELLS):
+		for col in range(CELLS):
+			if raw[row * CELLS + col] != S_ROAD:
+				continue
+			for dr in range(-1, 2):
+				var rr := row + dr
+				if rr < 0 or rr >= CELLS:
+					continue
+				for dc in range(-1, 2):
+					var cc := col + dc
+					if cc < 0 or cc >= CELLS:
+						continue
+					var k := rr * CELLS + cc
+					heights[k] = minf(heights[k], ROAD_CORRIDOR_Y)
 
 	var quads := 0
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# Top surfaces, run-merged while both class and height match.
 	for row in range(CELLS):
 		var col := 0
 		while col < CELLS:
-			var t := cells[row * CELLS + col]
+			var idx := row * CELLS + col
+			var t := cells[idx]
+			var hy := heights[idx]
 			var col2 := col + 1
-			while col2 < CELLS and cells[row * CELLS + col2] == t:
+			while col2 < CELLS and cells[row * CELLS + col2] == t \
+					and absf(heights[row * CELLS + col2] - hy) < 0.001:
 				col2 += 1
-			# Buildings paint as impervious hardscape; the surface-class id rides in
-			# COLOR.a so the ground shader can treat asphalt/concrete/grass distinctly.
 			var fam := S_OTHER_IMPERVIOUS if t == S_BUILDING else t
 			var color: Color = SURFACE_COLORS[S_OTHER_IMPERVIOUS] if t == S_BUILDING \
 				else (SURFACE_COLORS[t] if t < SURFACE_COLORS.size() else Color(1, 0, 1))
-			var y := -0.15 if t == S_WATER else 0.02
 			var x0 := origin.x + float(col) * CELL_M
 			var x1 := origin.x + float(col2) * CELL_M
 			var z0 := origin.y + float(row) * CELL_M
 			var z1 := origin.y + float(row + 1) * CELL_M
 			st.set_color(WorldMaterials.encode(color, fam))
-			_tri(st, Vector3(x0, y, z0), Vector3(x1, y, z0), Vector3(x1, y, z1), Vector3.UP)
-			_tri(st, Vector3(x0, y, z0), Vector3(x1, y, z1), Vector3(x0, y, z1), Vector3.UP)
+			_tri(st, Vector3(x0, hy, z0), Vector3(x1, hy, z0), Vector3(x1, hy, z1), Vector3.UP)
+			_tri(st, Vector3(x0, hy, z0), Vector3(x1, hy, z1), Vector3(x0, hy, z1), Vector3.UP)
 			quads += 1
 			col = col2
+	# Curb skirts: a vertical concrete face wherever a cell is taller than its right
+	# or lower neighbour (grass→street, sidewalk→street, median→parking …).
+	var curb := WorldMaterials.encode(CURB_FACE_COL, S_OTHER_IMPERVIOUS)
+	for row in range(CELLS):
+		for col in range(CELLS):
+			var h0 := heights[row * CELLS + col]
+			var bx := origin.x + float(col) * CELL_M
+			var bz := origin.y + float(row) * CELL_M
+			if col + 1 < CELLS:
+				var hr := heights[row * CELLS + col + 1]
+				if absf(h0 - hr) > 0.001:
+					var xe := bx + CELL_M
+					var lo := minf(h0, hr); var hi := maxf(h0, hr)
+					var nx := 1.0 if h0 > hr else -1.0
+					st.set_color(curb)
+					_tri(st, Vector3(xe, lo, bz), Vector3(xe, hi, bz), Vector3(xe, hi, bz + CELL_M), Vector3(nx, 0, 0))
+					_tri(st, Vector3(xe, lo, bz), Vector3(xe, hi, bz + CELL_M), Vector3(xe, lo, bz + CELL_M), Vector3(nx, 0, 0))
+			if row + 1 < CELLS:
+				var hd := heights[(row + 1) * CELLS + col]
+				if absf(h0 - hd) > 0.001:
+					var ze := bz + CELL_M
+					var lo2 := minf(h0, hd); var hi2 := maxf(h0, hd)
+					var nz := 1.0 if h0 > hd else -1.0
+					st.set_color(curb)
+					_tri(st, Vector3(bx, lo2, ze), Vector3(bx, hi2, ze), Vector3(bx + CELL_M, hi2, ze), Vector3(0, 0, nz))
+					_tri(st, Vector3(bx, lo2, ze), Vector3(bx + CELL_M, hi2, ze), Vector3(bx + CELL_M, lo2, ze), Vector3(0, 0, nz))
 	var ground_mesh := st.commit()
 	var mi := MeshInstance3D.new()
 	mi.mesh = ground_mesh
@@ -511,9 +566,9 @@ func _build_t1(chunk: Dictionary, root: Node3D) -> Dictionary:
 
 func _erase_paved_cells(cells: PackedByteArray) -> PackedByteArray:
 	## Replace S_ROAD / S_SIDEWALK cells with the nearest non-road, non-sidewalk,
-	## non-building cover (grass, verge, parking, plaza…), defaulting to grass.
-	## The smooth road/sidewalk ribbons are drawn on top, so this only governs what
-	## shows at the ribbon's edge — giving a smooth green (or plaza) boundary.
+	## non-building cover (grass, verge, parking…), defaulting to grass. The smooth
+	## road/sidewalk ribbons are drawn on top; the road corridor is separately kept
+	## at the low datum (see _build_t1) so the raised grass never buries it.
 	var out := cells.duplicate()
 	for row in range(CELLS):
 		for col in range(CELLS):
@@ -538,6 +593,13 @@ func _erase_paved_cells(cells: PackedByteArray) -> PackedByteArray:
 					break
 			out[row * CELLS + col] = fill
 	return out
+
+
+func _cell_h(t: int) -> float:
+	## Ground height for a surface class; buildings render as impervious hardscape.
+	if t == S_BUILDING:
+		return SURFACE_H[S_OTHER_IMPERVIOUS]
+	return SURFACE_H[t] if t < SURFACE_H.size() else 0.05
 
 
 ## Observed appearance value (BuildingAppearanceV1) for section/field, or "" when
@@ -1716,7 +1778,7 @@ func _build_ground_markings(chunk: Dictionary, root: Node3D) -> int:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var verts := 0
-	var y := 0.05                                  # just above the parking surface (0.02)
+	var y := 0.075                                 # clear of the raised parking surface (0.03)
 	for m in marks:
 		if not (m is Array) or (m as Array).size() < 5:
 			continue

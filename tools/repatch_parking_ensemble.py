@@ -42,9 +42,10 @@ STALL_PITCH = 2.7
 STALL_DEPTH = 5.0
 AISLE = 6.0
 MIN_REGION_CELLS = 24
-ISLAND_EVERY = 8          # every Nth stall column in a band becomes a grass island
+ISLAND_EVERY = 9          # every Nth stall column is a grass island (aligned into
+                          # tidy landscaped strips down the lot, not scattered)
 ISLAND_R = 2.3            # island grass radius (m)
-CAR_FILL = 0.42
+CAR_FILL = 0.55
 CAR_MIX = [("sedan", 5), ("suv", 3), ("pickup", 2), ("van", 1), ("jeep", 1),
            ("sports_car", 1)]
 ISLAND_TREES = ["tree_round", "tree_crape_myrtle", "tree_round", "tree_magnolia"]
@@ -173,7 +174,7 @@ def _region(cells, origin, grid, out):
         col_i = 0
         uu = umin + STALL_PITCH * 0.5
         while uu <= umax:
-            if col_i % ISLAND_EVERY == (band_i % ISLAND_EVERY) and len(out["tree"]) < MAX_ISLANDS:
+            if col_i > 0 and col_i % ISLAND_EVERY == 0 and len(out["tree"]) < MAX_ISLANDS:
                 px, pz = wp(uu, band_v)
                 if cell_is(px, pz, S_PARKING) and _carve_island(grid, origin, px, pz):
                     t = ISLAND_TREES[int(_rng(px, pz, 29) * len(ISLAND_TREES)) % len(ISLAND_TREES)]
