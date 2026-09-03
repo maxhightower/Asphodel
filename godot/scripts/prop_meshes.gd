@@ -76,6 +76,7 @@ const SUPPORTED_KINDS := [
 	"dumpster", "parking_stop", "bench", "bus_shelter", "wood_fence",
 	"chainlink_fence", "pallet", "road_barrier",
 	"sedan", "suv", "pickup", "van", "box_truck", "jeep", "sports_car",
+	"semi_truck", "oil_tanker",
 	"tree_round", "tree_oak", "tree_conical", "tree_columnar", "tree_palm",
 	"tree_willow", "bush_round", "bush_low",
 	"tree_magnolia", "tree_crape_myrtle", "tree_baldcypress",
@@ -170,7 +171,8 @@ static func _build(kind: String, variant: int) -> ArrayMesh:
 			_build_pallet(st)
 		"road_barrier":
 			_build_road_barrier(st)
-		"sedan", "suv", "pickup", "van", "box_truck", "jeep", "sports_car":
+		"sedan", "suv", "pickup", "van", "box_truck", "jeep", "sports_car", \
+		"semi_truck", "oil_tanker":
 			_build_vehicle(st, kind, variant)
 		"tree_round":
 			_build_tree_round(st, variant)
@@ -208,7 +210,8 @@ static func _build(kind: String, variant: int) -> ArrayMesh:
 	st.generate_normals()
 	var mesh := st.commit()
 	var vehicle_kinds := {"sedan": true, "suv": true, "pickup": true, "van": true,
-		"box_truck": true, "jeep": true, "sports_car": true}
+		"box_truck": true, "jeep": true, "sports_car": true,
+		"semi_truck": true, "oil_tanker": true}
 	mesh.surface_set_material(0, _vehicle_material() if vehicle_kinds.has(kind) else _opaque_material())
 	return mesh
 
@@ -638,6 +641,62 @@ static func _lights(st: SurfaceTool, x: float, y: float, zc: float, col: Color) 
 	_box(st, Vector3(x, y, -zc), Vector3(0.08, 0.16, 0.34), col)
 
 
+## A conventional (long-hood) semi tractor: chassis rail, hood, tall sleeper cab
+## with a raked screen + aero roof fairing, twin exhaust stacks and the fifth-wheel
+## coupling plate. Front bumper at x≈8.2; the trailer/tank mounts around x≈4.3.
+## Shared by the 18-wheeler and the oil tanker.
+static func _tractor(st: SurfaceTool, col: Color, glass: Color, trim: Color) -> void:
+	var flight := Color(0.93, 0.90, 0.74)
+	_box(st, Vector3(5.6, 0.9, 0.0), Vector3(5.6, 0.24, 1.2), trim)     # chassis rail
+	_box(st, Vector3(7.15, 1.2, 0.0), Vector3(1.9, 1.1, 2.34), col)     # hood
+	_box(st, Vector3(8.2, 0.92, 0.0), Vector3(0.24, 0.9, 2.5), trim)    # front bumper
+	_box(st, Vector3(8.06, 1.3, 0.0), Vector3(0.12, 0.9, 1.9), trim.darkened(0.2))  # grille
+	_lights(st, 8.2, 1.05, 0.98, flight)                                # headlamps
+	_box(st, Vector3(5.75, 2.15, 0.0), Vector3(1.9, 2.9, 2.42), col)    # tall sleeper cab
+	_box(st, Vector3(6.68, 2.55, 0.0), Vector3(0.12, 1.35, 2.0), glass) # windshield
+	_box(st, Vector3(5.8, 2.5, 1.2), Vector3(1.25, 0.95, 0.04), glass)  # side glass
+	_box(st, Vector3(5.8, 2.5, -1.2), Vector3(1.25, 0.95, 0.04), glass)
+	_box(st, Vector3(5.15, 3.55, 0.0), Vector3(1.35, 0.5, 2.24), col)   # roof aero fairing
+	_cylinder(st, Vector3(4.85, 0.9, 1.05), 0.1, 2.9, 6, trim, true, false)   # exhaust stacks
+	_cylinder(st, Vector3(4.85, 0.9, -1.05), 0.1, 2.9, 6, trim, true, false)
+	_box(st, Vector3(4.35, 1.05, 0.0), Vector3(1.4, 0.24, 1.6), trim)   # fifth-wheel plate
+
+
+## Big-rig running gear: front steer axle + tractor drive tandem (dual) + trailer
+## tandem (dual) = 18 wheels. `rear_ax` are the two trailer axle x positions.
+static func _rig_wheels(st: SurfaceTool, rear_ax: Array) -> void:
+	var r := 0.5
+	var w := 0.32
+	_wheel(st, 7.4, 1.08, r, w)                     # steer
+	_wheel(st, 7.4, -1.08, r, w)
+	for ax in [5.0, 4.15]:                          # drive tandem, dual wheels
+		for zc in [1.16, 0.82, -0.82, -1.16]:
+			_wheel(st, ax, zc, r, w)
+	for ax in rear_ax:                              # trailer tandem, dual wheels
+		for zc in [1.16, 0.82, -0.82, -1.16]:
+			_wheel(st, ax, zc, r, w)
+
+
+## A horizontal tank barrel along X (the tanker trailer), radius `r`, axis at
+## height `cy`, capped at both ends.
+static func _tank(st: SurfaceTool, x0: float, x1: float, cy: float, r: float, col: Color) -> void:
+	st.set_color(col)
+	var segs := 12
+	var c0 := Vector3(x0, cy, 0.0)
+	var c1 := Vector3(x1, cy, 0.0)
+	for i in range(segs):
+		var a0 := TAU * float(i) / float(segs)
+		var a1 := TAU * float(i + 1) / float(segs)
+		var p0 := Vector3(x0, cy + cos(a0) * r, sin(a0) * r)
+		var p1 := Vector3(x0, cy + cos(a1) * r, sin(a1) * r)
+		var q0 := Vector3(x1, cy + cos(a0) * r, sin(a0) * r)
+		var q1 := Vector3(x1, cy + cos(a1) * r, sin(a1) * r)
+		st.add_vertex(p0); st.add_vertex(q0); st.add_vertex(q1)
+		st.add_vertex(p0); st.add_vertex(q1); st.add_vertex(p1)
+		st.add_vertex(c0); st.add_vertex(p1); st.add_vertex(p0)   # end caps
+		st.add_vertex(c1); st.add_vertex(q0); st.add_vertex(q1)
+
+
 static func _build_vehicle(st: SurfaceTool, kind: String, variant: int) -> void:
 	var col := _vehicle_color(variant)
 	var glass := Color(0.11, 0.13, 0.17)
@@ -752,6 +811,30 @@ static func _build_vehicle(st: SurfaceTool, kind: String, variant: int) -> void:
 			_box(st, Vector3(-0.95, 1.8, 0.0), Vector3(4.3, 2.9, 2.2), col.lerp(Color.WHITE, 0.12))  # cargo box
 			_box(st, Vector3(2.7, 0.5, 0.0), Vector3(0.14, 0.4, 2.0), trim)
 			_lights(st, 2.71, 0.7, 0.75, flight)
+		"semi_truck":
+			# 18-wheeler: conventional tractor + a long dry-van trailer on tandem axles.
+			_rig_wheels(st, [-6.4, -7.4])
+			_tractor(st, col, glass, trim)
+			var tcol: Color = Color(0.85, 0.85, 0.87).lerp(col, 0.08)     # trailer skin (mostly neutral)
+			_box(st, Vector3(-1.7, 2.25, 0.0), Vector3(12.4, 2.9, 2.5), tcol)     # trailer box
+			_box(st, Vector3(-1.7, 0.82, 0.0), Vector3(12.0, 0.26, 1.2), trim)    # trailer frame
+			_box(st, Vector3(-7.85, 2.2, 0.0), Vector3(0.12, 2.7, 2.46), tcol.darkened(0.1))  # rear doors
+			_box(st, Vector3(-7.9, 0.7, 0.0), Vector3(0.16, 0.5, 2.3), trim)      # rear underride bar
+			_box(st, Vector3(4.05, 0.6, 0.0), Vector3(0.1, 0.7, 0.7), trim)       # landing gear
+			_lights(st, -7.9, 0.85, 1.0, rlight)
+		"oil_tanker":
+			# tractor + a polished cylindrical tank trailer with a walkway + dome hatch.
+			_rig_wheels(st, [-6.4, -7.4])
+			_tractor(st, col, glass, trim)
+			var tank: Color = Color(0.80, 0.81, 0.83)                    # brushed steel
+			_box(st, Vector3(-1.8, 0.9, 0.0), Vector3(12.2, 0.5, 1.1), trim)      # tank frame
+			_tank(st, -7.9, 4.3, 2.15, 1.2, tank)                        # tank barrel
+			_box(st, Vector3(-1.8, 3.4, 0.0), Vector3(10.5, 0.08, 0.5), trim)     # top walkway
+			_cylinder(st, Vector3(-1.0, 3.32, 0.0), 0.22, 0.32, 8, trim, true, false)   # dome/manhole
+			_cylinder(st, Vector3(2.4, 3.32, 0.0), 0.18, 0.28, 8, trim, true, false)
+			_box(st, Vector3(-8.0, 1.4, 0.0), Vector3(0.12, 2.2, 2.0), tank.darkened(0.05))  # rear head shield
+			_box(st, Vector3(-8.05, 0.7, 0.0), Vector3(0.16, 0.5, 2.1), trim)     # rear underride
+			_lights(st, -8.05, 0.85, 0.9, rlight)
 
 
 # ------------------------------------------------------------------------ vegetation

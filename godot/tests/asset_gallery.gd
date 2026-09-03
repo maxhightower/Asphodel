@@ -17,7 +17,8 @@ const GROUPS := {
 		"dumpster", "traffic_sign", "traffic_signal", "bus_shelter",
 		"parking_stop", "utility_pole", "ac_condenser", "guardrail",
 		"road_barrier", "pallet", "wood_fence", "chainlink_fence"],
-	"vehicles": ["sedan", "sports_car", "suv", "jeep", "pickup", "van", "box_truck"],
+	"vehicles": ["sedan", "sports_car", "suv", "jeep", "pickup", "van",
+		"box_truck", "semi_truck", "oil_tanker"],
 	"veg": ["tree_oak", "tree_round", "tree_magnolia", "tree_conical",
 		"tree_baldcypress", "tree_columnar", "tree_palm", "tree_willow",
 		"tree_crape_myrtle", "bush_round", "bush_low", "hedge",
@@ -72,31 +73,39 @@ func _run() -> void:
 
 	print("gallery: building group ", _group)
 	var kinds: Array = GROUPS.get(_group, GROUPS["street"])
-	# Pack kinds into a squarish grid of cells; a cell holds one kind's variants
-	# in a short row, so the whole sheet reads compactly rather than as a strip.
-	# vstep spaces the variants along +X (a vehicle's length axis), so it must clear
-	# the longest body (~6 m box truck) or the cars telescope into each other.
-	var vstep: float = {"street": 1.7, "vehicles": 7.5, "veg": 6.0}.get(_group, 1.7)
-	var cellw: float = {"street": 7.0, "vehicles": 42.0, "veg": 32.0}.get(_group, 7.0)
-	var celld: float = {"street": 3.2, "vehicles": 7.5, "veg": 8.0}.get(_group, 3.2)
-	var kpr := int(round(sqrt(float(kinds.size()))))
-	kpr = maxi(1, kpr)
+	# Spacing is derived from each kind's real mesh AABB so nothing overlaps whether
+	# it's a 4.5 m sedan or a 17 m tanker. Vehicles get one kind per row (variants
+	# along +X, the length axis); other groups keep the squarish grid.
+	var gap := 1.6
+	var kpr := 1 if _group == "vehicles" else maxi(1, int(round(sqrt(float(kinds.size())))))
+	# per-kind mesh length (X) and width (Z)
+	var klen := PackedFloat32Array()
+	var kwid := PackedFloat32Array()
+	for kind_i in kinds:
+		var ab := (PropMeshes.get_mesh(kind_i, 0) as Mesh).get_aabb()
+		klen.append(maxf(ab.size.x, 1.0))
+		kwid.append(maxf(ab.size.z, 1.0))
 	var min_x := INF; var min_z := INF; var max_x := -INF; var max_z := -INF
+	var z_cursor := 0.0
+	var row_h := 0.0
 	for i in range(kinds.size()):
 		var kind: String = kinds[i]
 		var nvar := _variant_count(kind)
 		var kcol := i % kpr
-		var krow := i / kpr
-		var x0 := float(kcol) * cellw
-		var z0 := float(krow) * celld
+		if kcol == 0 and i > 0:
+			z_cursor += row_h + gap
+			row_h = 0.0
+		row_h = maxf(row_h, kwid[i])
+		var x0 := float(kcol) * 12.0        # (unused for vehicles: kpr==1)
+		var step := klen[i] + gap
 		for c in range(nvar):
 			var mi := MeshInstance3D.new()
 			mi.mesh = PropMeshes.get_mesh(kind, c)
-			var px := x0 + float(c) * vstep
-			mi.position = Vector3(px, 0.0, z0)
+			var px := x0 + float(c) * step
+			mi.position = Vector3(px, 0.0, z_cursor)
 			add_child(mi)
-			min_x = minf(min_x, px); max_x = maxf(max_x, px)
-			min_z = minf(min_z, z0); max_z = maxf(max_z, z0)
+			min_x = minf(min_x, px - klen[i] * 0.5); max_x = maxf(max_x, px + klen[i] * 0.5)
+			min_z = minf(min_z, z_cursor); max_z = maxf(max_z, z_cursor)
 
 	# frame the grid bounds with an angled iso ortho camera
 	var w := max_x - min_x
@@ -104,7 +113,7 @@ func _run() -> void:
 	var center := Vector3((min_x + max_x) * 0.5, 1.0, (min_z + max_z) * 0.5)
 	var cam := Camera3D.new()
 	cam.projection = Camera3D.PROJECTION_ORTHOGONAL
-	cam.size = 0.46 * (w + d) + 9.0
+	cam.size = 0.62 * (w + d) + 14.0
 	cam.near = 0.1
 	cam.far = 3000.0
 	cam.position = center + Vector3(-0.55, 0.85, -0.55).normalized() * ((w + d) + 60.0)
