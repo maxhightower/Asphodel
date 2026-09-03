@@ -48,16 +48,18 @@ func _load_houses() -> Array:
 func _run() -> void:
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.60, 0.64, 0.68) if not _neutral else Color(0.5, 0.5, 0.52)
+	# Neutral mode: a mid-grey ground/sky + low ambient + a strong raking sun with
+	# shadows, so the ONLY thing distinguishing houses is their 3D shape.
+	env.background_color = Color(0.60, 0.64, 0.68) if not _neutral else Color(0.34, 0.35, 0.38)
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.78, 0.80, 0.84)
-	env.ambient_light_energy = 0.85
+	env.ambient_light_color = Color(0.78, 0.80, 0.84) if not _neutral else Color(0.55, 0.57, 0.60)
+	env.ambient_light_energy = 0.85 if not _neutral else 0.35
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
 	var sun := DirectionalLight3D.new()
-	sun.rotation_degrees = Vector3(-50, -44, 0)
-	sun.light_energy = 1.15
+	sun.rotation_degrees = Vector3(-38, -44, 0)
+	sun.light_energy = 1.15 if not _neutral else 1.6
 	sun.shadow_enabled = true
 	add_child(sun)
 
@@ -66,7 +68,7 @@ func _run() -> void:
 	pm.size = Vector2(400, 400)
 	ground.mesh = pm
 	var gmat := StandardMaterial3D.new()
-	gmat.albedo_color = Color(0.40, 0.44, 0.38) if not _neutral else Color(0.62, 0.62, 0.62)
+	gmat.albedo_color = Color(0.40, 0.44, 0.38) if not _neutral else Color(0.40, 0.41, 0.44)
 	ground.material_override = gmat
 	ground.position = Vector3(0, -0.02, 0)
 	add_child(ground)
@@ -99,7 +101,8 @@ func _run() -> void:
 	if _neutral:
 		# Flat grey: bypass the material-family shader so ONLY shape is visible.
 		var nm := StandardMaterial3D.new()
-		nm.albedo_color = Color(0.72, 0.72, 0.72)
+		nm.albedo_color = Color(0.66, 0.66, 0.68)
+		nm.roughness = 0.95
 		nm.vertex_color_use_as_albedo = false
 		mi.material_override = nm
 	else:

@@ -435,7 +435,8 @@ static func _porch_posts(st: SurfaceTool, dc3: Vector3, along: Vector3, nrm: Vec
 	var half := pw * 0.5 - 0.15
 	var post_h := (roof_h - y0) * 0.5
 	for s in [-1.0, 1.0]:
-		var base := dc3 + along * (s * half) + nrm * (depth - 0.2) + Vector3(0.0, y0, 0.0)
+		var sf := float(s)
+		var base := dc3 + along * (sf * half) + nrm * (depth - 0.2) + Vector3(0.0, y0, 0.0)
 		match support:
 			"TAPERED_POST_BRICK_PIER":
 				v += _box(st, base + Vector3(0.0, 0.5, 0.0), along, nrm, 0.16, 0.16, 0.5, pier_col)
@@ -443,7 +444,7 @@ static func _porch_posts(st: SurfaceTool, dc3: Vector3, along: Vector3, nrm: Vec
 					0.09, 0.09, post_h, col)
 			"PAIRED_POST":
 				for o in [-0.12, 0.12]:
-					v += _box(st, base + along * o + Vector3(0.0, post_h, 0.0), along, nrm,
+					v += _box(st, base + along * float(o) + Vector3(0.0, post_h, 0.0), along, nrm,
 						0.06, 0.06, post_h, col)
 			"CLASSICAL_SIMPLE":
 				v += _box(st, base + Vector3(0.0, post_h, 0.0), along, nrm, 0.11, 0.11, post_h, col)
@@ -514,7 +515,7 @@ static func _parking(st: SurfaceTool, ring: PackedVector2Array, ent_edge: int,
 		v += _box(st, gc3 + nrm * (cd * 0.5) + Vector3(0.0, 2.5, 0.0), along, nrm,
 			door_w * 0.5 + 0.2, cd * 0.5, 0.08, _enc(Color(0.5, 0.5, 0.52), _NEUTRAL))
 		for s in [-1.0, 1.0]:
-			v += _box(st, gc3 + along * (s * door_w * 0.5) + nrm * (cd - 0.3) + Vector3(0.0, 1.25, 0.0),
+			v += _box(st, gc3 + along * (float(s) * door_w * 0.5) + nrm * (cd - 0.3) + Vector3(0.0, 1.25, 0.0),
 				along, nrm, 0.06, 0.06, 1.25, _enc(TRIM_COL, _NEUTRAL))
 		return v
 	# attached / integrated garage door panel
@@ -694,18 +695,22 @@ static func _details(st: SurfaceTool, ring: PackedVector2Array, h: float,
 		ent_edge: int) -> int:
 	var v := 0
 	var ob := _obb(ring)
-	var ctr: Vector2 = ob["ctr"] + ob["dir"] * ob["cu"] + ob["perp"] * ob["cw"]
-	var d3 := Vector3(ob["dir"].x, 0.0, ob["dir"].y)
-	var p3 := Vector3(ob["perp"].x, 0.0, ob["perp"].y)
+	var dirv: Vector2 = ob["dir"]
+	var perpv: Vector2 = ob["perp"]
+	var half_u: float = ob["half_u"]
+	var half_w: float = ob["half_w"]
+	var ctr: Vector2 = ob["ctr"] + dirv * float(ob["cu"]) + perpv * float(ob["cw"])
+	var d3 := Vector3(dirv.x, 0.0, dirv.y)
+	var p3 := Vector3(perpv.x, 0.0, perpv.y)
 	if ("chimney_prominent" in details) or ("chimney_modest" in details):
 		var big: bool = "chimney_prominent" in details
-		var off := (float(_hash(bid, 61) % 100) / 100.0 - 0.5) * ob["half_u"]
-		var cpos := Vector3(ctr.x, h, ctr.y) + d3 * off + p3 * (ob["half_w"] * 0.6)
+		var off := (float(_hash(bid, 61) % 100) / 100.0 - 0.5) * half_u
+		var cpos := Vector3(ctr.x, h, ctr.y) + d3 * off + p3 * (half_w * 0.6)
 		var ch := 1.6 if big else 1.0
 		var cw := 0.5 if big else 0.35
 		v += _box(st, cpos + Vector3(0.0, ch * 0.5, 0.0), d3, p3, cw, cw, ch,
 			_enc(Color(0.46, 0.30, 0.26), _FAM_BRICK))
 	if "dormer_front" in details and roof.get("family", "") != "FLAT":
-		var dc := Vector3(ctr.x, h + 0.6, ctr.y) + p3 * (ob["half_w"] * 0.4)
+		var dc := Vector3(ctr.x, h + 0.6, ctr.y) + p3 * (half_w * 0.4)
 		v += _box(st, dc, d3, p3, 0.9, 0.5, 0.5, _enc(gable_m["col"], gable_m["fam"]))
 	return v
