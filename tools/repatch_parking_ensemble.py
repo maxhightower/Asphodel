@@ -1,13 +1,23 @@
-"""Offline P0-D3: dress the big raster parking fields as real commercial lots —
-parked cars in the stalls, light standards, and landscaped-island trees — so a lot
-reads as an intentional site instead of a striped grey polygon.
+"""Offline P0-D3/D5: turn the big raster parking fields into intentional lots in a
+single coordinated pass — landscaped grass islands, stall striping, parked cars,
+light standards.
 
 The huge visible parking lots are Overture S_PARKING land cover, not the compiler's
-open-area `_parking_lot`, so they never received its stalls/poles/cars. This adds
-that furniture from the same raster + stall grid the stripe markings use, so cars
-and poles land on the stall rows. Idempotent via a per-chunk sentinel. The
-compiler-side pass (a raster-parking-furniture step alongside the markings) is the
-follow-up for a from-source rebuild.
+open-area `_parking_lot`, so they arrive as bare striped polygons. This lays a
+PCA-oriented stall grid over each parking region and, in one pass so everything
+stays consistent:
+
+  * carves small GRASS islands into the surface raster and stands a tree (+ shrub)
+    on each — so island trees grow out of a green median, never straight out of the
+    asphalt;
+  * paints stall-divider stripes (ground_markings), skipping island cells;
+  * parks cars in ~42% of the remaining stalls (full vehicle mix, aligned to the
+    stall depth);
+  * drops light standards down the aisles.
+
+Idempotent via a per-chunk sentinel; re-encodes the (island-carved) surface. This
+supersedes the standalone parking-markings pass. The compiler-side raster-parking
+furniture step is the follow-up for a from-source rebuild.
 
     python -m tools.repatch_parking_ensemble godot/bundles/houston
 """
@@ -24,6 +34,7 @@ import sys
 import numpy as np
 
 S_PARKING = 2
+S_MAINTAINED_GRASS = 4
 CELLS = 128
 CELL_M = 2.0
 
@@ -31,13 +42,16 @@ STALL_PITCH = 2.7
 STALL_DEPTH = 5.0
 AISLE = 6.0
 MIN_REGION_CELLS = 24
-CAR_FILL = 0.42                      # fraction of stalls with a parked car
+ISLAND_EVERY = 8          # every Nth stall column in a band becomes a grass island
+ISLAND_R = 2.3            # island grass radius (m)
+CAR_FILL = 0.42
 CAR_MIX = [("sedan", 5), ("suv", 3), ("pickup", 2), ("van", 1), ("jeep", 1),
            ("sports_car", 1)]
 ISLAND_TREES = ["tree_round", "tree_crape_myrtle", "tree_round", "tree_magnolia"]
+ISLAND_SHRUBS = ["bush_round", "bush_low", "flowering_shrub"]
 MAX_CARS = 160
 MAX_POLES = 40
-MAX_TREES = 40
+MAX_ISLANDS = 40
 
 
 def _decode_rle(runs, n):
@@ -51,6 +65,21 @@ def _decode_rle(runs, n):
         if idx >= n:
             break
     return out.reshape(CELLS, CELLS)
+
+
+def _encode_rle(grid):
+    flat = grid.reshape(-1)
+    runs = []
+    i = 0
+    n = len(flat)
+    while i < n:
+        j = i
+        val = flat[i]
+        while j < n and flat[j] == val:
+            j += 1
+        runs.append(int(val)); runs.append(int(j - i))
+        i = j
+    return runs
 
 
 def _components(mask):
@@ -91,7 +120,27 @@ def _pick(mix, r):
     return mix[-1][0]
 
 
-def _region_furniture(cells, origin, mask, out):
+def _carve_island(grid, origin, px, pz):
+    """Set the parking cells within ISLAND_R of (px,pz) to grass (an island median).
+    Returns True if any cell was carved."""
+    ox, oz = origin
+    cc = int((px - ox) / CELL_M)
+    cr = int((pz - oz) / CELL_M)
+    rad = int(math.ceil(ISLAND_R / CELL_M))
+    carved = False
+    for dr in range(-rad, rad + 1):
+        for dc in range(-rad, rad + 1):
+            r, c = cr + dr, cc + dc
+            if 0 <= r < CELLS and 0 <= c < CELLS and grid[r, c] == S_PARKING:
+                wx = ox + (c + 0.5) * CELL_M
+                wz = oz + (r + 0.5) * CELL_M
+                if math.hypot(wx - px, wz - pz) <= ISLAND_R:
+                    grid[r, c] = S_MAINTAINED_GRASS
+                    carved = True
+    return carved
+
+
+def _region(cells, origin, grid, out):
     ox, oz = origin
     pts = np.array([[ox + (c + 0.5) * CELL_M, oz + (r + 0.5) * CELL_M] for r, c in cells])
     mean = pts.mean(axis=0)
@@ -99,62 +148,84 @@ def _region_furniture(cells, origin, mask, out):
     if not np.all(np.isfinite(cov)):
         return
     evals, evecs = np.linalg.eigh(cov)
-    u = evecs[:, int(np.argmax(evals))]       # aisle direction
-    v = np.array([-u[1], u[0]])               # stall depth direction
+    u = evecs[:, int(np.argmax(evals))]
+    v = np.array([-u[1], u[0]])
     pu = (pts - mean) @ u
     pv = (pts - mean) @ v
     umin, umax, vmin, vmax = pu.min(), pu.max(), pv.min(), pv.max()
     if umax - umin < 8.0:
         return
-    v_head = round(math.degrees(math.atan2(v[0], v[1])), 1)   # car heading along depth
+    v_head = round(math.degrees(math.atan2(v[0], v[1])), 1)
     u_head = round(math.degrees(math.atan2(u[0], u[1])), 1)
 
-    def on_park(wx, wz):
-        col = int((wx - ox) / CELL_M); row = int((wz - oz) / CELL_M)
-        return 0 <= row < CELLS and 0 <= col < CELLS and mask[row, col]
+    def wp(uu, vv):
+        p = mean + u * uu + v * vv
+        return float(p[0]), float(p[1])
 
+    def cell_is(wx, wz, val):
+        col = int((wx - ox) / CELL_M); row = int((wz - oz) / CELL_M)
+        return 0 <= row < CELLS and 0 <= col < CELLS and grid[row, col] == val
+
+    # Pass 1: carve grass islands (every Nth stall column per band) + plant them.
     band_v = vmin + STALL_DEPTH * 0.5
     band_i = 0
     while band_v <= vmax:
-        uu = umin + STALL_PITCH * 0.5
         col_i = 0
+        uu = umin + STALL_PITCH * 0.5
         while uu <= umax:
-            p = mean + u * uu + v * band_v
-            px, pz = float(p[0]), float(p[1])
-            if on_park(px, pz):
-                # a parked car in some stalls
+            if col_i % ISLAND_EVERY == (band_i % ISLAND_EVERY) and len(out["tree"]) < MAX_ISLANDS:
+                px, pz = wp(uu, band_v)
+                if cell_is(px, pz, S_PARKING) and _carve_island(grid, origin, px, pz):
+                    t = ISLAND_TREES[int(_rng(px, pz, 29) * len(ISLAND_TREES)) % len(ISLAND_TREES)]
+                    out["tree"].append([t, round(px, 2), round(pz, 2),
+                                        round(_rng(px, pz, 31) * 360.0, 1),
+                                        int(_rng(px, pz, 37) * 5) % 5])
+                    if _rng(px, pz, 41) < 0.6:
+                        s = ISLAND_SHRUBS[int(_rng(px, pz, 43) * len(ISLAND_SHRUBS)) % len(ISLAND_SHRUBS)]
+                        sx, sz = wp(uu + 0.9, band_v)
+                        out["tree"].append([s, round(sx, 2), round(sz, 2),
+                                            round(_rng(sx, sz, 47) * 360.0, 1),
+                                            int(_rng(sx, sz, 53) * 5) % 5])
+            uu += STALL_PITCH
+            col_i += 1
+        band_v += STALL_DEPTH + AISLE
+        band_i += 1
+
+    # Pass 2: stripes + parked cars on the stalls that are still asphalt.
+    band_v = vmin + STALL_DEPTH * 0.5
+    while band_v <= vmax:
+        uu = umin + STALL_PITCH * 0.5
+        while uu <= umax:
+            px, pz = wp(uu, band_v)
+            if cell_is(px, pz, S_PARKING):
+                out["mark"].append([round(px, 2), round(pz, 2), v_head, STALL_DEPTH, "parking_stall"])
                 if len(out["veh"]) < MAX_CARS and _rng(px, pz, 7) < CAR_FILL:
                     kind = _pick(CAR_MIX, _rng(px, pz, 11))
                     face = v_head if _rng(px, pz, 13) < 0.5 else (v_head + 180.0)
                     out["veh"].append([kind, round(px, 2), round(pz, 2),
                                        round(face, 1), int(_rng(px, pz, 17) * 5) % 5])
-                # a landscaped-island tree at the end of a run, now and then
-                elif len(out["tree"]) < MAX_TREES and col_i % 6 == 0 and _rng(px, pz, 23) < 0.5:
-                    t = ISLAND_TREES[int(_rng(px, pz, 29) * len(ISLAND_TREES)) % len(ISLAND_TREES)]
-                    out["tree"].append([t, round(px, 2), round(pz, 2),
-                                        round(_rng(px, pz, 31) * 360.0, 1),
-                                        int(_rng(px, pz, 37) * 5) % 5])
             uu += STALL_PITCH
-            col_i += 1
-        # light poles down the middle of the aisle behind this band
+        band_v += STALL_DEPTH + AISLE
+
+    # Pass 3: light standards down the aisles.
+    band_v = vmin + STALL_DEPTH * 0.5
+    while band_v <= vmax:
         pole_v = band_v + STALL_DEPTH * 0.5 + AISLE * 0.5
         upos = umin + 6.0
         while upos <= umax - 6.0 and len(out["prop"]) < MAX_POLES:
-            p = mean + u * upos + v * pole_v
-            px, pz = float(p[0]), float(p[1])
-            if on_park(px, pz):
+            px, pz = wp(upos, pole_v)
+            if cell_is(px, pz, S_PARKING):
                 out["prop"].append(["streetlight", round(px, 2), round(pz, 2), u_head, 0])
             upos += 16.0
         band_v += STALL_DEPTH + AISLE
-        band_i += 1
 
 
-def repatch_bundle(bundle_dir: str) -> tuple[int, int, int]:
+def repatch_bundle(bundle_dir: str) -> dict:
     cdir = os.path.join(bundle_dir, "world", "chunks")
     files = sorted(glob.glob(os.path.join(cdir, "c_*.json.gz")))
     if not files:
         raise SystemExit(f"no chunks under {cdir}")
-    cars = poles = trees = 0
+    tot = {"veh": 0, "prop": 0, "tree": 0, "mark": 0, "chunks": 0}
     for fn in files:
         with gzip.open(fn, "rt", encoding="utf-8") as f:
             chunk = json.load(f)
@@ -164,33 +235,36 @@ def repatch_bundle(bundle_dir: str) -> tuple[int, int, int]:
         if not runs:
             continue
         grid = _decode_rle(runs, CELLS * CELLS)
-        mask = grid == S_PARKING
-        if not mask.any():
+        if not (grid == S_PARKING).any():
             continue
         origin = chunk["origin"]
-        out = {"veh": [], "prop": [], "tree": []}
-        for comp in _components(mask):
-            _region_furniture(comp, origin, mask, out)
-        if not (out["veh"] or out["prop"] or out["tree"]):
+        out = {"veh": [], "prop": [], "tree": [], "mark": []}
+        for comp in _components(grid == S_PARKING):
+            _region(comp, origin, grid, out)
+        if not (out["veh"] or out["prop"] or out["tree"] or out["mark"]):
             continue
+        chunk["surface"] = _encode_rle(grid)
+        chunk["ground_markings"] = out["mark"]
         chunk.setdefault("vehicles", []).extend(out["veh"])
         chunk.setdefault("props", []).extend(out["prop"])
         chunk.setdefault("trees", []).extend(out["tree"])
         chunk["_pk_ens"] = 1
-        cars += len(out["veh"]); poles += len(out["prop"]); trees += len(out["tree"])
+        for k in ("veh", "prop", "tree", "mark"):
+            tot[k] += len(out[k])
+        tot["chunks"] += 1
         payload = json.dumps(chunk, separators=(",", ":"), sort_keys=True).encode("utf-8")
         with open(fn, "wb") as f:
             f.write(gzip.compress(payload, mtime=0))
-    return cars, poles, trees
+    return tot
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("bundle")
     args = ap.parse_args(argv)
-    cars, poles, trees = repatch_bundle(args.bundle)
-    print("added %d parked cars, %d light poles, %d island trees in %s"
-          % (cars, poles, trees, args.bundle))
+    t = repatch_bundle(args.bundle)
+    print("parking ensemble: %d islands+shrubs, %d cars, %d poles, %d stripes over %d chunks"
+          % (t["tree"], t["veh"], t["prop"], t["mark"], t["chunks"]))
     return 0
 
 
