@@ -394,6 +394,13 @@ func _render_live() -> void:
 	var world: Dictionary = SimBridge.last_world
 	if world.is_empty():
 		return
+	# Promote citizens near the player to high-fidelity avatars, and pick global
+	# crowd mesh fidelity from camera zoom (far when zoomed out).
+	if _player != null:
+		_citizen_render.set_focus_point(_player.global_position)
+	if _camera != null and "ortho_size" in _camera:
+		var far: bool = float(_camera.ortho_size) > 90.0
+		_citizen_render.set_crowd_lod(CitizenMeshes.LOD_FAR if far else CitizenMeshes.LOD_NORMAL)
 	_citizen_render.render_snapshot(world, _current_focus_zone,
 		_zone_center(_current_focus_zone), _zone_extent(_current_focus_zone))
 

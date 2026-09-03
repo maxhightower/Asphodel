@@ -43,10 +43,18 @@ func _ready() -> void:
 	if cr != null:
 		var drawn: int = cr.last_instance_count
 		_check(drawn > 0, "crowd renders %d citizens at once (continuous positions)" % drawn)
-		var mmi := cr.get_child(0)
-		if mmi is MultiMeshInstance3D:
-			_check(mmi.multimesh.instance_count == drawn,
-				"MultiMesh instance_count (%d) matches the drawn subset" % mmi.multimesh.instance_count)
+		# The humanoid crowd is spread across bounded (body,lower) MultiMesh buckets
+		# plus a small near-avatar pool; every drawn agent is exactly one body
+		# instance or one avatar (hair is an extra overlay, not counted here).
+		var body_instances := 0
+		var avatars := 0
+		for child in cr.get_children():
+			if child is MultiMeshInstance3D and str(child.name).begins_with("CrowdBucket"):
+				body_instances += (child as MultiMeshInstance3D).multimesh.instance_count
+			elif child is CitizenAvatar and child.visible:
+				avatars += 1
+		_check(body_instances + avatars == drawn,
+			"crowd body instances (%d) + avatars (%d) == drawn subset (%d)" % [body_instances, avatars, drawn])
 
 	# Named / roster members must be distinguishable in the snapshot.
 	var a: Dictionary = SimBridge.last_world.get("agents", {}).get(str(zone), {})

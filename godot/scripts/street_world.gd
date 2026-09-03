@@ -893,6 +893,8 @@ func _render_live() -> void:
 		return
 	# Place + spread the crowd across the zone's real footprint (not the tiny
 	# transmission torus), centred on the zone's world position.
+	if _player != null:
+		_citizen_render.set_focus_point(_player.global_position)
 	_citizen_render.render_snapshot(world, _current_focus_zone,
 		_zone_center(_current_focus_zone), _zone_extent(_current_focus_zone))
 
