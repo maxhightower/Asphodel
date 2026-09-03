@@ -22,6 +22,7 @@ const ResidentialHouseRenderer = preload("res://scripts/residential_house_render
 
 var _out := "/tmp/res_gallery.png"
 var _neutral := false
+var _only := ""       # comma-separated style names or indices to render close
 
 
 func _ready() -> void:
@@ -31,6 +32,8 @@ func _ready() -> void:
 			_out = args[i + 1]
 		elif args[i] == "--neutral":
 			_neutral = true
+		elif args[i] == "--only" and i + 1 < args.size():
+			_only = args[i + 1]
 	await _run()
 
 
@@ -74,9 +77,17 @@ func _run() -> void:
 	add_child(ground)
 
 	var houses := _load_houses()
-	# grid layout: 4 columns, cell 26 m so the widest ranch clears its neighbour.
-	var cols := 4
-	var cell := 26.0
+	if _only != "":
+		var want := _only.to_upper().split(",")
+		var filtered: Array = []
+		for h in houses:
+			if want.has(String(h.get("label", "")).to_upper()):
+				filtered.append(h)
+		if not filtered.is_empty():
+			houses = filtered
+	# grid layout: 4 columns, cell 23 m so the widest ranch clears its neighbour.
+	var cols := 4 if houses.size() > 4 else houses.size()
+	var cell := 23.0
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var total_verts := 0
@@ -94,6 +105,17 @@ func _run() -> void:
 		max_x = maxf(max_x, gx + cell * 0.5)
 		min_z = minf(min_z, gz - cell * 0.5)
 		max_z = maxf(max_z, gz + cell * 0.5)
+		# style label, floating toward the camera-facing (−x,−z) corner
+		var lbl := Label3D.new()
+		lbl.text = String(h.get("label", ""))
+		lbl.font_size = 64
+		lbl.pixel_size = 0.012
+		lbl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		lbl.modulate = Color(0.12, 0.12, 0.14) if _neutral else Color(0.95, 0.97, 1.0)
+		lbl.outline_size = 12
+		lbl.outline_modulate = Color(1, 1, 1, 0.85) if _neutral else Color(0, 0, 0, 0.7)
+		lbl.position = Vector3(gx - 6.0, 0.6, gz - 6.0)
+		add_child(lbl)
 
 	st.generate_normals()
 	var mi := MeshInstance3D.new()
@@ -101,7 +123,7 @@ func _run() -> void:
 	if _neutral:
 		# Flat grey: bypass the material-family shader so ONLY shape is visible.
 		var nm := StandardMaterial3D.new()
-		nm.albedo_color = Color(0.66, 0.66, 0.68)
+		nm.albedo_color = Color(0.68, 0.68, 0.70)
 		nm.roughness = 0.95
 		nm.vertex_color_use_as_albedo = false
 		mi.material_override = nm
@@ -109,16 +131,16 @@ func _run() -> void:
 		mi.material_override = WorldMaterials.building_material()
 	add_child(mi)
 
-	# frame the grid with an iso ortho camera
+	# frame the grid with an iso ortho camera (closer for detail)
 	var w := max_x - min_x
 	var d := max_z - min_z
-	var center := Vector3((min_x + max_x) * 0.5, 2.0, (min_z + max_z) * 0.5)
+	var center := Vector3((min_x + max_x) * 0.5, 1.4, (min_z + max_z) * 0.5)
 	var cam := Camera3D.new()
 	cam.projection = Camera3D.PROJECTION_ORTHOGONAL
-	cam.size = 0.62 * (w + d) + 12.0
+	cam.size = 0.54 * (w + d) + 6.0
 	cam.near = 0.1
 	cam.far = 5000.0
-	cam.position = center + Vector3(-0.55, 0.7, -0.55).normalized() * ((w + d) + 80.0)
+	cam.position = center + Vector3(-0.62, 0.6, -0.62).normalized() * ((w + d) + 80.0)
 	add_child(cam)
 	cam.look_at(center, Vector3.UP)
 	cam.make_current()

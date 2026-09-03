@@ -48,8 +48,11 @@ const _NEUTRAL := 15
 const _FAM_BRICK := 0
 const _FAM_SIDING := 2
 
-const _PITCH_RISE := {"VERY_LOW": 0.14, "LOW": 0.28, "MEDIUM": 0.5, "STEEP": 0.85}
-const _EAVE_OUT := {"TIGHT": 0.15, "NORMAL": 0.45, "WIDE": 0.8, "VERY_WIDE": 1.1}
+# pitch = rise / half-span (a tan factor): STEEP roofs really spike, VERY_LOW
+# roofs read as shallow. eave = how far the roof overhangs the wall (metres).
+const _PITCH_RISE := {"VERY_LOW": 0.24, "LOW": 0.48, "MEDIUM": 0.80, "STEEP": 1.20}
+const _EAVE_OUT := {"TIGHT": 0.30, "NORMAL": 0.55, "WIDE": 0.95, "VERY_WIDE": 1.25}
+const _ROOF_T := 0.34   # roof slab thickness → visible fascia + shadow at iso
 
 const DOOR_COL := Color(0.10, 0.08, 0.07)
 const WIN_COL := Color(0.12, 0.15, 0.20)
@@ -122,28 +125,46 @@ static func emit(st: SurfaceTool, b: Dictionary, cells: PackedByteArray,
 		var region: Dictionary = front_m if front_edges.has(i) else side_m
 		verts += _wall(st, a, c, body_lo, floors_top, region)
 
-	# ---- R9 windows (rhythm/proportion per grammar) + entrance door ----
-	verts += _fenestration(st, ring, ent_edge, ent_t, ent_w, body_lo, floors_top,
-		front_edges, String(win.get("family", "SIMPLE_VERTICAL")),
-		bool(win.get("symmetric", false)), int(arch.get("massing", {}).get(
-			"story_profile", "ONE") == "TWO"), bid)
+	var style := String(arch.get("style", {}).get("value", ""))
+	var two_story := int(arch.get("massing", {}).get("story_profile", "ONE") == "TWO")
 
-	# ---- R11 porch / entry ----
-	verts += _porch(st, ring, ent_edge, ent_t, ent_w, body_lo, porch, found_h, bid)
-
-	# ---- R12 garage / carport ----
-	verts += _parking(st, ring, ent_edge, body_lo, String(arch.get("parking", "SIDE_DRIVE")), bid)
-
-	# ---- R8 roof (family + pitch + eave), with gable material ----
+	# roof colour is needed by the porch roof too, so resolve it first.
 	var roof_fam := int(_ROOF_FAM.get(String(roof.get("material", "asphalt_shingle")), 10))
 	if "METAL_ROOF_RETROFIT" in mods:
 		roof_fam = 11   # standing seam metal
 	var roof_col := _roof_color(roof, roof_fam, bid)
+
+	# ---- R9 windows (framed, per grammar) + entrance door ----
+	verts += _fenestration(st, ring, ent_edge, ent_t, ent_w, body_lo, floors_top,
+		front_edges, String(win.get("family", "SIMPLE_VERTICAL")),
+		bool(win.get("symmetric", false)), two_story, bid)
+
+	# ---- projecting bay window (Queen Anne / Victorian character) ----
+	if "bay_projection" in details:
+		verts += _bay(st, ring, ent_edge, body_lo, floors_top, front_m, two_story)
+
+	# ---- arched entry surround on the facade (Spanish / Tudor / arched styles) ----
+	if "arched_entry" in details or style == "SPANISH_ECLECTIC" or style == "TUDOR_REVIVAL":
+		verts += _entry_arch(st, ring, ent_edge, ent_t, ent_w, body_lo, front_m)
+
+	# ---- R11 porch / entry -> a real terrace: platform, balustrade, columns,
+	#      porch roof, and an arched opening where the style calls for it ----
+	verts += _porch(st, ring, ent_edge, ent_t, ent_w, body_lo, porch, found_h, bid,
+		style, details, roof_col, front_m)
+
+	# ---- R12 garage / carport ----
+	verts += _parking(st, ring, ent_edge, body_lo, String(arch.get("parking", "SIDE_DRIVE")), bid)
+
+	# ---- exterior side staircase up to a raised (pier-and-beam) floor ----
+	if found_h > 0.45:
+		verts += _side_stairs(st, ring, ent_edge, found_h, bid)
+
+	# ---- R8 roof (solid, overhanging, with gable walls) ----
 	verts += _roof(st, ring, floors_top, String(roof.get("family", "SIDE_GABLE")),
 		String(roof.get("pitch", "MEDIUM")), String(roof.get("eave", "NORMAL")),
 		roof_col, roof_fam, gable_m, ent_edge)
 
-	# ---- details: chimney / dormer / stone accent (only what reads at iso) ----
+	# ---- details: chimney / dormer / gable decoration ----
 	verts += _details(st, ring, floors_top, details, roof, gable_m, bid, ent_edge)
 
 	return verts
@@ -313,11 +334,44 @@ static func _fenestration(st: SurfaceTool, ring: PackedVector2Array, ent_edge: i
 					continue
 				var center := a.lerp(c, t)
 				var hw := minf(ww, length / float(specs.size() + 1) * 0.9) * 0.5
-				var w0 := center - dir * hw + nrm2 * 0.04
-				var w1 := center + dir * hw + nrm2 * 0.04
 				var top := wy + wh * hscale
-				v += _quad(st, Vector3(w0.x, wy, w0.y), Vector3(w1.x, wy, w1.y),
-					Vector3(w1.x, top, w1.y), Vector3(w0.x, top, w0.y), nrm, WIN_COL)
+				if is_front:
+					var muntins := grammar not in ["MCM_HORIZONTAL", "RANCH_PICTURE"]
+					v += _window(st, center, dir, nrm2, hw, wy, top, muntins)
+				else:
+					var w0 := center - dir * hw + nrm2 * 0.04
+					var w1 := center + dir * hw + nrm2 * 0.04
+					v += _quad(st, Vector3(w0.x, wy, w0.y), Vector3(w1.x, wy, w1.y),
+						Vector3(w1.x, top, w1.y), Vector3(w0.x, top, w0.y), nrm, WIN_COL)
+	return v
+
+
+## A framed window: recessed dark pane + trim surround (jambs/head), a protruding
+## sill ledge, and optional muntin bars — so windows read as windows at iso.
+static func _window(st: SurfaceTool, center: Vector2, dir: Vector2, nrm2: Vector2,
+		hw: float, wy: float, top: float, muntins: bool) -> int:
+	var nrm := Vector3(nrm2.x, 0.0, nrm2.y)
+	var along := Vector3(dir.x, 0.0, dir.y)
+	var trim := _enc(TRIM_COL, _NEUTRAL)
+	var midy := (wy + top) * 0.5
+	var hh := (top - wy) * 0.5
+	var cen3 := Vector3(center.x, midy, center.y)
+	var fo := nrm * 0.055
+	var v := 0
+	# glass pane
+	var p := nrm2 * 0.03
+	var g0 := center - dir * hw + p
+	var g1 := center + dir * hw + p
+	v += _quad(st, Vector3(g0.x, wy, g0.y), Vector3(g1.x, wy, g1.y),
+		Vector3(g1.x, top, g1.y), Vector3(g0.x, top, g0.y), nrm, WIN_COL)
+	# surround: two jambs, a head lintel, a protruding sill
+	v += _box(st, cen3 + along * (hw + 0.06) + fo, along, nrm, 0.05, 0.035, hh + 0.1, trim)
+	v += _box(st, cen3 - along * (hw + 0.06) + fo, along, nrm, 0.05, 0.035, hh + 0.1, trim)
+	v += _box(st, Vector3(center.x, top + 0.07, center.y) + fo, along, nrm, hw + 0.13, 0.035, 0.05, trim)
+	v += _box(st, Vector3(center.x, wy - 0.05, center.y) + nrm * 0.1, along, nrm, hw + 0.16, 0.09, 0.05, trim.darkened(0.05))
+	if muntins:
+		v += _box(st, cen3 + nrm * 0.045, along, nrm, 0.022, 0.03, hh, trim)
+		v += _box(st, cen3 + nrm * 0.045, along, nrm, hw, 0.03, 0.022, trim)
 	return v
 
 
@@ -384,7 +438,8 @@ static func _window_specs(grammar: String, length: float, is_front: bool,
 # =========================================================================
 static func _porch(st: SurfaceTool, ring: PackedVector2Array, ent_edge: int,
 		ent_t: float, ent_w: float, y0: float, porch: Dictionary, found_h: float,
-		bid: int) -> int:
+		bid: int, style: String, details: Array, roof_col: Color,
+		front_m: Dictionary) -> int:
 	var family := String(porch.get("family", "NONE"))
 	if family == "NONE":
 		return 0
@@ -399,67 +454,340 @@ static func _porch(st: SurfaceTool, ring: PackedVector2Array, ent_edge: int,
 	var nrm2 := Vector2(seg.y, -seg.x).normalized()
 	var nrm := Vector3(nrm2.x, 0.0, nrm2.y)
 	var along := Vector3(dir.x, 0.0, dir.y)
-	var depth := clampf(float(porch.get("depth_m", 2.0)), 0.6, 3.2)
-	var wfrac := clampf(float(porch.get("width_fraction", 0.5)), 0.1, 1.0)
+	var depth := clampf(float(porch.get("depth_m", 2.0)), 1.2, 3.4)
+	var wfrac := clampf(float(porch.get("width_fraction", 0.5)), 0.14, 1.0)
 	var support := String(porch.get("support", "SIMPLE_POST"))
-	var pw := length * wfrac
-	# porch centre: full/near-full width centres on the edge; partial hugs the door.
-	var t_center: float = 0.5 if wfrac > 0.7 else ent_t
-	t_center = clampf(t_center, pw * 0.5 / length, 1.0 - pw * 0.5 / length)
+	var pw := minf(length * wfrac, length - 0.4)
+	var t_center: float = 0.5 if wfrac > 0.65 else ent_t
+	t_center = clampf(t_center, (pw * 0.5 + 0.2) / length, 1.0 - (pw * 0.5 + 0.2) / length)
 	var dc := a.lerp(c, t_center)
 	var dc3 := Vector3(dc.x, 0.0, dc.y)
 	var v := 0
-	# platform at finished-floor height (foundation raises the porch too)
-	var plat := dc3 + nrm * (depth * 0.5) + Vector3(0.0, y0 * 0.5, 0.0)
-	v += _box(st, plat + Vector3(0.0, 0.06, 0.0), along, nrm, pw * 0.5, depth * 0.5,
-		maxf(0.08, y0 * 0.5 + 0.06), _enc(Color(0.70, 0.68, 0.64), _NEUTRAL))
-	# roof over the porch (skip for RECESSED — that reads as cut into the mass)
-	var roof_h := 2.6 + y0
-	if family != "RECESSED":
-		var proj := 0.28 if family == "PROJECTING_GABLE" else 0.18
-		v += _box(st, dc3 + nrm * (depth * 0.5) + Vector3(0.0, roof_h, 0.0), along, nrm,
-			pw * 0.5 + proj, depth * 0.5 + proj, 0.09, _enc(Color(0.34, 0.30, 0.27), _NEUTRAL))
-	# supports
-	v += _porch_posts(st, dc3, along, nrm, pw, depth, roof_h, support, y0)
-	# steps up to the finished floor when raised
-	if y0 > 0.25:
-		v += _steps(st, dc3, along, nrm, minf(pw, ent_w + 1.4), depth, y0)
+	var deck_col := _enc(Color(0.72, 0.70, 0.66), _NEUTRAL)
+	var trim := _enc(TRIM_COL, _NEUTRAL)
+
+	var recessed := family == "RECESSED"
+	var floor_y := y0                                  # finished-floor height
+	var eave_y := 2.55 + y0
+	# recessed porches are shallow arcaded loggias (Spanish/Tudor), not a box.
+	if recessed:
+		depth = minf(depth, 1.7)
+	var half := pw * 0.5
+	var arcade := "arched_entry" in details or style == "SPANISH_ECLECTIC"
+	var col_h := eave_y - floor_y
+
+	# raised deck slab (a real terrace floor)
+	v += _box(st, dc3 + nrm * (depth * 0.5) + Vector3(0.0, floor_y * 0.5, 0.0),
+		along, nrm, half + 0.12, depth * 0.5, maxf(0.1, floor_y * 0.5), deck_col)
+
+	# columns along the porch front (+ intermediates for wide porches)
+	var cols: Array = [-1.0, 1.0]
+	if pw > 6.5:
+		cols = [-1.0, -0.5, 0.0, 0.5, 1.0]
+	elif pw > 5.0:
+		cols = [-1.0, -0.34, 0.34, 1.0]
+	elif pw > 3.2:
+		cols = [-1.0, 0.0, 1.0]
+	var prev_top := Vector3.ZERO
+	var have_prev := false
+	for s in cols:
+		var sf := float(s)
+		var cbase := dc3 + along * (sf * (half - 0.18)) + nrm * (depth - 0.22) \
+			+ Vector3(0.0, floor_y, 0.0)
+		v += _column(st, cbase, col_h, support, along, nrm, trim, front_m)
+		var top := cbase + Vector3(0.0, col_h, 0.0)
+		if have_prev and arcade:
+			v += _arch(st, prev_top, top, along, nrm, _enc(front_m["col"].lightened(0.15), front_m["fam"]))
+		prev_top = top
+		have_prev = true
+
+	# balustrade between the end columns for open terraces
+	if not recessed and family in ["FULL_WIDTH", "PARTIAL_FRONT", "WRAP_PARTIAL", "PROJECTING_GABLE"]:
+		var lc := dc3 + along * (-(half - 0.18)) + nrm * (depth - 0.22) + Vector3(0, floor_y, 0)
+		var rc := dc3 + along * ((half - 0.18)) + nrm * (depth - 0.22) + Vector3(0, floor_y, 0)
+		v += _railing(st, lc, rc, along, 0.95, trim.darkened(0.05))
+
+	# porch roof: front gable for PROJECTING_GABLE, else a low slab that ties into
+	# the wall (with a beam/entablature the columns carry).
+	var rcol := _enc(roof_col, _NEUTRAL)
+	if family == "PROJECTING_GABLE":
+		var pbase := dc3 + nrm * (depth * 0.5) + Vector3(0.0, eave_y, 0.0)
+		v += _gable(st, pbase, along, nrm, half + 0.2, depth * 0.5 + 0.2, 0.25,
+			clampf(half * 0.7, 0.8, 2.2), roof_col, _enc(front_m["col"], front_m["fam"]),
+			_enc(roof_col.darkened(0.3), _NEUTRAL), true, false)
+	else:
+		# entablature beam the columns support
+		v += _box(st, dc3 + nrm * (depth - 0.18) + Vector3(0.0, eave_y - 0.05, 0.0),
+			along, nrm, half + 0.16, 0.1, 0.16, _enc(TRIM_COL, _NEUTRAL))
+		v += _box(st, dc3 + nrm * (depth * 0.5) + Vector3(0.0, eave_y + 0.12, 0.0),
+			along, nrm, half + 0.22, depth * 0.5 + 0.22, 0.12, rcol)
+
+	# classical portico pediment (a front gable over the entry columns)
+	if support == "CLASSICAL_SIMPLE" or "columns" in details:
+		var pc := dc3 + nrm * (depth + 0.02) + Vector3(0.0, eave_y + 0.16, 0.0)
+		var pl := pc - along * (half + 0.28)
+		var pr := pc + along * (half + 0.28)
+		var apex := (pl + pr) * 0.5 + Vector3(0.0, clampf(half * 0.6, 0.55, 1.05), 0.0)
+		var ped := _enc(TRIM_COL, _NEUTRAL)
+		var bk := nrm * -0.34
+		v += _tri(st, pl, apex, pr, nrm, ped)
+		v += _tri(st, pr + bk, apex + bk, pl + bk, -nrm, ped)
+		v += _quad(st, pl + bk, pr + bk, pr, pl, Vector3.UP, ped.darkened(0.12))
+
+	# front steps up to the deck
+	v += _steps(st, dc3, along, nrm, minf(pw, ent_w + 1.8), depth, maxf(floor_y, 0.25))
 	return v
 
 
-static func _porch_posts(st: SurfaceTool, dc3: Vector3, along: Vector3, nrm: Vector3,
-		pw: float, depth: float, roof_h: float, support: String, y0: float) -> int:
-	var col := _enc(TRIM_COL, _NEUTRAL)
-	var pier_col := _enc(Color(0.56, 0.34, 0.28), _FAM_BRICK)
+## One porch support, styled. Round classical columns are an octagonal shaft with
+## a base + capital; brick-pier columns are a masonry plinth under a tapered post;
+## MCM posts are thin; tapered posts are frusta.
+static func _column(st: SurfaceTool, base: Vector3, height: float, support: String,
+		along: Vector3, nrm: Vector3, trim: Color, front_m: Dictionary) -> int:
 	var v := 0
-	var half := pw * 0.5 - 0.15
-	var post_h := (roof_h - y0) * 0.5
-	for s in [-1.0, 1.0]:
-		var sf := float(s)
-		var base := dc3 + along * (sf * half) + nrm * (depth - 0.2) + Vector3(0.0, y0, 0.0)
-		match support:
-			"TAPERED_POST_BRICK_PIER":
-				v += _box(st, base + Vector3(0.0, 0.5, 0.0), along, nrm, 0.16, 0.16, 0.5, pier_col)
-				v += _box(st, base + Vector3(0.0, 1.0 + post_h * 0.5, 0.0), along, nrm,
-					0.09, 0.09, post_h, col)
-			"PAIRED_POST":
-				for o in [-0.12, 0.12]:
-					v += _box(st, base + along * float(o) + Vector3(0.0, post_h, 0.0), along, nrm,
-						0.06, 0.06, post_h, col)
-			"CLASSICAL_SIMPLE":
-				v += _box(st, base + Vector3(0.0, post_h, 0.0), along, nrm, 0.11, 0.11, post_h, col)
-			"MCM_THIN":
-				v += _box(st, base + Vector3(0.0, post_h, 0.0), along, nrm, 0.05, 0.05, post_h, col)
-			"MCM_SLANTED":
-				# a thin post nudged outward at the top reads as a slanted MCM support
-				v += _box(st, base + nrm * 0.12 + Vector3(0.0, post_h, 0.0), along, nrm,
-					0.05, 0.05, post_h, col)
-			"TAPERED_POST":
-				v += _box(st, base + Vector3(0.0, post_h, 0.0), along, nrm, 0.12, 0.12, post_h, col)
-			"NONE":
-				pass
-			_:
-				v += _box(st, base + Vector3(0.0, post_h, 0.0), along, nrm, 0.09, 0.09, post_h, col)
+	var pier_col := _enc(front_m["col"].darkened(0.05), front_m["fam"])
+	match support:
+		"CLASSICAL_SIMPLE":
+			# plinth + round (octagonal) shaft + a flared capital — a real column
+			v += _box(st, base + Vector3(0, 0.1, 0), along, nrm, 0.22, 0.22, 0.1, trim)
+			v += _octo(st, base + Vector3(0, height * 0.5, 0), 0.16, height * 0.92, trim)
+			v += _box(st, base + Vector3(0, height - 0.08, 0), along, nrm, 0.24, 0.24, 0.12, trim)
+		"TAPERED_POST_BRICK_PIER":
+			v += _box(st, base + Vector3(0, height * 0.3, 0), along, nrm, 0.24, 0.24, height * 0.3, pier_col)
+			v += _tapered_post(st, base + Vector3(0, height * 0.62, 0), 0.17, 0.11, height * 0.4, along, nrm, trim)
+		"TAPERED_POST":
+			v += _tapered_post(st, base + Vector3(0, height * 0.5, 0), 0.19, 0.12, height, along, nrm, trim)
+		"PAIRED_POST":
+			for o in [-0.15, 0.15]:
+				v += _box(st, base + along * float(o) + Vector3(0, height * 0.5, 0), along, nrm, 0.07, 0.07, height * 0.5, trim)
+			v += _box(st, base + Vector3(0, height - 0.05, 0), along, nrm, 0.26, 0.1, 0.08, trim)
+		"MCM_THIN":
+			v += _box(st, base + Vector3(0, height * 0.5, 0), along, nrm, 0.06, 0.06, height * 0.5, trim.darkened(0.25))
+		"MCM_SLANTED":
+			v += _box(st, base + nrm * 0.16 + Vector3(0, height * 0.5, 0), along, nrm, 0.06, 0.06, height * 0.52, trim.darkened(0.25))
+		"NONE":
+			pass
+		_:
+			v += _box(st, base + Vector3(0, height * 0.5, 0), along, nrm, 0.11, 0.11, height * 0.5, trim)
+			v += _box(st, base + Vector3(0, height - 0.05, 0), along, nrm, 0.15, 0.15, 0.06, trim)
+	return v
+
+
+## Octagonal vertical prism (a round-ish column shaft), centred at `center`.
+static func _octo(st: SurfaceTool, center: Vector3, r: float, hh: float,
+		col: Color) -> int:
+	var v := 0
+	var up := Vector3(0, hh * 0.5, 0)
+	var prev := Vector3.ZERO
+	for i in range(9):
+		var ang := TAU * float(i) / 8.0
+		var p := Vector3(cos(ang) * r, 0, sin(ang) * r)
+		if i > 0:
+			var n := (prev + p).normalized()
+			v += _quad(st, center + prev - up, center + p - up, center + p + up,
+				center + prev + up, Vector3(n.x, 0, n.z), col)
+		prev = p
+	return v
+
+
+## Square post that narrows toward the top (a frustum): 4 trapezoids.
+static func _tapered_post(st: SurfaceTool, center: Vector3, rb: float, rt: float,
+		hh: float, along: Vector3, nrm: Vector3, col: Color) -> int:
+	var up := Vector3(0, hh * 0.5, 0)
+	var v := 0
+	var ab := along
+	var nb := nrm
+	# four faces
+	var corners_b := [ab * rb + nb * rb, ab * rb - nb * rb, -ab * rb - nb * rb, -ab * rb + nb * rb]
+	var corners_t := [ab * rt + nb * rt, ab * rt - nb * rt, -ab * rt - nb * rt, -ab * rt + nb * rt]
+	for i in range(4):
+		var b0: Vector3 = center - up + corners_b[i]
+		var b1: Vector3 = center - up + corners_b[(i + 1) % 4]
+		var t1: Vector3 = center + up + corners_t[(i + 1) % 4]
+		var t0: Vector3 = center + up + corners_t[i]
+		var fn := (b0 + b1 - center * 2.0 + Vector3(0, 0, 0)).normalized()
+		v += _quad(st, b0, b1, t1, t0, fn, col)
+	return v
+
+
+## A porch balustrade between two posts: top rail, bottom rail, and balusters.
+static func _railing(st: SurfaceTool, p0: Vector3, p1: Vector3, along: Vector3,
+		height: float, col: Color) -> int:
+	var v := 0
+	var span := (p1 - p0)
+	var length := span.length()
+	if length < 0.4:
+		return 0
+	var dir := span / length
+	var mid := (p0 + p1) * 0.5
+	# top + bottom rails
+	v += _box(st, mid + Vector3(0, height, 0), dir, Vector3(0, 0, 1), length * 0.5, 0.05, 0.06, col)
+	v += _box(st, mid + Vector3(0, 0.12, 0), dir, Vector3(0, 0, 1), length * 0.5, 0.05, 0.05, col)
+	# balusters
+	var count := clampi(int(length / 0.32), 2, 18)
+	for k in range(count + 1):
+		var t := float(k) / float(count)
+		var bp := p0 + span * t + Vector3(0, height * 0.5, 0)
+		v += _box(st, bp, dir, Vector3(0, 0, 1), 0.025, 0.025, height * 0.5, col)
+	return v
+
+
+## A shallow arch spanning between two column tops (Spanish / arched entries):
+## a stepped set of chords approximating a semicircle, filled as a thin band.
+static func _arch(st: SurfaceTool, l: Vector3, r: Vector3, along: Vector3,
+		nrm: Vector3, col: Color) -> int:
+	var span := r - l
+	var length := span.length()
+	if length < 0.6 or length > 6.0:
+		return 0
+	var dir := span / length
+	var rise := minf(length * 0.4, 0.9)
+	var segs := 5
+	var v := 0
+	var prev := l
+	for k in range(1, segs + 1):
+		var t := float(k) / float(segs)
+		var y := sin(PI * t) * rise
+		var p := l + span * t + Vector3(0, y, 0)
+		# a thin downward band under the arch chord
+		v += _quad(st, prev, p, p - Vector3(0, 0.16, 0), prev - Vector3(0, 0.16, 0),
+			nrm, col)
+		prev = p
+	return v
+
+
+## An arched entry surround raised on the facade over the front door (Spanish /
+## Tudor / arched styles): a curved molding band following a semicircle above the
+## door head, protruding from the wall so it reads as a real arch at iso.
+static func _entry_arch(st: SurfaceTool, ring: PackedVector2Array, ent_edge: int,
+		ent_t: float, ent_w: float, y0: float, front_m: Dictionary) -> int:
+	var n := ring.size()
+	var a := ring[ent_edge]
+	var c := ring[(ent_edge + 1) % n]
+	var seg := c - a
+	var length := seg.length()
+	if length < 2.4:
+		return 0
+	var dir := seg / length
+	var nrm2 := Vector2(seg.y, -seg.x).normalized()
+	var nrm := Vector3(nrm2.x, 0.0, nrm2.y)
+	var along := Vector3(dir.x, 0.0, dir.y)
+	var dc := a.lerp(c, ent_t)
+	var dc3 := Vector3(dc.x, 0.0, dc.y)
+	var hw := ent_w * 0.62
+	var spring_y := y0 + 2.05
+	var rise := hw * 0.95
+	var col := _enc(front_m["col"].lightened(0.18), front_m["fam"])
+	var fo := nrm * 0.07
+	var band := 0.16
+	var segs := 7
+	var v := 0
+	var prev := dc3 - along * hw + Vector3(0.0, spring_y, 0.0) + fo
+	# vertical jamb moldings up to the springline
+	v += _box(st, dc3 - along * hw + Vector3(0.0, spring_y * 0.5 + y0 * 0.5, 0.0) + nrm * 0.05,
+		along, nrm, 0.07, 0.05, (spring_y - y0) * 0.5, col)
+	v += _box(st, dc3 + along * hw + Vector3(0.0, spring_y * 0.5 + y0 * 0.5, 0.0) + nrm * 0.05,
+		along, nrm, 0.07, 0.05, (spring_y - y0) * 0.5, col)
+	for k in range(1, segs + 1):
+		var tt := float(k) / float(segs)
+		var ang := PI * tt
+		var p := dc3 + along * (hw * cos(PI - ang)) \
+			+ Vector3(0.0, spring_y + sin(ang) * rise, 0.0) + fo
+		v += _quad(st, prev, p, p - Vector3(0.0, band, 0.0), prev - Vector3(0.0, band, 0.0), nrm, col)
+		prev = p
+	return v
+
+
+## A projecting bay window (Queen Anne / Victorian): a canted 3-face box out of
+## the FRONT (entrance) wall, offset to one side of the door, each face carrying a
+## tall window. Placed on the entrance edge so it always faces the street.
+static func _bay(st: SurfaceTool, ring: PackedVector2Array, ent_edge: int,
+		y0: float, y1: float, front_m: Dictionary, two_story: int) -> int:
+	var n := ring.size()
+	var e := ent_edge
+	var a := ring[e]
+	var c := ring[(e + 1) % n]
+	var seg := c - a
+	var length := seg.length()
+	if length < 5.0:
+		# entrance edge too short — try a neighbour
+		e = (ent_edge + 1) % n
+		a = ring[e]
+		c = ring[(e + 1) % n]
+		seg = c - a
+		length = seg.length()
+		if length < 4.0:
+			return 0
+	var dir := seg / length
+	var nrm2 := Vector2(seg.y, -seg.x).normalized()
+	var nrm := Vector3(nrm2.x, 0.0, nrm2.y)
+	var along := Vector3(dir.x, 0.0, dir.y)
+	var bw := minf(2.8, length * 0.34)
+	# offset the bay to a side of the door (door sits ~mid the entrance edge)
+	var t := clampf(0.78, (bw * 0.6) / length, 1.0 - (bw * 0.6) / length)
+	if e != ent_edge:
+		t = 0.5
+	var proj := 1.15
+	var fh := (y1 - y0) / (2.0 if two_story == 1 else 1.0)
+	var top := y0 + fh * 0.95        # a ground-floor bay window
+	var col := _enc(front_m["col"], front_m["fam"])
+	var wcol := WIN_COL
+	var cen := a.lerp(c, t)
+	var cen3 := Vector3(cen.x, 0.0, cen.y)
+	# three canted faces: left, front, right
+	var l0 := cen3 - along * (bw * 0.5)
+	var r0 := cen3 + along * (bw * 0.5)
+	var lf := l0 + nrm * proj + along * (bw * 0.18)
+	var rf := r0 + nrm * proj - along * (bw * 0.18)
+	var v := 0
+	var faces := [[l0, lf], [lf, rf], [rf, r0]]
+	for f in faces:
+		var p0: Vector3 = f[0]
+		var p1: Vector3 = f[1]
+		var fn2 := Vector2((p1.z - p0.z), -(p1.x - p0.x)).normalized()
+		var fn := Vector3(fn2.x, 0, fn2.y)
+		# wall panel
+		v += _quad(st, Vector3(p0.x, y0, p0.z), Vector3(p1.x, y0, p1.z),
+			Vector3(p1.x, top, p1.z), Vector3(p0.x, top, p0.z), fn, col)
+		# window on the panel
+		var wp0 := p0.lerp(p1, 0.2)
+		var wp1 := p0.lerp(p1, 0.8)
+		var wy := y0 + (top - y0) * 0.28
+		var wt := y0 + (top - y0) * 0.82
+		v += _quad(st, Vector3(wp0.x, wy, wp0.z) + fn * 0.02, Vector3(wp1.x, wy, wp1.z) + fn * 0.02,
+			Vector3(wp1.x, wt, wp1.z) + fn * 0.02, Vector3(wp0.x, wt, wp0.z) + fn * 0.02, fn, wcol)
+	# little hip roof cap over the bay
+	var capc := (lf + rf) * 0.5
+	v += _box(st, Vector3(capc.x, top + 0.18, capc.z), along, nrm, bw * 0.55, proj * 0.7, 0.16,
+		_enc(Color(0.33, 0.31, 0.31), _NEUTRAL))
+	return v
+
+
+## Exterior side staircase up to a raised (pier-and-beam) finished floor.
+static func _side_stairs(st: SurfaceTool, ring: PackedVector2Array, ent_edge: int,
+		found_h: float, bid: int) -> int:
+	var n := ring.size()
+	var e := (ent_edge + 1) % n
+	var a := ring[e]
+	var c := ring[(e + 1) % n]
+	var seg := c - a
+	var length := seg.length()
+	if length < 4.0:
+		return 0
+	var dir := seg / length
+	var nrm2 := Vector2(seg.y, -seg.x).normalized()
+	var nrm := Vector3(nrm2.x, 0.0, nrm2.y)
+	var along := Vector3(dir.x, 0.0, dir.y)
+	var t := 0.28 if (_hash(bid, 77) & 1) == 0 else 0.72
+	var base := Vector3(a.lerp(c, t).x, 0.0, a.lerp(c, t).y)
+	var steps := clampi(int(round(found_h / 0.18)), 2, 6)
+	var col := _enc(Color(0.64, 0.62, 0.58), _NEUTRAL)
+	var v := 0
+	for k in range(steps):
+		var y := found_h * (1.0 - float(k + 1) / float(steps))
+		var out := 0.35 + k * 0.3
+		var ctr := base + nrm * out + Vector3(0.0, y + 0.06, 0.0)
+		v += _box(st, ctr, along, nrm, 0.75, 0.16, 0.07, col)
 	return v
 
 
@@ -588,101 +916,158 @@ static func _roof(st: SurfaceTool, ring: PackedVector2Array, h: float, family: S
 	var ob := _obb(ring)
 	var dir: Vector2 = ob["dir"]
 	var perp: Vector2 = ob["perp"]
-	var ctr: Vector2 = ob["ctr"] + dir * ob["cu"] + perp * ob["cw"]
+	var ctr: Vector2 = ob["ctr"] + dir * float(ob["cu"]) + perp * float(ob["cw"])
 	var hu: float = ob["half_u"]
 	var hw: float = ob["half_w"]
-	var eo: float = _EAVE_OUT.get(eave, 0.45)
-	var pr: float = _PITCH_RISE.get(pitch, 0.5)
-	var short := minf(hu, hw)
-	var rise := clampf(short * pr * 2.0, 0.4, 6.5)
+	var eo: float = _EAVE_OUT.get(eave, 0.55)
+	var pf: float = _PITCH_RISE.get(pitch, 0.8)
 	var v := 0
 	var gcol := _enc(gable_m["col"], gable_m["fam"])
-	var eu := hu + eo
-	var ew := hw + eo
-
-	# corners in world space of the eave rectangle
+	var fascia := _enc(roof_col.darkened(0.32), _NEUTRAL)
 	var d3 := Vector3(dir.x, 0.0, dir.y)
 	var p3 := Vector3(perp.x, 0.0, perp.y)
 	var base := Vector3(ctr.x, h, ctr.y)
 
 	match family:
 		"FLAT":
-			v += _flat_cap(st, ring, h, roof_col)
+			v += _flat_roof(st, ring, h, roof_col, fascia)
 		"SHED_COMPOSITE":
-			# single slope from one long side up to the other.
-			var lo := base - p3 * ew
-			var hi := base + p3 * ew + Vector3(0.0, rise, 0.0)
-			var c0 := lo - d3 * eu
-			var c1 := lo + d3 * eu
-			var c2 := hi + d3 * eu
-			var c3 := hi - d3 * eu
-			v += _quad(st, c0, c1, c2, c3, Vector3.UP, roof_col)
-			v += _flat_cap(st, ring, h, roof_col.darkened(0.1))
+			var rise := clampf(minf(hu, hw) * 2.0 * pf, 0.8, 5.5)
+			v += _gable(st, base, d3, p3, hu, hw, eo, rise, roof_col, gcol, fascia, false, true)
 		"LOW_HIP", "HIP", "CROSS_HIP", "COMPLEX_HIP_GABLE":
-			v += _hip(st, base, d3, p3, eu, ew, rise, roof_col)
+			var rise := clampf(minf(hu, hw) * pf, 0.6, 6.0)
+			v += _hip(st, base, d3, p3, hu, hw, eo, rise, roof_col, fascia)
 		"FRONT_GABLE":
-			v += _gable(st, base, d3, p3, eu, ew, rise, roof_col, gcol, true)
+			var rise := clampf(hw * pf, 0.9, 7.0)
+			v += _gable(st, base, d3, p3, hu, hw, eo, rise, roof_col, gcol, fascia, true, false)
 		_:   # SIDE_GABLE / CROSS_GABLE / LOW_GABLE
-			v += _gable(st, base, d3, p3, eu, ew, rise, roof_col, gcol, false)
+			var rise := clampf(hw * pf, 0.8, 7.0)
+			v += _gable(st, base, d3, p3, hu, hw, eo, rise, roof_col, gcol, fascia, false, false)
 	return v
 
 
-## Gable roof: ridge runs along the long axis (side gable) or short axis
-## (front_gable). Two slope planes + two triangular gable ends in gable material.
+## Solid gable roof: two thick sloped planes overhanging the walls, closed by a
+## fascia band all round (so the overhang reads as a real eave with a shadow),
+## triangular gable-end walls at the WALL line in gable material, and a ridge cap.
+## `shed` collapses one slope for a mono-pitch (MCM) roof.
 static func _gable(st: SurfaceTool, base: Vector3, d3: Vector3, p3: Vector3,
-		eu: float, ew: float, rise: float, roof_col: Color, gable_col: Color,
-		front: bool) -> int:
+		hu: float, hw: float, eo: float, rise: float, roof_col: Color,
+		gable_col: Color, fascia: Color, front: bool, shed: bool) -> int:
 	var v := 0
 	var ridge_axis := d3 if not front else p3
 	var slope_axis := p3 if not front else d3
-	var rl: float = eu if not front else ew        # half-length along ridge
-	var sw: float = ew if not front else eu         # half-width of slope
+	var rl_wall: float = hu if not front else hw
+	var sw_wall: float = hw if not front else hu
+	var rl := rl_wall + eo
+	var sw := sw_wall + eo
+	var t := _ROOF_T
 	var up := Vector3(0.0, rise, 0.0)
-	var ridge0 := base - ridge_axis * rl + up
-	var ridge1 := base + ridge_axis * rl + up
-	var eaveA0 := base - ridge_axis * rl - slope_axis * sw
-	var eaveA1 := base + ridge_axis * rl - slope_axis * sw
-	var eaveB0 := base - ridge_axis * rl + slope_axis * sw
-	var eaveB1 := base + ridge_axis * rl + slope_axis * sw
-	# two slope planes
-	v += _quad(st, eaveA0, eaveA1, ridge1, ridge0, Vector3.UP, roof_col)
-	v += _quad(st, eaveB1, eaveB0, ridge0, ridge1, Vector3.UP, roof_col)
-	# two gable-end triangles (gable material)
-	v += _tri(st, eaveA0, ridge0, eaveB0, -ridge_axis, gable_col)
-	v += _tri(st, eaveA1, eaveB1, ridge1, ridge_axis, gable_col)
+	var tv := Vector3(0.0, t, 0.0)
+	# ridge line (shed: ridge sits over the +slope eave instead of the centre)
+	var rcenter := base if not shed else base + slope_axis * sw
+	var ridge0 := rcenter - ridge_axis * rl + up
+	var ridge1 := rcenter + ridge_axis * rl + up
+	var eA0 := base - ridge_axis * rl - slope_axis * sw
+	var eA1 := base + ridge_axis * rl - slope_axis * sw
+	var eB0 := base - ridge_axis * rl + slope_axis * sw
+	var eB1 := base + ridge_axis * rl + slope_axis * sw
+	# top slope surfaces
+	v += _quad(st, eA0, eA1, ridge1, ridge0, Vector3.UP, roof_col)      # - side
+	if not shed:
+		v += _quad(st, eB1, eB0, ridge0, ridge1, Vector3.UP, roof_col)  # + side
+	else:
+		# shed: the high side is a vertical wall band in gable material
+		v += _quad(st, eB0, eB1, ridge1, ridge0, slope_axis, gable_col)
+	# underside (soffit) + eave fascia along the two long eaves
+	v += _eave_edge(st, eA0, eA1, t, fascia)
+	if not shed:
+		v += _eave_edge(st, eB1, eB0, t, fascia)
+	# rake fascia (sloped gable edges) both ends
+	v += _quad(st, eA0, eA0 - tv, ridge0 - tv, ridge0, -ridge_axis, fascia)
+	v += _quad(st, ridge1, ridge1 - tv, eA1 - tv, eA1, ridge_axis, fascia)
+	if not shed:
+		v += _quad(st, ridge0, ridge0 - tv, eB0 - tv, eB0, -ridge_axis, fascia)
+		v += _quad(st, eB1, eB1 - tv, ridge1 - tv, ridge1, ridge_axis, fascia)
+	# gable-end walls at the WALL line (triangles, gable material)
+	if not shed:
+		var gneg0 := base - ridge_axis * rl_wall - slope_axis * sw_wall
+		var gneg1 := base - ridge_axis * rl_wall + slope_axis * sw_wall
+		var gnegR := rcenter - ridge_axis * rl_wall + up
+		v += _tri(st, gneg0, gnegR, gneg1, -ridge_axis, gable_col)
+		var gpos0 := base + ridge_axis * rl_wall - slope_axis * sw_wall
+		var gpos1 := base + ridge_axis * rl_wall + slope_axis * sw_wall
+		var gposR := rcenter + ridge_axis * rl_wall + up
+		v += _tri(st, gpos0, gposR, gpos1, ridge_axis, gable_col)
+		# ridge cap board
+		v += _box(st, (ridge0 + ridge1) * 0.5, ridge_axis, slope_axis,
+			rl, 0.12, 0.1, fascia.lightened(0.1))
+	return v
+
+
+## A downward fascia band + soffit under one eave edge (e0->e1 at eave height).
+static func _eave_edge(st: SurfaceTool, e0: Vector3, e1: Vector3, t: float,
+		fascia: Color) -> int:
+	var tv := Vector3(0.0, t, 0.0)
+	var outn := Vector3(0, -1, 0)
+	var v := 0
+	v += _quad(st, e0, e1, e1 - tv, e0 - tv, outn, fascia)   # fascia face
 	return v
 
 
 static func _hip(st: SurfaceTool, base: Vector3, d3: Vector3, p3: Vector3,
-		eu: float, ew: float, rise: float, roof_col: Color) -> int:
+		hu: float, hw: float, eo: float, rise: float, roof_col: Color,
+		fascia: Color) -> int:
 	var v := 0
+	var eu := hu + eo
+	var ew := hw + eo
+	var t := _ROOF_T
+	var tv := Vector3(0.0, t, 0.0)
 	var up := Vector3(0.0, rise, 0.0)
-	var inset := minf(eu, ew) * 0.5
-	var ridge0 := base - d3 * (eu - inset) + up
-	var ridge1 := base + d3 * (eu - inset) + up
+	var rlen := maxf(0.2, hu - hw)     # ridge length for a true hip
+	var ridge0 := base - d3 * rlen + up
+	var ridge1 := base + d3 * rlen + up
 	var e00 := base - d3 * eu - p3 * ew
 	var e01 := base - d3 * eu + p3 * ew
 	var e10 := base + d3 * eu - p3 * ew
 	var e11 := base + d3 * eu + p3 * ew
 	# four hip faces
-	v += _quad(st, e00, e10, ridge1, ridge0, Vector3.UP, roof_col)   # -p side
-	v += _quad(st, e11, e01, ridge0, ridge1, Vector3.UP, roof_col)   # +p side
-	v += _tri(st, e00, ridge0, e01, -d3, roof_col)                   # -u hip end
-	v += _tri(st, e10, e11, ridge1, d3, roof_col)                    # +u hip end
+	v += _quad(st, e00, e10, ridge1, ridge0, Vector3.UP, roof_col)
+	v += _quad(st, e11, e01, ridge0, ridge1, Vector3.UP, roof_col)
+	v += _tri(st, e00, ridge0, e01, -d3, roof_col)
+	v += _tri(st, e10, e11, ridge1, d3, roof_col)
+	# perimeter fascia band (all four eaves)
+	v += _quad(st, e00, e10, e10 - tv, e00 - tv, -p3, fascia)
+	v += _quad(st, e11, e01, e01 - tv, e11 - tv, p3, fascia)
+	v += _quad(st, e10, e11, e11 - tv, e10 - tv, d3, fascia)
+	v += _quad(st, e01, e00, e00 - tv, e01 - tv, -d3, fascia)
+	v += _box(st, (ridge0 + ridge1) * 0.5, d3, p3, rlen, 0.12, 0.1,
+		fascia.lightened(0.1))
 	return v
 
 
-static func _flat_cap(st: SurfaceTool, ring: PackedVector2Array, h: float,
-		roof_col: Color) -> int:
+static func _flat_roof(st: SurfaceTool, ring: PackedVector2Array, h: float,
+		roof_col: Color, fascia: Color) -> int:
 	var tris := Geometry2D.triangulate_polygon(ring)
 	if tris.is_empty():
 		return 0
-	st.set_color(roof_col)
 	var v := 0
+	# raised parapet band so a flat roof reads as a defined edge, not a cut box
+	var n := ring.size()
+	var ph := 0.35
+	for i in range(n):
+		var a := ring[i]
+		var c := ring[(i + 1) % n]
+		if (c - a).length() <= 0.3:
+			continue
+		var nrm2 := Vector2((c.y - a.y), -(c.x - a.x)).normalized()
+		var nrm := Vector3(nrm2.x, 0.0, nrm2.y)
+		v += _quad(st, Vector3(a.x, h, a.y), Vector3(c.x, h, c.y),
+			Vector3(c.x, h + ph, c.y), Vector3(a.x, h + ph, a.y), nrm, fascia)
+	st.set_color(roof_col)
 	for i in range(0, tris.size(), 3):
 		for k in [tris[i], tris[i + 1], tris[i + 2]]:
 			st.set_normal(Vector3.UP)
-			st.add_vertex(Vector3(ring[k].x, h + 0.05, ring[k].y))
+			st.add_vertex(Vector3(ring[k].x, h + 0.08, ring[k].y))
 		v += 3
 	return v
 
