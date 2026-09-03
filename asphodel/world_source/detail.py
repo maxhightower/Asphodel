@@ -468,6 +468,31 @@ def _parking_lot(seed, parcel, open_area, building_polys, g, placements,
 
 # ---- per-building yard props -------------------------------------------
 
+def _mailbox_frontage(parcel_poly, ex, ez, dx, dz, min_d=5.0, max_d=13.0, inset=1.0):
+    """Point on the ray from the entrance toward the street where a mailbox sits:
+    just inside the parcel frontage, but clamped to a plausible front-yard depth."""
+    d = max_d
+    try:
+        ray = LineString([(ex, ez), (ex + dx * (max_d + 4.0), ez + dz * (max_d + 4.0))])
+        inter = ray.intersection(parcel_poly.exterior)
+        pts = []
+        for geom in getattr(inter, "geoms", [inter]):
+            if geom.is_empty:
+                continue
+            if geom.geom_type == "Point":
+                pts.append((geom.x, geom.y))
+            elif hasattr(geom, "coords"):
+                pts.extend(list(geom.coords))
+        cand = [math.hypot(px - ex, pz - ez) for px, pz in pts]
+        cand = [c for c in cand if c > 0.5]
+        if cand:
+            d = min(cand) - inset
+    except Exception:
+        pass
+    d = max(min_d, min(max_d, d))
+    return ex + dx * d, ez + dz * d
+
+
 def _building_props(seed, parcel, b, front_dir, walkway_dir, drive_strip, g,
                      placements, stats):
     rear_edge, side_edge = _rear_and_side_edges(b.poly, b.entrance_edge)
@@ -483,7 +508,11 @@ def _building_props(seed, parcel, b, front_dir, walkway_dir, drive_strip, g,
             dx, dz = front_dir
         else:
             dx, dz = 0.0, 1.0
-        mx, mz = ex + dx * 0.5, ez + dz * 0.5
+        # A mailbox belongs at the street frontage, not tucked against the door.
+        # Cast toward the street and stop just short of the parcel boundary,
+        # clamped to a sane front-yard depth (parcels here are block-level, so an
+        # unclamped cast could shoot a mailbox clear across the block).
+        mx, mz = _mailbox_frontage(parcel.poly, ex, ez, dx, dz)
         placements.append(Placement("mailbox", mx, mz,
                                      _heading_deg(dx, dz), 0, "prop"))
         _bump(stats, "props")
