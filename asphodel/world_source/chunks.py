@@ -102,6 +102,8 @@ def build_chunks(grid: ChunkGrid, rasters, segments, parcels, buildings,
             bdict["appearance"] = b.appearance
         if b.identity is not None:        # Package H: fictional business identity
             bdict["identity"] = b.identity
+        if getattr(b, "architecture", None) is not None:  # Residential Arch V1
+            bdict["architecture"] = b.architecture
         chunks[key]["buildings"].append(bdict)
 
     cat_field = {"prop": "props", "vehicle": "vehicles", "tree": "trees"}

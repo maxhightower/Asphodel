@@ -53,6 +53,7 @@ class BuildingRecord:
     feat: list = field(default_factory=list)       # BUILDING_FEATURES subset
     parcel_id: str | None = None
     height_observed: bool = False
+    floors_observed: bool = False   # floors came from an observed levels count
     # Package B: BuildingAppearanceV1.to_dict() — facade/roof colour+material+
     # shape with OBSERVED/DERIVED/PROCEDURAL provenance. None until assembled.
     appearance: dict | None = None
@@ -60,6 +61,10 @@ class BuildingRecord:
     # fictional name/category/palette/sign_family (always PROCEDURAL). None for
     # residential and until assigned.
     identity: dict | None = None
+    # Residential Architecture V1: ResidentialArchitectureV1.to_dict() for
+    # DETACHED_RESIDENTIAL buildings — the authoritative form/style/roof/facade/
+    # porch/foundation/parking grammar the renderer consumes. None otherwise.
+    architecture: dict | None = None
 
 
 @dataclass

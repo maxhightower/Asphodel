@@ -19,6 +19,7 @@ extends Node3D
 ## hardcoded below to match).
 
 const PropMeshes = preload("res://scripts/prop_meshes.gd")
+const ResidentialHouseRenderer = preload("res://scripts/residential_house_renderer.gd")
 
 const T1_RADIUS := 1408.0
 const T2_RADIUS := 800.0
@@ -794,6 +795,15 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array,
 	var poly: Array = b.get("poly", [])
 	if poly.size() < 3:
 		return 0
+	# Residential Architecture V1: Python has already decided this house's
+	# form/style/roof/porch/garage/foundation. Consume it — do NOT re-roll here.
+	# The dedicated renderer owns all detached-house geometry. Buildings compiled
+	# by an older pipeline carry no "architecture" key and fall through to the
+	# legacy procedural house path below (backward compatibility, mission R17).
+	if String(b.get("arch", "")) == "DETACHED_RESIDENTIAL" and b.has("architecture"):
+		var rv := ResidentialHouseRenderer.emit(st, b, cells, origin)
+		if rv >= 0:
+			return rv
 	var h := float(b.get("h", 3.0))
 	var floors := maxi(1, int(b.get("floors", 1)))
 	var floor_h := h / float(floors)
@@ -814,9 +824,12 @@ func _detail_building(st: SurfaceTool, b: Dictionary, hvac_xforms: Array,
 	# surface read as glazing.
 	var is_glass_facade := _facade_family_of(b) == WorldMaterials.B_GLASS_CURTAIN
 	var shutter_col: Color = SHUTTER_COLS[_stable_hash(bid, 29) % SHUTTER_COLS.size()]
-	# Per-house massing is picked deterministically so a subdivision reads as varied
-	# homes (some with a porch, some a garage, etc.) instead of copy-paste — and so a
-	# dense chunk isn't every-house-everything.
+	# LEGACY FALLBACK ONLY (mission R17): these independent porch/garage/patio/
+	# chimney rolls run exclusively for buildings compiled WITHOUT a
+	# ResidentialArchitectureV1 record (old bundles). Authoritative houses were
+	# already dispatched to ResidentialHouseRenderer above and never reach here, so
+	# there is no longer a double authority for a modern bundle. Do not add new
+	# residential decisions here — they belong in residential_grammar.py.
 	var want_porch := is_house and (_stable_hash(bid, 41) % 100) < 62
 	var want_garage := is_house and (_stable_hash(bid, 43) % 100) < 52
 	var want_patio := is_house and (_stable_hash(bid, 47) % 100) < 45

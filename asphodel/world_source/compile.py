@@ -14,7 +14,8 @@ import os
 import time
 
 from ..city_visual import business_identity
-from . import appearance_infer, buildings_grammar, detail, identity, normalize, streets
+from . import (appearance_infer, buildings_grammar, detail, identity, normalize,
+               residential_grammar, streets)
 from . import parcels as parcels_mod
 from .chunkgrid import ChunkGrid
 from .chunks import build_chunks, expected_cells, write_chunks
@@ -114,9 +115,23 @@ def compile_city(city: str, release: str, seed: int,
 
     brecords = buildings_grammar.compile_buildings(
         ordered, parcel_list, segments, seed)
+    # Residential Architecture V1 (mission R14): compile the authoritative
+    # form/style/roof/facade/porch/foundation/parking grammar for every detached
+    # house BEFORE the generic procedural appearance choices, so architecture is
+    # the single authority (Godot consumes, never re-rolls). Cohorts are keyed on
+    # the deterministic block id + block centroid (spatially-correlated eras);
+    # regional priors come from geography (lat/lon), never the city name. This
+    # also sets the residential facade/roof material family that colour inference
+    # then colours.
+    lat, lon = (ws.meta.get("origin") or [None, None])[:2]
+    props_by_bid = {bid: f.properties for bid, f in enumerate(ordered)}
+    arch_stats = residential_grammar.assign_architecture(
+        brecords, parcel_list, blocks, seed, lat=lat, lon=lon,
+        props_by_bid=props_by_bid)
     # Package C: fill appearance (facade/roof colour+material) for buildings that
     # carry no observed values, deterministically + spatially coherently. Never
-    # overwrites observed truth; provenance stays honest (mostly PROCEDURAL).
+    # overwrites observed truth (or the residential material set just above);
+    # provenance stays honest (mostly PROCEDURAL).
     appearance_infer.infer_records(brecords, seed)
     # Package H: attach a deterministic fictional business identity to every
     # non-residential building (name/category/palette/sign_family, always
@@ -175,6 +190,8 @@ def compile_city(city: str, release: str, seed: int,
         },
         "surface_census_cells": surf_census,
         "detail_stats": det.stats,
+        "residential_architecture": arch_stats,
+        "residential_census": residential_grammar.census(brecords),
         "elapsed_s": round(time.time() - t0, 1),
     }
 

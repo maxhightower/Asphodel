@@ -98,7 +98,10 @@ class WorldSourceV1:
 #                   "feat": [str,...],
 #                   "appearance": BuildingAppearanceV1.to_dict()  # optional,
 #                     facade/roof colour+material+shape with OBSERVED/DERIVED/
-#                     PROCEDURAL provenance (Package B)} ],
+#                     PROCEDURAL provenance (Package B),
+#                   "architecture": ResidentialArchitectureV1.to_dict()  # optional,
+#                     only on DETACHED_RESIDENTIAL: era/form/style/roof/facade/
+#                     porch/foundation/parking grammar the renderer consumes} ],
 #   "props":    [[kind, x, z, rot_deg, variant], ...],
 #   "vehicles": [[kind, x, z, rot_deg, variant], ...],
 #   "trees":    [[kind, x, z, rot_deg, variant], ...],   # bushes included
@@ -161,6 +164,21 @@ def validate_chunk(chunk: dict, expect_cells: int) -> list[str]:
         ent = b.get("entrance") or {}
         if not (0.0 <= ent.get("t", -1) <= 1.0):
             errs.append("entrance t outside [0,1]")
+        # Residential Architecture V1 is optional (only detached houses carry it)
+        # and additive to the v1 chunk contract; when present it must be valid and
+        # only attached to a detached-residential building.
+        arch_rec = b.get("architecture")
+        if arch_rec is not None:
+            if b.get("arch") != "DETACHED_RESIDENTIAL":
+                errs.append("architecture on a non-detached-residential building")
+            from ..city_visual.residential_architecture import (
+                ResidentialArchitectureV1,
+            )
+            try:
+                aerrs = ResidentialArchitectureV1.from_dict(arch_rec).validate()
+            except Exception as e:  # malformed record — never silently accept
+                aerrs = [f"unparseable architecture: {e}"]
+            errs += [f"architecture: {m}" for m in aerrs[:3]]
 
     valid_kinds = {
         "props": set(PROP_KINDS),

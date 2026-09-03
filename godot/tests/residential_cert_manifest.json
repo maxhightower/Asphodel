@@ -1,0 +1,27 @@
+{
+  "note": "Residential architecture V1 certification views over the compiled Houston bundle. Fixed world-space positions chosen from the existing P0 visual manifest's residential/neighbourhood views (NOT cherry-picked after seeing the result). Capture each view BEFORE (bundle without architecture / legacy fallback path) and AFTER (bundle repatched via tools/repatch_residential_architecture.py). Run headless with the iso screenshot harness at a fixed time-of-day and default yaw for like-for-like comparison.",
+  "bundle": "houston",
+  "time_hour": 13.0,
+  "yaw": "camera_default",
+  "screen": [1600, 900],
+  "categories": {
+    "medium_residential_neighborhood": ["R-V01", "R-V04"],
+    "dense_repetitive_subdivision": ["R-V02"],
+    "mixed_age_neighborhood": ["R-V03", "R-V05"]
+  },
+  "views": [
+    {"id": "R-V01", "scene": "medium residential neighborhood A", "pos": [-1916.6, -57.3], "zoom": 115, "pitch": 40, "source": "P0-V10"},
+    {"id": "R-V02", "scene": "dense repetitive subdivision", "pos": [2534.7, -2746.9], "zoom": 110, "pitch": 40, "source": "P0-V06"},
+    {"id": "R-V03", "scene": "mixed-age neighborhood B", "pos": [557.8, -3096.0], "zoom": 115, "pitch": 40, "source": "P0-V11"},
+    {"id": "R-V04", "scene": "medium residential neighborhood C", "pos": [2037.4, 2341.8], "zoom": 115, "pitch": 40, "source": "P0-V12"},
+    {"id": "R-V05", "scene": "mixed-use / infill edge", "pos": [-1663.1, -2277.7], "zoom": 120, "pitch": 40, "source": "P0-V09"}
+  ],
+  "gallery": {
+    "scene": "res://tests/ResidentialArchitectureGallery.tscn",
+    "fixture": "res://tests/residential_gallery.json",
+    "captures": [
+      {"id": "GAL-NEUTRAL", "args": ["--neutral", "--out", "/tmp/res_gallery_neutral.png"], "purpose": "silhouette diversity: styles must be distinguishable from SHAPE alone"},
+      {"id": "GAL-MATERIAL", "args": ["--out", "/tmp/res_gallery_material.png"], "purpose": "full material gallery"}
+    ]
+  }
+}

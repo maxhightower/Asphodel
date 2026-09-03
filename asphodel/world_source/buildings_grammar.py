@@ -132,10 +132,13 @@ def compile_buildings(ordered_features: list, parcels: list, segments: list,
 
         if isinstance(levels, (int, float)) and levels > 0:
             floors = max(1, round(levels))
+            floors_observed = True
         elif arch in ("BIG_BOX_COMMERCIAL", "INDUSTRIAL"):
             floors = 1
+            floors_observed = False
         else:
             floors = max(1, round(h / 3.3))
+            floors_observed = False
 
         roof_shape = (props.get("roof_shape") or "").strip().lower()
         if roof_shape in _PITCHED_ROOF_TAGS:
@@ -165,10 +168,11 @@ def compile_buildings(ordered_features: list, parcels: list, segments: list,
         rng_feat = DetRand(seed, f.stable_key, "feat")
         feat: list = []
         if arch == "DETACHED_RESIDENTIAL":
-            if rng_feat.chance(0.45):
-                feat.append("garage")
-            if rng_feat.chance(0.35):
-                feat.append("porch")
+            # NOTE: porch/garage for detached houses are NO LONGER rolled here.
+            # ResidentialArchitectureV1 (residential_grammar.assign_architecture)
+            # is the single authority for a house's porch/parking; it derives the
+            # `feat` garage/porch compatibility flags from that record afterward.
+            pass
         elif arch == "MULTIFAMILY":
             if rng_feat.chance(0.5):
                 feat.append("balconies")
@@ -194,7 +198,8 @@ def compile_buildings(ordered_features: list, parcels: list, segments: list,
             arch=arch, roof=roof, entrance_edge=entrance_edge,
             entrance_t=0.5, entrance_w=entrance_w, entrance_xy=(ex, ez),
             feat=feat, parcel_id=(parcel.pid if parcel is not None else None),
-            height_observed=height_observed, appearance=appearance,
+            height_observed=height_observed, floors_observed=floors_observed,
+            appearance=appearance,
         ))
 
     return records
