@@ -23,7 +23,7 @@
   "parcels": 23338,
   "road_records": 10641,
   "urban_parcels": 20548,
-  "urban_parcels_with_detail": 20468
+  "urban_parcels_with_detail": 20461
  },
  "gates": {
   "BUILDING_ARCHETYPE_COVERAGE_95": true,
@@ -41,7 +41,7 @@
  },
  "samples": {
   "invalid": [],
-  "mean_nearby_placements": 157.2,
+  "mean_nearby_placements": 120.8,
   "n": 1000,
   "n_invalid": 0,
   "urban": 888,
