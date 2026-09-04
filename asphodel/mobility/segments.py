@@ -122,9 +122,10 @@ class RoadSegment:
         return self.polyline[-1]
 
     def allows(self, mode: Mode) -> bool:
+        # Hard per-mode blocks come from closed_modes; blocked_fraction only
+        # scales cost (a fully blocked carriageway still lets pedestrians pass
+        # unless FOOT is explicitly closed — the §11 abandon-car-on-foot case).
         if mode in self.dynamic_state.closed_modes:
-            return False
-        if self.dynamic_state.blocked_fraction >= 1.0:
             return False
         return mode in self.allowed_modes
 
@@ -143,8 +144,10 @@ class RoadSegment:
         base = self.length / max(0.1, self.travel_speed(mode))
         ds = self.dynamic_state
         # Congestion multiplies time; partial blockage further slows by the
-        # fraction of capacity lost (a half-blocked lane ~doubles delay).
-        block_penalty = 1.0 / max(0.05, 1.0 - ds.blocked_fraction)
+        # fraction of capacity lost (a half-blocked lane ~doubles delay). The
+        # denominator is clamped so a fully blocked-but-open segment stays finite
+        # (a hard block is expressed via closed_modes, which makes allows() False).
+        block_penalty = 1.0 / max(0.1, 1.0 - ds.blocked_fraction)
         return base * max(1.0, ds.congestion) * block_penalty
 
 
