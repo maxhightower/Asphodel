@@ -12,3 +12,6 @@ output/*_aggregate.csv
 
 # Raw OSM response cache (large; regenerated on demand by asphodel.osm_city).
 output/osm_cache/
+
+# Rendered horizon screenshots (regenerate via godot/tests/HorizonShot.tscn)
+/shots/
