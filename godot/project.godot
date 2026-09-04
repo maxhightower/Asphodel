@@ -18,3 +18,15 @@ config/icon="res://icon.svg"
 [autoload]
 
 Session="*res://scripts/session.gd"
+CollisionLayers="*res://scripts/collision_layers.gd"
+
+[layer_names]
+
+3d_physics/layer_1="world_static"
+3d_physics/layer_2="player"
+3d_physics/layer_3="npc"
+3d_physics/layer_4="vehicle"
+3d_physics/layer_5="dynamic_prop"
+3d_physics/layer_6="trigger"
+3d_physics/layer_7="nav_query"
+3d_physics/layer_8="damage_query"
