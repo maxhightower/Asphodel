@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0asphhumanoidsmoke1"]
+
+[ext_resource type="Script" path="res://tests/citizen_humanoid_smoke.gd" id="1_smoke"]
+
+[node name="CitizenHumanoidSmoke" type="Node3D"]
+script = ExtResource("1_smoke")

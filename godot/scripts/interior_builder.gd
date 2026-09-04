@@ -153,30 +153,32 @@ static func build(descriptor: Dictionary, offset: Vector3 = Vector3(0, 0, 0)) ->
 	return root
 
 
+# One shared NPC material for every interior occupant (never one per citizen).
+static var _npc_material: ShaderMaterial = null
+
 static func _occupant(o: Dictionary) -> Node3D:
-	## An interior NPC: a capsule at the authoritative anchor, tagged with the
-	## citizen id so E-interact routes to INTERACT_WITH. Presentation only.
-	var n := Node3D.new()
+	## An interior NPC: a low-poly humanoid at the authoritative anchor, tagged with
+	## the citizen id so E-interact routes to INTERACT_WITH. It uses the SAME
+	## CitizenVisualIdentity + CitizenMeshes as outdoor citizens, so a given citizen
+	## looks identical indoors and outdoors (H0/H10). Presentation only.
+	if _npc_material == null:
+		_npc_material = CitizenVisualIdentity.build_material()
 	var cid := int(o.get("citizen_id", -1))
-	n.name = "Occupant_%d" % cid
-	n.position = Vector3(float(o.get("x", 0.0)), 0.0, float(o.get("y", 0.0)))
-	var mesh := CapsuleMesh.new()
-	mesh.radius = 0.28
-	mesh.height = 1.7
-	var mat := StandardMaterial3D.new()
-	# roster members tinted by their stable visual seed (recognisable on return)
-	var base := Color(0.75, 0.72, 0.68)
-	if bool(o.get("in_roster", false)):
-		var hue := float((cid * 0x9E3779B1) % 360) / 360.0
-		base = base.lerp(Color.from_hsv(hue, 0.5, 0.95), 0.5)
-	mat.albedo_color = base
-	mesh.material = mat
-	var mi := MeshInstance3D.new()
-	mi.mesh = mesh
-	mi.position = Vector3(0, 1.0, 0)
-	n.add_child(mi)
-	n.set_meta("citizen_id", cid)
-	return n
+	var appear := CitizenVisualIdentity.appearance(cid)
+	var av := CitizenAvatar.new()
+	av.name = "Occupant_%d" % cid
+	# Interior occupants render as a neutral IDLE stance for V1 (work/sleep poses
+	# are deferred); gait 0 avoids a frozen mid-stride since interiors have no
+	# per-frame animation driver.
+	av.configure(cid, appear, _npc_material, 0.0, CitizenMeshes.LOD_NEAR)
+	av.position = Vector3(float(o.get("x", 0.0)), FLOOR_Y, float(o.get("y", 0.0)))
+	# A stable, seed-derived facing so identical occupants don't all face north.
+	av.set_heading(float(CitizenVisualIdentity.visual_seed(cid) % 628) / 100.0)
+	if bool(o.get("in_roster", false)) and cid >= 0:
+		av.set_nameplate("Citizen %d" % cid)
+	# configure() already stamps set_meta("citizen_id", cid) on the avatar root,
+	# which is exactly what interaction candidate-gathering reads.
+	return av
 
 
 static func _decor(d: Dictionary) -> MeshInstance3D:
