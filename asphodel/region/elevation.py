@@ -117,13 +117,22 @@ ARCHETYPES: dict[str, TerrainArchetype] = {
         forest_fraction=0.50,
         arid=False,
     ),
-    # Generic inland rolling country (default fallback).
+    # Rolling inland hills — Hill Country style (Austin / San Antonio). Genuine
+    # relief with dissected valleys once erosion carves the drainage.
     "rolling_inland": TerrainArchetype(
         name="rolling_inland",
-        base_elevation=200.0,
-        plain_relief=25.0,
-        feature_km=6.0,
-        forest_fraction=0.35,
+        base_elevation=280.0,
+        plain_relief=95.0,
+        feature_km=4.5,
+        forest_fraction=0.40,
+    ),
+    # Gentle flat plains (rural TX, dead-flat farmland).
+    "flat_plains": TerrainArchetype(
+        name="flat_plains",
+        base_elevation=110.0,
+        plain_relief=14.0,
+        feature_km=7.0,
+        forest_fraction=0.30,
     ),
 }
 
@@ -176,9 +185,19 @@ class SyntheticElevationProvider(ElevationProvider):
         a = self.arch
         elev = np.full(np.broadcast(x, z).shape, a.base_elevation, dtype=np.float64)
 
-        # Gentle rolling relief everywhere.
+        # Domain warp: offset the sample coordinates by a low-frequency noise
+        # field so landforms curve and meander instead of looking like radial
+        # blobs — the single cheapest boost to natural-looking terrain.
+        wscale = 1.0 / (a.feature_km * 1000.0 * 2.2)
+        wamp = a.feature_km * 1000.0 * 0.75
+        wx = x + (noise.fbm(x * wscale + 11.1, z * wscale + 3.7,
+                            seed=self.seed + 911, octaves=3) - 0.5) * 2.0 * wamp
+        wz = z + (noise.fbm(x * wscale + 7.3, z * wscale + 19.2,
+                            seed=self.seed + 733, octaves=3) - 0.5) * 2.0 * wamp
+
+        # Gentle rolling relief everywhere (warped coords).
         fscale = 1.0 / (a.feature_km * 1000.0)
-        roll = noise.fbm(x * fscale, z * fscale, seed=self.seed, octaves=5)
+        roll = noise.fbm(wx * fscale, wz * fscale, seed=self.seed, octaves=5)
         elev = elev + a.plain_relief * (roll - 0.5) * 2.0
 
         # Piedmont slope: the plains rise gradually toward the mountains, so a
@@ -199,7 +218,8 @@ class SyntheticElevationProvider(ElevationProvider):
             ramp = np.clip((along - onset) / (a.mountain_rampin_km * 1000.0), 0.0, 1.0)
             ramp = ramp * ramp * (3.0 - 2.0 * ramp)  # smoothstep in
             mscale = 1.0 / (a.mountain_km * 1000.0)
-            ridge = noise.ridged(x * mscale, z * mscale, seed=self.seed + 77, octaves=6)
+            # Warped ridge coords give the range curving spurs and side-valleys.
+            ridge = noise.ridged(wx * mscale, wz * mscale, seed=self.seed + 77, octaves=6)
             elev = elev + a.mountain_relief * ramp * ridge
 
         # Coastline: land drops toward open water; below sea level becomes seabed.

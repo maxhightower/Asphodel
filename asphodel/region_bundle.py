@@ -34,13 +34,29 @@ from .physics import (
     collision_matrix,
 )
 
+from .region.erosion import erode_and_hydrology
+
 import numpy as np
+
+
+def _stats_from_grid(h: np.ndarray, step_m: float) -> dict:
+    """Relief statistics computed from a heightmap grid (the eroded surface)."""
+    gy, gx = np.gradient(h, step_m)
+    slope = np.hypot(gx, gy)
+    return {
+        "min_elevation": float(h.min()),
+        "max_elevation": float(h.max()),
+        "mean_elevation": float(h.mean()),
+        "relief_span": float(h.max() - h.min()),
+        "max_gradient": float(slope.max()),
+        "mean_gradient": float(slope.mean()),
+    }
 
 
 def build_region_artifact(georef: GeoReference, archetype_name: str,
                           extent: Optional[RegionalExtent] = None,
                           seed: int = 0, focus=(0.0, 0.0),
-                          heightmap_step_m: float = 1500.0,
+                          heightmap_step_m: float = 800.0,
                           max_depth: int = 6) -> dict:
     """Build the regional terrain artifact for a city (§3).
 
@@ -54,8 +70,19 @@ def build_region_artifact(georef: GeoReference, archetype_name: str,
     arch = archetype_for(archetype_name)
     provider = SyntheticElevationProvider(georef, arch, seed=seed)
 
+    # Bake the raw heightmap, then run the offline erosion + hydrology pass so the
+    # terrain gains dendritic valleys and rivers (realism for every city).
     heightmap = bake_heightmap(provider, extent, step_m=heightmap_step_m)
-    stats = terrain_stats(provider, extent)
+    raw = np.asarray(heightmap["heights"], dtype=np.float64)
+    mountainous = float(raw.max() - raw.min()) > 400.0
+    hydro = erode_and_hydrology(raw, heightmap["step_m"], seed=seed,
+                                mountainous=mountainous)
+    eroded = hydro["heights"]
+    heightmap["heights"] = [[round(float(v), 2) for v in row] for row in eroded]
+    heightmap["eroded"] = True
+    water_cells = [[int(r), int(c)] for r, c in zip(*np.where(hydro["water_mask"]))]
+
+    stats = _stats_from_grid(eroded, heightmap["step_m"])
 
     # Land cover summary over a coarse grid.
     x0, z0, side = extent.root_square()
@@ -93,6 +120,8 @@ def build_region_artifact(georef: GeoReference, archetype_name: str,
         "land_cover": cover,
         "sea_level": arch.sea_level,
         "heightmap": heightmap,
+        "water_cells": water_cells,       # [row, col] into the heightmap grid
+        "river_cells": hydro["river_cells"],
         "chunk_manifest": chunks,
         "atmosphere": {
             # First-pass aerial perspective params (§14): fog begins past the

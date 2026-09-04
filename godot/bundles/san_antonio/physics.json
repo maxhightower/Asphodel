@@ -1,0 +1,242 @@
+{
+  "body_profiles": {
+    "damage_query": {
+      "layer": 128,
+      "mask": 15,
+      "role": "query"
+    },
+    "dynamic_prop": {
+      "layer": 16,
+      "mask": 31,
+      "role": "rigid_body"
+    },
+    "nav_query": {
+      "layer": 64,
+      "mask": 25,
+      "role": "query"
+    },
+    "npc": {
+      "layer": 4,
+      "mask": 31,
+      "role": "character_body"
+    },
+    "player": {
+      "layer": 2,
+      "mask": 31,
+      "role": "character_body"
+    },
+    "trigger": {
+      "layer": 32,
+      "mask": 14,
+      "role": "area"
+    },
+    "vehicle": {
+      "layer": 8,
+      "mask": 31,
+      "role": "rigid_body"
+    },
+    "world_static": {
+      "layer": 1,
+      "mask": 0,
+      "role": "static_body"
+    }
+  },
+  "collision_matrix": [
+    {
+      "a": "world_static",
+      "b": "world_static",
+      "blocks": false
+    },
+    {
+      "a": "world_static",
+      "b": "player",
+      "blocks": true
+    },
+    {
+      "a": "world_static",
+      "b": "npc",
+      "blocks": true
+    },
+    {
+      "a": "world_static",
+      "b": "vehicle",
+      "blocks": true
+    },
+    {
+      "a": "world_static",
+      "b": "dynamic_prop",
+      "blocks": true
+    },
+    {
+      "a": "player",
+      "b": "player",
+      "blocks": true
+    },
+    {
+      "a": "player",
+      "b": "npc",
+      "blocks": true
+    },
+    {
+      "a": "player",
+      "b": "vehicle",
+      "blocks": true
+    },
+    {
+      "a": "player",
+      "b": "dynamic_prop",
+      "blocks": true
+    },
+    {
+      "a": "npc",
+      "b": "npc",
+      "blocks": true
+    },
+    {
+      "a": "npc",
+      "b": "vehicle",
+      "blocks": true
+    },
+    {
+      "a": "npc",
+      "b": "dynamic_prop",
+      "blocks": true
+    },
+    {
+      "a": "vehicle",
+      "b": "vehicle",
+      "blocks": true
+    },
+    {
+      "a": "vehicle",
+      "b": "dynamic_prop",
+      "blocks": true
+    },
+    {
+      "a": "dynamic_prop",
+      "b": "dynamic_prop",
+      "blocks": true
+    }
+  ],
+  "layers": {
+    "1": "world_static",
+    "2": "player",
+    "3": "npc",
+    "4": "vehicle",
+    "5": "dynamic_prop",
+    "6": "trigger",
+    "7": "nav_query",
+    "8": "damage_query"
+  },
+  "object_solidity": {
+    "barrier": {
+      "body": "world_static",
+      "collision": true,
+      "navigation": false,
+      "solidity": "solid"
+    },
+    "building_floor": {
+      "body": "world_static",
+      "collision": true,
+      "navigation": true,
+      "solidity": "solid"
+    },
+    "building_roof": {
+      "body": "world_static",
+      "collision": true,
+      "navigation": false,
+      "solidity": "solid"
+    },
+    "building_wall": {
+      "body": "world_static",
+      "collision": true,
+      "navigation": false,
+      "solidity": "solid"
+    },
+    "door": {
+      "body": "world_static",
+      "collision": true,
+      "navigation": true,
+      "solidity": "breakable"
+    },
+    "doorway": {
+      "body": "",
+      "collision": false,
+      "navigation": true,
+      "solidity": "navigation_only"
+    },
+    "foliage": {
+      "body": "",
+      "collision": false,
+      "navigation": false,
+      "solidity": "non_solid"
+    },
+    "interior_wall": {
+      "body": "world_static",
+      "collision": true,
+      "navigation": false,
+      "solidity": "solid"
+    },
+    "parked_vehicle": {
+      "body": "vehicle",
+      "collision": true,
+      "navigation": false,
+      "solidity": "solid"
+    },
+    "road_surface": {
+      "body": "",
+      "collision": false,
+      "navigation": true,
+      "solidity": "navigation_only"
+    },
+    "sidewalk": {
+      "body": "",
+      "collision": false,
+      "navigation": true,
+      "solidity": "navigation_only"
+    },
+    "stairs": {
+      "body": "world_static",
+      "collision": true,
+      "navigation": true,
+      "solidity": "solid"
+    },
+    "street_furniture": {
+      "body": "dynamic_prop",
+      "collision": true,
+      "navigation": false,
+      "solidity": "movable"
+    },
+    "terrain_far": {
+      "body": "",
+      "collision": false,
+      "navigation": false,
+      "solidity": "decoration_only"
+    },
+    "terrain_near": {
+      "body": "world_static",
+      "collision": true,
+      "navigation": true,
+      "solidity": "solid"
+    },
+    "tree_trunk": {
+      "body": "world_static",
+      "collision": true,
+      "navigation": false,
+      "solidity": "solid"
+    },
+    "trigger_zone": {
+      "body": "trigger",
+      "collision": false,
+      "navigation": false,
+      "solidity": "trigger_only"
+    },
+    "wreck": {
+      "body": "dynamic_prop",
+      "collision": true,
+      "navigation": false,
+      "solidity": "solid"
+    }
+  },
+  "version": "1"
+}

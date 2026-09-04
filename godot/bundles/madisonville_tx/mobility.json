@@ -1,0 +1,971 @@
+{
+  "nodes": {
+    "n_-101_-1425": [
+      -302.62,
+      -4275.36
+    ],
+    "n_-130_-403": [
+      -390.46,
+      -1208.79
+    ],
+    "n_-148_-375": [
+      -442.57,
+      -1123.61
+    ],
+    "n_-223_-408": [
+      -670.15,
+      -1225.0
+    ],
+    "n_-224_-214": [
+      -673.17,
+      -641.02
+    ],
+    "n_-229_-205": [
+      -686.33,
+      -613.87
+    ],
+    "n_-22_-746": [
+      -66.28,
+      -2238.52
+    ],
+    "n_-236_-189": [
+      -708.85,
+      -566.42
+    ],
+    "n_-244_-173": [
+      -730.76,
+      -520.44
+    ],
+    "n_-250_-195": [
+      -750.67,
+      -585.81
+    ],
+    "n_-251_-157": [
+      -754.21,
+      -471.19
+    ],
+    "n_-254_-197": [
+      -763.11,
+      -591.64
+    ],
+    "n_-311_-224": [
+      -933.6,
+      -672.86
+    ],
+    "n_-34_-471": [
+      -102.12,
+      -1414.29
+    ],
+    "n_-395_261": [
+      -1184.16,
+      782.98
+    ],
+    "n_-404_-268": [
+      -1213.47,
+      -804.45
+    ],
+    "n_-428_471": [
+      -1283.98,
+      1413.37
+    ],
+    "n_-459_-295": [
+      -1377.75,
+      -883.75
+    ],
+    "n_-462_824": [
+      -1385.69,
+      2472.02
+    ],
+    "n_-518_-167": [
+      -1553.54,
+      -500.76
+    ],
+    "n_-519_-321": [
+      -1556.09,
+      -962.48
+    ],
+    "n_-524_-170": [
+      -1573.37,
+      -509.93
+    ],
+    "n_-577_2129": [
+      -1730.7,
+      6385.72
+    ],
+    "n_-577_2143": [
+      -1732.11,
+      6430.15
+    ],
+    "n_-681_-403": [
+      -2042.46,
+      -1208.33
+    ],
+    "n_-757_-477": [
+      -2271.51,
+      -1432.37
+    ],
+    "n_-854_-573": [
+      -2562.84,
+      -1719.47
+    ],
+    "n_-878_2": [
+      -2635.2,
+      5.43
+    ],
+    "n_232_37": [
+      695.46,
+      111.74
+    ],
+    "n_2932_-1387": [
+      8794.97,
+      -4160.16
+    ],
+    "n_317_-517": [
+      951.16,
+      -1550.03
+    ],
+    "n_323_163": [
+      967.63,
+      489.6
+    ],
+    "n_389_-517": [
+      1167.84,
+      -1550.14
+    ],
+    "n_616_355": [
+      1848.83,
+      1066.19
+    ],
+    "n_641_366": [
+      1923.44,
+      1098.53
+    ],
+    "n_653_371": [
+      1957.93,
+      1114.15
+    ],
+    "n_657_373": [
+      1969.7,
+      1119.67
+    ],
+    "n_663_376": [
+      1990.23,
+      1129.28
+    ],
+    "n_683_385": [
+      2048.01,
+      1156.36
+    ],
+    "n_686_387": [
+      2058.56,
+      1161.31
+    ],
+    "n_705_396": [
+      2114.68,
+      1187.42
+    ],
+    "n_734_409": [
+      2202.42,
+      1228.23
+    ],
+    "n_747_415": [
+      2240.65,
+      1246.17
+    ],
+    "n_756_277": [
+      2267.69,
+      829.91
+    ],
+    "n_777_429": [
+      2331.14,
+      1287.8
+    ],
+    "n_780_259": [
+      2339.88,
+      778.01
+    ],
+    "n_790_435": [
+      2368.91,
+      1305.22
+    ],
+    "n_884_147": [
+      2652.58,
+      441.49
+    ],
+    "n_894_483": [
+      2680.66,
+      1450.05
+    ],
+    "n_898_123": [
+      2694.91,
+      368.28
+    ],
+    "n_89_-36": [
+      266.54,
+      -107.74
+    ]
+  },
+  "segments": [
+    {
+      "class": "motorway",
+      "directionality": "bidirectional",
+      "id": "seg0",
+      "lanes": 3,
+      "length": 630.03,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 31.0,
+      "u": "n_756_277",
+      "v": "n_898_123"
+    },
+    {
+      "class": "secondary",
+      "directionality": "bidirectional",
+      "id": "seg1",
+      "lanes": 1,
+      "length": 421.4,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 14.0,
+      "u": "n_-459_-295",
+      "v": "n_-518_-167"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg2",
+      "lanes": 2,
+      "length": 1063.53,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_-428_471",
+      "v": "n_-462_824"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg3",
+      "lanes": 2,
+      "length": 1334.12,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_-251_-157",
+      "v": "n_-395_261"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg4",
+      "lanes": 2,
+      "length": 320.4,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_-681_-403",
+      "v": "n_-757_-477"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg5",
+      "lanes": 2,
+      "length": 41.61,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_790_435",
+      "v": "n_777_429"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg6",
+      "lanes": 2,
+      "length": 188.87,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_-254_-197",
+      "v": "n_-311_-224"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg7",
+      "lanes": 2,
+      "length": 635.19,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_-130_-403",
+      "v": "n_-224_-214"
+    },
+    {
+      "class": "secondary",
+      "directionality": "bidirectional",
+      "id": "seg8",
+      "lanes": 1,
+      "length": 1245.36,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 14.0,
+      "u": "n_-524_-170",
+      "v": "n_-878_2"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg9",
+      "lanes": 2,
+      "length": 249.14,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_-223_-408",
+      "v": "n_-148_-375"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg10",
+      "lanes": 2,
+      "length": 1191.79,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_-22_-746",
+      "v": "n_-223_-408"
+    },
+    {
+      "class": "motorway",
+      "directionality": "bidirectional",
+      "id": "seg11",
+      "lanes": 3,
+      "length": 6979.94,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 31.0,
+      "u": "n_780_259",
+      "v": "n_-577_2143"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg12",
+      "lanes": 2,
+      "length": 61.9,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_705_396",
+      "v": "n_686_387"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg13",
+      "lanes": 2,
+      "length": 1076.26,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_616_355",
+      "v": "n_323_163"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg14",
+      "lanes": 2,
+      "length": 482.76,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_232_37",
+      "v": "n_89_-36"
+    },
+    {
+      "class": "motorway",
+      "directionality": "bidirectional",
+      "id": "seg15",
+      "lanes": 3,
+      "length": 6859.73,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 31.0,
+      "u": "n_-577_2129",
+      "v": "n_756_277"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg16",
+      "lanes": 2,
+      "length": 63.81,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_683_385",
+      "v": "n_663_376"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg17",
+      "lanes": 2,
+      "length": 22.67,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_663_376",
+      "v": "n_657_373"
+    },
+    {
+      "class": "secondary",
+      "directionality": "bidirectional",
+      "id": "seg18",
+      "lanes": 1,
+      "length": 21.84,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 14.0,
+      "u": "n_-524_-170",
+      "v": "n_-518_-167"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg19",
+      "lanes": 2,
+      "length": 1077.86,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_89_-36",
+      "v": "n_-236_-189"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg20",
+      "lanes": 2,
+      "length": 409.02,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_-757_-477",
+      "v": "n_-854_-573"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg21",
+      "lanes": 2,
+      "length": 309.28,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_-311_-224",
+      "v": "n_-404_-268"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg22",
+      "lanes": 2,
+      "length": 377.39,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_-404_-268",
+      "v": "n_-519_-321"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg23",
+      "lanes": 2,
+      "length": 547.44,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_-519_-321",
+      "v": "n_-681_-403"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg24",
+      "lanes": 2,
+      "length": 343.79,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_894_483",
+      "v": "n_790_435"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg25",
+      "lanes": 2,
+      "length": 8183.55,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_2932_-1387",
+      "v": "n_389_-517"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg26",
+      "lanes": 2,
+      "length": 2084.16,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_-101_-1425",
+      "v": "n_-22_-746"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg27",
+      "lanes": 2,
+      "length": 46.1,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_-236_-189",
+      "v": "n_-250_-195"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg28",
+      "lanes": 2,
+      "length": 13.74,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_-250_-195",
+      "v": "n_-254_-197"
+    },
+    {
+      "class": "motorway",
+      "directionality": "bidirectional",
+      "id": "seg29",
+      "lanes": 3,
+      "length": 460.1,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 31.0,
+      "u": "n_884_147",
+      "v": "n_780_259"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg30",
+      "lanes": 2,
+      "length": 465.74,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_323_163",
+      "v": "n_232_37"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg31",
+      "lanes": 2,
+      "length": 99.6,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_777_429",
+      "v": "n_747_415"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg32",
+      "lanes": 2,
+      "length": 42.24,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_747_415",
+      "v": "n_734_409"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg33",
+      "lanes": 2,
+      "length": 96.77,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_734_409",
+      "v": "n_705_396"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg34",
+      "lanes": 2,
+      "length": 11.65,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_686_387",
+      "v": "n_683_385"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg35",
+      "lanes": 2,
+      "length": 13.0,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_657_373",
+      "v": "n_653_371"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg36",
+      "lanes": 2,
+      "length": 81.32,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_641_366",
+      "v": "n_616_355"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg37",
+      "lanes": 2,
+      "length": 30.17,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_-224_-214",
+      "v": "n_-229_-205"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg38",
+      "lanes": 2,
+      "length": 50.94,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_-236_-189",
+      "v": "n_-244_-173"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg39",
+      "lanes": 2,
+      "length": 54.55,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_-244_-173",
+      "v": "n_-251_-157"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg40",
+      "lanes": 2,
+      "length": 52.52,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_-229_-205",
+      "v": "n_-236_-189"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg41",
+      "lanes": 2,
+      "length": 216.69,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_389_-517",
+      "v": "n_317_-517"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg42",
+      "lanes": 2,
+      "length": 1073.89,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_317_-517",
+      "v": "n_-34_-471"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg43",
+      "lanes": 2,
+      "length": 359.92,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_-34_-471",
+      "v": "n_-130_-403"
+    },
+    {
+      "class": "primary",
+      "directionality": "bidirectional",
+      "id": "seg44",
+      "lanes": 2,
+      "length": 639.18,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 18.0,
+      "u": "n_-395_261",
+      "v": "n_-428_471"
+    },
+    {
+      "class": "trunk",
+      "directionality": "bidirectional",
+      "id": "seg45",
+      "lanes": 2,
+      "length": 37.86,
+      "modes": [
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 25.0,
+      "u": "n_653_371",
+      "v": "n_641_366"
+    }
+  ],
+  "stats": {
+    "directed_edges": 92,
+    "nodes": 51,
+    "obstructions": 0,
+    "segments": 46
+  },
+  "version": "1"
+}

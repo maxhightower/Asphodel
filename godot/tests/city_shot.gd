@@ -21,6 +21,7 @@ var _hstep: float
 var _origin_elev: float
 var _lo: float
 var _hi: float
+var _water := {}      # "iz_ix" -> true, drainage/river/lake/coast cells
 
 
 func _ready() -> void:
@@ -65,6 +66,14 @@ func _load_terrain() -> void:
 	_origin_elev = float(region.get("georef", {}).get("origin_elevation", 0.0))
 	_lo = region["terrain_stats"]["min_elevation"]
 	_hi = region["terrain_stats"]["max_elevation"]
+	for rc in region.get("water_cells", []):
+		_water["%d_%d" % [int(rc[0]), int(rc[1])]] = true
+
+
+func _is_water(x: float, z: float) -> bool:
+	var ix := int(round((x - _hx0) / _hstep))
+	var iz := int(round((z - _hz0) / _hstep))
+	return _water.has("%d_%d" % [iz, ix])
 
 
 func _sample(x: float, z: float) -> float:
@@ -103,18 +112,24 @@ func _build_terrain_mesh() -> void:
 		for ix in range(n):
 			var wx := -HALF + ix * step
 			var h := _sample(wx, wz)
+			var y := h - _origin_elev
 			var base: Color
-			if h >= snow_line:
-				base = snow
-			elif h >= rock_line:
-				base = rock
+			var sh := 1.0
+			if _is_water(wx, wz):
+				base = Color(0.16, 0.34, 0.52)   # river / lake / coast
+				y -= 2.0                          # sit the water surface in the channel
 			else:
-				base = green.lerp(tan, clamp((h - _lo) / max(1.0, rock_line - _lo), 0.0, 1.0))
-			var nrm := Vector3(_sample(wx - g, wz) - _sample(wx + g, wz), 2.0 * g,
-							   _sample(wx, wz - g) - _sample(wx, wz + g)).normalized()
-			var sh: float = 0.45 + 0.70 * maxf(0.0, nrm.dot(L))
+				if h >= snow_line:
+					base = snow
+				elif h >= rock_line:
+					base = rock
+				else:
+					base = green.lerp(tan, clamp((h - _lo) / max(1.0, rock_line - _lo), 0.0, 1.0))
+				var nrm := Vector3(_sample(wx - g, wz) - _sample(wx + g, wz), 2.0 * g,
+								   _sample(wx, wz - g) - _sample(wx, wz + g)).normalized()
+				sh = 0.45 + 0.70 * maxf(0.0, nrm.dot(L))
 			st.set_color(Color(minf(base.r * sh, 1), minf(base.g * sh, 1), minf(base.b * sh, 1)))
-			st.add_vertex(Vector3(wx, h - _origin_elev, wz))
+			st.add_vertex(Vector3(wx, y, wz))
 	for iz in range(GRID):
 		for ix in range(GRID):
 			var a := iz * n + ix

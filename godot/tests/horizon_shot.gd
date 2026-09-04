@@ -67,6 +67,9 @@ func _render(shot: Dictionary) -> void:
 	_heights = hm["heights"]
 	_hx0 = hm["x0"]; _hz0 = hm["z0"]; _hstep = hm["step_m"]
 	_rows = _heights.size(); _cols = (_heights[0] as Array).size()
+	var water_set := {}
+	for rc in region.get("water_cells", []):
+		water_set["%d_%d" % [int(rc[0]), int(rc[1])]] = true
 	var origin_elev: float = float(region.get("georef", {}).get("origin_elevation", 0.0))
 	var sea: Variant = region.get("sea_level", null)
 	var has_sea := sea != null
@@ -96,24 +99,31 @@ func _render(shot: Dictionary) -> void:
 		for ix in range(n):
 			var wx := -HALF + ix * step
 			var h := _sample(wx, wz)
+			var y := h - origin_elev
 			var base: Color
-			if has_sea and h <= seaf:
-				base = water
+			var shade := 1.0
+			var wix := int(round((wx - _hx0) / _hstep))
+			var wiz := int(round((wz - _hz0) / _hstep))
+			if (has_sea and h <= seaf) or water_set.has("%d_%d" % [wiz, wix]):
+				base = water                       # sea, river, or lake
+				if not (has_sea and h <= seaf):
+					y -= 2.0
 			elif has_sea and h <= seaf + 4.0:
 				base = beach
-			elif h >= snow_line:
-				base = snow
-			elif h >= rock_line:
-				base = rock
 			else:
-				base = green.lerp(tan, clamp((h - lo) / max(1.0, rock_line - lo), 0.0, 1.0))
-			# Bake hillshade from the heightmap gradient (renderer-independent).
-			var nrm := Vector3(_sample(wx - g, wz) - _sample(wx + g, wz), 2.0 * g,
-							   _sample(wx, wz - g) - _sample(wx, wz + g)).normalized()
-			var shade: float = 0.42 + 0.72 * maxf(0.0, nrm.dot(L))
+				if h >= snow_line:
+					base = snow
+				elif h >= rock_line:
+					base = rock
+				else:
+					base = green.lerp(tan, clamp((h - lo) / max(1.0, rock_line - lo), 0.0, 1.0))
+				# Bake hillshade from the heightmap gradient (renderer-independent).
+				var nrm := Vector3(_sample(wx - g, wz) - _sample(wx + g, wz), 2.0 * g,
+								   _sample(wx, wz - g) - _sample(wx, wz + g)).normalized()
+				shade = 0.42 + 0.72 * maxf(0.0, nrm.dot(L))
 			st.set_color(Color(minf(base.r * shade, 1.0), minf(base.g * shade, 1.0),
 							   minf(base.b * shade, 1.0)))
-			st.add_vertex(Vector3(wx, h - origin_elev, wz))
+			st.add_vertex(Vector3(wx, y, wz))
 	for iz in range(GRID):
 		for ix in range(GRID):
 			var a := iz * n + ix
