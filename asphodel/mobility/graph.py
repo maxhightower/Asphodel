@@ -180,6 +180,30 @@ class MobilityGraph:
         self.add_segment(seg, ent_id, target)
         return ent_id
 
+    # -- load a baked mobility artifact -------------------------------------
+    @classmethod
+    def from_artifact(cls, art: dict) -> "MobilityGraph":
+        """Rebuild the graph from a bundle's mobility.json (nodes + segments)."""
+        g = cls()
+        for nid, xy in art["nodes"].items():
+            g.add_node(nid, (float(xy[0]), float(xy[1])))
+        for s in art["segments"]:
+            u, v = s["u"], s["v"]
+            if u is None or v is None:
+                continue
+            modes = {Mode(m) for m in s.get("modes", [])} or None
+            seg = RoadSegment(
+                id=s["id"],
+                polyline=[g.nodes[u], g.nodes[v]],
+                road_class=s.get("class", "residential"),
+                directionality=Direction(s.get("directionality", "bidirectional")),
+                allowed_modes=modes,
+                speed_limit=s.get("speed_limit"),
+                lanes=s.get("lanes"),
+            )
+            g.add_segment(seg, u, v)
+        return g
+
     # -- import from legacy polylines ---------------------------------------
     @classmethod
     def from_polylines(cls, polylines: Sequence[dict], snap: float = 2.0

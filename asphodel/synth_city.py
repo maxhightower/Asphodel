@@ -72,18 +72,34 @@ def build_synth_city_bundle(
                 "blocks": blocks,
             })
 
-    # Street grid: local streets + wider arterials.
-    polylines = []
+    # Street grid emitted as per-block segments so intersections become shared
+    # nodes (a routable grid, not disconnected full-span lines). Each segment
+    # spans one block between adjacent intersections.
+    xs = []
     x = x0
     while x <= x1 + 1e-6:
-        cls = "secondary" if abs((x - x0) % (zone_m * 1.5)) < 1e-6 else "residential"
-        polylines.append({"class": cls, "points": [[round(x, 2), z0], [round(x, 2), z1]]})
+        xs.append(round(x, 2))
         x += block_street_m
+    zs = []
     z = z0
     while z <= z1 + 1e-6:
-        cls = "secondary" if abs((z - z0) % (zone_m * 1.5)) < 1e-6 else "residential"
-        polylines.append({"class": cls, "points": [[x0, round(z, 2)], [x1, round(z, 2)]]})
+        zs.append(round(z, 2))
         z += block_street_m
+    arterial = zone_m * 1.5
+
+    def _cls(x, z):
+        on_art = (abs((x - x0) % arterial) < 1e-6) or (abs((z - z0) % arterial) < 1e-6)
+        return "secondary" if on_art else "residential"
+
+    polylines = []
+    for zi, z in enumerate(zs):
+        for xi, x in enumerate(xs):
+            if xi + 1 < len(xs):     # east edge (an east-west street)
+                polylines.append({"class": _cls(x, z),
+                                   "points": [[x, z], [xs[xi + 1], z]]})
+            if zi + 1 < len(zs):     # south edge (a north-south street)
+                polylines.append({"class": _cls(x, z),
+                                   "points": [[x, z], [x, zs[zi + 1]]]})
 
     meta = {
         "name": name,
