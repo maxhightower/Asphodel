@@ -1,0 +1,17 @@
+{
+  "center": [
+    40.015,
+    -105.2705
+  ],
+  "grid": {
+    "cell_m": 400.0,
+    "cols": 13,
+    "rows": 12
+  },
+  "name": "Boulder, Colorado",
+  "origin_elevation": 1655.0,
+  "projection": "equirectangular",
+  "seed": 7,
+  "source": "synthetic",
+  "version": "1"
+}

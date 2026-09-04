@@ -92,6 +92,22 @@ ARCHETYPES: dict[str, TerrainArchetype] = {
         forest_fraction=0.45,
         arid=True,
     ),
+    # A city built right against the mountain front (Boulder / the Flatirons):
+    # the range rises within ~2 km of downtown, not tens of km away.
+    "front_range_adjacent": TerrainArchetype(
+        name="front_range_adjacent",
+        base_elevation=1655.0,
+        plain_relief=22.0,
+        feature_km=5.0,
+        mountain_relief=2600.0,
+        mountain_dir=(-1.0, 0.0),   # mountains rise immediately to the west
+        mountain_onset_km=1.0,
+        mountain_rampin_km=4.0,
+        mountain_km=5.0,
+        sea_level=None,
+        forest_fraction=0.50,
+        arid=False,
+    ),
     # Generic inland rolling country (default fallback).
     "rolling_inland": TerrainArchetype(
         name="rolling_inland",

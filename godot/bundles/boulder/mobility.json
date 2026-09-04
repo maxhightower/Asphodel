@@ -1,0 +1,1763 @@
+{
+  "nodes": {
+    "n_-138_-767": [
+      -415.0,
+      -2300.0
+    ],
+    "n_-138_767": [
+      -415.0,
+      2300.0
+    ],
+    "n_-183_-767": [
+      -550.0,
+      -2300.0
+    ],
+    "n_-183_767": [
+      -550.0,
+      2300.0
+    ],
+    "n_-228_-767": [
+      -685.0,
+      -2300.0
+    ],
+    "n_-228_767": [
+      -685.0,
+      2300.0
+    ],
+    "n_-273_-767": [
+      -820.0,
+      -2300.0
+    ],
+    "n_-273_767": [
+      -820.0,
+      2300.0
+    ],
+    "n_-318_-767": [
+      -955.0,
+      -2300.0
+    ],
+    "n_-318_767": [
+      -955.0,
+      2300.0
+    ],
+    "n_-363_-767": [
+      -1090.0,
+      -2300.0
+    ],
+    "n_-363_767": [
+      -1090.0,
+      2300.0
+    ],
+    "n_-3_-767": [
+      -10.0,
+      -2300.0
+    ],
+    "n_-3_767": [
+      -10.0,
+      2300.0
+    ],
+    "n_-408_-767": [
+      -1225.0,
+      -2300.0
+    ],
+    "n_-408_767": [
+      -1225.0,
+      2300.0
+    ],
+    "n_-453_-767": [
+      -1360.0,
+      -2300.0
+    ],
+    "n_-453_767": [
+      -1360.0,
+      2300.0
+    ],
+    "n_-48_-767": [
+      -145.0,
+      -2300.0
+    ],
+    "n_-48_767": [
+      -145.0,
+      2300.0
+    ],
+    "n_-498_-767": [
+      -1495.0,
+      -2300.0
+    ],
+    "n_-498_767": [
+      -1495.0,
+      2300.0
+    ],
+    "n_-543_-767": [
+      -1630.0,
+      -2300.0
+    ],
+    "n_-543_767": [
+      -1630.0,
+      2300.0
+    ],
+    "n_-588_-767": [
+      -1765.0,
+      -2300.0
+    ],
+    "n_-588_767": [
+      -1765.0,
+      2300.0
+    ],
+    "n_-633_-137": [
+      -1900.0,
+      -410.0
+    ],
+    "n_-633_-182": [
+      -1900.0,
+      -545.0
+    ],
+    "n_-633_-2": [
+      -1900.0,
+      -5.0
+    ],
+    "n_-633_-227": [
+      -1900.0,
+      -680.0
+    ],
+    "n_-633_-272": [
+      -1900.0,
+      -815.0
+    ],
+    "n_-633_-317": [
+      -1900.0,
+      -950.0
+    ],
+    "n_-633_-362": [
+      -1900.0,
+      -1085.0
+    ],
+    "n_-633_-407": [
+      -1900.0,
+      -1220.0
+    ],
+    "n_-633_-452": [
+      -1900.0,
+      -1355.0
+    ],
+    "n_-633_-47": [
+      -1900.0,
+      -140.0
+    ],
+    "n_-633_-497": [
+      -1900.0,
+      -1490.0
+    ],
+    "n_-633_-542": [
+      -1900.0,
+      -1625.0
+    ],
+    "n_-633_-587": [
+      -1900.0,
+      -1760.0
+    ],
+    "n_-633_-632": [
+      -1900.0,
+      -1895.0
+    ],
+    "n_-633_-677": [
+      -1900.0,
+      -2030.0
+    ],
+    "n_-633_-722": [
+      -1900.0,
+      -2165.0
+    ],
+    "n_-633_-767": [
+      -1900.0,
+      -2300.0
+    ],
+    "n_-633_-92": [
+      -1900.0,
+      -275.0
+    ],
+    "n_-633_133": [
+      -1900.0,
+      400.0
+    ],
+    "n_-633_178": [
+      -1900.0,
+      535.0
+    ],
+    "n_-633_223": [
+      -1900.0,
+      670.0
+    ],
+    "n_-633_268": [
+      -1900.0,
+      805.0
+    ],
+    "n_-633_313": [
+      -1900.0,
+      940.0
+    ],
+    "n_-633_358": [
+      -1900.0,
+      1075.0
+    ],
+    "n_-633_403": [
+      -1900.0,
+      1210.0
+    ],
+    "n_-633_43": [
+      -1900.0,
+      130.0
+    ],
+    "n_-633_448": [
+      -1900.0,
+      1345.0
+    ],
+    "n_-633_493": [
+      -1900.0,
+      1480.0
+    ],
+    "n_-633_538": [
+      -1900.0,
+      1615.0
+    ],
+    "n_-633_583": [
+      -1900.0,
+      1750.0
+    ],
+    "n_-633_628": [
+      -1900.0,
+      1885.0
+    ],
+    "n_-633_673": [
+      -1900.0,
+      2020.0
+    ],
+    "n_-633_718": [
+      -1900.0,
+      2155.0
+    ],
+    "n_-633_763": [
+      -1900.0,
+      2290.0
+    ],
+    "n_-633_767": [
+      -1900.0,
+      2300.0
+    ],
+    "n_-633_88": [
+      -1900.0,
+      265.0
+    ],
+    "n_-93_-767": [
+      -280.0,
+      -2300.0
+    ],
+    "n_-93_767": [
+      -280.0,
+      2300.0
+    ],
+    "n_1032_-767": [
+      3095.0,
+      -2300.0
+    ],
+    "n_1032_767": [
+      3095.0,
+      2300.0
+    ],
+    "n_1033_-137": [
+      3100.0,
+      -410.0
+    ],
+    "n_1033_-182": [
+      3100.0,
+      -545.0
+    ],
+    "n_1033_-2": [
+      3100.0,
+      -5.0
+    ],
+    "n_1033_-227": [
+      3100.0,
+      -680.0
+    ],
+    "n_1033_-272": [
+      3100.0,
+      -815.0
+    ],
+    "n_1033_-317": [
+      3100.0,
+      -950.0
+    ],
+    "n_1033_-362": [
+      3100.0,
+      -1085.0
+    ],
+    "n_1033_-407": [
+      3100.0,
+      -1220.0
+    ],
+    "n_1033_-452": [
+      3100.0,
+      -1355.0
+    ],
+    "n_1033_-47": [
+      3100.0,
+      -140.0
+    ],
+    "n_1033_-497": [
+      3100.0,
+      -1490.0
+    ],
+    "n_1033_-542": [
+      3100.0,
+      -1625.0
+    ],
+    "n_1033_-587": [
+      3100.0,
+      -1760.0
+    ],
+    "n_1033_-632": [
+      3100.0,
+      -1895.0
+    ],
+    "n_1033_-677": [
+      3100.0,
+      -2030.0
+    ],
+    "n_1033_-722": [
+      3100.0,
+      -2165.0
+    ],
+    "n_1033_-767": [
+      3100.0,
+      -2300.0
+    ],
+    "n_1033_-92": [
+      3100.0,
+      -275.0
+    ],
+    "n_1033_133": [
+      3100.0,
+      400.0
+    ],
+    "n_1033_178": [
+      3100.0,
+      535.0
+    ],
+    "n_1033_223": [
+      3100.0,
+      670.0
+    ],
+    "n_1033_268": [
+      3100.0,
+      805.0
+    ],
+    "n_1033_313": [
+      3100.0,
+      940.0
+    ],
+    "n_1033_358": [
+      3100.0,
+      1075.0
+    ],
+    "n_1033_403": [
+      3100.0,
+      1210.0
+    ],
+    "n_1033_43": [
+      3100.0,
+      130.0
+    ],
+    "n_1033_448": [
+      3100.0,
+      1345.0
+    ],
+    "n_1033_493": [
+      3100.0,
+      1480.0
+    ],
+    "n_1033_538": [
+      3100.0,
+      1615.0
+    ],
+    "n_1033_583": [
+      3100.0,
+      1750.0
+    ],
+    "n_1033_628": [
+      3100.0,
+      1885.0
+    ],
+    "n_1033_673": [
+      3100.0,
+      2020.0
+    ],
+    "n_1033_718": [
+      3100.0,
+      2155.0
+    ],
+    "n_1033_763": [
+      3100.0,
+      2290.0
+    ],
+    "n_1033_88": [
+      3100.0,
+      265.0
+    ],
+    "n_132_-767": [
+      395.0,
+      -2300.0
+    ],
+    "n_132_767": [
+      395.0,
+      2300.0
+    ],
+    "n_177_-767": [
+      530.0,
+      -2300.0
+    ],
+    "n_177_767": [
+      530.0,
+      2300.0
+    ],
+    "n_222_-767": [
+      665.0,
+      -2300.0
+    ],
+    "n_222_767": [
+      665.0,
+      2300.0
+    ],
+    "n_267_-767": [
+      800.0,
+      -2300.0
+    ],
+    "n_267_767": [
+      800.0,
+      2300.0
+    ],
+    "n_312_-767": [
+      935.0,
+      -2300.0
+    ],
+    "n_312_767": [
+      935.0,
+      2300.0
+    ],
+    "n_357_-767": [
+      1070.0,
+      -2300.0
+    ],
+    "n_357_767": [
+      1070.0,
+      2300.0
+    ],
+    "n_402_-767": [
+      1205.0,
+      -2300.0
+    ],
+    "n_402_767": [
+      1205.0,
+      2300.0
+    ],
+    "n_42_-767": [
+      125.0,
+      -2300.0
+    ],
+    "n_42_767": [
+      125.0,
+      2300.0
+    ],
+    "n_447_-767": [
+      1340.0,
+      -2300.0
+    ],
+    "n_447_767": [
+      1340.0,
+      2300.0
+    ],
+    "n_492_-767": [
+      1475.0,
+      -2300.0
+    ],
+    "n_492_767": [
+      1475.0,
+      2300.0
+    ],
+    "n_537_-767": [
+      1610.0,
+      -2300.0
+    ],
+    "n_537_767": [
+      1610.0,
+      2300.0
+    ],
+    "n_582_-767": [
+      1745.0,
+      -2300.0
+    ],
+    "n_582_767": [
+      1745.0,
+      2300.0
+    ],
+    "n_627_-767": [
+      1880.0,
+      -2300.0
+    ],
+    "n_627_767": [
+      1880.0,
+      2300.0
+    ],
+    "n_672_-767": [
+      2015.0,
+      -2300.0
+    ],
+    "n_672_767": [
+      2015.0,
+      2300.0
+    ],
+    "n_717_-767": [
+      2150.0,
+      -2300.0
+    ],
+    "n_717_767": [
+      2150.0,
+      2300.0
+    ],
+    "n_762_-767": [
+      2285.0,
+      -2300.0
+    ],
+    "n_762_767": [
+      2285.0,
+      2300.0
+    ],
+    "n_807_-767": [
+      2420.0,
+      -2300.0
+    ],
+    "n_807_767": [
+      2420.0,
+      2300.0
+    ],
+    "n_852_-767": [
+      2555.0,
+      -2300.0
+    ],
+    "n_852_767": [
+      2555.0,
+      2300.0
+    ],
+    "n_87_-767": [
+      260.0,
+      -2300.0
+    ],
+    "n_87_767": [
+      260.0,
+      2300.0
+    ],
+    "n_897_-767": [
+      2690.0,
+      -2300.0
+    ],
+    "n_897_767": [
+      2690.0,
+      2300.0
+    ],
+    "n_942_-767": [
+      2825.0,
+      -2300.0
+    ],
+    "n_942_767": [
+      2825.0,
+      2300.0
+    ],
+    "n_987_-767": [
+      2960.0,
+      -2300.0
+    ],
+    "n_987_767": [
+      2960.0,
+      2300.0
+    ]
+  },
+  "segments": [
+    {
+      "class": "secondary",
+      "directionality": "bidirectional",
+      "id": "seg0",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 14.0,
+      "u": "n_-633_-767",
+      "v": "n_-633_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg1",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-588_-767",
+      "v": "n_-588_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg2",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-543_-767",
+      "v": "n_-543_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg3",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-498_-767",
+      "v": "n_-498_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg4",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-453_-767",
+      "v": "n_-453_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg5",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-408_-767",
+      "v": "n_-408_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg6",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-363_-767",
+      "v": "n_-363_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg7",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-318_-767",
+      "v": "n_-318_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg8",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-273_-767",
+      "v": "n_-273_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg9",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-228_-767",
+      "v": "n_-228_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg10",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-183_-767",
+      "v": "n_-183_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg11",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-138_-767",
+      "v": "n_-138_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg12",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-93_-767",
+      "v": "n_-93_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg13",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-48_-767",
+      "v": "n_-48_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg14",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-3_-767",
+      "v": "n_-3_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg15",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_42_-767",
+      "v": "n_42_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg16",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_87_-767",
+      "v": "n_87_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg17",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_132_-767",
+      "v": "n_132_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg18",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_177_-767",
+      "v": "n_177_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg19",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_222_-767",
+      "v": "n_222_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg20",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_267_-767",
+      "v": "n_267_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg21",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_312_-767",
+      "v": "n_312_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg22",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_357_-767",
+      "v": "n_357_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg23",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_402_-767",
+      "v": "n_402_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg24",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_447_-767",
+      "v": "n_447_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg25",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_492_-767",
+      "v": "n_492_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg26",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_537_-767",
+      "v": "n_537_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg27",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_582_-767",
+      "v": "n_582_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg28",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_627_-767",
+      "v": "n_627_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg29",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_672_-767",
+      "v": "n_672_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg30",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_717_-767",
+      "v": "n_717_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg31",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_762_-767",
+      "v": "n_762_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg32",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_807_-767",
+      "v": "n_807_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg33",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_852_-767",
+      "v": "n_852_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg34",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_897_-767",
+      "v": "n_897_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg35",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_942_-767",
+      "v": "n_942_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg36",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_987_-767",
+      "v": "n_987_767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg37",
+      "lanes": 1,
+      "length": 4600.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_1032_-767",
+      "v": "n_1032_767"
+    },
+    {
+      "class": "secondary",
+      "directionality": "bidirectional",
+      "id": "seg38",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot",
+        "heavy"
+      ],
+      "speed_limit": 14.0,
+      "u": "n_-633_-767",
+      "v": "n_1033_-767"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg39",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-722",
+      "v": "n_1033_-722"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg40",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-677",
+      "v": "n_1033_-677"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg41",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-632",
+      "v": "n_1033_-632"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg42",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-587",
+      "v": "n_1033_-587"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg43",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-542",
+      "v": "n_1033_-542"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg44",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-497",
+      "v": "n_1033_-497"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg45",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-452",
+      "v": "n_1033_-452"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg46",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-407",
+      "v": "n_1033_-407"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg47",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-362",
+      "v": "n_1033_-362"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg48",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-317",
+      "v": "n_1033_-317"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg49",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-272",
+      "v": "n_1033_-272"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg50",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-227",
+      "v": "n_1033_-227"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg51",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-182",
+      "v": "n_1033_-182"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg52",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-137",
+      "v": "n_1033_-137"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg53",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-92",
+      "v": "n_1033_-92"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg54",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-47",
+      "v": "n_1033_-47"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg55",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_-2",
+      "v": "n_1033_-2"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg56",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_43",
+      "v": "n_1033_43"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg57",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_88",
+      "v": "n_1033_88"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg58",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_133",
+      "v": "n_1033_133"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg59",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_178",
+      "v": "n_1033_178"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg60",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_223",
+      "v": "n_1033_223"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg61",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_268",
+      "v": "n_1033_268"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg62",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_313",
+      "v": "n_1033_313"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg63",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_358",
+      "v": "n_1033_358"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg64",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_403",
+      "v": "n_1033_403"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg65",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_448",
+      "v": "n_1033_448"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg66",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_493",
+      "v": "n_1033_493"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg67",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_538",
+      "v": "n_1033_538"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg68",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_583",
+      "v": "n_1033_583"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg69",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_628",
+      "v": "n_1033_628"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg70",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_673",
+      "v": "n_1033_673"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg71",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_718",
+      "v": "n_1033_718"
+    },
+    {
+      "class": "residential",
+      "directionality": "bidirectional",
+      "id": "seg72",
+      "lanes": 1,
+      "length": 5000.0,
+      "modes": [
+        "bicycle",
+        "car",
+        "emergency",
+        "foot"
+      ],
+      "speed_limit": 8.0,
+      "u": "n_-633_763",
+      "v": "n_1033_763"
+    }
+  ],
+  "stats": {
+    "directed_edges": 146,
+    "nodes": 145,
+    "obstructions": 0,
+    "segments": 73
+  },
+  "version": "1"
+}
