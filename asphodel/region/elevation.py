@@ -46,6 +46,11 @@ class TerrainArchetype:
     mountain_onset_km: float = 20.0    # distance from origin where the front begins
     mountain_rampin_km: float = 30.0   # distance over which it ramps to full height
     mountain_km: float = 18.0          # horizontal scale of the ridges
+    # Piedmont: the plains themselves rise gradually toward the mountains (a
+    # bajada), so a front-range city sits on a west-rising grade rather than dead
+    # flat ground. Slope in metres per metre; bounded so far plains flatten out.
+    piedmont_slope: float = 0.0
+    piedmont_extent_km: float = 12.0
     # Coastline (None -> landlocked):
     sea_level: Optional[float] = None      # m AMSL of the water plane
     coast_dir: Optional[Sequence[float]] = None  # unit (x,z) toward open water
@@ -88,6 +93,8 @@ ARCHETYPES: dict[str, TerrainArchetype] = {
         mountain_onset_km=14.0,
         mountain_rampin_km=26.0,
         mountain_km=16.0,
+        piedmont_slope=0.010,     # the high plains tilt gently up to the front
+        piedmont_extent_km=18.0,
         sea_level=None,
         forest_fraction=0.45,
         arid=True,
@@ -104,6 +111,8 @@ ARCHETYPES: dict[str, TerrainArchetype] = {
         mountain_onset_km=1.0,
         mountain_rampin_km=4.0,
         mountain_km=5.0,
+        piedmont_slope=0.028,     # town climbs ~2.8% toward the foothills
+        piedmont_extent_km=9.0,
         sea_level=None,
         forest_fraction=0.50,
         arid=False,
@@ -171,6 +180,15 @@ class SyntheticElevationProvider(ElevationProvider):
         fscale = 1.0 / (a.feature_km * 1000.0)
         roll = noise.fbm(x * fscale, z * fscale, seed=self.seed, octaves=5)
         elev = elev + a.plain_relief * (roll - 0.5) * 2.0
+
+        # Piedmont slope: the plains rise gradually toward the mountains, so a
+        # front-range city sits on a grade (bounded so distant plains flatten).
+        if a.piedmont_slope > 0.0 and a.mountain_dir is not None:
+            d = np.asarray(a.mountain_dir, dtype=np.float64)
+            d = d / (np.linalg.norm(d) or 1.0)
+            toward = x * d[0] + z * d[1]
+            ext = a.piedmont_extent_km * 1000.0
+            elev = elev + a.piedmont_slope * np.clip(toward, -ext, ext)
 
         # Mountain front: only along the archetype's direction, ramped by distance.
         if a.mountain_relief > 0.0 and a.mountain_dir is not None:

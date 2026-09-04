@@ -32,18 +32,23 @@ func _ready() -> void:
 	_build_city()
 	_setup_env()
 
-	var gy := terrain_y(2000.0, 0.0)
 	var shots := [
-		# Just above the rooftops east of downtown, looking west over the core to
-		# the Front Range rising right behind town.
-		{"name": "boulder_over_downtown", "cam": Vector3(3600, gy + 70, 120),
-		 "look": Vector3(-6000, 1100, 0), "fov": 70.0},
-		# A wider three-quarter view: the whole town in the valley, range behind.
-		{"name": "boulder_wide", "cam": Vector3(6200, gy + 900, 3600),
-		 "look": Vector3(-6000, 900, -900), "fov": 60.0},
+		# SIDE PROFILE: look north along the contours so the east->west grade shows
+		# in profile — the town visibly climbs left (west, toward the mountains).
+		{"name": "boulder_slope_profile",
+		 "cam": Vector3(500, terrain_y(500, 4600) + 260, 4600),
+		 "look": Vector3(500, terrain_y(500, -1500) + 60, -1500), "fov": 74.0},
+		# LOW THREE-QUARTER from the low SE corner looking NW up the grade to
+		# downtown and the range — you see the streets rising away from you.
+		{"name": "boulder_hillside",
+		 "cam": Vector3(5200, terrain_y(5200, 3400) + 90, 3400),
+		 "look": Vector3(-2500, terrain_y(-2500, -400) + 260, -400), "fov": 66.0},
 		# High oblique showing the street grid and the mountain wall together.
-		{"name": "boulder_overhead", "cam": Vector3(2200, gy + 2400, 200),
+		{"name": "boulder_overhead", "cam": Vector3(2200, terrain_y(2200, 200) + 2400, 200),
 		 "look": Vector3(-5000, 200, 0), "fov": 62.0},
+		# Above the rooftops looking west up the grade into downtown.
+		{"name": "boulder_over_downtown", "cam": Vector3(3600, terrain_y(3600, 120) + 70, 120),
+		 "look": Vector3(-6000, 1100, 0), "fov": 70.0},
 	]
 	for s in shots:
 		await _shoot(s)
