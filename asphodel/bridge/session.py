@@ -109,6 +109,12 @@ class WorldSession:
         world = world_from_bundle(
             bundle, seed=seed, micro_params=micro,
             max_live_zones=max_live_zones, max_live_agents=max_live_agents)
+        # Optional in-game start hour (the citizens' schedules run on it).
+        sh = msg.get("start_hour")
+        if sh is not None:
+            if not isinstance(sh, (int, float)) or not (0.0 <= float(sh) < 24.0):
+                raise _BadArg("START_WORLD 'start_hour' must be a number in [0, 24)")
+            world.start_hour = float(sh)
 
         n_citizens = 0
         player_home_zone = None

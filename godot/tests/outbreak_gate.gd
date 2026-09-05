@@ -160,7 +160,7 @@ func _run() -> void:
 	if not SimBridge.connect_to_sim():
 		_ok("bridge_connected", false, "start python -m asphodel.bridge.server first")
 		return
-	var started: Dictionary = SimBridge.start_world(_bundle, {"seed": 0,
+	var started: Dictionary = SimBridge.start_world(_bundle, {"seed": 0, "start_hour": 5.0,
 		"outbreak": {"pathogen": "classic_zombie", "citizen_id": _cid}})
 	_ok("world_started_with_outbreak", started.get("ok", false) and bool(started.get("outbreak_enabled", false)),
 		"mobility=%s outbreak=%s" % [str(started.get("mobility_enabled")), str(started.get("outbreak_enabled"))])
