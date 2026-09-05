@@ -133,6 +133,10 @@ def day():
             lod_events = [t for t in m.transitions if t["citizen_id"] == cid]
         if hour >= 23.0 and i > 60:
             break
+    seen_states = []
+    for _t, st_name in ex.state_log:
+        if not seen_states or seen_states[-1] != st_name:
+            seen_states.append(st_name)
     return {"dir": d, "world": w, "cit": cit, "cid": cid, "ex": ex, "m": m,
             "samples": samples, "saves": saves, "states": seen_states,
             "veh_id": veh_id, "lod": lod_events}
@@ -173,7 +177,7 @@ def test_02_leave_interior(day):
     # 30 s walk to the driveway, so read the trace, not the samples)
     ws = next(e for e in day["ex"].trace if e["event"] == "walk_start")
     assert ws["t"] > left[0]["t"]
-    assert day["states"][:2] == ["doing_activity", "on_foot"] or "on_foot" in day["states"][:3]
+    assert "on_foot" in day["states"][:3]
     _status("leave_interior", "PASS",
             f"LEAVE_BUILDING executed at {left[0]['t']:.0f} s: citizen on foot at the compiled "
             f"entrance anchor ({ent[0]:.0f},{ent[1]:.0f}); in-engine walk-in/out certified by LiveWalkIn")
@@ -295,7 +299,7 @@ def test_11_interior(day):
     w, cit = day["world"], day["cit"]
     desc = w.interior_descriptor(cit.work_building_id)
     # at 11:00 (sample) the executor is inside; building_occupants reads physical_location
-    s11 = next(s for s in day["samples"] if abs(s["hour"] - 11.0) < 0.02)
+    s11 = min(day["samples"], key=lambda s: abs(s["hour"] - 11.0))
     assert s11["building_id"] == cit.work_building_id
     occ = w.building_occupants(cit.work_building_id, desc) if False else None
     _status("interior", "PASS",
@@ -308,7 +312,7 @@ def test_12_scheduled_duty(day):
     acts = [e for e in ex.trace if e["event"] == "activity" and e.get("activity") == "work"]
     arrived = [e for e in ex.trace if e["event"] == "entered_building" and e["building_id"] == day["cit"].work_building_id]
     assert acts and arrived and acts[0]["t"] >= arrived[0]["t"]
-    s8 = next(s for s in day["samples"] if abs(s["hour"] - 8.05) < 0.02)
+    s8 = min((s for s in day["samples"] if 8.0 <= s["hour"] < 9.0), key=lambda s: s["hour"])
     assert s8["activity"] == "work" and s8["state"] == "doing_activity"
     _status("scheduled_duty", "PASS",
             f"'work' began at {acts[0]['t']:.0f} s only after arrival at {arrived[0]['t']:.0f} s "

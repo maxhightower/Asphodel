@@ -7,9 +7,31 @@
  "vehicle_id": "veh:4",
  "states_in_order": [
   "doing_activity",
-  "driving",
-  "doing_activity",
+  "inside_building",
   "on_foot",
+  "entering_vehicle",
+  "in_vehicle",
+  "driving",
+  "parked",
+  "exiting_vehicle",
+  "on_foot",
+  "doing_activity",
+  "inside_building",
+  "on_foot",
+  "entering_vehicle",
+  "in_vehicle",
+  "driving",
+  "parked",
+  "exiting_vehicle",
+  "on_foot",
+  "doing_activity",
+  "inside_building",
+  "on_foot",
+  "inside_building",
+  "doing_activity",
+  "inside_building",
+  "on_foot",
+  "inside_building",
   "doing_activity"
  ],
  "distance_walked_m": 391.9,
@@ -12750,9 +12772,17 @@
    "PASS",
    "citizen 4 starts inside home building 13106 (stored identity), activity sleep"
   ],
+  "leave_interior": [
+   "PASS",
+   "LEAVE_BUILDING executed at 9002 s: citizen on foot at the compiled entrance anchor (1210,687); in-engine walk-in/out certified by LiveWalkIn"
+  ],
   "pedestrian_navigation": [
    "PASS",
    "6 walk legs executed on the street graph, 392 m walked in 1 s substeps at 1.4 m/s (no teleport); in-engine CitizenBody: PASS body walked 38.8 m; within leash 120/120 frames"
+  ],
+  "vehicle_entry": [
+   "PASS",
+   "ON_FOOT -> ENTERING_VEHICLE -> IN_VEHICLE for persistent veh:4 (owner 4), walked to the car, 9034 s; in-engine PASS"
   ],
   "road_navigation": [
    "PASS",
@@ -12760,15 +12790,19 @@
   ],
   "physical_driving": [
    "FAIL",
-   "VehicleBody drove 6669 m under physics following the canonical route (max lag 52.6 m, impacts 935); body drove 6669 m; within leash 327/7996 frames; max lag 52.6 m; impacts 935"
+   "VehicleBody drove 11919 m under physics following the canonical route (max lag 52.6 m, impacts 4); body drove 11919 m; within leash 1079/7996 frames; max lag 52.6 m; impacts 4"
   ],
   "traffic_interaction": [
-   "FAIL",
-   "solid vehicle ahead: body stopped (FAIL), authority held (PASS); controller following/junction/closed-road logic in tests/test_embodied_controllers.py"
+   "PASS",
+   "solid vehicle ahead: body stopped (PASS), authority held (PASS); controller following/junction/closed-road logic in tests/test_embodied_controllers.py"
   ],
   "parking": [
    "PASS",
    "PARKING_ANCHOR #44971 chosen 61 m from the work entrance (rejected: {}), reached by the DRIVE leg, veh:4 parked at it; in-engine FAIL"
+  ],
+  "vehicle_exit": [
+   "PASS",
+   "PARKED -> EXITING_VEHICLE -> ON_FOOT beside veh:4"
   ],
   "destination_building": [
    "PASS",
@@ -12777,6 +12811,10 @@
   "interior": [
    "PASS",
    "descriptor 1 rooms/3 fixtures; at 11:00 the citizen's authoritative location is building 4517 (state doing_activity), occupancy via World.building_occupants"
+  ],
+  "scheduled_duty": [
+   "PASS",
+   "'work' began at 10800 s only after arrival at 9424 s (scheduled != arrived is distinguished by EmbodimentState.DOING_ACTIVITY)"
   ],
   "return_trip": [
    "PASS",

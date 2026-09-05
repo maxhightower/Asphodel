@@ -103,6 +103,7 @@ class TripExecutor:
     last_report_s: float = -1.0
     _walk_base: float = 0.0             # metres walked on completed legs
     _drive_base: float = 0.0            # metres driven on completed legs
+    state_log: List[tuple] = field(default_factory=list)   # (t, state) transitions
 
     # -- helpers -------------------------------------------------------------
     def event(self, now_s: float, kind: str, **info) -> None:
@@ -202,6 +203,13 @@ class TripExecutor:
         ``env`` the MobilityRuntime (graph, vehicles, anchors, failure policy)."""
         if rt.plan_serial != self.plan_serial:
             self.adopt(rt.itinerary, rt.plan_serial, env.now_s)
+        self._advance(dt, rt, env)
+        if not self.state_log or self.state_log[-1][1] != self.state.value:
+            self.state_log.append((round(env.now_s, 1), self.state.value))
+            if len(self.state_log) > MAX_TRACE:
+                del self.state_log[: len(self.state_log) - MAX_TRACE]
+
+    def _advance(self, dt: float, rt, env) -> None:
         step = self.current_step
         if step is None:
             self._in_place(rt, env)
@@ -525,6 +533,7 @@ class TripExecutor:
             "ped": None if self.ped is None else self.ped.to_state(),
             "car": None if self.car is None else self.car.to_state(),
             "trace": list(self.trace[-50:]),
+            "state_log": [list(x) for x in self.state_log[-50:]],
         }
         return st
 
@@ -544,6 +553,7 @@ class TripExecutor:
         ex._walk_base = float(st.get("walk_base", 0.0))
         ex._drive_base = float(st.get("drive_base", 0.0))
         ex.trace = list(st.get("trace") or [])
+        ex.state_log = [tuple(x) for x in (st.get("state_log") or [])]
         it = st.get("itinerary")
         ex.itinerary = None if it is None else Itinerary.from_state(it)
         step = ex.current_step
