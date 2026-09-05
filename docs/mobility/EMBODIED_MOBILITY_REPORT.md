@@ -110,9 +110,23 @@ stale inside a long `ADVANCE_TIME`.
 ## Rendered evidence (tools/run_mobility_shots.sh → EmbodiedMobilityShot.tscn)
 
 The real `IsometricWorld` scene under xvfb/software GL with the live bridge,
-camera on the citizen: `docs/mobility/evidence/*.png` with
-`manifest.json` (file, caption, hour, state, authoritative position, bodies
-present). See the manifest for the exact list produced by the final run.
+camera on the citizen (`docs/mobility/evidence/`, `manifest.json` records
+file, caption, hour, state, authoritative position and the bodies present):
+
+| shot | what it shows |
+|---|---|
+| 00_home_before_commute | 07:27, citizen inside home 13106, no body (inside) |
+| 01_leaving_home | CitizenBody at the compiled entrance anchor |
+| 02_walking_to_car | the citizen body walking the street toward the parked blue car |
+| 03_entering_car | at the car door (ENTERING_VEHICLE) |
+| 04_driving_real_street | the red VehicleBody on the canonical route through the streamed city |
+| 05_vehicle_interaction | the rendered pass did **not** capture the hold behind the blocker (the run-until timed out with `blocked=false`, car out of frame); the vehicle-ahead interaction is evidenced by the headless gate's probe trace (body stopped, authority held) |
+| 06_parked_near_work | the red car parked at the chosen anchor in the lot beside work, among static parked props |
+| 07_exiting_car | citizen on foot beside the car |
+| 08_walking_into_work | at the work entrance |
+| 09_inside_workplace | inside building 4517 (the player entered through the same interior system); the occupant is citizen 4 |
+| 10_return_trip_driving | 16:0x driving home |
+| 11_home_again | inside 13106 again |
 
 ## Vehicle result (veh:4)
 

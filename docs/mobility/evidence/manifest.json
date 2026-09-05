@@ -1,0 +1,144 @@
+{
+  "bundle": "houston",
+  "citizen_id": 4,
+  "shots": [
+    {
+      "bodies": [
+        "veh:2"
+      ],
+      "caption": "07:27 citizen 4 inside home 13106 (no body: inside)",
+      "file": "00_home_before_commute.png",
+      "hour": 7.45,
+      "state": "doing_activity",
+      "x": 1209.72,
+      "y": 686.58
+    },
+    {
+      "bodies": [
+        "veh:4",
+        "cit:4"
+      ],
+      "caption": "citizen leaves home: CitizenBody at the entrance anchor",
+      "file": "01_leaving_home.png",
+      "hour": 7.50083333333333,
+      "state": "on_foot",
+      "x": 1209.72,
+      "y": 686.58
+    },
+    {
+      "bodies": [
+        "veh:4",
+        "cit:4"
+      ],
+      "caption": "walking to the parked car along the street",
+      "file": "02_walking_to_car.png",
+      "hour": 7.505,
+      "state": "on_foot",
+      "x": 1214.676,
+      "y": 701.54
+    },
+    {
+      "bodies": [
+        "veh:4",
+        "cit:4"
+      ],
+      "caption": "entering the persistent vehicle (<null>)",
+      "file": "03_entering_car.png",
+      "hour": 7.50916666666667,
+      "state": "entering_vehicle",
+      "x": 1215.09,
+      "y": 681.99
+    },
+    {
+      "bodies": [
+        "veh:4"
+      ],
+      "caption": "VehicleBody driving the canonical road route (progress 0.15)",
+      "file": "04_driving_real_street.png",
+      "hour": 7.52805555555556,
+      "state": "driving",
+      "x": 1565.934,
+      "y": 517.858
+    },
+    {
+      "bodies": [
+        "veh:4",
+        "cit:26"
+      ],
+      "caption": "car held behind another vehicle on the road (blocked=false)",
+      "file": "05_vehicle_interaction.png",
+      "hour": 7.58361111111111,
+      "state": "driving",
+      "x": 1566.136,
+      "y": 441.163
+    },
+    {
+      "bodies": [
+        "veh:4"
+      ],
+      "caption": "parked at the chosen parking anchor near work",
+      "file": "06_parked_near_work.png",
+      "hour": 7.65944444444444,
+      "state": "parked",
+      "x": 1078.1,
+      "y": -2006.98
+    },
+    {
+      "bodies": [
+        "veh:4",
+        "cit:4"
+      ],
+      "caption": "citizen out of the car, on foot again",
+      "file": "07_exiting_car.png",
+      "hour": 7.66027777777778,
+      "state": "on_foot",
+      "x": 1079.4,
+      "y": -2006.99
+    },
+    {
+      "bodies": [
+        "veh:4",
+        "cit:4"
+      ],
+      "caption": "at the work entrance (building -1.0)",
+      "file": "08_walking_into_work.png",
+      "hour": 7.67833333333333,
+      "state": "on_foot",
+      "x": 1059.39,
+      "y": -2064.52
+    },
+    {
+      "bodies": [
+        "veh:4"
+      ],
+      "caption": "inside building 4517: interior occupants include citizen 4",
+      "file": "09_inside_workplace.png",
+      "hour": 7.67888888888889,
+      "state": "doing_activity",
+      "x": 1059.39,
+      "y": -2064.52
+    },
+    {
+      "bodies": [
+        "veh:4"
+      ],
+      "caption": "16:0x driving home (progress 0.30)",
+      "file": "10_return_trip_driving.png",
+      "hour": 16.0513888888889,
+      "state": "driving",
+      "x": 1519.391,
+      "y": -1331.769
+    },
+    {
+      "bodies": [
+        "veh:4"
+      ],
+      "caption": "home again: inside building 13106.0",
+      "file": "11_home_again.png",
+      "hour": 16.1352777777778,
+      "state": "doing_activity",
+      "x": 1209.72,
+      "y": 686.58
+    }
+  ]
+}
