@@ -17,3 +17,6 @@ output/osm_cache/
 # asphodel.world_source. The provenance manifest under geo/provenance/ is
 # committed and describes exactly what these files contain.
 data/raw/
+
+# Rendered horizon/living-city screenshots (regenerate via godot/tests/*Shot.tscn)
+/shots/
