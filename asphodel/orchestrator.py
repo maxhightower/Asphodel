@@ -143,6 +143,19 @@ class World:
         self.proximity_ticks = int(proximity_ticks)
         self._proximity: dict[int, int] = {}   # citizen_id -> consecutive ticks in focus
 
+        # --- ASPHODEL_EMBODIED_MOBILITY_V1: one movement authority ------------
+        # The epidemic tick is coarse (dt days); movement needs continuous time.
+        # `advance_seconds` runs a sub-tick clock (`_subtick_s`, game seconds
+        # into the current tick) and drives `self.mobility` — the
+        # MobilityRuntime that executes CitizenRuntime itineraries. When it is
+        # enabled, it is THE physical authority for every registered citizen;
+        # `embodiment.resolve_physical_location` remains only the FAR
+        # (schedule-state) authority for unregistered citizens and for worlds
+        # without a street graph.
+        self.mobility = None
+        self._subtick_s = 0.0
+        self._pending_mobility_state = None
+
     # ------------------------------------------------------------------ inputs
     def set_focus(self, zones) -> None:
         """Set the player-focus set: these zones are force-promoted (camera)."""
@@ -180,8 +193,123 @@ class World:
             self._zone_citizens[z].sort()
 
     def current_hour(self) -> float:
-        """The in-game hour [0,24) at the current authoritative tick."""
-        return npc.hour_of_day(self.sim.tick, self.dt, self.start_hour)
+        """The in-game hour [0,24) at the current authoritative tick, plus the
+        sub-tick seconds advanced by :meth:`advance_seconds` (0 unless the
+        embodied mobility clock is in use)."""
+        h = npc.hour_of_day(self.sim.tick, self.dt, self.start_hour)
+        if self._subtick_s:
+            h = (h + self._subtick_s / 3600.0) % 24.0
+        return h
+
+    @property
+    def tick_seconds(self) -> float:
+        """Length of one epidemic tick in game seconds."""
+        return float(self.dt) * 86400.0
+
+    @property
+    def game_seconds(self) -> float:
+        """Continuous game time since the world started (seconds)."""
+        return self.sim.tick * self.tick_seconds + self._subtick_s
+
+    # ------------------------------------------ embodied mobility (V1) -------
+    def enable_mobility(self, bundle_dir: str | None = None, runtime=None,
+                        register_all: bool = True):
+        """Attach the MobilityRuntime (the itinerary executor) to this world.
+
+        Builds one from the attached spatial context's street graph and the
+        bundle's entrance/parking anchors when ``runtime`` is not given.
+        Registers every citizen with a stored home building (bounded: the
+        bundle's canonical citizens) at ROUTE_SIMULATED fidelity. If a save
+        carried mobility state (``load_world``), it is restored instead of
+        re-registering, so trips continue exactly where they were.
+        """
+        from .embodied import MobilityRuntime, load_entrances
+        if runtime is None:
+            ctx = self.spatial_ctx
+            graph = getattr(ctx, "street_graph", None) if ctx is not None else None
+            if graph is None:
+                raise ValueError("enable_mobility needs a spatial context with a street graph")
+            entrances, anchors = load_entrances(bundle_dir) if bundle_dir else ({}, [])
+            pending = self._pending_mobility_state
+            if pending is not None:
+                runtime = MobilityRuntime.from_state(
+                    pending, graph, entrances, anchors, self.citizens, ctx=ctx,
+                    bundle_dir=bundle_dir, seed=self._seed)
+                self._pending_mobility_state = None
+                self.mobility = runtime
+                return runtime
+            runtime = MobilityRuntime(graph, entrances, anchors, ctx=ctx,
+                                      bundle_dir=bundle_dir, seed=self._seed)
+        self.mobility = runtime
+        if register_all:
+            hour = self.current_hour()
+            for cid in sorted(self.citizens):
+                prof = self.citizens[cid]
+                if getattr(prof, "home_building_id", None) is None:
+                    continue
+                runtime.register(prof, hour)
+        return runtime
+
+    def advance_seconds(self, seconds: float, focus_xy=None, auto_tick: bool = True) -> dict:
+        """Advance continuous game time by ``seconds`` (the embodied clock).
+
+        Movement (the MobilityRuntime) integrates in fixed 1 s substeps; when
+        the sub-tick clock crosses the epidemic tick length and ``auto_tick``
+        is set, :meth:`step` runs the epidemic tick (bit-identical to calling
+        it directly) and the remainder carries over. Returns a small summary.
+        """
+        seconds = float(seconds)
+        if seconds < 0:
+            raise ValueError("advance_seconds needs a non-negative duration")
+        ticks = 0
+        if self.mobility is not None and focus_xy is not None:
+            self.mobility.set_focus_xy(focus_xy)
+        remaining = seconds
+        while remaining > 1e-9:
+            room = self.tick_seconds - self._subtick_s
+            chunk = min(remaining, room) if auto_tick else remaining
+            if self.mobility is not None:
+                self.mobility.advance(chunk, self.current_hour())
+            self._subtick_s += chunk
+            remaining -= chunk
+            if auto_tick and self._subtick_s >= self.tick_seconds - 1e-9:
+                self.step()
+                ticks += 1
+            elif not auto_tick:
+                self._subtick_s = min(self._subtick_s, self.tick_seconds - 1e-6)
+                break
+        return {"seconds": seconds, "ticks": ticks, "tick": int(self.sim.tick),
+                "hour": self.current_hour(), "game_seconds": self.game_seconds}
+
+    def mobility_snapshot(self, include_routes: bool = True) -> dict | None:
+        if self.mobility is None:
+            return None
+        return self.mobility.snapshot(include_routes=include_routes)
+
+    def _mobility_location(self, cid: int, zone):
+        """PhysicalLocation from the executor (MID/NEAR authority), or None."""
+        m = self.mobility
+        if m is None:
+            return None
+        ex = m.execs.get(int(cid))
+        if ex is None:
+            return None
+        if int(cid) in m.frozen_at and m.focus_xy is not None:
+            # Frozen (ABSTRACT band): its last executed situation still holds.
+            pass
+        dest = ex.destination()
+        mode = embodiment.LocationMode.BUILDING if ex.inside else embodiment.LocationMode.STREET
+        mv = ex.movement()
+        movement = {"walking": embodiment.Movement.WALKING, "driving": embodiment.Movement.DRIVING,
+                    "stationary": embodiment.Movement.STATIONARY}[mv]
+        return embodiment.PhysicalLocation(
+            version=embodiment.LOCATION_SCHEMA_VERSION, citizen_id=int(cid),
+            zone=int(zone if zone is not None else -1), x=float(ex.pos[0]), y=float(ex.pos[1]),
+            mode=mode, building_id=int(ex.building_id), activity=ex.activity,
+            action=self._citizen_action(int(cid)), movement=movement,
+            destination_x=None if dest is None else float(dest[0]),
+            destination_y=None if dest is None else float(dest[1]),
+            route_frac=float(ex.route_progress()))
 
     # ------------------------------------------------------- Package 2: embodiment
     def set_spatial_context(self, ctx) -> None:
@@ -304,6 +432,10 @@ class World:
         home_xy, work_xy, home_zone, work_zone = self._spatial.get(
             cid, (None, None, None, None))
         home_bid, work_bid = self._buildings.get(cid, (None, None))
+        # Embodied mobility: the executor IS the location of a registered citizen.
+        loc = self._mobility_location(cid, home_zone)
+        if loc is not None:
+            return loc
         # Report the zone the macro currently associates with the citizen (home
         # zone is the stable authoritative association).
         return embodiment.resolve_physical_location(
@@ -388,6 +520,9 @@ class World:
 
     # --------------------------------------------------------------- one tick
     def step(self) -> WorldTick:
+        # The epidemic tick consumes the sub-tick movement clock: after this
+        # tick the hour is exactly the tick's hour again (embodied mobility V1).
+        self._subtick_s = 0.0
         # --- 1. membership: decide the promoted set (hysteresis + focus) -----
         self._update_membership()
         frozen = list(self.promoted)
@@ -520,6 +655,8 @@ class World:
         }
         if self.citizens:
             out["activity_occupancy"] = self.activity_occupancy()
+        if self.mobility is not None:
+            out["mobility"] = self.mobility.snapshot(include_routes=True)
         if len(self.roster) > 0:
             out["roster"] = [
                 {"citizen_id": r.citizen_id,
@@ -555,13 +692,15 @@ class World:
                 home_xy, work_xy, hz, wz = self._spatial.get(
                     cid, (None, None, None, None))
                 home_bid, work_bid = self._buildings.get(cid, (None, None))
-                loc = embodiment.resolve_physical_location(
-                    citizen_id=cid, schedule=self._schedules.get(cid, []),
-                    hour=hour, home_xy=home_xy, work_xy=work_xy,
-                    home_zone=hz, work_zone=wz,
-                    action=npc.action_name(int(zone.chosen_action[slot])),
-                    zone=z, ctx=ctx,
-                    home_building_id=home_bid, work_building_id=work_bid)
+                loc = self._mobility_location(cid, z)
+                if loc is None:
+                    loc = embodiment.resolve_physical_location(
+                        citizen_id=cid, schedule=self._schedules.get(cid, []),
+                        hour=hour, home_xy=home_xy, work_xy=work_xy,
+                        home_zone=hz, work_zone=wz,
+                        action=npc.action_name(int(zone.chosen_action[slot])),
+                        zone=z, ctx=ctx,
+                        home_building_id=home_bid, work_building_id=work_bid)
                 world_xy[slot] = [loc.x, loc.y]
                 mode[slot] = loc.mode
                 building_id[slot] = loc.building_id

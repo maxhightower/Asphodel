@@ -127,6 +127,10 @@ class WorldSession:
                     CitySpatialContext.from_bundle_dir(bundle_dir))
             except Exception:
                 pass  # embodiment falls back to zone-centre anchors
+            # ASPHODEL_EMBODIED_MOBILITY_V1: the one movement authority. A
+            # bundle with a street graph executes its citizens' itineraries;
+            # `mobility: false` keeps a bare world (protocol/epidemic tests).
+            self._enable_mobility(world, bundle_dir, msg.get("mobility", True))
             n_citizens = len(population)
             if player_citizen is not None:
                 player_profile = None
@@ -166,11 +170,77 @@ class WorldSession:
                           n_citizens=n_citizens,
                           **self._summary())
 
+    def _enable_mobility(self, world, bundle_dir, want) -> None:
+        if not want:
+            return
+        ctx = getattr(world, "spatial_ctx", None)
+        if ctx is None or getattr(ctx, "street_graph", None) is None:
+            return
+        try:
+            world.enable_mobility(bundle_dir=bundle_dir)
+        except Exception as e:  # a bundle without anchors is a FAR-only world
+            self.mobility_error = f"{type(e).__name__}: {e}"
+
     def _cmd_set_focus(self, msg, rid) -> dict:
         self._require_world(Command.SET_FOCUS)
         zones = _zone_list(msg.get("zones", []))
         self.world.set_focus(zones)
+        xy = msg.get("xy")
+        if xy is not None and self.world.mobility is not None:
+            self.world.mobility.set_focus_xy(_xy(xy, "xy"))
         return P.response(Command.SET_FOCUS, id=rid, focus=sorted(zones))
+
+    # --------------------------------------------- embodied mobility (v4)
+    def _cmd_advance_time(self, msg, rid) -> dict:
+        """Advance the continuous movement clock by ``seconds`` of game time.
+
+        Crossing the epidemic tick length runs World.step (auto-tick) so the
+        client needs one clock. ``focus_xy`` moves the LOD focus (the player);
+        ``snapshot`` = "mobility" returns the movement block, true the full
+        world snapshot, false/absent nothing but the summary.
+        """
+        self._require_world(Command.ADVANCE_TIME)
+        if self.paused:
+            return P.error_response(ErrorCode.PAUSED,
+                                    "world is paused; RESUME before ADVANCE_TIME",
+                                    cmd=Command.ADVANCE_TIME, id=rid)
+        seconds = msg.get("seconds", 0.0)
+        if not isinstance(seconds, (int, float)) or seconds < 0 or seconds > 86400 * 7:
+            raise _BadArg("ADVANCE_TIME 'seconds' must be a number in [0, 7 days]")
+        focus = msg.get("focus_xy")
+        fxy = _xy(focus, "focus_xy") if focus is not None else None
+        res = self.world.advance_seconds(float(seconds), focus_xy=fxy, auto_tick=True)
+        out = dict(self._summary(), advanced_seconds=float(seconds),
+                   ticks_crossed=int(res["ticks"]), game_seconds=float(res["game_seconds"]))
+        want = msg.get("snapshot")
+        if want == "mobility":
+            out["mobility"] = self.world.mobility_snapshot()
+        elif want:
+            snap = self.world.snapshot()
+            self._inject_player_location(snap)
+            out["world"] = snap
+        return P.response(Command.ADVANCE_TIME, id=rid, **out)
+
+    def _cmd_mobility_report(self, msg, rid) -> dict:
+        """NEAR bodies report where physics put them (the authority for NEAR)."""
+        self._require_world(Command.MOBILITY_REPORT)
+        bodies = msg.get("bodies")
+        if not isinstance(bodies, list):
+            raise _BadArg("MOBILITY_REPORT requires a list 'bodies'")
+        dt = msg.get("dt", 0.0)
+        if not isinstance(dt, (int, float)) or dt < 0:
+            raise _BadArg("MOBILITY_REPORT 'dt' must be a non-negative number")
+        applied = 0
+        if self.world.mobility is not None:
+            applied = self.world.mobility.apply_physical_report(bodies, float(dt))
+        return P.response(Command.MOBILITY_REPORT, id=rid, applied=applied)
+
+    def _cmd_get_mobility(self, msg, rid) -> dict:
+        self._require_world(Command.GET_MOBILITY)
+        return P.response(Command.GET_MOBILITY, id=rid,
+                          mobility=self.world.mobility_snapshot(
+                              include_routes=bool(msg.get("routes", True))),
+                          **self._summary())
 
     def _cmd_advance(self, msg, rid) -> dict:
         self._require_world(Command.ADVANCE)
@@ -377,8 +447,11 @@ class WorldSession:
             if self.bundle:
                 from ..embodiment import CitySpatialContext
                 from .worldfactory import resolve_bundle_dir
-                world.set_spatial_context(
-                    CitySpatialContext.from_bundle_dir(resolve_bundle_dir(self.bundle)))
+                bdir = resolve_bundle_dir(self.bundle)
+                world.set_spatial_context(CitySpatialContext.from_bundle_dir(bdir))
+                # Embodied mobility: restore trips exactly where they were.
+                if world._pending_mobility_state is not None:
+                    self._enable_mobility(world, bdir, True)
         except Exception:
             pass
         return P.response(Command.LOAD, id=rid, path=path, **self._summary())
@@ -404,6 +477,9 @@ class WorldSession:
             "promoted": self.world.promoted_zones(),
             "totals": totals,
             "total_pop": float(sum(totals.values())),
+            "hour": float(self.world.current_hour()),
+            "game_seconds": float(self.world.game_seconds),
+            "mobility_enabled": self.world.mobility is not None,
         }
 
 
@@ -451,6 +527,13 @@ def _micro_from(d):
         raise _BadArg(f"unknown micro fields: {sorted(bad)}")
     base = MicroParams(area_size=100.0, infection_radius=2.0, mixing_step_frac=0.12)
     return replace(base, **d)
+
+
+def _xy(v, name):
+    if not (isinstance(v, (list, tuple)) and len(v) == 2
+            and all(isinstance(c, (int, float)) for c in v)):
+        raise _BadArg(f"{name} must be [x, y]")
+    return (float(v[0]), float(v[1]))
 
 
 def _zone_list(zones):

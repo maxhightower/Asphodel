@@ -1,17 +1,25 @@
 class_name CitizenBody
 extends CharacterBody3D
 
-## Physical NPC body + local navigation (AS-PHYS-0 §4.4, AS-NAV-2 §7.1/§7.2).
+## Physical NPC body + local navigation (AS-PHYS-0 §4.4, AS-NAV-2 §7.1/§7.2,
+## ASPHODEL_EMBODIED_MOBILITY_V1 §7).
 ##
-## The authoritative physical object a near citizen follows. The planner supplies a
-## high-level route (a list of waypoints from the MobilityGraph); this body steers
-## toward the current waypoint with cheap local avoidance and lets physics decide
-## where it actually moves — the planner never sets the transform directly. When
-## local movement repeatedly fails to make progress the body declares itself stuck
-## and emits `blocked`, which the strategic layer turns into a replan (§7.2). Layers
-## come from the generated CollisionLayers authority, so the NPC cannot pass through
-## walls/player/cars/other NPCs but fits through valid doorways, and crowd
-## bottlenecks emerge from real collision.
+## The authoritative physical object a near citizen follows. Two drive modes:
+##
+## * **waypoint mode** (`set_route`): the body steers toward the next waypoint of
+##   a route with cheap local avoidance and lets physics decide where it moves;
+##   repeated failure to progress emits `blocked` (the NavGate contract).
+## * **follow mode** (`set_follow_target`): the authoritative Python executor
+##   integrates the citizen's progress along its planned route and publishes the
+##   position it should be at; the body moves toward that point with the same
+##   steering + collision. If physics cannot get it there (a wall, a car, a
+##   crowd) the body falls behind, `is_blocked()` becomes true, and the
+##   EmbodiedMobility node reports the physical position back so the simulation
+##   holds the citizen's progress where the body really is. Physics is the
+##   authority for where the body ends up; the plan never sets the transform.
+##
+## Layers come from the generated CollisionLayers authority, so the NPC cannot
+## pass through walls/player/cars/other NPCs but fits through valid doorways.
 
 signal blocked(at: Vector3)     # local nav failed -> ask the strategic layer to replan
 signal arrived()
@@ -21,10 +29,14 @@ signal arrived()
 @export var avoid_radius: float = 2.0
 @export var stuck_frames: int = 90        # ~1.5 s at 60 Hz of no progress
 @export var progress_epsilon: float = 0.3  # metres that count as "made progress"
+@export var follow_leash: float = 3.0     # metres behind the authoritative point = blocked
 
 var semantic_id: String = ""              # stable citizen id across LOD (§12)
 var waypoints: Array = []                 # Array[Vector3] high-level route
 var is_stuck: bool = false
+var follow_mode: bool = false
+var follow_target: Vector3 = Vector3.ZERO
+var follow_speed: float = 0.0
 
 var _wp: int = 0
 var _sensor: Area3D
@@ -63,6 +75,7 @@ func _ready() -> void:
 
 
 func set_route(points: Array) -> void:
+	follow_mode = false
 	waypoints = points
 	_wp = 0
 	is_stuck = false
@@ -70,11 +83,38 @@ func set_route(points: Array) -> void:
 	_progress_ref = global_position
 
 
+func set_follow_target(target: Vector3, speed: float) -> void:
+	## Embodied mode: the authoritative point the citizen should be at now, and
+	## the speed the plan is moving at (0 = standing).
+	if not follow_mode:
+		_progress_frames = 0
+		_progress_ref = global_position
+		is_stuck = false
+	follow_mode = true
+	follow_target = target
+	follow_speed = speed
+
+
 func has_arrived() -> bool:
+	if follow_mode:
+		return _lag() < arrive_radius
 	return _wp >= waypoints.size()
 
 
+func is_blocked() -> bool:
+	return is_stuck
+
+
+func _lag() -> float:
+	var to := follow_target - global_position
+	to.y = 0.0
+	return to.length()
+
+
 func _physics_process(delta: float) -> void:
+	if follow_mode:
+		_follow(delta)
+		return
 	if is_stuck or has_arrived():
 		velocity = Vector3(0, velocity.y - _gravity * delta, 0)
 		move_and_slide()
@@ -98,6 +138,44 @@ func _physics_process(delta: float) -> void:
 	velocity = Vector3(desired.x, velocity.y - _gravity * delta, desired.z)
 	move_and_slide()
 	_update_stuck()
+
+
+func _follow(delta: float) -> void:
+	var to := follow_target - global_position
+	to.y = 0.0
+	var lag := to.length()
+	if lag < 0.15:
+		velocity = Vector3(0, velocity.y - _gravity * delta, 0)
+		move_and_slide()
+		is_stuck = false
+		_progress_frames = 0
+		_progress_ref = global_position
+		return
+	# Catch up a little faster than the plan so a small lag closes; never
+	# overshoot the authoritative point within one frame.
+	var cap: float = max(follow_speed * 1.5, walk_speed)
+	var speed: float = min(cap, lag / max(delta, 0.0001))
+	var desired := _steer(to / lag)
+	if desired.length() > 0.001:
+		desired = desired.normalized() * speed
+	velocity = Vector3(desired.x, velocity.y - _gravity * delta, desired.z)
+	move_and_slide()
+	# Blocked = the plan is ahead of us by more than the leash and we are not
+	# closing the gap.
+	if lag > follow_leash:
+		if global_position.distance_to(_progress_ref) > progress_epsilon:
+			_progress_ref = global_position
+			_progress_frames = 0
+			is_stuck = false
+		else:
+			_progress_frames += 1
+			if _progress_frames > stuck_frames and not is_stuck:
+				is_stuck = true
+				emit_signal("blocked", global_position)
+	else:
+		is_stuck = false
+		_progress_frames = 0
+		_progress_ref = global_position
 
 
 func _steer(goal_dir: Vector3) -> Vector3:

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8embodiedshot1"]
+
+[ext_resource type="Script" path="res://tests/embodied_mobility_shot.gd" id="1_emshot"]
+
+[node name="EmbodiedMobilityShot" type="Node"]
+script = ExtResource("1_emshot")

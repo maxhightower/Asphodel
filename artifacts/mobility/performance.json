@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "city": "houston",
+  "bundle_dir": "/home/user/Asphodel/godot/bundles/houston",
+  "repeats": 3,
+  "unit": "milliseconds",
+  "machine": {
+    "python": "3.11.15",
+    "implementation": "CPython",
+    "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "processor": "x86_64"
+  },
+  "bundle_load_ms": 1177.4,
+  "graph": {
+    "nodes": 11729,
+    "segments": 16458,
+    "entrances": 22504
+  },
+  "register_all_ms": 307.64,
+  "n_citizens_all": 58,
+  "n_vehicles_all": 40,
+  "routing": {
+    "citizen_id": 4,
+    "home_building_id": 13106,
+    "work_building_id": 4517,
+    "home_work_foot_ms": 36.184,
+    "home_work_foot_m": 3569.1,
+    "home_work_car_ms": 32.437,
+    "home_work_car_m": 3713.4,
+    "random20_foot_total_ms": 1138.1,
+    "random20_car_total_ms": 814.64,
+    "random20_foot_per_route_ms": 56.905,
+    "random20_car_per_route_ms": 40.732,
+    "random20_seed": 0,
+    "random20_solved_foot": 20,
+    "random20_solved_car": 16
+  },
+  "pedestrian": {
+    "substeps": 1000,
+    "path_length_m": 3569.1,
+    "path_points": 132,
+    "total_ms": 1.94,
+    "per_substep_ms": 0.00194
+  },
+  "vehicle": {
+    "substeps": 1000,
+    "path_length_m": 3713.4,
+    "path_points": 117,
+    "junctions": 56,
+    "by_others": {
+      "0": {
+        "total_ms": 13.04,
+        "per_substep_ms": 0.01304,
+        "n_within_lookahead_at_start": 0
+      },
+      "10": {
+        "total_ms": 516.77,
+        "per_substep_ms": 0.51677,
+        "n_within_lookahead_at_start": 10
+      },
+      "50": {
+        "total_ms": 502.84,
+        "per_substep_ms": 0.50284,
+        "n_within_lookahead_at_start": 10
+      }
+    },
+    "note": "others are a deterministic 7 m queue ahead on the path; VehicleController._lead_gap only projects the ones within lookahead+10 m, so the cost saturates once the queue fills that window"
+  },
+  "runtime_advance": {
+    "1": {
+      "n_citizens": 1,
+      "n_vehicles": 1,
+      "start_hour": 5.0,
+      "game_minutes_per_repeat": 20,
+      "ms_per_game_minute": 5.0,
+      "ms_per_citizen_game_minute": 5.005
+    },
+    "10": {
+      "n_citizens": 10,
+      "n_vehicles": 8,
+      "start_hour": 5.0,
+      "game_minutes_per_repeat": 20,
+      "ms_per_game_minute": 5.0,
+      "ms_per_citizen_game_minute": 0.5
+    },
+    "all": {
+      "n_citizens": 58,
+      "n_vehicles": 40,
+      "start_hour": 5.0,
+      "game_minutes_per_repeat": 20,
+      "ms_per_game_minute": 6.1,
+      "ms_per_citizen_game_minute": 0.105
+    },
+    "all_commute_0700": {
+      "n_citizens": 58,
+      "n_vehicles": 40,
+      "start_hour": 7.0,
+      "game_minutes_per_repeat": 20,
+      "ms_per_game_minute": 43.88,
+      "ms_per_citizen_game_minute": 0.756
+    }
+  },
+  "lod": {
+    "activate_after_1h_freeze_ms": 0.75,
+    "set_focus_and_update_bands_ms": 0.047,
+    "n_transitions": 11
+  },
+  "snapshot": {
+    "ms": 0.31,
+    "n_citizens": 58,
+    "n_vehicles": 40,
+    "json_bytes": 34384
+  },
+  "persistence": {
+    "save_ms": 1.59,
+    "restore_ms": 224.94,
+    "state_bytes": 110255
+  },
+  "budget": {
+    "clock_multiplier": 24.0,
+    "real_seconds_per_game_minute": 2.5,
+    "advance_ms_per_game_minute_all_citizens": 6.1,
+    "n_citizens": 58,
+    "budget_ms": 2500.0,
+    "budget_used_fraction": 0.0024,
+    "advance_ms_per_game_minute_commute_peak": 43.88,
+    "budget_used_fraction_commute_peak": 0.0176,
+    "headroom_x": 409.8,
+    "implied_max_citizens_at_24x": 23770,
+    "note": "at 24x one game minute is 2.5 s of real time; advancing 58 citizens costs 6.1 ms, i.e. 0.24% of that budget (commute peak at 07:00: 43.88 ms, 1.76%)"
+  }
+}

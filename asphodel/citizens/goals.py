@@ -71,8 +71,14 @@ class GoalStack:
         self.goals: List[Goal] = []
         self.preempt_margin = preempt_margin
         self._active: Optional[Goal] = None
+        # Per-stack id sequence: goal ids are unique within a citizen and
+        # reproducible across save/load (the module counter is only the
+        # default for goals built outside a stack).
+        self.seq = 0
 
     def push(self, goal: Goal) -> None:
+        goal.id = self.seq
+        self.seq += 1
         self.goals.append(goal)
 
     def remove(self, goal_id: int) -> None:

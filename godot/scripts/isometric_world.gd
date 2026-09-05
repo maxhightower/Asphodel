@@ -43,6 +43,7 @@ var _sun: DirectionalLight3D
 var _exterior: ExteriorWorld = null
 var _region_loader: RegionLoader = null
 var _citizen_render: Node3D
+var _embodied: EmbodiedMobility = null     # NEAR bodies of the embodied mobility runtime
 var _has_compiled_world := false
 
 # --- authoritative bookkeeping (identity, not truth) ------------------------
@@ -417,6 +418,19 @@ func _connect_live_world(dir: String, meta: Dictionary) -> void:
 	_citizen_render = load("res://scripts/citizen_render.gd").new()
 	_citizen_render.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(_citizen_render)
+	# Embodied mobility: the movement clock's NEAR band becomes real bodies
+	# (CitizenBody / VehicleBody) around the player and reports physics back.
+	if SimBridge.mobility_enabled:
+		_embodied = EmbodiedMobility.new()
+		_embodied.name = "EmbodiedMobility"
+		_embodied.process_mode = Node.PROCESS_MODE_PAUSABLE
+		# Bodies must keep up with the clock's pacing (game seconds per real second).
+		_embodied.time_scale = (24.0 * 3600.0 / GameClock.REAL_SECONDS_PER_DAY) * GameClock.time_scale
+		add_child(_embodied)
+		GameClock.mobility_updated.connect(_embodied.apply)
+		if _player != null:
+			SimBridge.focus_xy = Vector2(_player.position.x, _player.position.z)
+			SimBridge.has_focus_xy = true
 	var snap: Dictionary = SimBridge.snapshot()
 	if snap.get("ok", false):
 		GameClock.apply_outbreak(SimBridge._mean_belief_from(snap))
@@ -468,6 +482,10 @@ func _physics_process(_delta: float) -> void:
 func _update_live_bubble() -> void:
 	if _zone_map == null or _player == null or not SimBridge.is_connected_to_sim():
 		return
+	# The player's ground position is the embodied LOD focus (bodies within the
+	# physical radius); sent with every ADVANCE_TIME.
+	SimBridge.focus_xy = Vector2(_player.position.x, _player.position.z)
+	SimBridge.has_focus_xy = true
 	if _inside_building >= 0:
 		return
 	var z := _zone_map.zone_of_xy(_player.position.x, _player.position.z)
@@ -911,6 +929,7 @@ func building_count() -> int: return _building_aabb.size()
 
 
 func get_citizen_render() -> Node3D: return _citizen_render
+func get_embodied() -> EmbodiedMobility: return _embodied
 func render_live_now() -> void: _render_live()
 func gather_candidates() -> Array: return _gather_candidates()
 func enter_building_by_id(bid: int) -> void: _enter_building(bid)

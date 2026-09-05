@@ -64,6 +64,7 @@ class Movement:
     STATIONARY = "stationary"
     WALKING = "walking"       # moving on foot toward a destination
     COMMUTING = "commuting"   # travelling home<->work along the road network
+    DRIVING = "driving"       # at the wheel of a VehicleInstance (embodied mobility)
 
 
 @dataclass

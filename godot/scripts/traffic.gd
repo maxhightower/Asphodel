@@ -1,10 +1,14 @@
 extends Node3D
 
-## LEGACY PRESENTATION (canonical convergence, 2026-09): ambient movers on the
-## roads.json polylines, first-person scene only. They carry no identity and no
-## collision; the canonical vehicle model is asphodel/transport (VehicleInstance,
-## TrafficReconciler) realised by vehicle_body.gd / playback rows. Scheduled for
-## replacement in the Godot session — do not extend.
+## EXPLICIT_NONCANONICAL_PRESENTATION (ASPHODEL_EMBODIED_MOBILITY_V1 §28).
+##
+## Ambient movers on the roads.json polylines, first-person StreetScene only
+## (never the default IsometricWorld). They carry NO identity, NO collision
+## layer, NO simulation state and are never reported to the bridge, so they
+## cannot masquerade as canonical entities. The canonical vehicle in the
+## playable scene is a Python VehicleInstance realised by
+## embodied_mobility.gd -> vehicle_body.gd from the movement snapshot. Kept only
+## as decorative filler on the legacy path; do not extend, do not read back.
 
 ## Presentation-only traffic: placeholder vehicles (cars, trucks, motorcycles/
 ## bikes) driving along the bundle's road polylines. The authoritative Python

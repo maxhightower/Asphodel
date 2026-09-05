@@ -25,6 +25,9 @@ extends Node
 
 signal ticked(game_day: int, hour: float, outbreak: float)
 signal paused_changed(is_paused: bool)
+## Embodied mobility: a fresh movement block arrived from ADVANCE_TIME.
+## `game_dt` is the game seconds the block advanced by since the previous one.
+signal mobility_updated(block: Dictionary, game_dt: float)
 
 const REAL_SECONDS_PER_DAY := 3600.0
 const HOURS_PER_DAY := 24.0
@@ -48,6 +51,17 @@ var _outbreak: float = 0.0
 # Optional bound live bridge (SimBridge autoload). When present + connected, tick
 # crossings drive World.advance and refresh _outbreak from the authoritative reply.
 var _bridge: Node = null
+
+# --- Embodied mobility clock (ASPHODEL_EMBODIED_MOBILITY_V1) --------------
+# When the live world executes itineraries (SimBridge.mobility_enabled) the
+# clock sends ADVANCE_TIME with the exact game seconds elapsed, throttled to
+# SEND_INTERVAL real seconds per request; the server auto-ticks the epidemic
+# when the sub-tick clock crosses a tick, so there is ONE time axis.
+const SEND_INTERVAL := 0.1
+var use_time_clock := true
+var _pending_game_s := 0.0
+var _since_send := 0.0
+var _last_snapshot_tick := -1
 
 
 func _ready() -> void:
@@ -129,12 +143,47 @@ func _advance(d_hours: float) -> void:
 	# Map elapsed in-game time onto the sim's tick axis. One in-game day spans
 	# 1/_dt_days ticks. When we cross into new ticks, drive the AUTHORITATIVE
 	# world forward by exactly that many ticks and read the outbreak back.
+	if _time_clock_active():
+		_pending_game_s += d_hours * 3600.0
+		_since_send += d_hours * 3600.0 / (24.0 * 3600.0 / REAL_SECONDS_PER_DAY) / max(time_scale, 0.0001)
+		if _since_send >= SEND_INTERVAL:
+			flush_time()
+		ticked.emit(game_day, hour, outbreak_belief())
+		return
 	var ticks_per_hour := (1.0 / _dt_days) / HOURS_PER_DAY
 	var target := int(floor(_elapsed_ingame_hours * ticks_per_hour))
 	if target > sim_tick:
 		_advance_world(target - sim_tick)
 		sim_tick = target
 	ticked.emit(game_day, hour, outbreak_belief())
+
+
+func _time_clock_active() -> bool:
+	return use_time_clock and _bridge != null and _bridge.is_connected_to_sim() \
+		and bool(_bridge.get("mobility_enabled"))
+
+
+func flush_time() -> void:
+	## Send the accumulated game seconds as one ADVANCE_TIME (movement block
+	## back); on a tick crossing also refresh the full authoritative snapshot.
+	_since_send = 0.0
+	if _pending_game_s <= 0.0 or not _time_clock_active():
+		return
+	var sent := _pending_game_s
+	_pending_game_s = 0.0
+	var reply: Dictionary = _bridge.advance_time(sent, "mobility")
+	if reply.get("ok", false) != true:
+		return
+	var t := int(reply.get("tick", sim_tick))
+	if t != sim_tick or _last_snapshot_tick < 0:
+		sim_tick = t
+		_last_snapshot_tick = t
+		var snap: Dictionary = _bridge.snapshot()
+		if snap.get("ok", false) == true:
+			_outbreak = _bridge._mean_belief_from(snap)
+			_bridge.advanced.emit(t, _outbreak, snap)
+	if reply.has("mobility") and reply["mobility"] != null:
+		mobility_updated.emit(reply["mobility"], sent)
 
 
 func _advance_world(delta_ticks: int) -> void:

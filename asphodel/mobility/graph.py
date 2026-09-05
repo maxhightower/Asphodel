@@ -76,11 +76,19 @@ class MobilityGraph:
         self._adj.setdefault(node_id, [])
         return node_id
 
-    def add_segment(self, seg: RoadSegment, u: str, v: str) -> None:
+    def add_segment(self, seg: RoadSegment, u: str, v: str,
+                    index: bool = True) -> None:
+        """Add a segment between two existing nodes.
+
+        ``index=False`` keeps the segment out of the nearest-segment bucket
+        index: runtime access connectors (anchor -> street, see
+        ``asphodel.embodied.pathing``) are routable but are never a "where on
+        the street am I" answer, and must not force a city-wide reindex."""
         if u not in self.nodes or v not in self.nodes:
             raise KeyError("segment endpoints must be added as nodes first")
         self.segments[seg.id] = seg
-        self._grid = None                      # geometry changed: reindex on demand
+        if index:
+            self._grid = None                  # geometry changed: reindex on demand
         d = seg.directionality
         if d in (Direction.BIDIRECTIONAL, Direction.FORWARD):
             self._adj[u].append((v, seg.id, True))

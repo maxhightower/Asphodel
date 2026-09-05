@@ -1,0 +1,49 @@
+{
+ "citizen_id": 4,
+ "transitions": [
+  {
+   "t": 60.0,
+   "citizen_id": 4,
+   "from": "route_simulated",
+   "to": "physical",
+   "distance": 0.0,
+   "pos": [
+    1209.7,
+    686.6
+   ],
+   "step": 0,
+   "state": "doing_activity"
+  },
+  {
+   "t": 9120.0,
+   "citizen_id": 4,
+   "from": "physical",
+   "to": "route_simulated",
+   "distance": 552.6,
+   "pos": [
+    1569.7,
+    267.3
+   ],
+   "step": 3,
+   "state": "driving"
+  },
+  {
+   "t": 40020.0,
+   "citizen_id": 4,
+   "from": "route_simulated",
+   "to": "physical",
+   "distance": 8.4,
+   "pos": [
+    1209.5,
+    694.9
+   ],
+   "step": 6,
+   "state": "on_foot"
+  }
+ ],
+ "godot": {
+  "demoted": null,
+  "promoted_back": null,
+  "progressed_far": null
+ }
+}

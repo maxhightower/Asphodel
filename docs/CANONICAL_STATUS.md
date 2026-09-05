@@ -60,6 +60,16 @@ splits are named in that report.
   authoritative Python state transition.
 * Save/load preserves deterministic continuation.
 
+## Embodied mobility (2026-09-05)
+
+`ASPHODEL_EMBODIED_MOBILITY_V1` closed the Planner ↔ World and vehicles-in-
+the-playable-scene splits: `asphodel/embodied/` executes CitizenRuntime
+itineraries on a sub-tick movement clock inside `World`, persistent
+`VehicleInstance`s drive the canonical road route, and Godot realises the NEAR
+band as `CitizenBody`/`VehicleBody` with physics reported back. See
+`docs/mobility/EMBODIED_MOBILITY_ARCHITECTURE.md` and
+`docs/mobility/EMBODIED_MOBILITY_REPORT.md`.
+
 ## Historical reports
 
 The milestone findings that used to sit at the repository root are in

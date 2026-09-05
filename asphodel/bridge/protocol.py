@@ -29,7 +29,9 @@ from typing import Any
 # a different major version is rejected (see WorldSession.handle / Command.HELLO).
 # v1: authoritative world (M1). v2: + Package 3 survival/interaction commands.
 # v3: + GET_INTERIOR (walk-in interiors: authoritative interior descriptor).
-PROTOCOL_VERSION = 3
+# v4: + ADVANCE_TIME / MOBILITY_REPORT / GET_MOBILITY (embodied mobility: the
+#      continuous movement clock, NEAR-body physical reports, the movement snapshot).
+PROTOCOL_VERSION = 4
 
 
 class Command:
@@ -61,12 +63,18 @@ class Command:
     # --- Walk-in interiors (v3) -------------------------------------------
     GET_INTERIOR = "GET_INTERIOR"            # authoritative interior descriptor + deltas
 
+    # --- Embodied mobility (v4) -------------------------------------------
+    ADVANCE_TIME = "ADVANCE_TIME"            # advance continuous game seconds (movement clock)
+    MOBILITY_REPORT = "MOBILITY_REPORT"      # NEAR bodies report physical positions/blockage
+    GET_MOBILITY = "GET_MOBILITY"            # movement snapshot without advancing
+
     ALL = frozenset({
         HELLO, START_WORLD, SET_FOCUS, ADVANCE, INTERVENE, INTERACT_WITH,
         PAUSE, RESUME, SNAPSHOT, SAVE, LOAD, SHUTDOWN,
         ENTER_BUILDING, LEAVE_BUILDING, INSPECT_BUILDING, SEARCH_CONTAINER,
         TAKE_ITEM, DROP_ITEM, USE_ITEM, INSPECT_INVENTORY,
         GET_INTERIOR,
+        ADVANCE_TIME, MOBILITY_REPORT, GET_MOBILITY,
     })
 
 

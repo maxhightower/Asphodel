@@ -1,0 +1,58 @@
+{
+ "citizen_id": 4,
+ "vehicle_id": "veh:4",
+ "choices": [
+  {
+   "index": 44971,
+   "kind": "PARKING_ANCHOR",
+   "xy": [
+    1078.1,
+    -2006.98
+   ],
+   "node": "park:44971",
+   "distance_to_entrance_m": 60.5,
+   "connector_m": 8.2,
+   "street_segment": "6477f34c-909d-4712-910a-67d000c88a3e#0",
+   "rejected": {}
+  },
+  {
+   "index": 31968,
+   "kind": "DRIVEWAY_ANCHOR",
+   "xy": [
+    1215.09,
+    681.99
+   ],
+   "node": "park:31968",
+   "distance_to_entrance_m": 7.1,
+   "connector_m": 20.0,
+   "street_segment": "e873be86-b0cc-4cd2-bee3-a7dd92bc54ea#0",
+   "rejected": {}
+  }
+ ],
+ "parked": [
+  {
+   "t": 9355.0,
+   "event": "parked",
+   "vehicle_id": "veh:4",
+   "anchor": [
+    1078.1,
+    -2007.0
+   ],
+   "node": "park:44971"
+  },
+  {
+   "t": 39994.0,
+   "event": "parked",
+   "vehicle_id": "veh:4",
+   "anchor": [
+    1215.1,
+    682.0
+   ],
+   "node": "park:31968"
+  }
+ ],
+ "work_entrance": [
+  1059.39,
+  -2064.52
+ ]
+}

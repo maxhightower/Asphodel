@@ -20,7 +20,7 @@ signal connected_changed(is_connected: bool)
 signal world_started(summary: Dictionary)
 signal advanced(tick: int, outbreak: float, summary: Dictionary)
 
-const PROTOCOL_VERSION := 3   # v3: + GET_INTERIOR (walk-in interiors)
+const PROTOCOL_VERSION := 4   # v4: + ADVANCE_TIME / MOBILITY_REPORT / GET_MOBILITY (embodied mobility)
 
 var _peer: StreamPeerTCP = null
 var _id := 0
@@ -29,6 +29,17 @@ var last_summary: Dictionary = {}
 
 # The most recent authoritative snapshot (World.snapshot()), or {} if none.
 var last_world: Dictionary = {}
+
+# --- Embodied mobility (v4) --------------------------------------------------
+# Whether the started world executes citizen itineraries (START_WORLD reply
+# `mobility`). When true the GameClock drives ADVANCE_TIME (continuous game
+# seconds) instead of tick-granular ADVANCE, and EmbodiedMobility instantiates
+# CitizenBody/VehicleBody for the NEAR band around `focus_xy`.
+var mobility_enabled := false
+var focus_xy := Vector2.ZERO          # the player's ground position (sim frame: x, z)
+var has_focus_xy := false
+# The most recent movement block (World.mobility_snapshot()), or {} if none.
+var last_mobility: Dictionary = {}
 
 
 func is_connected_to_sim() -> bool:
@@ -77,12 +88,57 @@ func start_world(bundle: String, opts: Dictionary = {}) -> Dictionary:
 	var r := _send("START_WORLD", fields)
 	if _ok(r):
 		last_summary = r
+		mobility_enabled = bool(r.get("mobility_enabled", false))
 		world_started.emit(r)
 	return r
 
 
-func set_focus(zones: Array) -> Dictionary:
-	return _send("SET_FOCUS", {"zones": zones})
+func set_focus(zones: Array, xy = null) -> Dictionary:
+	var fields := {"zones": zones}
+	if xy != null:
+		fields["xy"] = [float(xy.x), float(xy.y)]
+	elif has_focus_xy:
+		fields["xy"] = [focus_xy.x, focus_xy.y]
+	return _send("SET_FOCUS", fields)
+
+
+# ---------------------------------------------------- embodied mobility (v4)
+func advance_time(seconds: float, want: String = "mobility") -> Dictionary:
+	## Advance the continuous movement clock by `seconds` of GAME time. The
+	## server auto-runs the epidemic tick when the sub-tick clock crosses the
+	## tick length (bit-identical to ADVANCE). `want` = "mobility" (movement
+	## block), "world" (full snapshot) or "" (summary only).
+	var fields := {"seconds": seconds}
+	if has_focus_xy:
+		fields["focus_xy"] = [focus_xy.x, focus_xy.y]
+	if want == "mobility":
+		fields["snapshot"] = "mobility"
+	elif want == "world":
+		fields["snapshot"] = true
+	var r := _send("ADVANCE_TIME", fields)
+	if _ok(r):
+		last_summary = r
+		if r.has("mobility") and r["mobility"] != null:
+			last_mobility = r["mobility"]
+		if r.has("world"):
+			last_world = r["world"]
+			if r["world"].has("mobility"):
+				last_mobility = r["world"]["mobility"]
+	return r
+
+
+func mobility_report(bodies: Array, dt: float) -> Dictionary:
+	## NEAR bodies report where physics actually put them (the physical result
+	## is the authority for NEAR progress; it can hold a trip back, never push it).
+	## bodies: [{"id": "cit:4", "x": .., "z": .., "blocked": bool}, ...]
+	return _send("MOBILITY_REPORT", {"bodies": bodies, "dt": dt})
+
+
+func get_mobility(routes: bool = true) -> Dictionary:
+	var r := _send("GET_MOBILITY", {"routes": routes})
+	if _ok(r) and r.has("mobility") and r["mobility"] != null:
+		last_mobility = r["mobility"]
+	return r
 
 
 func advance(ticks: int = 1, want_snapshot: bool = false) -> Dictionary:
@@ -177,6 +233,8 @@ func snapshot() -> Dictionary:
 	var r := _send("SNAPSHOT", {})
 	if _ok(r) and r.has("world"):
 		last_world = r["world"]
+		if r["world"].has("mobility"):
+			last_mobility = r["world"]["mobility"]
 	return r
 
 
@@ -193,6 +251,7 @@ func load(path: String) -> Dictionary:
 	var r := _send("LOAD", {"path": path})
 	if _ok(r):
 		last_summary = r
+		mobility_enabled = bool(r.get("mobility_enabled", mobility_enabled))
 	return r
 
 
