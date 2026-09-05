@@ -109,6 +109,28 @@ func _run_until(pred: Callable, max_frames: int, follow: bool = true) -> Diction
 	return row
 
 
+# Coarse advance for stretches where the followed citizen does not move
+# (inside a building, incapacitated, a corpse): the Python side still runs
+# its 1 s substeps; Godot bodies are re-synced from the block afterwards.
+func _coarse_until(pred: Callable, max_game_s: float, chunk_s: float = 4.0) -> Dictionary:
+	var row := {}
+	var t := 0.0
+	while t < max_game_s:
+		var r: Dictionary = SimBridge.advance_time(chunk_s, "mobility")
+		if r.get("ok", false) != true:
+			break
+		t += chunk_s
+		var block: Dictionary = r.get("mobility", {})
+		_emb.apply(block, chunk_s)
+		row = _citizen_row(block)
+		_place_player(row)
+		if pred.call(row, block):
+			return row
+		if int(t / chunk_s) % 25 == 0:
+			await get_tree().physics_frame
+	return row
+
+
 func _point_ahead(route: Array, dist: float) -> Vector2:
 	var acc := 0.0
 	for i in range(1, route.size()):
@@ -179,6 +201,10 @@ func _run() -> void:
 	_place_player(row)
 	await _settle(90)
 	await _shot("00_infected_ordinary_morning.png", "incubating citizen %d at work (building %s), ordinary life" % [_cid, str(row.get("building_id"))])
+	# incubating inside the workplace: nothing to render, coarse-step to just before onset
+	h = float(SimBridge.last_summary.get("hour", 0.0))
+	if h < onset_hour - 0.05:
+		row = await _coarse_until(func(r, _b): return str(r.get("health")) != "incubating" or float(SimBridge.last_summary.get("hour", 0.0)) >= onset_hour - 0.05, (onset_hour - 0.05 - h) * 3600.0 + 8.0)
 	# 2. onset: leaves work under its own executor (pale look while symptomatic)
 	row = await _run_until(func(r, _b): return str(r.get("health")) == "symptomatic" and str(r.get("state")) in ["on_foot", "approaching_vehicle", "entering_vehicle", "driving"], 12000)
 	await _settle(6)
@@ -189,11 +215,11 @@ func _run() -> void:
 	await _shot("02_collapse.png", "incapacitated at (%s,%s) building=%s vehicle=%s" % [str(row.get("x")), str(row.get("y")), str(row.get("building_id")), str(row.get("vehicle_id"))])
 	var col := Vector2(float(row["x"]), float(row["y"]))
 	# 4. corpse at the same place
-	row = await _run_until(func(r, _b): return str(r.get("health")) in ["corpse", "dead"], 12000)
+	row = await _coarse_until(func(r, _b): return str(r.get("health")) in ["corpse", "dead"], 3.0 * 3600.0)
 	await _settle(6)
 	await _shot("03_corpse.png", "corpse of citizen %d at (%s,%s) (same place as the collapse: %s)" % [_cid, str(row.get("x")), str(row.get("y")), str(Vector2(float(row["x"]), float(row["y"])).distance_to(col) < 0.01)])
 	# 5. reanimation at the same place, then the undead walking
-	row = await _run_until(func(r, _b): return str(r.get("health")) == "undead", 16000)
+	row = await _coarse_until(func(r, _b): return str(r.get("health")) == "undead", 3.0 * 3600.0)
 	await _settle(6)
 	await _shot("04_reanimated_same_place.png", "citizen %d reanimated at (%s,%s), same identity, same place" % [_cid, str(row.get("x")), str(row.get("y"))])
 	var start := Vector2(float(row["x"]), float(row["y"]))

@@ -254,9 +254,14 @@ class OutbreakRuntime:
         # if the threat is in our home, flee to the errand building instead
         thr = self.mobility.execs.get(threat_id)
         target = home
-        if thr is not None and thr.inside and thr.building_id == (rt.node_meta.get(home) or {}).get("building_id"):
+        home_bid = (rt.node_meta.get(home) or {}).get("building_id")
+        if thr is not None and thr.inside and thr.building_id == home_bid:
             alt = next((n for n, m in rt.node_meta.items()
                         if n.startswith("ent:") and n != home and m.get("building_id") is not None), None)
+            if alt is None:
+                # a citizen with no other known place takes refuge in a
+                # deterministic nearby building (never the one under attack)
+                alt = self._refuge_node(rt, int(home_bid))
             target = alt or home
         # An identical flee already under way is kept (re-pushing would restart
         # the plan and the leave-building dwell under a sustained attack).
@@ -268,6 +273,20 @@ class OutbreakRuntime:
         rt.push_goal(g, self.mobility.graph)
         self.event("FLEE", citizen_id=cid, threat_citizen=threat_id, target=target, reason=reason,
                    **self._where(ex))
+
+    def _refuge_node(self, rt, avoid_bid: int) -> Optional[str]:
+        mob = self.mobility
+        xy = mob.entrance_of(avoid_bid)
+        if xy is None:
+            return None
+        bid = mob._errand_building(avoid_bid, xy)
+        if bid is None:
+            return None
+        node = mob.node_for_building(bid)
+        if node is None:
+            return None
+        rt.node_meta[node] = {"building_id": int(bid), "xy": mob.entrances.get(int(bid))}
+        return node
 
     def _reissue_constraints(self) -> None:
         """Health/disruption goals must survive the planner's schedule sync

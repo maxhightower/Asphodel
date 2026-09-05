@@ -142,6 +142,22 @@ PYTHONPATH=. python3 tools/mobility_city_smoke.py && PYTHONPATH=. python3 tools/
 
 See `docs/mobility/EMBODIED_MOBILITY_ARCHITECTURE.md` and `EMBODIED_MOBILITY_REPORT.md`.
 
+## Embodied outbreak (ASPHODEL_OUTBREAK_V1)
+
+Infection, sickness, death, reanimation, fear and civil breakdown act on the
+same persistent citizens through the same planner/executor chain
+(`asphodel/outbreak/`). Certification:
+
+```bash
+PYTHONPATH=. python3 -m pytest -q tests/test_outbreak_*.py                 # health, contacts, progression, save/load, LOD, bridge, disruption
+PYTHONPATH=. python3 -m pytest -q tests/test_outbreak_v1_day.py -s        # the O1–O22 table (Houston, one day)
+tools/run_outbreak_gate.sh                   # in-engine gate (live bridge, undead body, attack, flee)
+tools/run_outbreak_shots.sh houston 42       # rendered evidence (xvfb) -> docs/outbreak/evidence/
+PYTHONPATH=. python3 tools/outbreak_city_smoke.py && PYTHONPATH=. python3 tools/outbreak_perf.py
+```
+
+See `docs/outbreak/OUTBREAK_V1_ARCHITECTURE.md` and `OUTBREAK_V1_REPORT.md`.
+
 ## Key experiments
 
 | Experiment | Question | Plot |

@@ -705,6 +705,8 @@ class MobilityRuntime:
                                    "parking_index": m.get("parking_index")}
                 if n.startswith("park:") and xy is not None and n not in graph.nodes:
                     attach_anchor(graph, n, (float(xy[0]), float(xy[1])), [Mode.CAR, Mode.FOOT], Mode.CAR)
+                elif n.startswith("ent:") and m.get("building_id") is not None and n not in graph.nodes:
+                    rt_obj.node_for_building(int(m["building_id"]))  # e.g. a flee refuge
             rt.current_node = rs.get("current_node", rt.current_node)
             rt.destination = rs.get("destination")
             rt.inside_building = bool(rs.get("inside_building", True))

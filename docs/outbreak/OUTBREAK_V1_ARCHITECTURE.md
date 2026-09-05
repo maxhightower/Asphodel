@@ -126,8 +126,11 @@ VehicleInstances, positions are executor positions.
   reach → bite roll → `EXPOSURE(bite)`; the victim always **FLEEs**.
 * **Fear** (`_witnesses`, every 5 s): a living citizen in the same building
   as an undead/corpse or within 25 m outdoors of an undead or an attack gets
-  `THREAT_OBSERVED` and a `FLEE` goal (source `emergency`, 0.92) to home, or
-  to its errand building when the threat is in its home.
+  `THREAT_OBSERVED` and a `FLEE` goal (source `emergency`, 0.92) to home, or,
+  when the threat is in its home, to its errand/work building or (for a
+  citizen that knows no other place) a deterministic nearby refuge building
+  chosen by the mobility runtime's errand picker, never the building under
+  attack.
 
 Planning stays with `CitizenRuntime`; movement stays with `TripExecutor`.
 

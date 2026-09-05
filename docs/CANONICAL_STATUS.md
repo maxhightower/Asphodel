@@ -70,6 +70,22 @@ band as `CitizenBody`/`VehicleBody` with physics reported back. See
 `docs/mobility/EMBODIED_MOBILITY_ARCHITECTURE.md` and
 `docs/mobility/EMBODIED_MOBILITY_REPORT.md`.
 
+## Embodied outbreak (2026-09-05)
+
+`ASPHODEL_OUTBREAK_V1` put the outbreak on the same persistent citizens:
+`asphodel/outbreak/` holds one `HealthRecord` per registered citizen
+(susceptible → incubating → symptomatic → incapacitated → corpse → undead,
+every outcome a seeded draw stamped at infection), exposure comes from real
+co-presence in buildings, vehicles and the street, sickness changes plans
+through the ordinary `CitizenRuntime` → `TripExecutor` chain, the dead stay
+where they died, the risen keep their `citizen_id`, abandoned cars become
+wrecks that close their segment and disrupted workplaces send workers home.
+The June `claude/outbreak-config-types-A8fTw` branch was audited as a donor
+(`docs/outbreak/OUTBREAK_DONOR_AUDIT.md`) and its archetype values were
+carried into the per-citizen grammar; its macro-compartment engine was not.
+See `docs/outbreak/OUTBREAK_V1_ARCHITECTURE.md` and
+`docs/outbreak/OUTBREAK_V1_REPORT.md`.
+
 ## Historical reports
 
 The milestone findings that used to sit at the repository root are in
