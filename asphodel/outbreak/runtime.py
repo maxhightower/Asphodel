@@ -247,6 +247,11 @@ class OutbreakRuntime:
             alt = next((n for n, m in rt.node_meta.items()
                         if n.startswith("ent:") and n != home and m.get("building_id") is not None), None)
             target = alt or home
+        # An identical flee already under way is kept (re-pushing would restart
+        # the plan and the leave-building dwell under a sustained attack).
+        if any(g.source == "emergency" and g.kind == GoalKind.FLEE and g.target == target
+               for g in rt.goals.goals):
+            return
         rt.goals.goals = [g for g in rt.goals.goals if g.source != "emergency"]
         g = Goal(GoalKind.FLEE, target=target, reason=reason, source="emergency", priority=FLEE_PRIORITY)
         rt.push_goal(g, self.mobility.graph)
@@ -417,10 +422,11 @@ class OutbreakRuntime:
         rec = self.records[ucid]
         rec.attacks += 1
         u = roll(self.seed, vcid, f"bite:{ucid}", rec.attacks)
-        took = u < p.bite_probability
-        self.event("ATTACK", citizen_id=ucid, victim_citizen=vcid, exposed=bool(took), **self._where(vx))
         vrec = self.record(vcid)
-        if took and vrec.state == HealthState.SUSCEPTIBLE:
+        took = u < p.bite_probability and vrec.state == HealthState.SUSCEPTIBLE
+        self.event("ATTACK", citizen_id=ucid, victim_citizen=vcid, exposed=bool(took),
+                   victim_health=vrec.state.value, **self._where(vx))
+        if took:
             vrec.bitten_by = ucid
             self._expose(vcid, ucid, "bite", vx.pos)
         # the victim always flees an attack
@@ -484,6 +490,8 @@ class OutbreakRuntime:
         veh.speed = 0.0
         veh.engine_state = "off"
         obs = veh.to_wreck(graph, severity=1.0)     # PERSISTENT_WRECK at its position
+        # A car stalled across a street closes it to vehicles (pedestrians pass).
+        obs.modes_affected = {Mode.CAR, Mode.HEAVY}
         veh.driver = None
         sid = obs.affected_segment
         if sid is not None and sid in graph.segments and obs.id not in graph._obstructions:
