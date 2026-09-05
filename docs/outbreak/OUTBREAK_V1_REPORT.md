@@ -315,7 +315,34 @@ shared 4-core container while other jobs ran; treat absolute values as ±20 %.
 
 ## 16. Rendered evidence (`docs/outbreak/evidence/`)
 
-EVIDENCE_PLACEHOLDER
+Produced by `tools/run_outbreak_shots.sh houston 42 docs/outbreak/evidence`:
+the real `IsometricWorld` scene under xvfb (software GL), live Python bridge,
+world started by the scene, outbreak seeded through the bridge at 05:00, then
+stepped at 0.1 game-second per physics frame through the moving stretches and
+in 4 s chunks through the still ones. `manifest.json` carries the script's own
+captions; the column "what the frame actually shows" is a review of the pixels
+and is the caption that counts.
+
+| file | script caption (authoritative rows) | what the frame actually shows |
+|---|---|---|
+| `00_infected_ordinary_morning.png` | incubating citizen 42 inside building 2318 (doing_activity) before onset | the flat roof of the workplace from above and the player marker; **no citizen is visible** (an interior has no body). Proves only that the camera is at the workplace while the authority says "incubating, inside". The HUD clock (`Day 1 10:41`) is the scene's paused clock, not the simulation hour. |
+| `01_symptomatic_leaving_work.png` | symptomatic, schedule invalidated, heading home (on_foot) | **the same roof view as 00; no walking body is visible in the frame.** It does not show the citizen leaving; the leaving is evidenced by the gate's body frames (§12), not by this image. |
+| `02_collapse.png` | incapacitated at (-274.4, -2164.9), building −1, vehicle veh:42 | a red car stopped in the middle of the carriageway among parked cars, i.e. the citizen's own car halted mid-street where the driver collapsed. The driver is inside the car, so no separate body. |
+| `03_corpse.png` | corpse of citizen 42 at the same coordinates (same place as the collapse: true) | the same car in the same place; a corpse in a car has no separate body, so the frame is visually identical to 02. The equality of coordinates is from the rows, not from the pixels. |
+| `04_reanimated_same_place.png` | citizen 42 reanimated at the same coordinates, same identity | a green-tinted figure (the undead look) standing beside the driver's door of that car: the undead has left the car it died in, at the death location. |
+| `05_undead_walking.png` | undead body walking under physics, 13 m from the death location | the same green figure on the road about a car-length-and-a-half from the car, the car unchanged. Shows a body displaced from the death spot; the fact that physics moved it is from the gate's leash metric, not the pixels. |
+| `06_abandoned_vehicle_obstruction.png` | abandoned veh:42: persistent wreck, segment closed to cars | the red car alone in the carriageway with the undead further up the road. The frame shows a car stopped in the road; that it is a wreck that closes the segment to cars is authoritative state (`MobilityObstruction`), not visible here. |
+| `07_attack.png` | undead 42 attacks citizen 294 in building 6366 (exposed=true) | the roof of building 6366 and the player marker; **no bodies** (the attack happened inside). The image proves the camera was at 6366 when the ATTACK event fired; nothing more. |
+| `08_victim_flees.png` | citizen 294 fleeing on foot after the attack (FLEE goal) | the corner of building 6366 at street level; **no fleeing body is clearly visible** in this frame. The flight is evidenced by the gate (`fleeing_citizen_embodied_on_foot`: a CitizenBody for 294 left 6366 on foot), not by this image. |
+
+Net: frames 02–06 are genuine in-world evidence of the collapse at the wheel,
+the car left in the road, the undead rising beside it and walking away; frames
+00, 01, 07, 08 show only where the camera was (interiors have no bodies) and
+must not be read as showing the captioned behaviour. A first rendered pass
+(discarded) captioned an already-undead citizen as "incubating" because the
+script added an absolute clock time to the current hour; the script now
+computes onset from the movement clock and prefixes any caption whose
+condition the window did not reach.
 
 ## 17. Remaining debt
 
