@@ -107,7 +107,8 @@ class OutbreakRuntime:
     def seed_index_case(self, cid: int, context: str = "index_case") -> HealthRecord:
         ex = self.mobility.execs[int(cid)]
         rec = self.record(cid)
-        rec.infect(self.pathogen, self.seed, self.now_s, None, context, ex.pos, [])
+        rec.infect(self.pathogen, self.seed, self.now_s, None, context, ex.pos, [],
+                   force_symptomatic=True)
         self.event("EXPOSURE", citizen_id=int(cid), source_citizen=None, context=context, **self._where(ex))
         self.event("INFECTED", citizen_id=int(cid), pathogen=self.pathogen.name,
                    symptom_t=rec.symptom_t, incapacitation_t=rec.incapacitation_t,

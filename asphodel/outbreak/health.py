@@ -96,7 +96,8 @@ class HealthRecord:
 
     # -- transitions (all timestamps decided here, once) ------------------------
     def infect(self, p: OutbreakPathogen, seed: int, now_s: float, source: Optional[int],
-               context: str, location: Optional[Vec2], lineage: List[int]) -> None:
+               context: str, location: Optional[Vec2], lineage: List[int],
+               force_symptomatic: bool = False) -> None:
         cid = self.citizen_id
         self.state = HealthState.INCUBATING
         self.pathogen = p.name
@@ -106,7 +107,8 @@ class HealthRecord:
         self.exposure_t = now_s
         self.infection_t = now_s
         self.lineage = list(lineage) + ([source] if source is not None else [])
-        self.asymptomatic = roll(seed, cid, "asymptomatic") < p.asymptomatic_fraction
+        # An index case is by definition the first *observed* (symptomatic) case.
+        self.asymptomatic = (not force_symptomatic) and roll(seed, cid, "asymptomatic") < p.asymptomatic_fraction
         inc = jittered(p.incubation_s, p.jitter, roll(seed, cid, "incubation"))
         if self.asymptomatic:
             self.symptom_t = None
