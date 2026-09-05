@@ -20,3 +20,6 @@ data/raw/
 
 # Rendered horizon/living-city screenshots (regenerate via godot/tests/*Shot.tscn)
 /shots/
+
+# Claude Code agent worktrees (session tooling, never repository content)
+/.claude/
