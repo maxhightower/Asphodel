@@ -72,7 +72,37 @@ CitizenRuntime (goal) ─► TripExecutor (to the building, DOING_ACTIVITY) ─�
 ## 4. Certification table (`tests/test_work_v1_day.py`, Houston, 05:00→18:30)
 
 ```
-FINAL_TABLE_PLACEHOLDER
+SMART_OBJECTS_WORK_V1_CERTIFICATION
+  S1   PASS     Stable Smart Object identities: 119 objects of building 15873 regenerate with identical ids/kinds/rooms in a fresh world; ids are so:<building>:<k> from the interior generation order
+  S2   PASS     Room/zone hierarchy exists: building 15873: rooms [(0, 'shop_floor', 'sales_floor'), (1, 'back_room', 'employee_area'), (2, 'storeroom', 'stock_room')] joined by doorways
+  S3   PASS     Objects belong to correct rooms/buildings: every object of 15873 lies inside its room rectangle and carries the building id (0 bad)
+  S4   PASS     Citizen has deterministic job/workplace: 211 citizens employed identically in two fresh worlds; citizen 297 (courier) is a cashier at 15873 assigned so:15873:5; roles: cashier=52, cleaner=118, desk_worker=31, stocker=10
+  S5   PASS     Work generates concrete task sequence: cashier 297: 18 tasks ['browse', 'man_register', 'take_break']; first: [(7.6, 'man_register', 'so:15873:5'), (8.2, 'man_register', 'so:15873:5'), (8.7, 'man_register', 'so:15873:5'), (9.29, 'man_register', 'so:15873:5')]
+  S6   PASS     Existing mobility reaches workplace: citizen 297 clocked in at 15873 at 7.6 after the executor's trip (executor events: [('left_building', 3448), ('walk_done', None), ('walk_done', None)])
+  S7   PASS     Internal navigation reaches station: MOVE_TO_OBJECT at 7.6 (4 waypoints through doorways) -> USE_START at 7.63 at so:15873:5 (checkout, room 0), 0.01 m from its interaction point
+  S8   PASS     Exclusive reservation prevents double occupancy: 0 invariant violations over 810 game-minute samples (exclusive objects with >1 holder, citizens holding 2 exclusive objects); cashier 297 held ['so:15873:104', 'so:15873:5', 'so:15873:50']
+  S9   PASS     Contention resolves without deadlock: station so:15873:5 broke at 12.00: OBJECT_UNAVAILABLE for 297, then RESERVED so:15873:5 at 12.64 (38 min later, an alternative station); 0 bounded waits; 13 RESERVATION_DENIED city-wide
+  S10  PASS     Citizen physically uses Smart Object: cashier 297: 16 completed uses, longest 39 min at so:15873:5
+  S11  PASS     Smart Object state changes authoritatively: cleaner 243 set dirty->False on 11 objects; registers of 15873 record served=14; 135 shelf stock changes city-wide; 931 STATE_CHANGE events
+  S12  PASS     Multi-object task succeeds: cleaner 243 at 4587: 190 tasks over 18 distinct objects; fetch supplies at a storage object then clean a different object: True; sequence head [('fetch_supplies', 'so:4587:1', 'supplies'), ('clean_object', 'so:4587:113', 'clean'), ('clean_object', 'so:4587:77', 'clean'), ('clean_object', 'so:4587:10', 'clean'), ('clean_object', 'so:4587:3', 'clean')]
+  S13  PASS     Multi-agent/service interaction succeeds: at 15873: 26 customers queued, 14 served by the shop's cashiers ([(169, 'by', 297, 'at', 'so:15873:5', 10.83), (82, 'by', 297, 'at', 'so:15873:5', 10.86), (287, 'by', 297, 'at', 'so:15873:5', 10.88), (19, 'by', 297, 'at', 'so:15873:5', 10.91)]); cashier 297 served 14; city-wide SERVED=31 UNSERVED=116
+  S14  PASS     Work can be interrupted: 8 interruptions with reasons ['disruption', 'emergency', 'health'] ([(42, 'health:do_activity', 9.9), (127, 'emergency:flee', 10.83), (247, 'health:do_activity', 11.08), (117, 'health:do_activity', 14.23), (87, 'disruption:do_activity', 14.33)]); 147 shift-end CLOCK_OUTs (object unavailable case in S9)
+  S15  PASS     Reservation cleanup on interruption: no interrupted citizen keeps a hold outside a live session (0 leaks); releases are logged at the interruption instant
+  S16  PASS     Existing planner takes control after interruption: after interruption the existing planner/executor own the citizen: [('health', 42, 'health:do_activity', 'on_foot', 'emergency'), ('emergency', 127, 'emergency:flee', 'trip_failed', 'emergency'), ('disruption', 87, 'disruption:do_activity', 'on_foot', 'emergency')]
+  S17  PASS     Room/station context visible to outbreak query: office 2318 at 11:00: [('87', 'office', 2, 'so:2318:9177', 'take_break'), ('117', 'office', 2, 'so:2318:9185', 'desk_work'), ('135', 'office', 2, 'so:2318:9173', 'desk_work'), ('247', 'office', 2, 'so:2318:9182', 'desk_work')]; 103 outbreak events carry room_id/zone/object_id (e.g. [('EXPOSURE', 0, 'living_room'), ('INFECTED', 0, 'living_room')])
+  S18  PASS     LOD demotion preserves work state: focus onto the shop at 11.5: band PHYSICAL then ROUTE_SIMULATED; same object/task, progress continuous, one holder: True/True/True/[297]; in-engine: PASS  promoted_back_at_authoritative_pose  body recreated inside the interior 0.000 m from the authoritative pose; object so:12013:20 (session object so:12013:20)
+  S19  PASS     LOD promotion restores same work state: promotion recreated the same session (see S18) with the Godot body at the authoritative interior pose
+  S20  PASS     Save/load active station use: walking_to_station@8.017: identical restore, 10-min continuation byte-identical=True; using_station@8.517: identical restore, 10-min continuation byte-identical=True; waiting@10.583: identical restore, 10-min continuation byte-identical=True
+  S21  PASS     Save/load multi-step work: multi_step@7.633: identical restore, 10-min continuation byte-identical=True
+  S22  PASS     Save/load interruption: interrupted@9.917: identical restore, 10-min continuation byte-identical=True; work_to_home@16.017: identical restore, 10-min continuation byte-identical=True
+  S23  PASS     Godot embodiment proves work execution: WorkGate 22 PASS / 0 FAIL: world_started_with_work  START_WORLD by the scene: mob; rooms_and_objects_stable  3 rooms ["shop_floor", "back; worker_commuted_into_workplace  citizen 68 state=doing; interior_position_is_inside_the_footprint  authoritati; player_inside_building_worker_embodied  inside_buildin; interior_body_at_authoritative_pose  materialized 0.00
+  S24  PASS     Existing mobility gate remains PASS: MobilityGate (tools/run_mobility_gate.sh houston 4) 24 PASS / 0 FAIL on the 300-citizen population with the work layer enabled (artifacts/mobility/godot_probe_trace.json)
+  S25  PASS     Existing outbreak gate remains PASS: OutbreakGate (tools/run_outbreak_gate.sh) 18 PASS / 0 FAIL with the work layer enabled; the index case collapsed on foot this run (abandoned-car row INFO)
+  S26  PASS     Existing Godot gates remain PASS: godot/tests/run_gates.sh (PhysicsGate, RegionGate, NavGate, ConvergenceGate, ExteriorStream): 85 PASS / 0 FAIL; WorkGate 22/22 PASS (artifacts/smart_objects_work_v1/godot_probe_trace.json)
+  S27  PASS     Multi-city smoke: houston: PASS; madisonville_tx: PASS; austin: PASS; san_antonio: PASS; boulder: INFO
+  S28  PASS     No city-name special cases: no `if city == ...` branches in the smart-object layer or the smoke/perf tools
+.
+16 passed in 201.45s (0:03:21)
 ```
 
 Workers and workplaces are chosen from the data by the test itself (the
@@ -96,18 +126,19 @@ Times are game clock; ids are the authoritative ones from
 | 07:36 | `CLOCK_IN` at 15873; `RESERVED so:15873:5` (exclusive); `TASK_START man_register`; `MOVE_TO_OBJECT` (4 waypoints through doorways) | WorkRuntime takes over inside |
 | 07:37 | `USE_START` at `so:15873:5`, 0.01 m from its interaction point | S7 |
 | 08:11 … 10:32 | `man_register` instances of 30–40 min each on the same station (the station stays held across instances) | S10 |
-| 10:39–10:59 | **14 customers served** (`SERVED` 222, 82, 277, 8, 19, 169, 143, 25, 132, 167, 287, 221, 40, 81), each after browsing a shelf and queueing at the register; the register's `served` state reaches 14 | S13, S11 |
+| 10:32–10:47 | **break**: `RESERVATION_RELEASED so:15873:5 (switched station)`, `RESERVED so:15873:104` (a back-room chair), `BREAK_START` → `BREAK_END`, back on `so:15873:5` | S10, non-work affordance at work |
+| 10:50–11:09 | **14 customers served** (`SERVED` 8, 19, 25, 40, 81, 82, 132, 143, 167, 169, 221, 222, 277, 287), each after browsing a shelf and queueing at the register; the register's `served` state reaches 14 | S13, S11 |
 | 11:30 | LOD probe: focus onto the shop for 1 s → band PHYSICAL, same object/task, progress continuous, one holder; back to ROUTE_SIMULATED | S18/S19 |
 | 12:00 | scripted stressor: `so:15873:5` set `working=false` → `OBJECT_UNAVAILABLE`, hold evicted; **within the same second `RESERVED so:15873:50`** (the alternative station) and `USE_START` there | S9 |
-| 12:35 | the station is repaired (12:20); at the next task boundary the cashier switches back: `RESERVATION_RELEASED so:15873:50 (switched station)`, `RESERVED so:15873:5` | S9 |
-| 13:13 … 15:38 | further `man_register` instances | |
+| 12:38 | the station is repaired (12:20); at the next task boundary the cashier switches back: `RESERVATION_RELEASED so:15873:50 (switched station)`, `RESERVED so:15873:5` | S9 |
+| 13:49–14:05 | second break on `so:15873:104`, then back to the register | |
+| 14:05 … 15:38 | further `man_register` instances | |
 | 15:59 | schedule ends the shift: `RESERVATION_RELEASED (shift_end)`, **`CLOCK_OUT` served=14** | S14 |
-| 16:00+ | existing mobility carries the citizen home; at home a `sit` (chair) session | S16 |
+| 16:00+ | existing mobility carries the citizen home; 16:32 `RESERVATION_RELEASED so:3440:3` closes a `sit` (chair) session at home | S16 |
 
-The cashier took no break in this day: the break-room seating added in
-interior v2 is used by 51 cashiers city-wide before 14:00, but 297's
-break-due check fires only at a task boundary and its long queue window
-coincided with one. Honest note, not a gate.
+Breaks are deferred while customers are queued at the cashier's own
+station (a break precondition), which is why both of 297's breaks fall in
+service-free windows.
 
 Second thread, the **cleaner**: citizen 243 at workplace 4587 (office/retail
 mix): `fetch_supplies` at storage `so:4587:1` (07:37) → `clean_object`
@@ -123,7 +154,7 @@ query can tell 87 (on a break seat), 117/135/247 (at desks
 
 ## 6. Contention
 
-* **Natural**: 9 `RESERVATION_DENIED` city-wide over the day (desk workers
+* **Natural**: 13 `RESERVATION_DENIED` city-wide over the day (desk workers
   whose preferred desk is held); each resolved by an alternative station or
   a 30 s bounded wait in the role's zone; 4260 `WAIT` events are workers
   with nothing doable (mostly cleaners with everything clean) standing in
@@ -137,7 +168,7 @@ query can tell 87 (on a break seat), 117/135/247 (at desks
 ## 7. Mutable world state ("what did this employee accomplish?")
 
 `shift_log` per completed session: 297 served 14; 243 cleaned 11; 42
-completed 1 document before its health override. City-wide in the day: 926
+completed 1 document before its health override. City-wide in the day: 931
 `STATE_CHANGE` events — registers' `served`, desks' `documents_done`,
 objects `dirty → False` by cleaners (and `→ True` by use, a 0.30 hash roll),
 shelf `stock` depleted by browsing customers and restored by stockers,
@@ -146,22 +177,23 @@ deltas and restored identically (S20–S22).
 
 ## 8. Interruption
 
-Seven `WORK_INTERRUPTED` events in the certification day, all caused by
+Eight `WORK_INTERRUPTED` events in the certification day, all caused by
 existing systems:
 
 | time | citizen | reason | at |
 |---|---|---|---|
 | 09:54 | 42 | `health:do_activity` (symptom onset → health goal) | desk_work at `so:2318:9179` |
+| 10:50 | 127 | `emergency:flee` (an undead entered the shop) | man_register at `so:6255:50` |
 | 11:05 | 247 | `health:do_activity` | take_break at `so:2318:9183` |
 | 14:14 | 117 | `health:do_activity` | desk_work at `so:2318:9185` |
 | 14:20 | 87, 135, 170 | `disruption:do_activity` (WORKPLACE_DISRUPTED 2318) | desk / break seat / cleaning |
-| 15:39 | 191 | `emergency:flee` (attacked by an undead) | inspect at `so:4075:449` |
+| 15:39 | 191 | `emergency:flee` (attacked by an undead) | inspect at `so:4075:455` |
 
 In each case the executor left `DOING_ACTIVITY` under the planner's new
 goal, every hold was released at that instant (S15: 0 leaks), and the
 planner/executor owned what followed (S16: 42 later `trip_failed` under an
 emergency goal as an undead, 191 became a corpse, the disrupted workers went
-home). Object unavailability (S9) and shift end (148 `CLOCK_OUT`) are the
+home). Object unavailability (S9) and shift end (147 `CLOCK_OUT`) are the
 other two interruption classes.
 
 ## 9. Outbreak interaction
@@ -275,8 +307,8 @@ city-name branching exists (S28 greps the layer and the tools).
 
 | role | pattern stressed | what the day showed |
 |---|---|---|
-| cashier (52 citizens) | fixed exclusive station, customer queue, break seat (v2), substitution when the station breaks | 297: 14 served, station switch and return; 51 cashier breaks city-wide |
-| desk_worker (31) | selected free workstation, long tasks, contention on desks, breaks | 2318's five desk workers on five desks, `documents_done` increments, 9 denials resolved |
+| cashier (52 citizens) | fixed exclusive station, customer queue, break seat, substitution when the station breaks | 297: 14 served, two breaks on a back-room chair, station switch and return; 238 `BREAK_START` city-wide |
+| desk_worker (31) | selected free workstation, long tasks, contention on desks, breaks | 2318's five desk workers on five desks, `documents_done` increments, 13 denials resolved |
 | cleaner (118) | dynamic target selection over many objects, carrying supplies between storage and target, state change | 243: 190 tasks over 18 objects, 11 cleaned |
 | stocker (10, data-driven fourth) | retrieve goods from a rack, restock the most depleted shelf | 134 shelf stock changes city-wide |
 | customer (errand-goers) and resident (sleep/sit) | the same affordance layer outside work | 286 customer arrivals, 31 served, 297 residents on beds/chairs at 06:00 |
@@ -293,18 +325,18 @@ in the manifest carry the authoritative rows at capture time.
 | `01_walk_to_station.png` | the same room seconds later, the worker mid-floor between shelf rows walking to `so:12013:5` |
 | `02_using_station.png` | the worker at the register mesh, tinted with the `using` look, a gold holder ring at the station |
 | `03_service_interaction.png` | the register at the instant the SERVED event was drained; the cashier at the station. The customer body is not distinguishable in this frame — the service is evidenced by the event, not the pixels |
-| `04_task_switch.png` | **NOT REACHED**: the cashier kept `man_register` for the captured hour; the frame shows it at the register. Task switching is evidenced by the cleaner's trace (§5) and by `05_contention.png`, not by this frame |
-| `05_contention.png` | after `working=false`: the worker has left the register and the holder ring has moved to the substitute station on the right |
+| `04_task_switch.png` | after the cashier's task switched from `man_register` to `take_break` (object `so:12013:488`, phase `to_object`): the worker's body is on the sales floor between the gondolas, away from the register, walking toward the back room. The frame shows a body in motion; the task order itself is the authority's row in the manifest, not something the pixels prove |
+| `05_contention.png` | `so:12013:488` set `working=false` while held: the authority evicted the worker (`OBJECT_UNAVAILABLE`) and re-targeted it to `so:12013:494`; the frame, captured within the same second, is nearly identical to `04` (the body has barely moved). Substitution is evidenced by the manifest row and `GET_ROOMS` holders, not by this frame |
 | `06_interruption.png` | the back room after the shift ended: no interior body for the worker (it is outside), matching `state on_foot` |
 | `07_leaving.png` | the exterior parking lot; **the body exists but is not visible** — exterior bodies sit below this lot's surface mesh because the scene never calls `set_ground_y` (pre-existing, §19) |
-| `08_after_promotion.png` | two bodies in the room: the re-promoted worker highlighted at its station with the ring, and a co-worker |
+| `08_after_promotion.png` | the back room (chairs, racks, lockers) after 10 game minutes with the player 1.5 km away and no body: the worker's body is recreated at the authoritative interior pose (0.00 m from it) on chair `so:12013:494`, with its gold holder ring |
 
 ## 18. Multi-agent interaction
 
 Customers are ordinary citizens on their schedule's errand slot whose errand
 destination is a staffed shop open at that hour. In the certification day 14
 of them queued at 297's register and were served one by one (~90 s each);
-city-wide 84 queued, 31 served, 117 left (shops closed for the evening
+city-wide 99 queued, 31 served, 116 left (shops closed for the evening
 errands of day workers, a cashier on break, or the customer's schedule moving
 it on — each `CUSTOMER_UNSERVED` carries the reason). A shop whose workers are
 present but no register is staffed is flagged `WORKPLACE_REDUCED_FUNCTION`
@@ -323,8 +355,8 @@ present but no register is staffed is flagged `WORKPLACE_REDUCED_FUNCTION`
   contacts.
 * **Customers only via the errand slot**; day workers' errands fall outside
   shop hours, so most of the day's customers are home-anchored citizens.
-* **Cashier breaks depend on a task boundary**; a long service window can
-  postpone one past the shift.
+* **Cashier breaks are deferred while customers are queued** at the till; a
+  shop with a continuous queue would postpone a break past the shift.
 * **No inventory**: carrying is a flag; goods/supplies have quantities on
   objects only.
 * **Mobility mass-departure spike** (10.9 s in the 07:30 game minute,
