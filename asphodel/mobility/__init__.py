@@ -11,6 +11,11 @@ from .segments import (
 )
 from .obstructions import MobilityObstruction, ObstructionKind
 from .graph import MobilityGraph, Route
+from .bake import (
+    STREETMAP_VERSION,
+    streetmap_from_polylines,
+    streetmap_from_world_source,
+)
 
 __all__ = [
     "Mode",
@@ -23,4 +28,7 @@ __all__ = [
     "ObstructionKind",
     "MobilityGraph",
     "Route",
+    "STREETMAP_VERSION",
+    "streetmap_from_polylines",
+    "streetmap_from_world_source",
 ]

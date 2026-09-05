@@ -51,11 +51,24 @@ _CLASS_DEFAULTS = {
     "secondary": (14.0, 1, {Mode.FOOT, Mode.BICYCLE, Mode.CAR, Mode.HEAVY, Mode.EMERGENCY}),
     "tertiary": (12.0, 1, {Mode.FOOT, Mode.BICYCLE, Mode.CAR, Mode.HEAVY, Mode.EMERGENCY}),
     "residential": (8.0, 1, {Mode.FOOT, Mode.BICYCLE, Mode.CAR, Mode.EMERGENCY}),
+    # Overture's "unclassified" is a public through road below tertiary — a
+    # minor road, not an unknown one; it carries the same traffic residential
+    # does but is not a housing street, so it keeps a slightly higher limit.
+    "unclassified": (10.0, 1,
+                     {Mode.FOOT, Mode.BICYCLE, Mode.CAR, Mode.HEAVY, Mode.EMERGENCY}),
+    "living_street": (5.5, 1, {Mode.FOOT, Mode.BICYCLE, Mode.CAR, Mode.EMERGENCY}),
     "service": (6.0, 1, {Mode.FOOT, Mode.BICYCLE, Mode.CAR, Mode.EMERGENCY}),
+    "track": (6.0, 1, {Mode.FOOT, Mode.BICYCLE, Mode.CAR, Mode.EMERGENCY}),
     "footway": (1.4, 0, {Mode.FOOT, Mode.BICYCLE}),
     "path": (1.4, 0, {Mode.FOOT, Mode.BICYCLE}),
+    "steps": (0.6, 0, {Mode.FOOT}),          # a stairway: on foot only, and slowly
+    "cycleway": (4.5, 0, {Mode.FOOT, Mode.BICYCLE}),
+    "bridleway": (1.4, 0, {Mode.FOOT}),
     "sidewalk": (1.4, 0, {Mode.FOOT}),
     "pedestrian": (1.4, 0, {Mode.FOOT, Mode.BICYCLE}),
+    # Overture "unknown" is an un-tagged carriageway, not a non-road: it behaves
+    # like a residential street so the network does not fragment around it.
+    "unknown": (8.0, 1, {Mode.FOOT, Mode.BICYCLE, Mode.CAR, Mode.EMERGENCY}),
     "connector": (1.4, 0, {Mode.FOOT, Mode.BICYCLE, Mode.CAR, Mode.HEAVY, Mode.EMERGENCY}),
 }
 
