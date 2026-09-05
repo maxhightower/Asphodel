@@ -17,6 +17,8 @@ import json
 import math
 import os
 import random
+
+import numpy as np
 from typing import Optional
 
 from .region_bundle import augment_bundle
@@ -158,6 +160,22 @@ def build_synth_city_bundle(
     # Canonical {version, buildings:[{poly,height}]} footprints, road-aware.
     footprints = bld.generate_procedural(zones, seed=seed, roads=polylines)
     footprints["source"] = "procedural-synthetic"
+    # Workplace categories by zone density (the same zoning mix the legacy
+    # bake used), so the synthetic city has shops, offices, clinics and
+    # schools for citizens to work in — not 639 houses. Deterministic.
+    from .osm_city.world_from_osm import _ZONING, _category_weights
+    zrng = np.random.default_rng(seed + 101)
+    zone_of = {}
+    for z in zones:
+        zone_of[(z["row"], z["col"])] = z
+    for b in footprints["buildings"]:
+        cx = sum(p[0] for p in b["poly"]) / len(b["poly"])
+        cz = sum(p[1] for p in b["poly"]) / len(b["poly"])
+        c = int((cx - x0) // zone_m); r = int((cz - z0) // zone_m)
+        z = zone_of.get((min(rows - 1, max(0, r)), min(cols - 1, max(0, c))))
+        density = float(z["density"]) if z else 0.0
+        w = _category_weights(density)
+        b["cat"] = _ZONING[int(zrng.choice(len(_ZONING), p=w / w.sum()))]
     bnd._write_json(os.path.join(out_dir, "buildings.json"), footprints)
     write_citizens_from_bundle(out_dir, name, n=60, seed=seed)
 

@@ -24,10 +24,10 @@
     "rows": 16
   },
   "mobility": {
-    "connected_components": 2,
+    "connected_components": 1,
     "local_floor": 0.1,
-    "n_edges": 419,
-    "source": "roads"
+    "n_edges": 513,
+    "source": "streetmap (world_source/overture@2026-08-19.0)"
   },
   "n_days": 90.0,
   "n_ticks": 360,

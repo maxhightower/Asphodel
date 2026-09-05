@@ -277,7 +277,7 @@
     "profile": "Austin",
     "shift": "day",
     "signature_dilemma": "Cut through the gridlock everyone else is trapped in, or get off the road entirely.",
-    "signature_location": "on a city street, mid-commute",
+    "signature_location": "on the motorway, mid-commute",
     "signature_situation": "The road seizes solid around you, but you're not in a car -- you can still move.",
     "signature_title": "Faster than the jam",
     "situation_kind": "travel",
@@ -286,8 +286,8 @@
     "spawn_context": "commute",
     "spawn_hour": 7.9,
     "spawn_xy": [
-      859.26,
-      -2926.74
+      2024.37,
+      -2506.92
     ],
     "work_building_id": 1444,
     "work_district": "South-East",

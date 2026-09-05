@@ -108,8 +108,8 @@
     "spawn_context": "commute",
     "spawn_hour": 7.62,
     "spawn_xy": [
-      989.38,
-      357.67
+      989.47,
+      253.17
     ],
     "work_building_id": 32379,
     "work_district": "North",
@@ -277,18 +277,18 @@
     "on_duty": false,
     "profile": "San Antonio",
     "shift": "day",
-    "signature_dilemma": "Cut through the gridlock everyone else is trapped in, or get off the road entirely.",
-    "signature_location": "on a city street, mid-commute",
-    "signature_situation": "The road seizes solid around you, but you're not in a car -- you can still move.",
-    "signature_title": "Faster than the jam",
+    "signature_dilemma": "Reverse into the chaos behind you, or run from the fireball on foot.",
+    "signature_location": "on the motorway, mid-commute",
+    "signature_situation": "A fuel tanker jackknifes ahead and erupts into a wall of flame.",
+    "signature_title": "Tanker goes up",
     "situation_kind": "travel",
     "spawn_anchor": "route",
     "spawn_approx": false,
     "spawn_context": "commute",
     "spawn_hour": 7.9,
     "spawn_xy": [
-      2045.6,
-      -2372.6
+      2078.12,
+      -2420.32
     ],
     "work_building_id": 496,
     "work_district": "South-East",
@@ -349,8 +349,8 @@
     "spawn_context": "commute",
     "spawn_hour": 3.54,
     "spawn_xy": [
-      -2698.8,
-      1829.58
+      -2390.76,
+      1573.26
     ],
     "work_building_id": 2070,
     "work_district": "South",
@@ -3045,18 +3045,18 @@
     "on_duty": false,
     "profile": "San Antonio",
     "shift": "night",
-    "signature_dilemma": "Sit tight in a metal box, or abandon the car and go on foot.",
-    "signature_location": "on a city street, mid-commute",
-    "signature_situation": "Bumper to bumper, then nobody is moving at all.",
-    "signature_title": "Total gridlock",
+    "signature_dilemma": "Reverse into the chaos behind you, or run from the fireball on foot.",
+    "signature_location": "on the motorway, mid-commute",
+    "signature_situation": "A fuel tanker jackknifes ahead and erupts into a wall of flame.",
+    "signature_title": "Tanker goes up",
     "situation_kind": "travel",
     "spawn_anchor": "route",
     "spawn_approx": false,
     "spawn_context": "commute",
     "spawn_hour": 3.81,
     "spawn_xy": [
-      1054.97,
-      -1478.54
+      1045.93,
+      -1468.41
     ],
     "work_building_id": 1087,
     "work_district": "South-East",

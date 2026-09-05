@@ -3462,8 +3462,10 @@
       "lanes": 2,
       "length": 76.65,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -3961,8 +3963,10 @@
       "lanes": 2,
       "length": 145.79,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -5552,8 +5556,10 @@
       "lanes": 2,
       "length": 178.43,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -5994,8 +6000,10 @@
       "lanes": 2,
       "length": 1459.17,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -6834,8 +6842,10 @@
       "lanes": 2,
       "length": 193.47,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -7503,8 +7513,10 @@
       "lanes": 2,
       "length": 105.89,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -8503,8 +8515,10 @@
       "lanes": 2,
       "length": 198.33,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -8554,8 +8568,10 @@
       "lanes": 2,
       "length": 151.75,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -10002,8 +10018,10 @@
       "lanes": 2,
       "length": 136.41,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -10594,8 +10612,10 @@
       "lanes": 2,
       "length": 110.16,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -10619,8 +10639,10 @@
       "lanes": 2,
       "length": 95.34,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -10724,8 +10746,10 @@
       "lanes": 2,
       "length": 506.62,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -10757,8 +10781,10 @@
       "lanes": 2,
       "length": 676.31,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -10798,8 +10824,10 @@
       "lanes": 2,
       "length": 48.77,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -10827,8 +10855,10 @@
       "lanes": 2,
       "length": 24.83,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -10852,8 +10882,10 @@
       "lanes": 2,
       "length": 7.57,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -10877,8 +10909,10 @@
       "lanes": 2,
       "length": 23.33,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -10902,8 +10936,10 @@
       "lanes": 2,
       "length": 38.45,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -10927,8 +10963,10 @@
       "lanes": 2,
       "length": 37.84,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -10956,8 +10994,10 @@
       "lanes": 2,
       "length": 42.23,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -10985,8 +11025,10 @@
       "lanes": 2,
       "length": 67.03,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -11010,8 +11052,10 @@
       "lanes": 2,
       "length": 29.74,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -11035,8 +11079,10 @@
       "lanes": 2,
       "length": 614.72,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -11072,8 +11118,10 @@
       "lanes": 2,
       "length": 19.23,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -11101,8 +11149,10 @@
       "lanes": 2,
       "length": 58.8,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -11130,8 +11180,10 @@
       "lanes": 2,
       "length": 6.67,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -11159,8 +11211,10 @@
       "lanes": 2,
       "length": 15.81,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -11188,8 +11242,10 @@
       "lanes": 2,
       "length": 76.34,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -11213,8 +11269,10 @@
       "lanes": 2,
       "length": 4.27,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -11238,8 +11296,10 @@
       "lanes": 2,
       "length": 67.58,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -11691,8 +11751,10 @@
       "lanes": 2,
       "length": 92.67,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -11742,8 +11804,10 @@
       "lanes": 2,
       "length": 45.7,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -11767,8 +11831,10 @@
       "lanes": 2,
       "length": 50.16,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -11796,8 +11862,10 @@
       "lanes": 2,
       "length": 74.87,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -13887,8 +13955,10 @@
       "lanes": 2,
       "length": 181.71,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15517,8 +15587,10 @@
       "lanes": 2,
       "length": 37.81,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15542,8 +15614,10 @@
       "lanes": 2,
       "length": 34.71,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15567,8 +15641,10 @@
       "lanes": 2,
       "length": 13.14,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15592,8 +15668,10 @@
       "lanes": 2,
       "length": 20.79,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15617,8 +15695,10 @@
       "lanes": 2,
       "length": 8.1,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15642,8 +15722,10 @@
       "lanes": 2,
       "length": 9.02,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15667,8 +15749,10 @@
       "lanes": 2,
       "length": 33.87,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15692,8 +15776,10 @@
       "lanes": 2,
       "length": 11.76,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15717,8 +15803,10 @@
       "lanes": 2,
       "length": 382.15,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15750,8 +15838,10 @@
       "lanes": 2,
       "length": 26.79,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15779,8 +15869,10 @@
       "lanes": 2,
       "length": 10.89,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15804,8 +15896,10 @@
       "lanes": 2,
       "length": 22.17,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15829,8 +15923,10 @@
       "lanes": 2,
       "length": 16.78,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15854,8 +15950,10 @@
       "lanes": 2,
       "length": 11.01,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15879,8 +15977,10 @@
       "lanes": 2,
       "length": 21.68,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15904,8 +16004,10 @@
       "lanes": 2,
       "length": 10.07,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -15929,8 +16031,10 @@
       "lanes": 2,
       "length": 30.81,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -17984,8 +18088,10 @@
       "lanes": 2,
       "length": 78.39,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -18906,8 +19012,10 @@
       "lanes": 2,
       "length": 84.37,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -21664,8 +21772,10 @@
       "lanes": 2,
       "length": 49.89,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -22218,8 +22328,10 @@
       "lanes": 2,
       "length": 11.08,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -22243,8 +22355,10 @@
       "lanes": 2,
       "length": 86.83,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -22268,8 +22382,10 @@
       "lanes": 2,
       "length": 69.35,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -22412,8 +22528,10 @@
       "lanes": 2,
       "length": 515.65,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -22453,8 +22571,10 @@
       "lanes": 2,
       "length": 72.56,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -22478,8 +22598,10 @@
       "lanes": 2,
       "length": 91.33,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -22503,8 +22625,10 @@
       "lanes": 2,
       "length": 74.98,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -22532,8 +22656,10 @@
       "lanes": 2,
       "length": 100.56,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -22561,8 +22687,10 @@
       "lanes": 2,
       "length": 47.54,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -22954,8 +23082,10 @@
       "lanes": 2,
       "length": 84.4,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -25518,8 +25648,10 @@
       "lanes": 2,
       "length": 74.69,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -26538,8 +26670,10 @@
       "lanes": 2,
       "length": 85.67,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -26589,8 +26723,10 @@
       "lanes": 2,
       "length": 84.64,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -27367,8 +27503,10 @@
       "lanes": 2,
       "length": 105.45,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -28292,8 +28430,10 @@
       "lanes": 2,
       "length": 47.58,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -29914,8 +30054,10 @@
       "lanes": 2,
       "length": 71.33,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -30152,8 +30294,10 @@
       "lanes": 2,
       "length": 129.95,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -30185,8 +30329,10 @@
       "lanes": 2,
       "length": 43.48,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -30210,8 +30356,10 @@
       "lanes": 2,
       "length": 182.9,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -30433,8 +30581,10 @@
       "lanes": 2,
       "length": 29.85,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -30668,8 +30818,10 @@
       "lanes": 2,
       "length": 78.63,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -30719,8 +30871,10 @@
       "lanes": 2,
       "length": 126.42,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -32150,8 +32304,10 @@
       "lanes": 2,
       "length": 63.25,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -33686,8 +33842,10 @@
       "lanes": 2,
       "length": 210.89,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [
@@ -33932,8 +34090,10 @@
       "lanes": 2,
       "length": 70.23,
       "modes": [
+        "bicycle",
         "car",
         "emergency",
+        "foot",
         "heavy"
       ],
       "pts": [

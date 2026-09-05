@@ -1,18 +1,77 @@
 [
   {
     "age": 53,
-    "current_activity": "leisure",
-    "current_location": "North residential 521",
-    "environment": "residential",
-    "home_building_id": 521,
-    "home_district": "North",
+    "current_activity": "errand",
+    "current_location": "North-East commercial 552",
+    "environment": "retail",
+    "home_building_id": 550,
+    "home_district": "North-East",
     "home_xy": [
-      863.74,
-      707.04
+      1667.33,
+      625.57
     ],
     "inventory": {
       "cash": 1,
-      "keys": 2,
+      "id_card": 1,
+      "phone": 2,
+      "wallet": 1,
+      "water_bottle": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "cash": 1,
+        "id_card": 1,
+        "phone": 2,
+        "wallet": 1,
+        "water_bottle": 1
+      },
+      "vehicle": {},
+      "workplace": {
+        "laptop": 1,
+        "usb_drive": 1
+      }
+    },
+    "name": "Leo Johnson",
+    "occupation": "it_support",
+    "on_duty": false,
+    "profile": "Boulder, Colorado",
+    "shift": "day",
+    "signature_dilemma": "Make for home, or shelter where you stand.",
+    "signature_location": "North-East commercial 552",
+    "signature_situation": "You're out at North-East commercial 552 when the collapse comes -- in the open, among strangers.",
+    "signature_title": "Caught out in public",
+    "situation_kind": "generic",
+    "spawn_anchor": "legacy",
+    "spawn_approx": true,
+    "spawn_context": "errand",
+    "spawn_hour": 16.82,
+    "spawn_xy": [
+      1667.33,
+      625.57
+    ],
+    "work_building_id": 430,
+    "work_district": "Old Town",
+    "work_xy": [
+      1028.82,
+      303.8
+    ]
+  },
+  {
+    "age": 37,
+    "current_activity": "sleep",
+    "current_location": "South residential 94",
+    "environment": "residential",
+    "home_building_id": 94,
+    "home_district": "South",
+    "home_xy": [
+      850.88,
+      -894.67
+    ],
+    "inventory": {
+      "face_mask": 1,
+      "keys": 1,
+      "name_tag": 1,
       "phone": 1,
       "transit_pass": 1,
       "wallet": 1,
@@ -21,160 +80,115 @@
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "cash": 1,
-        "keys": 2,
+        "face_mask": 1,
+        "keys": 1,
+        "name_tag": 1,
         "phone": 1,
         "transit_pass": 1,
         "wallet": 1,
         "water_bottle": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "apron": 1,
+        "box_cutter": 1
+      }
     },
-    "name": "Leo Johnson",
-    "occupation": "unemployed",
+    "name": "Carlos Patel",
+    "occupation": "grocery_clerk",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
-    "situation_kind": "signature",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "South residential 94",
+    "signature_situation": "You're sleep at South residential 94 -- not on shift when the collapse comes. Your grocery_clerk's edge is back at the shop floor of a supermarket.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 14.72,
+    "spawn_hour": 6.03,
     "spawn_xy": [
-      863.74,
-      707.04
+      850.88,
+      -894.67
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 145,
+    "work_district": "West",
+    "work_xy": [
+      -97.36,
+      -496.69
+    ]
   },
   {
-    "age": 37,
-    "current_activity": "leisure",
-    "current_location": "West residential 133",
+    "age": 45,
+    "current_activity": "sleep",
+    "current_location": "East residential 444",
     "environment": "residential",
-    "home_building_id": 133,
-    "home_district": "West",
+    "home_building_id": 444,
+    "home_district": "East",
     "home_xy": [
-      -489.01,
-      -331.71
+      1668.51,
+      215.97
     ],
     "inventory": {
-      "face_mask": 1,
-      "keys": 2,
+      "cash": 1,
+      "face_mask": 4,
+      "id_badge": 1,
       "phone": 2,
-      "shopping_bag": 1,
-      "transit_pass": 1,
-      "wallet": 1,
+      "snack": 1,
       "water_bottle": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "face_mask": 1,
-        "keys": 2,
+        "cash": 1,
+        "face_mask": 4,
+        "id_badge": 1,
         "phone": 2,
-        "shopping_bag": 1,
-        "transit_pass": 1,
-        "wallet": 1,
+        "snack": 1,
         "water_bottle": 1
       },
       "vehicle": {},
-      "workplace": {}
-    },
-    "name": "Carlos Patel",
-    "occupation": "homemaker",
-    "on_duty": false,
-    "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
-    "situation_kind": "signature",
-    "spawn_anchor": "legacy",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 19.16,
-    "spawn_xy": [
-      -489.01,
-      -331.71
-    ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
-  },
-  {
-    "age": 45,
-    "current_activity": "sleep",
-    "current_location": "Old Town residential 414",
-    "environment": "residential",
-    "home_building_id": 414,
-    "home_district": "Old Town",
-    "home_xy": [
-      615.38,
-      373.91
-    ],
-    "inventory": {
-      "cash": 1,
-      "face_mask": 1,
-      "keys": 2,
-      "phone": 2,
-      "shopping_bag": 1,
-      "transit_pass": 1,
-      "wallet": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "cash": 1,
-        "face_mask": 1,
-        "keys": 2,
-        "phone": 2,
-        "shopping_bag": 1,
-        "transit_pass": 1,
-        "wallet": 1
-      },
-      "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "pen_light": 1,
+        "scrubs": 1
+      }
     },
     "name": "Leo Okafor",
-    "occupation": "homemaker",
+    "occupation": "nurse",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
-    "situation_kind": "signature",
+    "shift": "night",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "East residential 444",
+    "signature_situation": "You're sleep at East residential 444 -- not on shift when the collapse comes. Your nurse's edge is back at the hospital floor at shift change.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 3.34,
+    "spawn_hour": 8.29,
     "spawn_xy": [
-      615.38,
-      373.91
+      1668.51,
+      215.97
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 332,
+    "work_district": "East",
+    "work_xy": [
+      1572.4,
+      -101.92
+    ]
   },
   {
     "age": 75,
     "current_activity": "sleep",
-    "current_location": "Old Town residential 321",
+    "current_location": "West residential 354",
     "environment": "residential",
-    "home_building_id": 321,
-    "home_district": "Old Town",
+    "home_building_id": 354,
+    "home_district": "West",
     "home_xy": [
-      1261.37,
-      67.17
+      -491.7,
+      225.33
     ],
     "inventory": {
       "cash": 1,
@@ -216,8 +230,8 @@
     "spawn_context": "home",
     "spawn_hour": 2.53,
     "spawn_xy": [
-      1261.37,
-      67.17
+      -491.7,
+      225.33
     ],
     "work_building_id": null,
     "work_district": "",
@@ -226,115 +240,133 @@
   {
     "age": 51,
     "current_activity": "sleep",
-    "current_location": "North residential 505",
+    "current_location": "North residential 514",
     "environment": "residential",
-    "home_building_id": 505,
+    "home_building_id": 514,
     "home_district": "North",
     "home_xy": [
-      225.03,
-      772.32
+      698.54,
+      619.43
     ],
     "inventory": {
       "cash": 1,
       "face_mask": 1,
-      "keys": 2,
-      "phone": 2,
-      "shopping_bag": 1,
-      "snack": 1
+      "name_tag": 1,
+      "phone": 1,
+      "transit_pass": 1,
+      "wallet": 1,
+      "water_bottle": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "cash": 1,
         "face_mask": 1,
-        "keys": 2,
-        "phone": 2,
-        "shopping_bag": 1,
-        "snack": 1
+        "name_tag": 1,
+        "phone": 1,
+        "transit_pass": 1,
+        "wallet": 1,
+        "water_bottle": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "apron": 1
+      }
     },
     "name": "Leo Cohen",
-    "occupation": "homemaker",
+    "occupation": "barista",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
-    "situation_kind": "signature",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "North residential 514",
+    "signature_situation": "You're sleep at North residential 514 -- not on shift when the collapse comes. Your barista's edge is back at a caf\u00e9.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 2.37,
     "spawn_xy": [
-      225.03,
-      772.32
+      698.54,
+      619.43
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 457,
+    "work_district": "East",
+    "work_xy": [
+      1974.39,
+      222.24
+    ]
   },
   {
     "age": 34,
-    "current_activity": "leisure",
-    "current_location": "West residential 235",
-    "environment": "residential",
-    "home_building_id": 235,
-    "home_district": "West",
+    "current_activity": "work",
+    "current_location": "South commercial 74",
+    "environment": "retail",
+    "home_building_id": 216,
+    "home_district": "East",
     "home_xy": [
-      -1054.99,
-      50.54
+      1426.3,
+      -331.94
     ],
     "inventory": {
-      "keys": 2,
-      "phone": 1,
+      "backpack": 1,
+      "cash": 1,
+      "face_mask": 1,
+      "lock": 1,
+      "phone": 2,
+      "scanner": 1,
       "transit_pass": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "keys": 2,
-        "phone": 1,
+        "backpack": 1,
+        "cash": 1,
+        "face_mask": 1,
+        "lock": 1,
+        "phone": 2,
+        "scanner": 1,
         "transit_pass": 1
       },
       "vehicle": {},
       "workplace": {}
     },
     "name": "Carlos Park",
-    "occupation": "unemployed",
-    "on_duty": false,
+    "occupation": "courier",
+    "on_duty": true,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
+    "shift": "day",
+    "signature_dilemma": "Outrun the gridlock everyone else is trapped in.",
+    "signature_location": "weaving through traffic on a bike",
+    "signature_situation": "You're the only thing moving faster than the panic itself.",
+    "signature_title": "Faster than the panic",
     "situation_kind": "signature",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 9.15,
+    "spawn_context": "workplace",
+    "spawn_hour": 9.54,
     "spawn_xy": [
-      -1054.99,
-      50.54
+      379.36,
+      -982.99
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 74,
+    "work_district": "South",
+    "work_xy": [
+      379.36,
+      -982.99
+    ]
   },
   {
     "age": 4,
     "current_activity": "sleep",
-    "current_location": "North residential 599",
+    "current_location": "North residential 607",
     "environment": "residential",
-    "home_building_id": 599,
+    "home_building_id": 607,
     "home_district": "North",
     "home_xy": [
-      611.36,
-      1269.85
+      949.51,
+      1184.89
     ],
     "inventory": {
       "backpack": 1,
@@ -370,8 +402,8 @@
     "spawn_context": "home",
     "spawn_hour": 0.31,
     "spawn_xy": [
-      611.36,
-      1269.85
+      949.51,
+      1184.89
     ],
     "work_building_id": null,
     "work_district": "",
@@ -379,19 +411,18 @@
   },
   {
     "age": 34,
-    "current_activity": "sleep",
-    "current_location": "West residential 358",
+    "current_activity": "leisure",
+    "current_location": "West residential 377",
     "environment": "residential",
-    "home_building_id": 358,
+    "home_building_id": 377,
     "home_district": "West",
     "home_xy": [
-      -505.61,
-      302.82
+      54.77,
+      381.96
     ],
     "inventory": {
+      "id_badge": 1,
       "keys": 2,
-      "phone": 1,
-      "shopping_bag": 1,
       "snack": 1,
       "transit_pass": 1,
       "water_bottle": 1
@@ -399,160 +430,170 @@
     "inventory_scopes": {
       "home": {},
       "on_person": {
+        "id_badge": 1,
         "keys": 2,
-        "phone": 1,
-        "shopping_bag": 1,
         "snack": 1,
         "transit_pass": 1,
         "water_bottle": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "ticket_machine": 1
+      }
     },
     "name": "Carlos Costa",
-    "occupation": "homemaker",
+    "occupation": "bus_driver",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
-    "situation_kind": "signature",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "West residential 377",
+    "signature_situation": "You're leisure at West residential 377 -- not on shift when the collapse comes. Your bus_driver's edge is back at behind the wheel of a full bus.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
     "spawn_hour": 7.03,
     "spawn_xy": [
-      -505.61,
-      302.82
+      54.77,
+      381.96
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 333,
+    "work_district": "East",
+    "work_xy": [
+      1668.01,
+      -27.38
+    ]
   },
   {
     "age": 31,
-    "current_activity": "leisure",
-    "current_location": "East residential 209",
-    "environment": "residential",
-    "home_building_id": 209,
-    "home_district": "East",
+    "current_activity": "work",
+    "current_location": "West medical 367",
+    "environment": "medical",
+    "home_building_id": 205,
+    "home_district": "Old Town",
     "home_xy": [
-      1416.0,
-      -577.32
+      1260.97,
+      -345.36
     ],
     "inventory": {
       "cash": 1,
-      "face_mask": 1,
+      "face_mask": 6,
+      "id_badge": 1,
       "keys": 1,
-      "phone": 1,
-      "shopping_bag": 1,
-      "transit_pass": 1,
-      "water_bottle": 1
+      "radio": 1,
+      "snack": 1,
+      "trauma_kit": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "cash": 1,
-        "face_mask": 1,
+        "face_mask": 6,
+        "id_badge": 1,
         "keys": 1,
-        "phone": 1,
-        "shopping_bag": 1,
-        "transit_pass": 1,
-        "water_bottle": 1
+        "radio": 1,
+        "snack": 1,
+        "trauma_kit": 1
       },
       "vehicle": {},
       "workplace": {}
     },
     "name": "Leo Silva",
-    "occupation": "homemaker",
-    "on_duty": false,
+    "occupation": "paramedic",
+    "on_duty": true,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
+    "shift": "night",
+    "signature_dilemma": "Keep answering calls into the chaos, or take the rig somewhere safe.",
+    "signature_location": "out on a callout in the ambulance",
+    "signature_situation": "The radio dissolves into overlapping mayday calls.",
+    "signature_title": "Driving toward the screaming",
     "situation_kind": "signature",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 18.59,
+    "spawn_context": "workplace",
+    "spawn_hour": 1.39,
     "spawn_xy": [
-      1416.0,
-      -577.32
+      -96.99,
+      222.53
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 367,
+    "work_district": "West",
+    "work_xy": [
+      -96.99,
+      222.53
+    ]
   },
   {
     "age": 29,
     "current_activity": "leisure",
-    "current_location": "Old Town residential 290",
+    "current_location": "Old Town residential 286",
     "environment": "residential",
-    "home_building_id": 290,
+    "home_building_id": 286,
     "home_district": "Old Town",
     "home_xy": [
-      703.68,
-      -180.21
+      453.72,
+      66.22
     ],
     "inventory": {
       "keys": 1,
-      "phone": 2,
-      "wallet": 1,
-      "water_bottle": 1
+      "phone": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "keys": 1,
-        "phone": 2,
-        "wallet": 1,
-        "water_bottle": 1
+        "phone": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "gloves": 1,
+        "tool_bag": 1,
+        "wrench": 2
+      }
     },
     "name": "Carlos Mensah",
-    "occupation": "unemployed",
+    "occupation": "plumber",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
-    "situation_kind": "signature",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "Old Town residential 286",
+    "signature_situation": "You're leisure at Old Town residential 286 -- not on shift when the collapse comes. Your plumber's edge is back at under a sink or in a basement.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 17.73,
+    "spawn_hour": 20.01,
     "spawn_xy": [
-      703.68,
-      -180.21
+      453.72,
+      66.22
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 360,
+    "work_district": "West",
+    "work_xy": [
+      -504.63,
+      372.27
+    ]
   },
   {
     "age": 52,
-    "current_activity": "leisure",
-    "current_location": "North-West residential 490",
-    "environment": "residential",
-    "home_building_id": 490,
-    "home_district": "North-West",
+    "current_activity": "work",
+    "current_location": "Old Town commercial 161",
+    "environment": "high_rise",
+    "home_building_id": 504,
+    "home_district": "North",
     "home_xy": [
-      -98.95,
-      771.97
+      468.76,
+      701.15
     ],
     "inventory": {
+      "calculator": 1,
       "face_mask": 1,
-      "keys": 1,
-      "phone": 1,
-      "shopping_bag": 1,
+      "id_card": 1,
+      "laptop": 1,
       "snack": 1,
       "transit_pass": 1,
       "wallet": 1,
@@ -561,10 +602,10 @@
     "inventory_scopes": {
       "home": {},
       "on_person": {
+        "calculator": 1,
         "face_mask": 1,
-        "keys": 1,
-        "phone": 1,
-        "shopping_bag": 1,
+        "id_card": 1,
+        "laptop": 1,
         "snack": 1,
         "transit_pass": 1,
         "wallet": 1,
@@ -574,37 +615,40 @@
       "workplace": {}
     },
     "name": "Leo Khan",
-    "occupation": "homemaker",
-    "on_duty": false,
+    "occupation": "accountant",
+    "on_duty": true,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
+    "shift": "day",
+    "signature_dilemma": "Wait it out in a safe building, or commit to the roads.",
+    "signature_location": "an office",
+    "signature_situation": "The screens lock up and the floor empties around your desk.",
+    "signature_title": "The spreadsheets freeze",
     "situation_kind": "signature",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 8.19,
+    "spawn_context": "workplace",
+    "spawn_hour": 10.51,
     "spawn_xy": [
-      -98.95,
-      771.97
+      453.5,
+      -580.56
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 161,
+    "work_district": "Old Town",
+    "work_xy": [
+      453.5,
+      -580.56
+    ]
   },
   {
     "age": 83,
     "current_activity": "leisure",
-    "current_location": "West residential 248",
+    "current_location": "West residential 235",
     "environment": "residential",
-    "home_building_id": 248,
+    "home_building_id": 235,
     "home_district": "West",
     "home_xy": [
-      -339.2,
-      58.45
+      -1054.99,
+      50.54
     ],
     "inventory": {
       "keys": 2,
@@ -640,8 +684,8 @@
     "spawn_context": "home",
     "spawn_hour": 14.15,
     "spawn_xy": [
-      -339.2,
-      58.45
+      -1054.99,
+      50.54
     ],
     "work_building_id": null,
     "work_district": "",
@@ -650,180 +694,82 @@
   {
     "age": 33,
     "current_activity": "leisure",
-    "current_location": "Old Town residential 394",
+    "current_location": "Old Town residential 405",
     "environment": "residential",
-    "home_building_id": 394,
+    "home_building_id": 405,
     "home_district": "Old Town",
     "home_xy": [
-      304.96,
-      374.82
+      695.14,
+      211.5
     ],
     "inventory": {
       "cash": 1,
       "face_mask": 1,
+      "id_card": 1,
       "keys": 2,
       "phone": 1,
-      "shopping_bag": 1,
+      "snack": 1,
       "transit_pass": 1,
-      "water_bottle": 1
+      "wallet": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "cash": 1,
         "face_mask": 1,
+        "id_card": 1,
         "keys": 2,
         "phone": 1,
-        "shopping_bag": 1,
+        "snack": 1,
         "transit_pass": 1,
-        "water_bottle": 1
+        "wallet": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "laptop": 1
+      }
     },
     "name": "Leo Nguyen",
-    "occupation": "homemaker",
+    "occupation": "office_worker",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
-    "situation_kind": "signature",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "Old Town residential 405",
+    "signature_situation": "You're leisure at Old Town residential 405 -- not on shift when the collapse comes. Your office_worker's edge is back at a high floor of an office tower.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 8.78,
+    "spawn_hour": 18.33,
     "spawn_xy": [
-      304.96,
-      374.82
+      695.14,
+      211.5
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 287,
+    "work_district": "Old Town",
+    "work_xy": [
+      625.11,
+      -258.24
+    ]
   },
   {
     "age": 35,
     "current_activity": "sleep",
-    "current_location": "North residential 542",
+    "current_location": "North-West residential 578",
     "environment": "residential",
-    "home_building_id": 542,
-    "home_district": "North",
+    "home_building_id": 578,
+    "home_district": "North-West",
     "home_xy": [
-      1177.7,
-      775.42
+      -259.55,
+      1265.31
     ],
     "inventory": {
       "face_mask": 1,
-      "keys": 1,
-      "phone": 2,
-      "wallet": 1,
-      "water_bottle": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "face_mask": 1,
-        "keys": 1,
-        "phone": 2,
-        "wallet": 1,
-        "water_bottle": 1
-      },
-      "vehicle": {},
-      "workplace": {}
-    },
-    "name": "Carlos Okafor",
-    "occupation": "unemployed",
-    "on_duty": false,
-    "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
-    "situation_kind": "signature",
-    "spawn_anchor": "legacy",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 7.3,
-    "spawn_xy": [
-      1177.7,
-      775.42
-    ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
-  },
-  {
-    "age": 48,
-    "current_activity": "leisure",
-    "current_location": "West residential 127",
-    "environment": "residential",
-    "home_building_id": 127,
-    "home_district": "West",
-    "home_xy": [
-      -339.41,
-      -659.58
-    ],
-    "inventory": {
-      "cash": 1,
-      "face_mask": 1,
-      "keys": 2,
+      "id_card": 1,
       "phone": 1,
-      "shopping_bag": 1,
-      "snack": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "cash": 1,
-        "face_mask": 1,
-        "keys": 2,
-        "phone": 1,
-        "shopping_bag": 1,
-        "snack": 1
-      },
-      "vehicle": {},
-      "workplace": {}
-    },
-    "name": "Leo Diallo",
-    "occupation": "homemaker",
-    "on_duty": false,
-    "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
-    "situation_kind": "signature",
-    "spawn_anchor": "legacy",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 19.21,
-    "spawn_xy": [
-      -339.41,
-      -659.58
-    ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
-  },
-  {
-    "age": 38,
-    "current_activity": "leisure",
-    "current_location": "North residential 586",
-    "environment": "residential",
-    "home_building_id": 586,
-    "home_district": "North",
-    "home_xy": [
-      221.0,
-      1176.5
-    ],
-    "inventory": {
-      "face_mask": 1,
-      "keys": 1,
-      "phone": 2,
+      "snack": 1,
       "transit_pass": 1,
       "wallet": 1
     },
@@ -831,114 +777,246 @@
       "home": {},
       "on_person": {
         "face_mask": 1,
-        "keys": 1,
-        "phone": 2,
+        "id_card": 1,
+        "phone": 1,
+        "snack": 1,
         "transit_pass": 1,
         "wallet": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "laptop": 1,
+        "usb_drive": 1
+      }
     },
-    "name": "Carlos Cohen",
-    "occupation": "unemployed",
+    "name": "Carlos Okafor",
+    "occupation": "it_support",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
-    "situation_kind": "signature",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "North-West residential 578",
+    "signature_situation": "You're sleep at North-West residential 578 -- not on shift when the collapse comes. Your it_support's edge is back at a server room.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 17.81,
+    "spawn_hour": 22.53,
     "spawn_xy": [
-      221.0,
-      1176.5
+      -259.55,
+      1265.31
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 512,
+    "work_district": "North",
+    "work_xy": [
+      458.56,
+      855.48
+    ]
   },
   {
-    "age": 57,
-    "current_activity": "sleep",
-    "current_location": "Old Town residential 269",
-    "environment": "residential",
-    "home_building_id": 269,
-    "home_district": "Old Town",
-    "home_xy": [
-      460.3,
-      -256.12
-    ],
-    "inventory": {
-      "face_mask": 1,
-      "keys": 1,
-      "phone": 2,
-      "water_bottle": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "face_mask": 1,
-        "keys": 1,
-        "phone": 2,
-        "water_bottle": 1
-      },
-      "vehicle": {},
-      "workplace": {}
-    },
-    "name": "Leo Rivera",
-    "occupation": "unemployed",
-    "on_duty": false,
-    "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
-    "situation_kind": "signature",
-    "spawn_anchor": "legacy",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 22.27,
-    "spawn_xy": [
-      460.3,
-      -256.12
-    ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
-  },
-  {
-    "age": 46,
-    "current_activity": "leisure",
-    "current_location": "South residential 103",
-    "environment": "residential",
-    "home_building_id": 103,
+    "age": 48,
+    "current_activity": "errand",
+    "current_location": "South commercial 92",
+    "environment": "retail",
+    "home_building_id": 88,
     "home_district": "South",
     "home_xy": [
-      1107.99,
-      -990.25
+      778.91,
+      -1055.51
     ],
     "inventory": {
       "cash": 1,
       "face_mask": 1,
-      "keys": 2,
-      "phone": 1,
-      "shopping_bag": 1,
-      "wallet": 1,
-      "water_bottle": 1
+      "id_card": 1,
+      "keys": 1,
+      "snack": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "cash": 1,
         "face_mask": 1,
-        "keys": 2,
+        "id_card": 1,
+        "keys": 1,
+        "snack": 1
+      },
+      "vehicle": {},
+      "workplace": {
+        "laptop": 1,
+        "notebook": 1
+      }
+    },
+    "name": "Leo Diallo",
+    "occupation": "professor",
+    "on_duty": false,
+    "profile": "Boulder, Colorado",
+    "shift": "day",
+    "signature_dilemma": "Make for home, or shelter where you stand.",
+    "signature_location": "South commercial 92",
+    "signature_situation": "You're out at South commercial 92 when the collapse comes -- in the open, among strangers.",
+    "signature_title": "Caught out in public",
+    "situation_kind": "generic",
+    "spawn_anchor": "legacy",
+    "spawn_approx": true,
+    "spawn_context": "errand",
+    "spawn_hour": 17.85,
+    "spawn_xy": [
+      778.91,
+      -1055.51
+    ],
+    "work_building_id": 516,
+    "work_district": "North",
+    "work_xy": [
+      870.08,
+      621.9
+    ]
+  },
+  {
+    "age": 38,
+    "current_activity": "leisure",
+    "current_location": "North residential 599",
+    "environment": "residential",
+    "home_building_id": 599,
+    "home_district": "North",
+    "home_xy": [
+      611.36,
+      1269.85
+    ],
+    "inventory": {
+      "backpack": 1,
+      "cash": 1,
+      "phone": 1,
+      "snack": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "backpack": 1,
+        "cash": 1,
         "phone": 1,
-        "shopping_bag": 1,
+        "snack": 1
+      },
+      "vehicle": {},
+      "workplace": {
+        "lock": 1,
+        "scanner": 1
+      }
+    },
+    "name": "Carlos Cohen",
+    "occupation": "courier",
+    "on_duty": false,
+    "profile": "Boulder, Colorado",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "North residential 599",
+    "signature_situation": "You're leisure at North residential 599 -- not on shift when the collapse comes. Your courier's edge is back at weaving through traffic on a bike.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
+    "spawn_anchor": "legacy",
+    "spawn_approx": false,
+    "spawn_context": "home",
+    "spawn_hour": 21.0,
+    "spawn_xy": [
+      611.36,
+      1269.85
+    ],
+    "work_building_id": 434,
+    "work_district": "Old Town",
+    "work_xy": [
+      1177.57,
+      374.2
+    ]
+  },
+  {
+    "age": 57,
+    "current_activity": "work",
+    "current_location": "Old Town commercial 307",
+    "environment": "high_rise",
+    "home_building_id": 260,
+    "home_district": "West",
+    "home_xy": [
+      52.41,
+      -97.68
+    ],
+    "inventory": {
+      "hi_vis": 1,
+      "keys": 1,
+      "phone": 1,
+      "scanner": 1,
+      "snack": 1,
+      "transit_pass": 1,
+      "wallet": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "hi_vis": 1,
+        "keys": 1,
+        "phone": 1,
+        "scanner": 1,
+        "snack": 1,
+        "transit_pass": 1,
+        "wallet": 1
+      },
+      "vehicle": {},
+      "workplace": {}
+    },
+    "name": "Leo Rivera",
+    "occupation": "delivery_driver",
+    "on_duty": true,
+    "profile": "Boulder, Colorado",
+    "shift": "day",
+    "signature_dilemma": "A van of unknown supplies and a head full of back roads -- use them.",
+    "signature_location": "mid-route in a loaded van",
+    "signature_situation": "Your van is full of other people's parcels on a street going still.",
+    "signature_title": "A van full of unknowns",
+    "situation_kind": "signature",
+    "spawn_anchor": "legacy",
+    "spawn_approx": false,
+    "spawn_context": "workplace",
+    "spawn_hour": 13.84,
+    "spawn_xy": [
+      1104.86,
+      -174.01
+    ],
+    "work_building_id": 307,
+    "work_district": "Old Town",
+    "work_xy": [
+      1104.86,
+      -174.01
+    ]
+  },
+  {
+    "age": 46,
+    "current_activity": "work",
+    "current_location": "West commercial 369",
+    "environment": "retail",
+    "home_building_id": 80,
+    "home_district": "South",
+    "home_xy": [
+      466.67,
+      -909.93
+    ],
+    "inventory": {
+      "apron": 1,
+      "box_cutter": 1,
+      "cash": 1,
+      "face_mask": 1,
+      "keys": 1,
+      "name_tag": 1,
+      "wallet": 1,
+      "water_bottle": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "apron": 1,
+        "box_cutter": 1,
+        "cash": 1,
+        "face_mask": 1,
+        "keys": 1,
+        "name_tag": 1,
         "wallet": 1,
         "water_bottle": 1
       },
@@ -946,43 +1024,46 @@
       "workplace": {}
     },
     "name": "Carlos Ahmed",
-    "occupation": "homemaker",
-    "on_duty": false,
+    "occupation": "grocery_clerk",
+    "on_duty": true,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
+    "shift": "day",
+    "signature_dilemma": "Defend the stockroom, or melt into the crowd with a full cart.",
+    "signature_location": "the shop floor of a supermarket",
+    "signature_situation": "The store fills with people who are no longer queuing to pay.",
+    "signature_title": "They've stopped paying",
     "situation_kind": "signature",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 20.62,
+    "spawn_context": "workplace",
+    "spawn_hour": 9.42,
     "spawn_xy": [
-      1107.99,
-      -990.25
+      65.92,
+      221.55
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 369,
+    "work_district": "West",
+    "work_xy": [
+      65.92,
+      221.55
+    ]
   },
   {
     "age": 32,
     "current_activity": "sleep",
-    "current_location": "North-West residential 477",
+    "current_location": "North residential 497",
     "environment": "residential",
-    "home_building_id": 477,
-    "home_district": "North-West",
+    "home_building_id": 497,
+    "home_district": "North",
     "home_xy": [
-      -346.12,
-      628.48
+      300.87,
+      625.76
     ],
     "inventory": {
       "cash": 1,
       "face_mask": 1,
-      "keys": 2,
-      "phone": 2,
+      "keys": 1,
+      "phone": 1,
       "snack": 1,
       "transit_pass": 1,
       "wallet": 1,
@@ -993,54 +1074,61 @@
       "on_person": {
         "cash": 1,
         "face_mask": 1,
-        "keys": 2,
-        "phone": 2,
+        "keys": 1,
+        "phone": 1,
         "snack": 1,
         "transit_pass": 1,
         "wallet": 1,
         "water_bottle": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "overalls": 1,
+        "rag": 1,
+        "tool_box": 1
+      }
     },
     "name": "Leo Brooks",
-    "occupation": "unemployed",
+    "occupation": "mechanic",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
-    "situation_kind": "signature",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "North residential 497",
+    "signature_situation": "You're sleep at North residential 497 -- not on shift when the collapse comes. Your mechanic's edge is back at a garage full of vehicles.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 6.53,
+    "spawn_hour": 1.3,
     "spawn_xy": [
-      -346.12,
-      628.48
+      300.87,
+      625.76
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 37,
+    "work_district": "South",
+    "work_xy": [
+      1105.84,
+      -1452.51
+    ]
   },
   {
     "age": 18,
-    "current_activity": "leisure",
-    "current_location": "North residential 501",
+    "current_activity": "sleep",
+    "current_location": "North residential 510",
     "environment": "residential",
-    "home_building_id": 501,
+    "home_building_id": 510,
     "home_district": "North",
     "home_xy": [
-      223.96,
-      697.67
+      217.36,
+      859.97
     ],
     "inventory": {
       "cash": 1,
       "face_mask": 1,
-      "keys": 2,
-      "phone": 1,
+      "keys": 1,
+      "name_tag": 1,
       "snack": 1,
       "water_bottle": 1
     },
@@ -1049,46 +1137,51 @@
       "on_person": {
         "cash": 1,
         "face_mask": 1,
-        "keys": 2,
-        "phone": 1,
+        "keys": 1,
+        "name_tag": 1,
         "snack": 1,
         "water_bottle": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "apron": 1
+      }
     },
     "name": "Carlos Silva",
-    "occupation": "unemployed",
+    "occupation": "barista",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
-    "situation_kind": "signature",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "North residential 510",
+    "signature_situation": "You're sleep at North residential 510 -- not on shift when the collapse comes. Your barista's edge is back at a caf\u00e9.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 18.59,
+    "spawn_hour": 5.68,
     "spawn_xy": [
-      223.96,
-      697.67
+      217.36,
+      859.97
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 128,
+    "work_district": "West",
+    "work_xy": [
+      -504.47,
+      -585.83
+    ]
   },
   {
     "age": 6,
     "current_activity": "leisure",
-    "current_location": "South residential 92",
+    "current_location": "South residential 75",
     "environment": "residential",
-    "home_building_id": 92,
+    "home_building_id": 75,
     "home_district": "South",
     "home_xy": [
-      701.86,
-      -905.46
+      469.58,
+      -981.92
     ],
     "inventory": {
       "backpack": 1,
@@ -1128,8 +1221,8 @@
     "spawn_context": "home",
     "spawn_hour": 8.01,
     "spawn_xy": [
-      701.86,
-      -905.46
+      469.58,
+      -981.92
     ],
     "work_building_id": null,
     "work_district": "",
@@ -1137,120 +1230,134 @@
   },
   {
     "age": 15,
-    "current_activity": "leisure",
-    "current_location": "East residential 453",
+    "current_activity": "sleep",
+    "current_location": "South-West residential 16",
     "environment": "residential",
-    "home_building_id": 453,
-    "home_district": "East",
+    "home_building_id": 16,
+    "home_district": "South-West",
     "home_xy": [
-      1584.92,
-      459.77
+      -181.84,
+      -1459.75
     ],
     "inventory": {
+      "backpack": 1,
       "cash": 1,
       "face_mask": 1,
+      "id_card": 1,
       "phone": 1,
-      "snack": 1,
       "wallet": 1,
       "water_bottle": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
+        "backpack": 1,
         "cash": 1,
         "face_mask": 1,
+        "id_card": 1,
         "phone": 1,
-        "snack": 1,
         "wallet": 1,
         "water_bottle": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "laptop": 1,
+        "notebook": 1
+      }
     },
     "name": "Carlos Khan",
-    "occupation": "resident",
+    "occupation": "student",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "",
-    "signature_location": "East residential 453",
-    "signature_situation": "You're leisure at East residential 453 when the collapse comes.",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "South-West residential 16",
+    "signature_situation": "You're sleep at South-West residential 16 -- not on shift when the collapse comes. Your student's edge is back at a packed lecture hall.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 6.53,
+    "spawn_hour": 3.99,
     "spawn_xy": [
-      1584.92,
-      459.77
+      -181.84,
+      -1459.75
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 404,
+    "work_district": "Old Town",
+    "work_xy": [
+      615.58,
+      219.25
+    ]
   },
   {
     "age": 47,
-    "current_activity": "leisure",
-    "current_location": "Old Town residential 439",
-    "environment": "residential",
-    "home_building_id": 439,
-    "home_district": "Old Town",
+    "current_activity": "commute",
+    "current_location": "North-West residential 474",
+    "environment": "street",
+    "home_building_id": 474,
+    "home_district": "North-West",
     "home_xy": [
-      1265.9,
-      459.15
+      -743.81,
+      788.59
     ],
     "inventory": {
       "cash": 1,
-      "face_mask": 1,
-      "keys": 1,
-      "phone": 2,
-      "transit_pass": 1
+      "id_card": 1,
+      "phone": 1,
+      "snack": 1,
+      "water_bottle": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "cash": 1,
-        "face_mask": 1,
-        "keys": 1,
-        "phone": 2,
-        "transit_pass": 1
+        "id_card": 1,
+        "phone": 1,
+        "snack": 1,
+        "water_bottle": 1
       },
-      "vehicle": {},
+      "vehicle": {
+        "laptop": 1,
+        "usb_drive": 1
+      },
       "workplace": {}
     },
     "name": "Leo Patel",
-    "occupation": "unemployed",
+    "occupation": "it_support",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
-    "situation_kind": "signature",
+    "shift": "day",
+    "signature_dilemma": "Force the doors and join the street, or stay in the herd.",
+    "signature_location": "on a city street, mid-commute",
+    "signature_situation": "Shoulder to shoulder on a bus that has stopped dead in the jam, the doors hissing against the crowd.",
+    "signature_title": "Packed transit, stopped dead",
+    "situation_kind": "travel",
     "spawn_anchor": "legacy",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 20.77,
+    "spawn_approx": true,
+    "spawn_context": "commute",
+    "spawn_hour": 16.49,
     "spawn_xy": [
-      1265.9,
-      459.15
+      428.57,
+      -87.32
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 278,
+    "work_district": "Old Town",
+    "work_xy": [
+      455.91,
+      -107.75
+    ]
   },
   {
     "age": 84,
     "current_activity": "sleep",
-    "current_location": "East residential 454",
+    "current_location": "North-West residential 486",
     "environment": "residential",
-    "home_building_id": 454,
-    "home_district": "East",
+    "home_building_id": 486,
+    "home_district": "North-West",
     "home_xy": [
-      1653.98,
-      453.83
+      -101.12,
+      612.27
     ],
     "inventory": {
       "cash": 1,
@@ -1294,8 +1401,8 @@
     "spawn_context": "home",
     "spawn_hour": 2.98,
     "spawn_xy": [
-      1653.98,
-      453.83
+      -101.12,
+      612.27
     ],
     "work_building_id": null,
     "work_district": "",
@@ -1303,69 +1410,81 @@
   },
   {
     "age": 17,
-    "current_activity": "leisure",
-    "current_location": "Old Town residential 398",
+    "current_activity": "sleep",
+    "current_location": "North residential 539",
     "environment": "residential",
-    "home_building_id": 398,
-    "home_district": "Old Town",
+    "home_building_id": 539,
+    "home_district": "North",
     "home_xy": [
-      226.32,
-      467.77
+      1252.99,
+      695.33
     ],
     "inventory": {
       "cash": 1,
-      "face_mask": 1,
-      "transit_pass": 1
+      "keys": 1,
+      "name_tag": 1,
+      "snack": 1,
+      "transit_pass": 1,
+      "water_bottle": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "cash": 1,
-        "face_mask": 1,
-        "transit_pass": 1
+        "keys": 1,
+        "name_tag": 1,
+        "snack": 1,
+        "transit_pass": 1,
+        "water_bottle": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "apron": 1
+      }
     },
     "name": "Leo Reyes",
-    "occupation": "resident",
+    "occupation": "barista",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "",
-    "signature_location": "Old Town residential 398",
-    "signature_situation": "You're leisure at Old Town residential 398 when the collapse comes.",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "North residential 539",
+    "signature_situation": "You're sleep at North residential 539 -- not on shift when the collapse comes. Your barista's edge is back at a caf\u00e9.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 9.98,
+    "spawn_hour": 3.06,
     "spawn_xy": [
-      226.32,
-      467.77
+      1252.99,
+      695.33
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 527,
+    "work_district": "North",
+    "work_xy": [
+      628.99,
+      862.88
+    ]
   },
   {
     "age": 47,
-    "current_activity": "leisure",
-    "current_location": "Old Town residential 203",
-    "environment": "residential",
-    "home_building_id": 203,
+    "current_activity": "work",
+    "current_location": "East civic 330",
+    "environment": "civic",
+    "home_building_id": 202,
     "home_district": "Old Town",
     "home_xy": [
-      1107.51,
-      -338.77
+      1017.54,
+      -337.39
     ],
     "inventory": {
       "cash": 1,
       "face_mask": 1,
+      "helmet": 1,
       "keys": 1,
-      "phone": 2,
-      "shopping_bag": 1,
+      "phone": 1,
+      "radio": 1,
       "snack": 1,
       "wallet": 1
     },
@@ -1374,9 +1493,10 @@
       "on_person": {
         "cash": 1,
         "face_mask": 1,
+        "helmet": 1,
         "keys": 1,
-        "phone": 2,
-        "shopping_bag": 1,
+        "phone": 1,
+        "radio": 1,
         "snack": 1,
         "wallet": 1
       },
@@ -1384,43 +1504,44 @@
       "workplace": {}
     },
     "name": "Carlos Diallo",
-    "occupation": "homemaker",
-    "on_duty": false,
+    "occupation": "firefighter",
+    "on_duty": true,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
+    "shift": "day",
+    "signature_dilemma": "Run toward the smoke, or save your crew.",
+    "signature_location": "the station or a callout",
+    "signature_situation": "Three structure fires reported and no water pressure left.",
+    "signature_title": "Three fires, no water",
     "situation_kind": "signature",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
-    "spawn_context": "home",
+    "spawn_context": "workplace",
     "spawn_hour": 9.98,
     "spawn_xy": [
-      1107.51,
-      -338.77
+      1424.31,
+      -92.96
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 330,
+    "work_district": "East",
+    "work_xy": [
+      1424.31,
+      -92.96
+    ]
   },
   {
     "age": 41,
     "current_activity": "sleep",
-    "current_location": "Old Town residential 294",
+    "current_location": "Old Town residential 289",
     "environment": "residential",
-    "home_building_id": 294,
+    "home_building_id": 289,
     "home_district": "Old Town",
     "home_xy": [
-      614.92,
-      -102.26
+      626.37,
+      -175.43
     ],
     "inventory": {
       "face_mask": 1,
-      "keys": 1,
-      "phone": 1,
-      "shopping_bag": 1,
+      "name_tag": 1,
       "snack": 1,
       "water_bottle": 1
     },
@@ -1428,51 +1549,112 @@
       "home": {},
       "on_person": {
         "face_mask": 1,
-        "keys": 1,
-        "phone": 1,
-        "shopping_bag": 1,
+        "name_tag": 1,
         "snack": 1,
         "water_bottle": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "apron": 1,
+        "order_pad": 1
+      }
     },
     "name": "Leo Park",
-    "occupation": "homemaker",
+    "occupation": "waiter",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
-    "situation_kind": "signature",
+    "shift": "night",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "Old Town residential 289",
+    "signature_situation": "You're sleep at Old Town residential 289 -- not on shift when the collapse comes. Your waiter's edge is back at a busy restaurant floor.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 7.56,
+    "spawn_hour": 10.86,
     "spawn_xy": [
-      614.92,
-      -102.26
+      626.37,
+      -175.43
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 549,
+    "work_district": "North-East",
+    "work_xy": [
+      1418.32,
+      626.02
+    ]
   },
   {
     "age": 23,
-    "current_activity": "leisure",
-    "current_location": "North residential 518",
-    "environment": "residential",
-    "home_building_id": 518,
+    "current_activity": "work",
+    "current_location": "South-East commercial 116",
+    "environment": "retail",
+    "home_building_id": 547,
     "home_district": "North",
     "home_xy": [
-      627.64,
-      703.31
+      1250.62,
+      859.26
     ],
     "inventory": {
+      "face_mask": 1,
+      "gloves": 2,
+      "id_badge": 1,
       "keys": 2,
-      "phone": 2,
+      "phone": 1,
+      "wallet": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "face_mask": 1,
+        "gloves": 2,
+        "id_badge": 1,
+        "keys": 2,
+        "phone": 1,
+        "wallet": 1
+      },
+      "vehicle": {},
+      "workplace": {}
+    },
+    "name": "Carlos Rivera",
+    "occupation": "cleaner",
+    "on_duty": true,
+    "profile": "Boulder, Colorado",
+    "shift": "night",
+    "signature_dilemma": "A whole empty building to yourself, or get out before others arrive.",
+    "signature_location": "an empty office building at night",
+    "signature_situation": "Emergency lights snap on while you're alone with the master key.",
+    "signature_title": "Alone with a master key",
+    "situation_kind": "signature",
+    "spawn_anchor": "legacy",
+    "spawn_approx": false,
+    "spawn_context": "workplace",
+    "spawn_hour": 1.81,
+    "spawn_xy": [
+      1575.53,
+      -734.73
+    ],
+    "work_building_id": 116,
+    "work_district": "South-East",
+    "work_xy": [
+      1575.53,
+      -734.73
+    ]
+  },
+  {
+    "age": 17,
+    "current_activity": "sleep",
+    "current_location": "South residential 88",
+    "environment": "residential",
+    "home_building_id": 88,
+    "home_district": "South",
+    "home_xy": [
+      778.91,
+      -1055.51
+    ],
+    "inventory": {
+      "keys": 1,
+      "name_tag": 1,
       "transit_pass": 1,
       "wallet": 1,
       "water_bottle": 1
@@ -1480,99 +1662,53 @@
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "keys": 2,
-        "phone": 2,
+        "keys": 1,
+        "name_tag": 1,
         "transit_pass": 1,
         "wallet": 1,
         "water_bottle": 1
       },
       "vehicle": {},
-      "workplace": {}
-    },
-    "name": "Carlos Rivera",
-    "occupation": "unemployed",
-    "on_duty": false,
-    "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
-    "situation_kind": "signature",
-    "spawn_anchor": "legacy",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 20.08,
-    "spawn_xy": [
-      627.64,
-      703.31
-    ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
-  },
-  {
-    "age": 17,
-    "current_activity": "sleep",
-    "current_location": "Old Town residential 178",
-    "environment": "residential",
-    "home_building_id": 178,
-    "home_district": "Old Town",
-    "home_xy": [
-      694.42,
-      -503.84
-    ],
-    "inventory": {
-      "cash": 1,
-      "face_mask": 1,
-      "keys": 1,
-      "phone": 1,
-      "transit_pass": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "cash": 1,
-        "face_mask": 1,
-        "keys": 1,
-        "phone": 1,
-        "transit_pass": 1
-      },
-      "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "apron": 1,
+        "box_cutter": 1
+      }
     },
     "name": "Leo Costa",
-    "occupation": "resident",
+    "occupation": "grocery_clerk",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "",
-    "signature_location": "Old Town residential 178",
-    "signature_situation": "You're sleep at Old Town residential 178 when the collapse comes.",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "South residential 88",
+    "signature_situation": "You're sleep at South residential 88 -- not on shift when the collapse comes. Your grocery_clerk's edge is back at the shop floor of a supermarket.",
     "signature_title": "Off-shift when it hit",
     "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 23.76,
+    "spawn_hour": 5.9,
     "spawn_xy": [
-      694.42,
-      -503.84
+      778.91,
+      -1055.51
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 146,
+    "work_district": "West",
+    "work_xy": [
+      64.63,
+      -492.99
+    ]
   },
   {
     "age": 1,
     "current_activity": "sleep",
-    "current_location": "South residential 39",
+    "current_location": "South residential 33",
     "environment": "residential",
-    "home_building_id": 39,
+    "home_building_id": 33,
     "home_district": "South",
     "home_xy": [
-      1174.59,
-      -1387.4
+      628.54,
+      -1294.07
     ],
     "inventory": {
       "backpack": 1,
@@ -1610,8 +1746,8 @@
     "spawn_context": "home",
     "spawn_hour": 4.02,
     "spawn_xy": [
-      1174.59,
-      -1387.4
+      628.54,
+      -1294.07
     ],
     "work_building_id": null,
     "work_district": "",
@@ -1619,89 +1755,152 @@
   },
   {
     "age": 61,
-    "current_activity": "leisure",
-    "current_location": "West residential 382",
+    "current_activity": "sleep",
+    "current_location": "Old Town residential 389",
     "environment": "residential",
-    "home_building_id": 382,
-    "home_district": "West",
+    "home_building_id": 389,
+    "home_district": "Old Town",
     "home_xy": [
-      63.52,
-      469.93
+      211.8,
+      305.78
     ],
     "inventory": {
       "cash": 1,
       "keys": 2,
-      "medication": 2,
-      "phone": 1,
-      "reading_glasses": 1
+      "phone": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "cash": 1,
         "keys": 2,
-        "medication": 2,
-        "phone": 1,
-        "reading_glasses": 1
+        "phone": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "gloves": 2,
+        "hi_vis": 1
+      }
     },
     "name": "Leo Mensah",
-    "occupation": "retiree",
+    "occupation": "sanitation_worker",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Stay put among neighbours, or accept a stranger's offer to leave.",
-    "signature_location": "at home or out on a morning walk",
-    "signature_situation": "The street you've known for decades turns strange in minutes.",
-    "signature_title": "Forty years on this street",
-    "situation_kind": "signature",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "Old Town residential 389",
+    "signature_situation": "You're sleep at Old Town residential 389 -- not on shift when the collapse comes. Your sanitation_worker's edge is back at the streets, mid-collection round.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 19.46,
+    "spawn_hour": 5.38,
     "spawn_xy": [
-      63.52,
-      469.93
+      211.8,
+      305.78
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 292,
+    "work_district": "Old Town",
+    "work_xy": [
+      851.71,
+      -189.38
+    ]
   },
   {
     "age": 59,
     "current_activity": "leisure",
-    "current_location": "North-East residential 556",
+    "current_location": "North residential 590",
     "environment": "residential",
-    "home_building_id": 556,
-    "home_district": "North-East",
+    "home_building_id": 590,
+    "home_district": "North",
     "home_xy": [
-      1657.69,
-      771.94
+      697.92,
+      1023.34
     ],
     "inventory": {
       "cash": 1,
-      "face_mask": 1,
-      "keys": 2,
-      "phone": 2,
-      "shopping_bag": 1,
+      "face_mask": 3,
+      "id_badge": 1,
+      "keys": 1,
+      "phone": 1,
       "snack": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "cash": 1,
-        "face_mask": 1,
-        "keys": 2,
-        "phone": 2,
-        "shopping_bag": 1,
+        "face_mask": 3,
+        "id_badge": 1,
+        "keys": 1,
+        "phone": 1,
         "snack": 1
+      },
+      "vehicle": {},
+      "workplace": {
+        "gloves": 2
+      }
+    },
+    "name": "Carlos Garcia",
+    "occupation": "care_worker",
+    "on_duty": false,
+    "profile": "Boulder, Colorado",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "North residential 590",
+    "signature_situation": "You're leisure at North residential 590 -- not on shift when the collapse comes. Your care_worker's edge is back at a care home or a client's house.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
+    "spawn_anchor": "legacy",
+    "spawn_approx": false,
+    "spawn_context": "home",
+    "spawn_hour": 19.22,
+    "spawn_xy": [
+      697.92,
+      1023.34
+    ],
+    "work_building_id": 403,
+    "work_district": "Old Town",
+    "work_xy": [
+      615.26,
+      142.76
+    ]
+  },
+  {
+    "age": 69,
+    "current_activity": "leisure",
+    "current_location": "Old Town residential 310",
+    "environment": "residential",
+    "home_building_id": 310,
+    "home_district": "Old Town",
+    "home_xy": [
+      1030.71,
+      -95.75
+    ],
+    "inventory": {
+      "cash": 1,
+      "keys": 2,
+      "phone": 1,
+      "shopping_bag": 1,
+      "snack": 1,
+      "transit_pass": 1,
+      "wallet": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "cash": 1,
+        "keys": 2,
+        "phone": 1,
+        "shopping_bag": 1,
+        "snack": 1,
+        "transit_pass": 1,
+        "wallet": 1
       },
       "vehicle": {},
       "workplace": {}
     },
-    "name": "Carlos Garcia",
+    "name": "Leo Johnson",
     "occupation": "homemaker",
     "on_duty": false,
     "profile": "Boulder, Colorado",
@@ -1714,66 +1913,10 @@
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 9.21,
-    "spawn_xy": [
-      1657.69,
-      771.94
-    ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
-  },
-  {
-    "age": 69,
-    "current_activity": "leisure",
-    "current_location": "Old Town residential 295",
-    "environment": "residential",
-    "home_building_id": 295,
-    "home_district": "Old Town",
-    "home_xy": [
-      697.95,
-      -94.49
-    ],
-    "inventory": {
-      "cash": 1,
-      "keys": 2,
-      "medication": 2,
-      "reading_glasses": 1,
-      "snack": 1,
-      "transit_pass": 1,
-      "wallet": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "cash": 1,
-        "keys": 2,
-        "medication": 2,
-        "reading_glasses": 1,
-        "snack": 1,
-        "transit_pass": 1,
-        "wallet": 1
-      },
-      "vehicle": {},
-      "workplace": {}
-    },
-    "name": "Leo Johnson",
-    "occupation": "retiree",
-    "on_duty": false,
-    "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Stay put among neighbours, or accept a stranger's offer to leave.",
-    "signature_location": "at home or out on a morning walk",
-    "signature_situation": "The street you've known for decades turns strange in minutes.",
-    "signature_title": "Forty years on this street",
-    "situation_kind": "signature",
-    "spawn_anchor": "legacy",
-    "spawn_approx": false,
-    "spawn_context": "home",
     "spawn_hour": 14.44,
     "spawn_xy": [
-      697.95,
-      -94.49
+      1030.71,
+      -95.75
     ],
     "work_building_id": null,
     "work_district": "",
@@ -1782,13 +1925,13 @@
   {
     "age": 85,
     "current_activity": "sleep",
-    "current_location": "North residential 547",
+    "current_location": "North residential 582",
     "environment": "residential",
-    "home_building_id": 547,
+    "home_building_id": 582,
     "home_district": "North",
     "home_xy": [
-      1250.62,
-      859.26
+      226.19,
+      1100.24
     ],
     "inventory": {
       "cash": 1,
@@ -1830,8 +1973,8 @@
     "spawn_context": "home",
     "spawn_hour": 3.99,
     "spawn_xy": [
-      1250.62,
-      859.26
+      226.19,
+      1100.24
     ],
     "work_building_id": null,
     "work_district": "",
@@ -1839,80 +1982,25 @@
   },
   {
     "age": 46,
-    "current_activity": "sleep",
-    "current_location": "South-West residential 19",
-    "environment": "residential",
-    "home_building_id": 19,
+    "current_activity": "work",
+    "current_location": "North education 516",
+    "environment": "education",
+    "home_building_id": 13,
     "home_district": "South-West",
     "home_xy": [
-      56.46,
-      -1143.88
+      -576.03,
+      -1462.86
     ],
     "inventory": {
       "cash": 1,
       "face_mask": 1,
+      "id_card": 1,
       "keys": 1,
-      "phone": 2,
-      "shopping_bag": 1,
+      "laptop": 1,
+      "marker": 2,
+      "phone": 1,
       "snack": 1,
       "transit_pass": 1,
-      "wallet": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "cash": 1,
-        "face_mask": 1,
-        "keys": 1,
-        "phone": 2,
-        "shopping_bag": 1,
-        "snack": 1,
-        "transit_pass": 1,
-        "wallet": 1
-      },
-      "vehicle": {},
-      "workplace": {}
-    },
-    "name": "Leo Okafor",
-    "occupation": "homemaker",
-    "on_duty": false,
-    "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
-    "situation_kind": "signature",
-    "spawn_anchor": "legacy",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 1.81,
-    "spawn_xy": [
-      56.46,
-      -1143.88
-    ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
-  },
-  {
-    "age": 20,
-    "current_activity": "sleep",
-    "current_location": "Old Town residential 292",
-    "environment": "residential",
-    "home_building_id": 292,
-    "home_district": "Old Town",
-    "home_xy": [
-      851.71,
-      -189.38
-    ],
-    "inventory": {
-      "cash": 1,
-      "face_mask": 1,
-      "keys": 1,
-      "phone": 1,
-      "shopping_bag": 1,
-      "snack": 1,
       "water_bottle": 1
     },
     "inventory_scopes": {
@@ -1920,9 +2008,71 @@
       "on_person": {
         "cash": 1,
         "face_mask": 1,
+        "id_card": 1,
         "keys": 1,
+        "laptop": 1,
+        "marker": 2,
         "phone": 1,
-        "shopping_bag": 1,
+        "snack": 1,
+        "transit_pass": 1,
+        "water_bottle": 1
+      },
+      "vehicle": {},
+      "workplace": {}
+    },
+    "name": "Leo Okafor",
+    "occupation": "teacher",
+    "on_duty": true,
+    "profile": "Boulder, Colorado",
+    "shift": "day",
+    "signature_dilemma": "Keep them calm and contained, or release them to parents who may never come.",
+    "signature_location": "a classroom of thirty",
+    "signature_situation": "The intercom dies mid-announcement and thirty children turn to you.",
+    "signature_title": "Thirty kids look to you",
+    "situation_kind": "signature",
+    "spawn_anchor": "legacy",
+    "spawn_approx": false,
+    "spawn_context": "workplace",
+    "spawn_hour": 11.96,
+    "spawn_xy": [
+      870.08,
+      621.9
+    ],
+    "work_building_id": 516,
+    "work_district": "North",
+    "work_xy": [
+      870.08,
+      621.9
+    ]
+  },
+  {
+    "age": 20,
+    "current_activity": "work",
+    "current_location": "Old Town commercial 191",
+    "environment": "retail",
+    "home_building_id": 286,
+    "home_district": "Old Town",
+    "home_xy": [
+      453.72,
+      66.22
+    ],
+    "inventory": {
+      "apron": 1,
+      "box_cutter": 1,
+      "cash": 1,
+      "face_mask": 1,
+      "name_tag": 1,
+      "snack": 1,
+      "water_bottle": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "apron": 1,
+        "box_cutter": 1,
+        "cash": 1,
+        "face_mask": 1,
+        "name_tag": 1,
         "snack": 1,
         "water_bottle": 1
       },
@@ -1930,37 +2080,40 @@
       "workplace": {}
     },
     "name": "Carlos Reyes",
-    "occupation": "homemaker",
-    "on_duty": false,
+    "occupation": "grocery_clerk",
+    "on_duty": true,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
+    "shift": "day",
+    "signature_dilemma": "Defend the stockroom, or melt into the crowd with a full cart.",
+    "signature_location": "the shop floor of a supermarket",
+    "signature_situation": "The store fills with people who are no longer queuing to pay.",
+    "signature_title": "They've stopped paying",
     "situation_kind": "signature",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 4.1,
+    "spawn_context": "workplace",
+    "spawn_hour": 11.27,
     "spawn_xy": [
-      851.71,
-      -189.38
+      1019.75,
+      -586.98
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 191,
+    "work_district": "Old Town",
+    "work_xy": [
+      1019.75,
+      -586.98
+    ]
   },
   {
     "age": 2,
     "current_activity": "leisure",
-    "current_location": "North-East residential 553",
+    "current_location": "North residential 586",
     "environment": "residential",
-    "home_building_id": 553,
-    "home_district": "North-East",
+    "home_building_id": 586,
+    "home_district": "North",
     "home_xy": [
-      1656.26,
-      695.24
+      221.0,
+      1176.5
     ],
     "inventory": {
       "backpack": 1,
@@ -1996,8 +2149,8 @@
     "spawn_context": "home",
     "spawn_hour": 17.39,
     "spawn_xy": [
-      1656.26,
-      695.24
+      221.0,
+      1176.5
     ],
     "work_building_id": null,
     "work_district": "",
@@ -2006,19 +2159,19 @@
   {
     "age": 42,
     "current_activity": "leisure",
-    "current_location": "Old Town residential 307",
+    "current_location": "East residential 324",
     "environment": "residential",
-    "home_building_id": 307,
-    "home_district": "Old Town",
+    "home_building_id": 324,
+    "home_district": "East",
     "home_xy": [
-      1104.86,
-      -174.01
+      1588.68,
+      -255.73
     ],
     "inventory": {
       "cash": 1,
-      "keys": 2,
-      "phone": 2,
-      "shopping_bag": 1,
+      "keys": 1,
+      "name_tag": 1,
+      "phone": 1,
       "transit_pass": 1,
       "wallet": 1
     },
@@ -2026,47 +2179,53 @@
       "home": {},
       "on_person": {
         "cash": 1,
-        "keys": 2,
-        "phone": 2,
-        "shopping_bag": 1,
+        "keys": 1,
+        "name_tag": 1,
+        "phone": 1,
         "transit_pass": 1,
         "wallet": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "apron": 1,
+        "box_cutter": 1
+      }
     },
     "name": "Carlos Park",
-    "occupation": "homemaker",
+    "occupation": "grocery_clerk",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
-    "situation_kind": "signature",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "East residential 324",
+    "signature_situation": "You're leisure at East residential 324 -- not on shift when the collapse comes. Your grocery_clerk's edge is back at the shop floor of a supermarket.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 10.29,
+    "spawn_hour": 20.24,
     "spawn_xy": [
-      1104.86,
-      -174.01
+      1588.68,
+      -255.73
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 146,
+    "work_district": "West",
+    "work_xy": [
+      64.63,
+      -492.99
+    ]
   },
   {
     "age": 4,
     "current_activity": "sleep",
-    "current_location": "West residential 247",
+    "current_location": "West residential 234",
     "environment": "residential",
-    "home_building_id": 247,
+    "home_building_id": 234,
     "home_district": "West",
     "home_xy": [
-      -497.09,
-      67.9
+      -977.44,
+      -186.06
     ],
     "inventory": {
       "backpack": 1,
@@ -2106,8 +2265,8 @@
     "spawn_context": "home",
     "spawn_hour": 23.51,
     "spawn_xy": [
-      -497.09,
-      67.9
+      -977.44,
+      -186.06
     ],
     "work_building_id": null,
     "work_district": "",
@@ -2116,13 +2275,13 @@
   {
     "age": 5,
     "current_activity": "sleep",
-    "current_location": "Old Town residential 294",
+    "current_location": "Old Town residential 289",
     "environment": "residential",
-    "home_building_id": 294,
+    "home_building_id": 289,
     "home_district": "Old Town",
     "home_xy": [
-      614.92,
-      -102.26
+      626.37,
+      -175.43
     ],
     "inventory": {
       "backpack": 1,
@@ -2162,8 +2321,8 @@
     "spawn_context": "home",
     "spawn_hour": 22.91,
     "spawn_xy": [
-      614.92,
-      -102.26
+      626.37,
+      -175.43
     ],
     "work_building_id": null,
     "work_district": "",
@@ -2171,118 +2330,134 @@
   },
   {
     "age": 40,
-    "current_activity": "errand",
-    "current_location": "South",
-    "environment": "retail",
-    "home_building_id": 70,
-    "home_district": "South",
+    "current_activity": "work",
+    "current_location": "West commercial 380",
+    "environment": "high_rise",
+    "home_building_id": 46,
+    "home_district": "South-East",
     "home_xy": [
-      294.6,
-      -1060.63
+      1669.79,
+      -1149.0
     ],
     "inventory": {
       "cash": 1,
-      "face_mask": 1,
+      "gloves": 2,
+      "id_badge": 1,
       "keys": 2,
-      "phone": 1,
-      "water_bottle": 1
+      "snack": 1,
+      "transit_pass": 1,
+      "wallet": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "cash": 1,
-        "face_mask": 1,
+        "gloves": 2,
+        "id_badge": 1,
         "keys": 2,
-        "phone": 1,
-        "water_bottle": 1
+        "snack": 1,
+        "transit_pass": 1,
+        "wallet": 1
       },
       "vehicle": {},
       "workplace": {}
     },
     "name": "Leo Silva",
-    "occupation": "unemployed",
-    "on_duty": false,
+    "occupation": "cleaner",
+    "on_duty": true,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
+    "shift": "night",
+    "signature_dilemma": "A whole empty building to yourself, or get out before others arrive.",
+    "signature_location": "an empty office building at night",
+    "signature_situation": "Emergency lights snap on while you're alone with the master key.",
+    "signature_title": "Alone with a master key",
     "situation_kind": "signature",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 11.77,
+    "spawn_context": "workplace",
+    "spawn_hour": 1.71,
     "spawn_xy": [
-      294.6,
-      -1060.63
+      -100.7,
+      457.44
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 380,
+    "work_district": "West",
+    "work_xy": [
+      -100.7,
+      457.44
+    ]
   },
   {
     "age": 21,
-    "current_activity": "errand",
-    "current_location": "Old Town",
+    "current_activity": "work",
+    "current_location": "North commercial 521",
     "environment": "retail",
-    "home_building_id": 399,
+    "home_building_id": 405,
     "home_district": "Old Town",
     "home_xy": [
-      303.92,
-      461.45
+      695.14,
+      211.5
     ],
     "inventory": {
-      "keys": 2,
-      "phone": 1,
-      "snack": 1,
-      "wallet": 1,
-      "water_bottle": 1
+      "backpack": 1,
+      "face_mask": 1,
+      "keys": 1,
+      "lock": 1,
+      "phone": 2,
+      "scanner": 1,
+      "transit_pass": 1,
+      "wallet": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "keys": 2,
-        "phone": 1,
-        "snack": 1,
-        "wallet": 1,
-        "water_bottle": 1
+        "backpack": 1,
+        "face_mask": 1,
+        "keys": 1,
+        "lock": 1,
+        "phone": 2,
+        "scanner": 1,
+        "transit_pass": 1,
+        "wallet": 1
       },
       "vehicle": {},
       "workplace": {}
     },
     "name": "Carlos Mensah",
-    "occupation": "unemployed",
-    "on_duty": false,
+    "occupation": "courier",
+    "on_duty": true,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
+    "shift": "day",
+    "signature_dilemma": "Outrun the gridlock everyone else is trapped in.",
+    "signature_location": "weaving through traffic on a bike",
+    "signature_situation": "You're the only thing moving faster than the panic itself.",
+    "signature_title": "Faster than the panic",
     "situation_kind": "signature",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 10.82,
+    "spawn_context": "workplace",
+    "spawn_hour": 9.54,
     "spawn_xy": [
-      303.92,
-      461.45
+      863.74,
+      707.04
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 521,
+    "work_district": "North",
+    "work_xy": [
+      863.74,
+      707.04
+    ]
   },
   {
     "age": 2,
     "current_activity": "leisure",
-    "current_location": "Old Town residential 291",
+    "current_location": "Old Town residential 286",
     "environment": "residential",
-    "home_building_id": 291,
+    "home_building_id": 286,
     "home_district": "Old Town",
     "home_xy": [
-      774.55,
-      -177.61
+      453.72,
+      66.22
     ],
     "inventory": {
       "backpack": 1,
@@ -2320,8 +2495,8 @@
     "spawn_context": "home",
     "spawn_hour": 14.27,
     "spawn_xy": [
-      774.55,
-      -177.61
+      453.72,
+      66.22
     ],
     "work_building_id": null,
     "work_district": "",
@@ -2330,13 +2505,13 @@
   {
     "age": 88,
     "current_activity": "sleep",
-    "current_location": "South-East residential 44",
+    "current_location": "South residential 33",
     "environment": "residential",
-    "home_building_id": 44,
-    "home_district": "South-East",
+    "home_building_id": 33,
+    "home_district": "South",
     "home_xy": [
-      1422.97,
-      -1294.89
+      628.54,
+      -1294.07
     ],
     "inventory": {
       "cash": 1,
@@ -2378,8 +2553,8 @@
     "spawn_context": "home",
     "spawn_hour": 4.81,
     "spawn_xy": [
-      1422.97,
-      -1294.89
+      628.54,
+      -1294.07
     ],
     "work_building_id": null,
     "work_district": "",
@@ -2388,13 +2563,13 @@
   {
     "age": 56,
     "current_activity": "sleep",
-    "current_location": "Old Town residential 197",
+    "current_location": "Old Town residential 196",
     "environment": "residential",
-    "home_building_id": 197,
+    "home_building_id": 196,
     "home_district": "Old Town",
     "home_xy": [
-      1174.35,
-      -489.83
+      1103.91,
+      -501.48
     ],
     "inventory": {
       "keys": 1,
@@ -2432,8 +2607,8 @@
     "spawn_context": "home",
     "spawn_hour": 4.32,
     "spawn_xy": [
-      1174.35,
-      -489.83
+      1103.91,
+      -501.48
     ],
     "work_building_id": null,
     "work_district": "",
@@ -2441,176 +2616,194 @@
   },
   {
     "age": 21,
-    "current_activity": "sleep",
-    "current_location": "North residential 542",
-    "environment": "residential",
-    "home_building_id": 542,
-    "home_district": "North",
+    "current_activity": "work",
+    "current_location": "Old Town commercial 204",
+    "environment": "retail",
+    "home_building_id": 578,
+    "home_district": "North-West",
     "home_xy": [
-      1177.7,
-      775.42
-    ],
-    "inventory": {
-      "keys": 1,
-      "phone": 2,
-      "transit_pass": 1,
-      "wallet": 1,
-      "water_bottle": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "keys": 1,
-        "phone": 2,
-        "transit_pass": 1,
-        "wallet": 1,
-        "water_bottle": 1
-      },
-      "vehicle": {},
-      "workplace": {}
-    },
-    "name": "Carlos Okafor",
-    "occupation": "unemployed",
-    "on_duty": false,
-    "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
-    "situation_kind": "signature",
-    "spawn_anchor": "legacy",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 0.62,
-    "spawn_xy": [
-      1177.7,
-      775.42
-    ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
-  },
-  {
-    "age": 28,
-    "current_activity": "leisure",
-    "current_location": "East residential 323",
-    "environment": "residential",
-    "home_building_id": 323,
-    "home_district": "East",
-    "home_xy": [
-      1500.94,
-      -250.52
+      -259.55,
+      1265.31
     ],
     "inventory": {
       "cash": 1,
-      "keys": 2,
-      "phone": 1,
-      "shopping_bag": 1,
-      "snack": 1,
+      "face_mask": 1,
+      "fuel_can": 1,
+      "keys": 1,
+      "shears": 1,
       "wallet": 1,
-      "water_bottle": 1
+      "work_gloves": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "cash": 1,
-        "keys": 2,
-        "phone": 1,
-        "shopping_bag": 1,
-        "snack": 1,
+        "face_mask": 1,
+        "fuel_can": 1,
+        "keys": 1,
+        "shears": 1,
         "wallet": 1,
-        "water_bottle": 1
+        "work_gloves": 1
       },
       "vehicle": {},
       "workplace": {}
     },
-    "name": "Leo Diallo",
-    "occupation": "homemaker",
-    "on_duty": false,
+    "name": "Carlos Okafor",
+    "occupation": "landscaper",
+    "on_duty": true,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
+    "shift": "day",
+    "signature_dilemma": "Every house around you is a possible shelter -- pick the right door.",
+    "signature_location": "mowing a garden in a residential neighbourhood",
+    "signature_situation": "You're three lawns from your truck when the street erupts.",
+    "signature_title": "Three lawns from the truck",
     "situation_kind": "signature",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 10.25,
+    "spawn_context": "workplace",
+    "spawn_hour": 14.92,
     "spawn_xy": [
-      1500.94,
-      -250.52
+      1181.96,
+      -332.95
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 204,
+    "work_district": "Old Town",
+    "work_xy": [
+      1181.96,
+      -332.95
+    ]
   },
   {
-    "age": 27,
-    "current_activity": "leisure",
-    "current_location": "Old Town residential 297",
-    "environment": "residential",
-    "home_building_id": 297,
-    "home_district": "Old Town",
+    "age": 28,
+    "current_activity": "errand",
+    "current_location": "West commercial 353",
+    "environment": "retail",
+    "home_building_id": 354,
+    "home_district": "West",
     "home_xy": [
-      861.13,
-      -96.43
+      -491.7,
+      225.33
     ],
     "inventory": {
+      "id_card": 1,
       "keys": 2,
       "phone": 2,
-      "shopping_bag": 1,
       "snack": 1,
       "transit_pass": 1,
-      "wallet": 1
+      "wallet": 1,
+      "water_bottle": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
+        "id_card": 1,
         "keys": 2,
         "phone": 2,
-        "shopping_bag": 1,
         "snack": 1,
         "transit_pass": 1,
-        "wallet": 1
+        "wallet": 1,
+        "water_bottle": 1
       },
       "vehicle": {},
-      "workplace": {}
+      "workplace": {
+        "laptop": 1
+      }
     },
-    "name": "Carlos Cohen",
-    "occupation": "homemaker",
+    "name": "Leo Diallo",
+    "occupation": "office_worker",
     "on_duty": false,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
-    "situation_kind": "signature",
+    "shift": "day",
+    "signature_dilemma": "Make for home, or shelter where you stand.",
+    "signature_location": "West commercial 353",
+    "signature_situation": "You're out at West commercial 353 when the collapse comes -- in the open, among strangers.",
+    "signature_title": "Caught out in public",
+    "situation_kind": "generic",
+    "spawn_anchor": "legacy",
+    "spawn_approx": true,
+    "spawn_context": "errand",
+    "spawn_hour": 17.7,
+    "spawn_xy": [
+      -491.7,
+      225.33
+    ],
+    "work_building_id": 209,
+    "work_district": "East",
+    "work_xy": [
+      1416.0,
+      -577.32
+    ]
+  },
+  {
+    "age": 27,
+    "current_activity": "sleep",
+    "current_location": "Old Town residential 310",
+    "environment": "residential",
+    "home_building_id": 310,
+    "home_district": "Old Town",
+    "home_xy": [
+      1030.71,
+      -95.75
+    ],
+    "inventory": {
+      "face_mask": 4,
+      "id_badge": 1,
+      "phone": 1,
+      "transit_pass": 1,
+      "wallet": 1,
+      "water_bottle": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "face_mask": 4,
+        "id_badge": 1,
+        "phone": 1,
+        "transit_pass": 1,
+        "wallet": 1,
+        "water_bottle": 1
+      },
+      "vehicle": {},
+      "workplace": {
+        "radio": 1,
+        "trauma_kit": 1
+      }
+    },
+    "name": "Carlos Cohen",
+    "occupation": "paramedic",
+    "on_duty": false,
+    "profile": "Boulder, Colorado",
+    "shift": "night",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "Old Town residential 310",
+    "signature_situation": "You're sleep at Old Town residential 310 -- not on shift when the collapse comes. Your paramedic's edge is back at out on a callout in the ambulance.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
     "spawn_context": "home",
-    "spawn_hour": 9.13,
+    "spawn_hour": 10.42,
     "spawn_xy": [
+      1030.71,
+      -95.75
+    ],
+    "work_building_id": 297,
+    "work_district": "Old Town",
+    "work_xy": [
       861.13,
       -96.43
-    ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    ]
   },
   {
     "age": 4,
     "current_activity": "sleep",
-    "current_location": "North residential 581",
+    "current_location": "North residential 598",
     "environment": "residential",
-    "home_building_id": 581,
+    "home_building_id": 598,
     "home_district": "North",
     "home_xy": [
-      453.3,
-      1020.18
+      863.07,
+      1174.64
     ],
     "inventory": {
       "backpack": 1,
@@ -2642,8 +2835,8 @@
     "spawn_context": "home",
     "spawn_hour": 6.72,
     "spawn_xy": [
-      453.3,
-      1020.18
+      863.07,
+      1174.64
     ],
     "work_building_id": null,
     "work_district": "",
@@ -2651,128 +2844,22 @@
   },
   {
     "age": 37,
-    "current_activity": "leisure",
-    "current_location": "Old Town residential 319",
-    "environment": "residential",
-    "home_building_id": 319,
-    "home_district": "Old Town",
+    "current_activity": "work",
+    "current_location": "North commercial 601",
+    "environment": "retail",
+    "home_building_id": 341,
+    "home_district": "East",
     "home_xy": [
-      1091.73,
-      61.97
+      1826.85,
+      -104.95
     ],
     "inventory": {
       "cash": 1,
-      "face_mask": 1,
-      "keys": 2,
-      "phone": 1,
-      "snack": 1,
-      "wallet": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "cash": 1,
-        "face_mask": 1,
-        "keys": 2,
-        "phone": 1,
-        "snack": 1,
-        "wallet": 1
-      },
-      "vehicle": {},
-      "workplace": {}
-    },
-    "name": "Carlos Ahmed",
-    "occupation": "unemployed",
-    "on_duty": false,
-    "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
-    "situation_kind": "signature",
-    "spawn_anchor": "legacy",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 19.94,
-    "spawn_xy": [
-      1091.73,
-      61.97
-    ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
-  },
-  {
-    "age": 19,
-    "current_activity": "leisure",
-    "current_location": "South residential 84",
-    "environment": "residential",
-    "home_building_id": 84,
-    "home_district": "South",
-    "home_xy": [
-      458.35,
-      -741.0
-    ],
-    "inventory": {
-      "cash": 1,
-      "face_mask": 1,
+      "gloves": 2,
+      "id_badge": 1,
       "keys": 1,
       "phone": 1,
       "snack": 1,
-      "transit_pass": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "cash": 1,
-        "face_mask": 1,
-        "keys": 1,
-        "phone": 1,
-        "snack": 1,
-        "transit_pass": 1
-      },
-      "vehicle": {},
-      "workplace": {}
-    },
-    "name": "Leo Brooks",
-    "occupation": "unemployed",
-    "on_duty": false,
-    "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
-    "situation_kind": "signature",
-    "spawn_anchor": "legacy",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 13.37,
-    "spawn_xy": [
-      458.35,
-      -741.0
-    ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
-  },
-  {
-    "age": 13,
-    "current_activity": "leisure",
-    "current_location": "Old Town residential 154",
-    "environment": "residential",
-    "home_building_id": 154,
-    "home_district": "Old Town",
-    "home_xy": [
-      214.34,
-      -652.71
-    ],
-    "inventory": {
-      "cash": 1,
-      "keys": 1,
-      "phone": 1,
-      "transit_pass": 1,
       "wallet": 1,
       "water_bottle": 1
     },
@@ -2780,103 +2867,238 @@
       "home": {},
       "on_person": {
         "cash": 1,
+        "gloves": 2,
+        "id_badge": 1,
         "keys": 1,
         "phone": 1,
-        "transit_pass": 1,
+        "snack": 1,
         "wallet": 1,
         "water_bottle": 1
       },
       "vehicle": {},
       "workplace": {}
     },
-    "name": "Carlos Silva",
-    "occupation": "resident",
-    "on_duty": false,
+    "name": "Carlos Ahmed",
+    "occupation": "cleaner",
+    "on_duty": true,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "",
-    "signature_location": "Old Town residential 154",
-    "signature_situation": "You're leisure at Old Town residential 154 when the collapse comes.",
-    "signature_title": "Off-shift when it hit",
-    "situation_kind": "generic",
+    "shift": "night",
+    "signature_dilemma": "A whole empty building to yourself, or get out before others arrive.",
+    "signature_location": "an empty office building at night",
+    "signature_situation": "Emergency lights snap on while you're alone with the master key.",
+    "signature_title": "Alone with a master key",
+    "situation_kind": "signature",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 9.38,
+    "spawn_context": "workplace",
+    "spawn_hour": 1.29,
     "spawn_xy": [
-      214.34,
-      -652.71
+      1016.94,
+      1027.65
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 601,
+    "work_district": "North",
+    "work_xy": [
+      1016.94,
+      1027.65
+    ]
   },
   {
-    "age": 14,
-    "current_activity": "sleep",
-    "current_location": "West residential 239",
-    "environment": "residential",
-    "home_building_id": 239,
-    "home_district": "West",
+    "age": 19,
+    "current_activity": "work",
+    "current_location": "Old Town industrial 203",
+    "environment": "industrial",
+    "home_building_id": 66,
+    "home_district": "South-West",
     "home_xy": [
-      -585.89,
-      -170.49
+      -102.73,
+      -731.84
     ],
     "inventory": {
       "cash": 1,
-      "keys": 1,
-      "phone": 1,
+      "face_mask": 1,
+      "gloves": 1,
+      "hi_vis": 1,
+      "scanner": 1,
       "snack": 1,
       "transit_pass": 1,
-      "wallet": 1,
       "water_bottle": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "cash": 1,
+        "face_mask": 1,
+        "gloves": 1,
+        "hi_vis": 1,
+        "scanner": 1,
+        "snack": 1,
+        "transit_pass": 1,
+        "water_bottle": 1
+      },
+      "vehicle": {},
+      "workplace": {}
+    },
+    "name": "Leo Brooks",
+    "occupation": "warehouse_worker",
+    "on_duty": true,
+    "profile": "Boulder, Colorado",
+    "shift": "day",
+    "signature_dilemma": "Barricade a warehouse of goods, or load a pallet onto a truck.",
+    "signature_location": "a distribution warehouse",
+    "signature_situation": "The conveyors stop with pallets of everything sitting ready.",
+    "signature_title": "Pallets of everything",
+    "situation_kind": "signature",
+    "spawn_anchor": "legacy",
+    "spawn_approx": false,
+    "spawn_context": "workplace",
+    "spawn_hour": 14.18,
+    "spawn_xy": [
+      1107.51,
+      -338.77
+    ],
+    "work_building_id": 203,
+    "work_district": "Old Town",
+    "work_xy": [
+      1107.51,
+      -338.77
+    ]
+  },
+  {
+    "age": 13,
+    "current_activity": "commute",
+    "current_location": "North-West residential 486",
+    "environment": "street",
+    "home_building_id": 486,
+    "home_district": "North-West",
+    "home_xy": [
+      -101.12,
+      612.27
+    ],
+    "inventory": {
+      "backpack": 1,
+      "face_mask": 1,
+      "id_card": 1,
+      "keys": 1,
+      "phone": 1,
+      "transit_pass": 1,
+      "water_bottle": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "backpack": 1,
+        "face_mask": 1,
+        "id_card": 1,
         "keys": 1,
+        "phone": 1,
+        "transit_pass": 1,
+        "water_bottle": 1
+      },
+      "vehicle": {
+        "laptop": 1,
+        "notebook": 1
+      },
+      "workplace": {}
+    },
+    "name": "Carlos Silva",
+    "occupation": "student",
+    "on_duty": false,
+    "profile": "Boulder, Colorado",
+    "shift": "day",
+    "signature_dilemma": "Force the doors and join the street, or stay in the herd.",
+    "signature_location": "on a city street, mid-commute",
+    "signature_situation": "Shoulder to shoulder on a bus that has stopped dead in the jam, the doors hissing against the crowd.",
+    "signature_title": "Packed transit, stopped dead",
+    "situation_kind": "travel",
+    "spawn_anchor": "legacy",
+    "spawn_approx": true,
+    "spawn_context": "commute",
+    "spawn_hour": 16.02,
+    "spawn_xy": [
+      -66.84,
+      544.28
+    ],
+    "work_building_id": 90,
+    "work_district": "South",
+    "work_xy": [
+      703.46,
+      -983.57
+    ]
+  },
+  {
+    "age": 14,
+    "current_activity": "work",
+    "current_location": "East education 219",
+    "environment": "education",
+    "home_building_id": 80,
+    "home_district": "South",
+    "home_xy": [
+      466.67,
+      -909.93
+    ],
+    "inventory": {
+      "backpack": 1,
+      "id_card": 1,
+      "keys": 1,
+      "laptop": 1,
+      "notebook": 1,
+      "phone": 1,
+      "snack": 1,
+      "transit_pass": 1,
+      "water_bottle": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "backpack": 1,
+        "id_card": 1,
+        "keys": 1,
+        "laptop": 1,
+        "notebook": 1,
         "phone": 1,
         "snack": 1,
         "transit_pass": 1,
-        "wallet": 1,
         "water_bottle": 1
       },
       "vehicle": {},
       "workplace": {}
     },
     "name": "Leo Garcia",
-    "occupation": "resident",
-    "on_duty": false,
+    "occupation": "student",
+    "on_duty": true,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "",
-    "signature_location": "West residential 239",
-    "signature_situation": "You're sleep at West residential 239 when the collapse comes.",
-    "signature_title": "Off-shift when it hit",
-    "situation_kind": "generic",
+    "shift": "day",
+    "signature_dilemma": "Shelter on a campus you know, or join the rush for the doors.",
+    "signature_location": "a packed lecture hall",
+    "signature_situation": "The lecture cuts off as every phone in the hall lights up.",
+    "signature_title": "Mid-lecture, all phones at once",
+    "situation_kind": "signature",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 4.77,
+    "spawn_context": "workplace",
+    "spawn_hour": 12.05,
     "spawn_xy": [
-      -585.89,
-      -170.49
+      1666.8,
+      -335.56
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 219,
+    "work_district": "East",
+    "work_xy": [
+      1666.8,
+      -335.56
+    ]
   },
   {
     "age": 4,
     "current_activity": "leisure",
-    "current_location": "Old Town residential 388",
+    "current_location": "Old Town residential 399",
     "environment": "residential",
-    "home_building_id": 388,
+    "home_building_id": 399,
     "home_district": "Old Town",
     "home_xy": [
-      458.14,
-      220.45
+      303.92,
+      461.45
     ],
     "inventory": {
       "backpack": 1,
@@ -2916,8 +3138,8 @@
     "spawn_context": "home",
     "spawn_hour": 13.7,
     "spawn_xy": [
-      458.14,
-      220.45
+      303.92,
+      461.45
     ],
     "work_building_id": null,
     "work_district": "",
@@ -2925,120 +3147,131 @@
   },
   {
     "age": 41,
-    "current_activity": "sleep",
-    "current_location": "Old Town residential 286",
-    "environment": "residential",
-    "home_building_id": 286,
+    "current_activity": "work",
+    "current_location": "Old Town commercial 409",
+    "environment": "retail",
+    "home_building_id": 276,
     "home_district": "Old Town",
     "home_xy": [
-      453.72,
-      66.22
-    ],
-    "inventory": {
-      "face_mask": 1,
-      "keys": 1,
-      "phone": 2,
-      "shopping_bag": 1,
-      "snack": 1,
-      "wallet": 1
-    },
-    "inventory_scopes": {
-      "home": {},
-      "on_person": {
-        "face_mask": 1,
-        "keys": 1,
-        "phone": 2,
-        "shopping_bag": 1,
-        "snack": 1,
-        "wallet": 1
-      },
-      "vehicle": {},
-      "workplace": {}
-    },
-    "name": "Leo Patel",
-    "occupation": "homemaker",
-    "on_duty": false,
-    "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
-    "situation_kind": "signature",
-    "spawn_anchor": "legacy",
-    "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 1.7,
-    "spawn_xy": [
-      453.72,
-      66.22
-    ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
-  },
-  {
-    "age": 23,
-    "current_activity": "sleep",
-    "current_location": "South-West residential 67",
-    "environment": "residential",
-    "home_building_id": 67,
-    "home_district": "South-West",
-    "home_xy": [
-      59.54,
-      -734.73
+      227.76,
+      -108.18
     ],
     "inventory": {
       "cash": 1,
-      "face_mask": 1,
+      "id_card": 1,
       "keys": 1,
-      "phone": 1,
+      "laptop": 1,
+      "phone": 2,
+      "transit_pass": 1,
       "water_bottle": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
         "cash": 1,
-        "face_mask": 1,
+        "id_card": 1,
         "keys": 1,
-        "phone": 1,
+        "laptop": 1,
+        "phone": 2,
+        "transit_pass": 1,
         "water_bottle": 1
       },
       "vehicle": {},
       "workplace": {}
     },
-    "name": "Carlos Nguyen",
-    "occupation": "unemployed",
-    "on_duty": false,
+    "name": "Leo Patel",
+    "occupation": "office_worker",
+    "on_duty": true,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Move early and light, before the roads choke.",
-    "signature_location": "at home or out on errands",
-    "signature_situation": "There's no workplace expecting you -- you're just here when it breaks.",
-    "signature_title": "No shift to miss",
+    "shift": "day",
+    "signature_dilemma": "Descend with the crush, or wait it out at altitude.",
+    "signature_location": "a high floor of an office tower",
+    "signature_situation": "The lifts die and the stairwell fills with everyone from above.",
+    "signature_title": "The lifts just stopped",
     "situation_kind": "signature",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 23.18,
+    "spawn_context": "workplace",
+    "spawn_hour": 8.4,
     "spawn_xy": [
-      59.54,
-      -734.73
+      621.05,
+      304.28
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 409,
+    "work_district": "Old Town",
+    "work_xy": [
+      621.05,
+      304.28
+    ]
+  },
+  {
+    "age": 23,
+    "current_activity": "sleep",
+    "current_location": "South-East residential 45",
+    "environment": "residential",
+    "home_building_id": 45,
+    "home_district": "South-East",
+    "home_xy": [
+      1655.61,
+      -1297.96
+    ],
+    "inventory": {
+      "snack": 1,
+      "transit_pass": 1,
+      "wallet": 1,
+      "water_bottle": 1
+    },
+    "inventory_scopes": {
+      "home": {},
+      "on_person": {
+        "snack": 1,
+        "transit_pass": 1,
+        "wallet": 1,
+        "water_bottle": 1
+      },
+      "vehicle": {},
+      "workplace": {
+        "bucket": 1,
+        "harness": 1,
+        "rope": 1,
+        "squeegee": 1
+      }
+    },
+    "name": "Carlos Nguyen",
+    "occupation": "window_washer",
+    "on_duty": false,
+    "profile": "Boulder, Colorado",
+    "shift": "day",
+    "signature_dilemma": "Make for your workplace's resources, or improvise where you are.",
+    "signature_location": "South-East residential 45",
+    "signature_situation": "You're sleep at South-East residential 45 -- not on shift when the collapse comes. Your window_washer's edge is back at a cradle on the side of a glass tower, thirty storeys up.",
+    "signature_title": "Off-shift when it hit",
+    "situation_kind": "generic",
+    "spawn_anchor": "legacy",
+    "spawn_approx": false,
+    "spawn_context": "home",
+    "spawn_hour": 4.84,
+    "spawn_xy": [
+      1655.61,
+      -1297.96
+    ],
+    "work_building_id": 303,
+    "work_district": "Old Town",
+    "work_xy": [
+      695.45,
+      63.28
+    ]
   },
   {
     "age": 87,
     "current_activity": "leisure",
-    "current_location": "North residential 594",
+    "current_location": "North residential 604",
     "environment": "residential",
-    "home_building_id": 594,
+    "home_building_id": 604,
     "home_district": "North",
     "home_xy": [
-      618.34,
-      1110.97
+      1269.45,
+      1019.42
     ],
     "inventory": {
       "cash": 1,
@@ -3078,8 +3311,8 @@
     "spawn_context": "home",
     "spawn_hour": 19.1,
     "spawn_xy": [
-      618.34,
-      1110.97
+      1269.45,
+      1019.42
     ],
     "work_building_id": null,
     "work_district": "",
@@ -3088,13 +3321,13 @@
   {
     "age": 73,
     "current_activity": "leisure",
-    "current_location": "Old Town residential 410",
+    "current_location": "East residential 442",
     "environment": "residential",
-    "home_building_id": 410,
-    "home_district": "Old Town",
+    "home_building_id": 442,
+    "home_district": "East",
     "home_xy": [
-      711.18,
-      305.82
+      1421.95,
+      220.26
     ],
     "inventory": {
       "cash": 1,
@@ -3136,8 +3369,8 @@
     "spawn_context": "home",
     "spawn_hour": 15.4,
     "spawn_xy": [
-      711.18,
-      305.82
+      1421.95,
+      220.26
     ],
     "work_building_id": null,
     "work_district": "",
@@ -3146,13 +3379,13 @@
   {
     "age": 6,
     "current_activity": "sleep",
-    "current_location": "West residential 354",
+    "current_location": "West residential 373",
     "environment": "residential",
-    "home_building_id": 354,
+    "home_building_id": 373,
     "home_district": "West",
     "home_xy": [
-      -491.7,
-      225.33
+      55.12,
+      309.48
     ],
     "inventory": {
       "backpack": 1,
@@ -3192,8 +3425,8 @@
     "spawn_context": "home",
     "spawn_hour": 0.63,
     "spawn_xy": [
-      -491.7,
-      225.33
+      55.12,
+      309.48
     ],
     "work_building_id": null,
     "work_district": "",
@@ -3201,54 +3434,63 @@
   },
   {
     "age": 46,
-    "current_activity": "sleep",
-    "current_location": "Old Town residential 431",
-    "environment": "residential",
-    "home_building_id": 431,
-    "home_district": "Old Town",
+    "current_activity": "work",
+    "current_location": "North-West civic 494",
+    "environment": "civic",
+    "home_building_id": 454,
+    "home_district": "East",
     "home_xy": [
-      1095.98,
-      310.16
+      1653.98,
+      453.83
     ],
     "inventory": {
-      "face_mask": 1,
-      "keys": 2,
-      "phone": 2,
-      "shopping_bag": 1,
+      "badge": 1,
+      "cash": 1,
+      "keys": 1,
+      "notebook": 1,
+      "phone": 1,
+      "radio": 1,
+      "transit_pass": 1,
       "wallet": 1
     },
     "inventory_scopes": {
       "home": {},
       "on_person": {
-        "face_mask": 1,
-        "keys": 2,
-        "phone": 2,
-        "shopping_bag": 1,
+        "badge": 1,
+        "cash": 1,
+        "keys": 1,
+        "notebook": 1,
+        "phone": 1,
+        "radio": 1,
+        "transit_pass": 1,
         "wallet": 1
       },
       "vehicle": {},
       "workplace": {}
     },
     "name": "Carlos Rivera",
-    "occupation": "homemaker",
-    "on_duty": false,
+    "occupation": "police_officer",
+    "on_duty": true,
     "profile": "Boulder, Colorado",
-    "shift": "none",
-    "signature_dilemma": "Fortify a familiar, stocked house, or gather the household and run.",
-    "signature_location": "at home, mid-chore",
-    "signature_situation": "The home is yours and you know exactly what's in every cupboard.",
-    "signature_title": "The house is yours",
+    "shift": "night",
+    "signature_dilemma": "Enforce an order that no longer exists, or shed the uniform.",
+    "signature_location": "on night patrol",
+    "signature_situation": "Dispatch falls quiet between bursts of coded calls.",
+    "signature_title": "Dispatch goes silent",
     "situation_kind": "signature",
     "spawn_anchor": "legacy",
     "spawn_approx": false,
-    "spawn_context": "home",
-    "spawn_hour": 1.93,
+    "spawn_context": "workplace",
+    "spawn_hour": 3.08,
     "spawn_xy": [
-      1095.98,
-      310.16
+      64.38,
+      859.8
     ],
-    "work_building_id": null,
-    "work_district": "",
-    "work_xy": null
+    "work_building_id": 494,
+    "work_district": "North-West",
+    "work_xy": [
+      64.38,
+      859.8
+    ]
   }
 ]

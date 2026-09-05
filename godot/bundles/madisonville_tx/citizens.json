@@ -98,18 +98,18 @@
     "on_duty": false,
     "profile": "Madisonville",
     "shift": "day",
-    "signature_dilemma": "Sit tight in a metal box, or abandon the car and go on foot.",
-    "signature_location": "on a city street, mid-commute",
-    "signature_situation": "Bumper to bumper, then nobody is moving at all.",
-    "signature_title": "Total gridlock",
+    "signature_dilemma": "Climb the central barrier on foot, or ride it out in the cab.",
+    "signature_location": "on the motorway, mid-commute",
+    "signature_situation": "Eighty to zero -- the motorway concertinas into a pile-up in seconds.",
+    "signature_title": "Motorway folds up",
     "situation_kind": "travel",
     "spawn_anchor": "route",
     "spawn_approx": false,
     "spawn_context": "commute",
     "spawn_hour": 7.62,
     "spawn_xy": [
-      -1009.81,
-      -35.36
+      -853.07,
+      -172.2
     ],
     "work_building_id": 2792,
     "work_district": "North-East",
@@ -278,7 +278,7 @@
     "profile": "Madisonville",
     "shift": "day",
     "signature_dilemma": "Cut through the gridlock everyone else is trapped in, or get off the road entirely.",
-    "signature_location": "on a city street, mid-commute",
+    "signature_location": "on the motorway, mid-commute",
     "signature_situation": "The road seizes solid around you, but you're not in a car -- you can still move.",
     "signature_title": "Faster than the jam",
     "situation_kind": "travel",
@@ -287,8 +287,8 @@
     "spawn_context": "commute",
     "spawn_hour": 7.9,
     "spawn_xy": [
-      -864.51,
-      -640.98
+      -831.63,
+      -624.88
     ],
     "work_building_id": 979,
     "work_district": "West",
@@ -339,18 +339,18 @@
     "on_duty": false,
     "profile": "Madisonville",
     "shift": "night",
-    "signature_dilemma": "Sit tight in a metal box, or abandon the car and go on foot.",
+    "signature_dilemma": "Cut through the gridlock everyone else is trapped in, or get off the road entirely.",
     "signature_location": "on a city street, mid-commute",
-    "signature_situation": "Bumper to bumper, then nobody is moving at all.",
-    "signature_title": "Total gridlock",
+    "signature_situation": "The road seizes solid around you, but you're not in a car -- you can still move.",
+    "signature_title": "Faster than the jam",
     "situation_kind": "travel",
     "spawn_anchor": "route",
     "spawn_approx": false,
     "spawn_context": "commute",
     "spawn_hour": 3.54,
     "spawn_xy": [
-      409.34,
-      -40.8
+      319.62,
+      364.09
     ],
     "work_building_id": 1713,
     "work_district": "Old Town",
@@ -3054,8 +3054,8 @@
     "spawn_context": "commute",
     "spawn_hour": 3.81,
     "spawn_xy": [
-      -581.35,
-      -833.16
+      -920.49,
+      -704.36
     ],
     "work_building_id": 398,
     "work_district": "South",
