@@ -269,7 +269,10 @@ func _run() -> void:
 			drive_frames += 1
 			var lag := _lag(vr, vb)
 			max_lag = max(max_lag, lag)
-			if lag <= vb.follow_leash + 1.0:
+			# The authority integrates in 1 s substeps, so it jumps by up to one
+			# second of travel ahead of the body; the body must close that within
+			# the leash before the next jump.
+			if lag <= vb.follow_leash + 1.0 + float(vr.get("speed", 0.0)):
 				drive_ok_frames += 1
 			if last_v != Vector3.ZERO:
 				drive_body_dist += Vector2(vb.global_position.x, vb.global_position.z).distance_to(Vector2(last_v.x, last_v.z))

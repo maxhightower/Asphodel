@@ -443,8 +443,11 @@ class MobilityRuntime:
     def advance(self, dt_s: float, now_hour: float) -> None:
         """Advance every active citizen by ``dt_s`` game seconds (fixed substeps)."""
         self._accum += float(dt_s)
+        # The hour advances with every substep (one ADVANCE may span a long
+        # stretch of game time; a schedule boundary inside it must be seen).
+        hour_base, t_base = float(now_hour), self.now_s
         while self._accum >= SUBSTEP_S - 1e-9:
-            self._substep(SUBSTEP_S, now_hour)
+            self._substep(SUBSTEP_S, hour_base + (self.now_s - t_base) / 3600.0)
             self._accum -= SUBSTEP_S
         self._update_bands()
 
