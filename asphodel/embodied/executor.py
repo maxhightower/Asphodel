@@ -358,7 +358,13 @@ class TripExecutor:
             if self.speed_override > 0.0:
                 self.ped.desired_speed = self.speed_override
             # start from where we physically are: project onto the path
-            self.ped.dist = _resume_dist(path, self.pos)
+            rd = _resume_dist(path, self.pos)
+            if rd == 0.0 and math.hypot(path.points[0][0] - self.pos[0], path.points[0][1] - self.pos[1]) > RESUME_TOLERANCE_M:
+                # never relocate: a leg that starts elsewhere is a planning error
+                self.ped = None
+                self.fail("walk leg does not start where the citizen is", rt, env)
+                return False
+            self.ped.dist = rd
             self.ped._update_segment_index()
             self.state = EmbodimentState.ON_FOOT
             self.activity = "traveling"
@@ -367,6 +373,9 @@ class TripExecutor:
         c = self.ped
         c.advance(dt, env.moving_vehicles_near(self.pos, 30.0), physical=self.has_body)
         self.pos = c.position
+        nb = c.path.node_before(c.dist)
+        if nb is not None and nb != rt.current_node:
+            rt.note_situation(node=nb)
         self.heading = c.heading
         self.speed = c.speed
         self.distance_walked = self._walk_base + c.distance_walked
@@ -435,7 +444,13 @@ class TripExecutor:
             veh.assign_route(step.route, env.graph)
             self.car = VehicleController(path, params=env.vehicle_params(veh))
             self.car.junctions = junctions_on_path(env.graph, path)
-            self.car.dist = _resume_dist(path, veh.position())
+            rd = _resume_dist(path, veh.position())
+            vp = veh.position()
+            if rd == 0.0 and math.hypot(path.points[0][0] - vp[0], path.points[0][1] - vp[1]) > RESUME_TOLERANCE_M:
+                self.car = None
+                self.fail("drive leg does not start where the vehicle is", rt, env)
+                return False
+            self.car.dist = rd
             veh.fidelity = (VehicleFidelity.PHYSICAL_CONTROLLED if self.has_body
                             else VehicleFidelity.ROUTE_SIMULATED)
             self.state = EmbodimentState.DRIVING
@@ -450,13 +465,19 @@ class TripExecutor:
         self.pos = c.position
         self.heading = c.heading
         self.speed = c.speed
+        nb = c.path.node_before(c.dist)
+        if nb is not None and nb != rt.vehicle_node:
+            rt.note_situation(node=nb, vehicle_node=nb)
         self.distance_driven = self._drive_base + c.distance_driven
         if c.blocked and c.blocked_s <= dt:
             self.blocked_events += 1
             self.event(env.now_s, "blocked", reason=c.last_reason,
                        following=c.following, closed=c.road_closed_ahead)
-        if c.road_closed_ahead is not None and c.blocked_s > CAR_BLOCK_REPLAN_S:
-            env.on_blocked(self, rt, f"road blocked: {c.road_closed_ahead}")
+        if c.blocked_s > CAR_BLOCK_REPLAN_S:
+            why = (f"road blocked: {c.road_closed_ahead}" if c.road_closed_ahead is not None
+                   else f"stuck {c.last_reason} {c.following or c.yielding_to or ''}")
+            self.blocked_events += 1
+            env.on_blocked(self, rt, why)
             return False
         if c.arrived or c.dist >= c.path.length - 1e-6:
             self.speed = 0.0

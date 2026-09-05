@@ -54,6 +54,8 @@ class OtherVehicle:
     next_junction: Optional[Vec2] = None
     junction_dist: float = math.inf
     started_s: float = 0.0
+    parked: bool = False        # at a kerb/parking anchor (off the carriageway): never a lead
+    wreck: bool = False         # an abandoned/crashed car ON the carriageway: always an obstacle
 
 
 @dataclass
@@ -158,6 +160,8 @@ class VehicleController:
         for o in others:
             if o.vehicle_id == own_id:
                 continue
+            if o.parked and not o.wreck:
+                continue                      # a car parked at its anchor is not traffic
             if math.hypot(o.xy[0] - p[0], o.xy[1] - p[1]) > self.params.lookahead + 10.0:
                 continue
             along = wbase + distance_of_point(wpts, wcum, o.xy)

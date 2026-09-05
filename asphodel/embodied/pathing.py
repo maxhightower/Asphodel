@@ -312,6 +312,19 @@ class PhysicalPath:
                 "mode": self.mode.value,
                 "route_nodes": list(self.route.nodes) if self.route else []}
 
+    def node_before(self, dist: float) -> Optional[str]:
+        """The last graph node passed at ``dist`` along the path (the start node
+        of the segment containing ``dist``), or None without a route."""
+        if self.route is None or not self.route.nodes:
+            return None
+        k = 0
+        for i, (_sid, s0, _s1) in enumerate(self.segments):
+            if s0 <= dist + 1e-6:
+                k = i
+        if k < len(self.route.nodes):
+            return self.route.nodes[k]
+        return self.route.nodes[-1]
+
     def remaining_points(self, dist: float, max_points: int = 400) -> List[Vec2]:
         """The path ahead of ``dist`` (published to a NEAR body as waypoints)."""
         if dist <= 0:

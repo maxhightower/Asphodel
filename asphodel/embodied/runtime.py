@@ -393,7 +393,9 @@ class MobilityRuntime:
             if ex is not None and ex.car is not None:
                 nj, jd = ex.car.next_junction()
                 heading = ex.car.heading
-            out.append(OtherVehicle(vid, p, float(v.speed), heading, nj, jd))
+            out.append(OtherVehicle(vid, p, float(v.speed), heading, nj, jd,
+                                    parked=(v.parked_location is not None),
+                                    wreck=(v.fidelity == VehicleFidelity.PERSISTENT_WRECK)))
         return out
 
     def _exec_of_vehicle(self, vid: str) -> Optional[TripExecutor]:
