@@ -220,8 +220,8 @@ def test_O5_O6_symptoms_change_plans_and_mobility_executes(day):
     assert trip, "the citizen never moved after symptom onset"
     _status("O5", "PASS", f"SYMPTOM_ONSET at {5 + onset['t'] / 3600:.2f} h in building {onset['building_id']} "
             f"-> 'health' goal go_home replaced the schedule (PLAN_INVALIDATED)")
-    _status("O6", "PASS", f"TripExecutor executed the replanned trip: {[t['event'] for t in trip]} "
-            f"(embodiment states after onset, same executor)")
+    _status("O6", "PASS", f"TripExecutor executed the replanned trip: {sorted(set(trip))} "
+            f"(embodiment states after onset, same executor; left building {onset['building_id']} at {left['hour']:.2f} h)")
 
 
 def test_O7_O8_death_at_location_corpse_persists(day):
