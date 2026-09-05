@@ -29,17 +29,17 @@ class OutbreakPathogen:
     archetype: str = "classic"
     # --- transmission (hazard rates per game hour per infectious contact) ----
     transmission_route: str = "bite"          # bite | contact | fluid | airborne (label + mixing)
-    building_rate_per_h: float = 0.35          # co-occupants of one building (symptomatic source)
+    building_rate_per_h: float = 0.5           # co-occupants of one building (symptomatic source)
     vehicle_rate_per_h: float = 1.0            # shared vehicle
     proximity_rate_per_h: float = 0.6          # NEAR: within proximity_radius_m outdoors
     proximity_radius_m: float = 2.5
-    presymptomatic_factor: float = 0.5         # infectiousness before symptoms (last presymptomatic_s)
-    presymptomatic_s: float = 1.0 * H
+    presymptomatic_factor: float = 0.6         # infectiousness before symptoms (last presymptomatic_s)
+    presymptomatic_s: float = 2.0 * H
     bite_probability: float = 0.85             # per undead attack contact
     undead_infectious: float = 1.2             # relative weight of an undead source (co-occupancy)
     # --- progression (means; per-citizen jitter in [1-jitter, 1+jitter]) -----
     incubation_s: float = 4.0 * H              # exposure -> symptom onset
-    symptomatic_s: float = 1.0 * H             # symptom onset -> incapacitation
+    symptomatic_s: float = 0.15 * H            # symptom onset -> incapacitation (a fast collapse)
     incapacitated_s: float = 0.5 * H           # incapacitation -> death (if fatal)
     jitter: float = 0.4
     asymptomatic_fraction: float = 0.05        # never symptomatic; recover
