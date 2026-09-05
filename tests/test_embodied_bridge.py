@@ -64,8 +64,9 @@ def test_hello_advertises_v4_and_the_new_commands():
     s = WorldSession()
     r = s.handle({"cmd": Command.HELLO, "protocol_version": PROTOCOL_VERSION, "id": 7})
     assert r["ok"] and r["id"] == 7
-    assert PROTOCOL_VERSION == 4
-    assert r["protocol_version"] == 4
+    # v4 introduced the movement clock; later milestones may bump further (v5: outbreak)
+    assert PROTOCOL_VERSION >= 4
+    assert r["protocol_version"] == PROTOCOL_VERSION
     for cmd in (Command.ADVANCE_TIME, Command.MOBILITY_REPORT, Command.GET_MOBILITY):
         assert cmd in r["commands"]
     # an older client is rejected, never silently misread

@@ -8,7 +8,7 @@
   "building_same": true,
   "itinerary_same": true,
   "continuation_bit_identical": true,
-  "save_bytes": 780314
+  "save_bytes": 3996124
  },
  "driving": {
   "hour": 7.542,
@@ -19,7 +19,7 @@
   "building_same": true,
   "itinerary_same": true,
   "continuation_bit_identical": true,
-  "save_bytes": 790827
+  "save_bytes": 4065132
  },
  "parked": {
   "hour": 7.6,
@@ -30,7 +30,7 @@
   "building_same": true,
   "itinerary_same": true,
   "continuation_bit_identical": true,
-  "save_bytes": 795284
+  "save_bytes": 4090854
  },
  "inside_work": {
   "hour": 7.638,
@@ -41,6 +41,6 @@
   "building_same": true,
   "itinerary_same": true,
   "continuation_bit_identical": true,
-  "save_bytes": 798170
+  "save_bytes": 4114264
  }
 }
