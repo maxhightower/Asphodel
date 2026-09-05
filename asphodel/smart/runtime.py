@@ -700,6 +700,7 @@ class WorkRuntime:
                 if self.ledger.hold(o, cid, self.now_s, exclusive=False):
                     a.task_id = "browse"
                     a.object_id = o.object_id
+                    a.wait_since_s = -1.0
                     a.duration_s = 120.0
                     a.progress_s = 0.0
                     a.next_s = 0.0
@@ -738,6 +739,22 @@ class WorkRuntime:
                            **self._where(ex, a))
                 return
             # the shortest queue, nearest first (a deterministic tie-break)
+            if not staffed:
+                # every till is unattended but staff is in the building (a break):
+                # wait near the tills without committing to one; re-check often
+                a.task_id = "await_service"
+                a.object_id = None
+                a.wait_since_s = self.now_s if a.wait_since_s < 0 else a.wait_since_s
+                a.phase = "waiting"
+                a.next_s = 0.0
+                self.event("CUSTOMER_QUEUED", citizen_id=cid, position=0, staffed=False,
+                           **self._where(ex, a))
+                tx, ty = pool[0].use_xy
+                if _d(ex.pos, (tx, ty)) > 2.0:
+                    self._go_to(cid, ex, a, g, (tx + math.cos(pool[0].facing) * 2.0,
+                                                ty + math.sin(pool[0].facing) * 2.0))
+                    a.phase = "waiting"
+                return
             o = min(pool, key=lambda s: (len(self.queues.get(s.object_id, [])),
                                          round(_d(ex.pos, s.use_xy), 3), s.object_id))
             q = self.queues.setdefault(o.object_id, [])
@@ -745,7 +762,8 @@ class WorkRuntime:
             a.task_id = "checkout"
             a.object_id = o.object_id
             a.progress_s = 0.0
-            a.wait_since_s = self.now_s
+            if a.wait_since_s < 0:
+                a.wait_since_s = self.now_s
             a.phase = "waiting"
             a.next_s = 0.0
             self.event("CUSTOMER_QUEUED", citizen_id=cid, position=len(q), staffed=bool(staffed),
@@ -764,6 +782,20 @@ class WorkRuntime:
 
     def _customer_wait(self, cid: int, ex: TripExecutor, a: ActivityState,
                        reg: SmartObjectRegistry, g: RoomGraph, dt: float) -> None:
+        if a.task_id == "await_service":
+            stations = reg.with_caps("station", "transact")
+            if any(o.available() and self.ledger.holders_of(o.object_id) for o in stations):
+                a.task_id = "browsed"          # a till is staffed again: queue there
+                a.phase = "idle"
+                a.next_s = 0.0
+                return
+            if self.now_s - a.wait_since_s >= CUSTOMER_PATIENCE_S:
+                a.phase = "done"
+                a.task_id = "unserved"
+                self.event("CUSTOMER_UNSERVED", citizen_id=cid, reason="no staffed register",
+                           waited_s=round(self.now_s - a.wait_since_s, 1), **self._where(ex, a))
+                self._flag_reduced(a.building_id, reg)
+            return
         q = self.queues.get(a.object_id or "", [])
         obj = reg.get(a.object_id) if a.object_id else None
         staffed = obj is not None and obj.available() and bool(self.ledger.holders_of(obj.object_id))
