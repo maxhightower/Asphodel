@@ -254,14 +254,24 @@ class OutbreakRuntime:
         # if the threat is in our home, flee to the errand building instead
         thr = self.mobility.execs.get(threat_id)
         target = home
-        home_bid = (rt.node_meta.get(home) or {}).get("building_id")
-        if thr is not None and thr.inside and thr.building_id == home_bid:
-            alt = next((n for n, m in rt.node_meta.items()
-                        if n.startswith("ent:") and n != home and m.get("building_id") is not None), None)
-            if alt is None:
-                # a citizen with no other known place takes refuge in a
-                # deterministic nearby building (never the one under attack)
-                alt = self._refuge_node(rt, int(home_bid))
+        home_meta = rt.node_meta.get(home) or {}
+        home_bid = home_meta.get("building_id")
+        home_xy = home_meta.get("xy")
+        # "the threat is at my home": inside it, registered at it, or at its door
+        threat_at_home = thr is not None and home_bid is not None and (
+            (thr.inside and thr.building_id == home_bid)
+            or int(thr.building_id) == int(home_bid)
+            or (home_xy is not None and _d(thr.pos, home_xy) <= THREAT_RADIUS_M))
+        if threat_at_home:
+            # the nearest other place this citizen knows (work / errand), or a
+            # deterministic nearby refuge building; never the one under attack
+            cands = [(n, m) for n, m in sorted(rt.node_meta.items())
+                     if n.startswith("ent:") and n != home and m.get("building_id") is not None]
+            refuge = self._refuge_node(rt, int(home_bid))
+            if refuge is not None and all(n != refuge for n, _ in cands):
+                cands.append((refuge, rt.node_meta[refuge]))
+            cands = [(n, m) for n, m in cands if m.get("xy") is not None]
+            alt = min(cands, key=lambda nm: _d(ex.pos, nm[1]["xy"]))[0] if cands else None
             target = alt or home
         # An identical flee already under way is kept (re-pushing would restart
         # the plan and the leave-building dwell under a sustained attack).
