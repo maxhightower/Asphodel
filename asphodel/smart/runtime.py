@@ -419,7 +419,10 @@ class WorkRuntime:
                       emp: Employment) -> bool:
         p = task.precondition
         if p == "break_due":
-            return a.worked_s >= ROLES[a.role].break_after_s
+            # a break waits while customers are queued at this worker's station
+            oid = a.object_id if a.object_id and self.ledger.exclusive_of.get(a.citizen_id) == a.object_id \
+                else emp.assigned_object
+            return a.worked_s >= ROLES[a.role].break_after_s and not (oid and self.queues.get(oid))
         if p == "customer_waiting":
             oid = a.object_id if a.object_id and self.ledger.exclusive_of.get(a.citizen_id) == a.object_id \
                 else emp.assigned_object

@@ -418,8 +418,11 @@ class OutbreakRuntime:
                 else:
                     if vx.in_vehicle:
                         continue
-                    d = _d(ux.pos, vx.pos)
-                    if d > p.undead_sense_m and not (vx.inside and d <= p.undead_sense_m):
+                    # a victim inside a building is sensed at that building's
+                    # door (its interior position may be a room away)
+                    ref = (self.mobility.entrance_of(vx.building_id) or vx.pos) if vx.inside else vx.pos
+                    d = _d(ux.pos, ref)
+                    if d > p.undead_sense_m:
                         continue
                 if d < bestd:
                     best, bestd = vcid, d
