@@ -31565,13 +31565,17 @@
    "PASS",
    "save with active disruption at 14.35 h: disrupted buildings, obstructions and continuation identical"
   ],
+  "O19": [
+   "PASS",
+   "in-engine run reproduced the index case's biological events [('SYMPTOM_ONSET', 42.0), ('INCAPACITATED', 42.0), ('DEATH', 42.0), ('REANIMATION', 42.0)] at identical timestamps: True"
+  ],
   "O20": [
-   "NOT_RUN",
-   "artifacts/outbreak_v1/regression.json absent (written by the final suite run)"
+   "PASS",
+   "906 collected: 904 passed; 1 pre-existing environment failure (raw Overture parquet, identical on origin/main); 1 stale v4 pin fixed and re-verified (11 passed)"
   ],
   "O21": [
-   "NOT_RUN",
-   "regression.json absent"
+   "PASS",
+   "existing headless gates (godot/tests/run_gates.sh: PhysicsGate, RegionGate, NavGate, ConvergenceGate): 85 PASS / 0 FAIL; ExteriorStream gate 0 failures; MobilityGate PASS; OutbreakGate 18/18 PASS (artifacts/outbreak_v1/godot_probe_trace.json)"
   ],
   "O22": [
    "PASS",
