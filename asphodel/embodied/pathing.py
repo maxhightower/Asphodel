@@ -278,6 +278,62 @@ class PhysicalPath:
             pts = [graph.nodes[nodes[0]]]
         return cls(pts, segments=segs, route=route, mode=route.mode)
 
+    def kerb_offset(self, d: float) -> "PhysicalPath":
+        """The same path walked along the kerb: every point that lies on a real
+        street segment is moved ``d`` metres to the right of the direction of
+        travel; access connectors (front door, driveway, parking bay) keep
+        their real geometry so the walk still ends at the door. Segment
+        extents are rescaled to the new cumulative lengths so node bookkeeping
+        (``node_before``, ``segment_at``) keeps working. Pure geometry: the
+        same route always yields the same kerb path."""
+        pts = self.points
+        n = len(pts)
+        if d == 0.0 or n < 2 or not self.segments:
+            return self
+        # which point indices lie on street (non-connector) segments
+        on_street = [False] * n
+        for sid, s0, s1 in self.segments:
+            if sid.startswith("conn:"):
+                continue
+            for i, c in enumerate(self.cum):
+                if s0 - 1e-6 <= c <= s1 + 1e-6:
+                    on_street[i] = True
+        # the leg's own end points are places the citizen must physically
+        # reach (a door, a parked car, the node of the next leg): never moved
+        on_street[0] = False
+        on_street[n - 1] = False
+        out: List[Vec2] = []
+        for i, p in enumerate(pts):
+            if not on_street[i]:
+                out.append(p)
+                continue
+            # average of the unit directions into and out of this vertex
+            dx = dy = 0.0
+            if i > 0:
+                ax, ay = pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]
+                L = math.hypot(ax, ay)
+                if L > 1e-9:
+                    dx += ax / L
+                    dy += ay / L
+            if i < n - 1:
+                bx, by = pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]
+                L = math.hypot(bx, by)
+                if L > 1e-9:
+                    dx += bx / L
+                    dy += by / L
+            L = math.hypot(dx, dy)
+            if L < 1e-9:
+                out.append(p)
+                continue
+            nx, ny = dy / L, -dx / L          # right-hand normal of the travel direction
+            out.append((p[0] + nx * d, p[1] + ny * d))
+        new_cum = _cumulative(out)
+        old_len = self.cum[-1] if self.cum else 0.0
+        new_len = new_cum[-1] if new_cum else 0.0
+        k = (new_len / old_len) if old_len > 1e-9 else 1.0
+        segs = [(sid, s0 * k, s1 * k) for sid, s0, s1 in self.segments]
+        return PhysicalPath(out, cum=new_cum, segments=segs, route=self.route, mode=self.mode)
+
     @property
     def length(self) -> float:
         return self.cum[-1] if self.cum else 0.0

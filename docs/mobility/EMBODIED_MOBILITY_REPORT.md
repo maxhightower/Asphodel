@@ -236,7 +236,9 @@ simulation, is the frame budget question.
 * **Junction yielding on fast roads**: `junction_yield_m` (14 m) is shorter
   than the stopping distance at the 16 m/s ceiling, so a car can roll through
   a yield on a trunk road; correct on calm streets (tested).
-* **Pedestrians walk the road polyline** (no sidewalk offset); they yield to
+* ~~**Pedestrians walk the road polyline** (no sidewalk offset)~~ — closed by
+  `ASPHODEL_OUTBREAK_V1`: walking legs run 4.5 m kerb-side of the centreline
+  (`asphodel/embodied/executor.py::walk_path`); they still yield to
   moving cars. Kerb-side geometry is a later refinement.
 * **Materialization safety** (`lod/materialize.py`) is not applied at body
   spawn; anchors are outside footprints by construction.

@@ -63,6 +63,7 @@ CAR_BLOCK_REPLAN_S = 45.0
 MAX_TRACE = 400
 RESUME_TOLERANCE_M = 8.0       # how far off a new leg's path we still "are on it"
 WALK_APPROACH_LIMIT_M = 200.0  # a walk leg may begin with a straight approach to its start within this
+KERB_OFFSET_M = 4.5            # pedestrians walk this far to the right of the street centreline (kerb side)
 
 
 def _resume_dist(path: PhysicalPath, pos: Vec2) -> float:
@@ -79,6 +80,14 @@ def _resume_dist(path: PhysicalPath, pos: Vec2) -> float:
     along = distance_of_point(path.points, path.cum, pos)
     p = path.point_at(along)
     return along if math.hypot(p[0] - pos[0], p[1] - pos[1]) <= RESUME_TOLERANCE_M else 0.0
+
+
+def walk_path(graph, route) -> PhysicalPath:
+    """The physical path of a walking leg: the route polyline walked along the
+    kerb (``KERB_OFFSET_M`` right of the street centreline) so pedestrians do
+    not share the carriageway with the authoritative cars, which drive the
+    centreline. Used for execution and for restoring a saved leg alike."""
+    return PhysicalPath.from_route(graph, route).kerb_offset(KERB_OFFSET_M)
 
 
 @dataclass
@@ -361,7 +370,7 @@ class TripExecutor:
             if step.route is None:
                 self.fail("walk step without a route", rt, env)
                 return False
-            path = PhysicalPath.from_route(env.graph, step.route)
+            path = walk_path(env.graph, step.route)
             if path.length <= 0.0 and step.anchor_xy is None:
                 return True
             self.ped = PedestrianController(path)
@@ -669,7 +678,7 @@ class TripExecutor:
         ex.itinerary = None if it is None else Itinerary.from_state(it)
         step = ex.current_step
         if st.get("ped") is not None and step is not None and step.route is not None:
-            ex.ped = PedestrianController(PhysicalPath.from_route(env.graph, step.route))
+            ex.ped = PedestrianController(walk_path(env.graph, step.route))
             ex.ped.restore(st["ped"])
         if st.get("car") is not None and step is not None and step.route is not None:
             veh = env.vehicles.get(ex.vehicle_id or "")

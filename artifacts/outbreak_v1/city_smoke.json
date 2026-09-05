@@ -5,7 +5,7 @@
   "end_hour": 17.0,
   "step_s": 60.0,
   "determinism_hours": 3.0,
-  "wall_s": 213.4,
+  "wall_s": 210.1,
   "python": "3.11.15",
   "cities": {
     "houston": {
@@ -13,7 +13,7 @@
       "status": "PASS",
       "reason": "",
       "bundle_dir": "/home/user/Asphodel/godot/bundles/houston",
-      "setup_s": 3.42,
+      "setup_s": 3.52,
       "n_citizens": 297,
       "contact_structure": {
         "n_workplaces": 167,
@@ -53,20 +53,20 @@
       "end_hour": 17.0,
       "step_s": 60.0,
       "game_minutes": 720,
-      "run_s": 108.44,
-      "ms_per_game_minute_total": 150.609,
-      "ms_per_game_minute_mobility": 139.433,
-      "ms_per_game_minute_outbreak": 11.148,
-      "ms_per_game_minute_other": 0.027,
-      "n_events": 123,
-      "n_events_in_runtime_ring": 123,
+      "run_s": 105.52,
+      "ms_per_game_minute_total": 146.551,
+      "ms_per_game_minute_mobility": 136.2,
+      "ms_per_game_minute_outbreak": 10.326,
+      "ms_per_game_minute_other": 0.026,
+      "n_events": 121,
+      "n_events_in_runtime_ring": 121,
       "n_events_dropped_between_drains": 0,
       "events_by_kind": {
         "ATTACK": 4,
         "CORPSE_CREATED": 6,
         "DEATH": 6,
         "EXPOSURE": 9,
-        "FLEE": 5,
+        "FLEE": 4,
         "HUNT": 18,
         "INCAPACITATED": 6,
         "INFECTED": 9,
@@ -75,7 +75,6 @@
         "ROAD_OBSTRUCTED": 1,
         "ROAM": 26,
         "SYMPTOM_ONSET": 6,
-        "THREAT_OBSERVED": 1,
         "VEHICLE_ABANDONED": 1,
         "WORKPLACE_DISRUPTED": 4
       },
@@ -168,7 +167,7 @@
             "context": "bite"
           },
           {
-            "hour": 16.55,
+            "hour": 16.534,
             "citizen_id": 188,
             "source_citizen": 127,
             "context": "bite"
@@ -315,8 +314,8 @@
           "citizen_id": 42,
           "vehicle_id": "veh:42",
           "reason": "driver incapacitated",
-          "x": -1280.1,
-          "y": -1325.7,
+          "x": -1269.4,
+          "y": -1334.7,
           "segment": "bf368bb4-0c9e-4829-87cc-3c69b328af6a#1"
         },
         {
@@ -329,15 +328,15 @@
             "car",
             "heavy"
           ],
-          "x": -1280.1,
-          "y": -1325.7
+          "x": -1269.4,
+          "y": -1334.7
         },
         {
           "hour": 9.982,
           "event": "INCAPACITATED",
           "citizen_id": 42,
-          "x": -1280.1,
-          "y": -1325.7,
+          "x": -1269.4,
+          "y": -1334.7,
           "building_id": -1,
           "vehicle_id": "veh:42",
           "embodiment": "incapacitated"
@@ -382,8 +381,8 @@
           "citizen_id": 42,
           "will_reanimate": true,
           "reanimate_t": 20143.257203494406,
-          "x": -1280.1,
-          "y": -1325.7,
+          "x": -1269.4,
+          "y": -1334.7,
           "building_id": -1,
           "vehicle_id": "veh:42",
           "embodiment": "corpse"
@@ -394,8 +393,8 @@
           "citizen_id": 42,
           "original_citizen_id": 42,
           "lineage": [],
-          "x": -1280.1,
-          "y": -1325.7,
+          "x": -1269.4,
+          "y": -1334.7,
           "building_id": -1,
           "vehicle_id": null,
           "embodiment": "undead"
@@ -793,19 +792,6 @@
           "embodiment": "corpse"
         },
         {
-          "hour": 16.034,
-          "event": "FLEE",
-          "citizen_id": 173,
-          "threat_citizen": 117,
-          "target": "ent:11670",
-          "reason": "saw undead citizen 117",
-          "x": 209.3,
-          "y": -1884.3,
-          "building_id": -1,
-          "vehicle_id": "veh:173",
-          "embodiment": "driving"
-        },
-        {
           "hour": 16.264,
           "event": "SYMPTOM_ONSET",
           "citizen_id": 294,
@@ -865,7 +851,7 @@
           "embodiment": "inside_building"
         },
         {
-          "hour": 16.55,
+          "hour": 16.534,
           "event": "ATTACK",
           "citizen_id": 127,
           "victim_citizen": 188,
@@ -878,7 +864,7 @@
           "embodiment": "doing_activity"
         },
         {
-          "hour": 16.55,
+          "hour": 16.534,
           "event": "EXPOSURE",
           "citizen_id": 188,
           "source_citizen": 127,
@@ -890,15 +876,15 @@
           "embodiment": "doing_activity"
         },
         {
-          "hour": 16.55,
+          "hour": 16.534,
           "event": "INFECTED",
           "citizen_id": 188,
           "source_citizen": 127,
           "pathogen": "classic_zombie",
-          "symptom_t": 52910.45176684192,
-          "incapacitation_t": 53280.127950600356,
-          "death_t": 55586.180218800284,
-          "reanimate_t": 57170.14201463853,
+          "symptom_t": 52850.45176684192,
+          "incapacitation_t": 53220.127950600356,
+          "death_t": 55526.180218800284,
+          "reanimate_t": 57110.14201463853,
           "fatal": true,
           "will_reanimate": true,
           "lineage": [
@@ -912,7 +898,7 @@
           "embodiment": "doing_activity"
         },
         {
-          "hour": 16.55,
+          "hour": 16.534,
           "event": "FLEE",
           "citizen_id": 188,
           "threat_citizen": 127,
@@ -959,13 +945,13 @@
         "events_identical": true,
         "first_difference": null,
         "digest": {
-          "executors": 867031415,
-          "health": 1255549908,
+          "executors": 2820467743,
+          "health": 1279816689,
           "n_execs": 297,
           "n_records": 4
         },
         "note": "full event lists over the first 3 game hours compared verbatim, plus an executor-position and health digest at the same instant",
-        "repeat_s": 42.26
+        "repeat_s": 42.76
       }
     },
     "madisonville_tx": {
@@ -973,7 +959,7 @@
       "status": "PASS",
       "reason": "",
       "bundle_dir": "/home/user/Asphodel/godot/bundles/madisonville_tx",
-      "setup_s": 0.81,
+      "setup_s": 0.23,
       "n_citizens": 53,
       "contact_structure": {
         "n_workplaces": 30,
@@ -1011,41 +997,41 @@
       "end_hour": 17.0,
       "step_s": 60.0,
       "game_minutes": 720,
-      "run_s": 6.03,
-      "ms_per_game_minute_total": 8.374,
-      "ms_per_game_minute_mobility": 5.095,
-      "ms_per_game_minute_outbreak": 3.256,
-      "ms_per_game_minute_other": 0.023,
-      "n_events": 599,
-      "n_events_in_runtime_ring": 599,
+      "run_s": 5.92,
+      "ms_per_game_minute_total": 8.227,
+      "ms_per_game_minute_mobility": 5.081,
+      "ms_per_game_minute_outbreak": 3.123,
+      "ms_per_game_minute_other": 0.022,
+      "n_events": 582,
+      "n_events_in_runtime_ring": 582,
       "n_events_dropped_between_drains": 0,
       "events_by_kind": {
-        "ATTACK": 9,
+        "ATTACK": 8,
         "CORPSE_CREATED": 9,
         "DEATH": 9,
-        "EXPOSURE": 12,
-        "FLEE": 16,
-        "HUNT": 57,
+        "EXPOSURE": 11,
+        "FLEE": 14,
+        "HUNT": 44,
         "INCAPACITATED": 9,
-        "INFECTED": 12,
+        "INFECTED": 11,
         "PLAN_INVALIDATED": 25,
         "REANIMATION": 7,
-        "ROAM": 405,
+        "ROAM": 407,
         "SYMPTOM_ONSET": 9,
-        "THREAT_OBSERVED": 15,
+        "THREAT_OBSERVED": 14,
         "WORKPLACE_DISRUPTED": 5
       },
       "health": {
         "by_state": {
           "corpse": 1,
           "dead": 1,
-          "incubating": 3,
-          "susceptible": 41,
+          "incubating": 2,
+          "susceptible": 42,
           "undead": 7
         },
         "n_registered": 53,
-        "n_ever_infected": 12,
-        "n_infected_now": 11,
+        "n_ever_infected": 11,
+        "n_infected_now": 10,
         "n_symptomatic": 0,
         "n_incapacitated": 0,
         "n_dead": 2,
@@ -1069,10 +1055,10 @@
         "final_state": "undead"
       },
       "onward": {
-        "n_onward_exposures": 11,
+        "n_onward_exposures": 10,
         "contexts": {
           "building:580": 2,
-          "bite": 9
+          "bite": 8
         },
         "first": {
           "hour": 8.234,
@@ -1140,12 +1126,6 @@
             "hour": 12.584,
             "citizen_id": 50,
             "source_citizen": 11,
-            "context": "bite"
-          },
-          {
-            "hour": 16.684,
-            "citizen_id": 2,
-            "source_citizen": 45,
             "context": "bite"
           }
         ]
@@ -1291,7 +1271,7 @@
           "event": "INCAPACITATED",
           "citizen_id": 11,
           "x": -592.2,
-          "y": -1190.5,
+          "y": -1186.2,
           "building_id": -1,
           "vehicle_id": null,
           "embodiment": "incapacitated"
@@ -1303,7 +1283,7 @@
           "will_reanimate": true,
           "reanimate_t": 18244.16389434801,
           "x": -592.2,
-          "y": -1190.5,
+          "y": -1186.2,
           "building_id": -1,
           "vehicle_id": null,
           "embodiment": "corpse"
@@ -1315,7 +1295,7 @@
           "original_citizen_id": 11,
           "lineage": [],
           "x": -592.2,
-          "y": -1190.5,
+          "y": -1186.2,
           "building_id": -1,
           "vehicle_id": null,
           "embodiment": "undead"
@@ -2199,19 +2179,6 @@
           "embodiment": "inside_building"
         },
         {
-          "hour": 16.017,
-          "event": "FLEE",
-          "citizen_id": 31,
-          "threat_citizen": 59,
-          "target": "ent:1064",
-          "reason": "saw undead citizen 59",
-          "x": 245.3,
-          "y": -117.7,
-          "building_id": -1,
-          "vehicle_id": "veh:31",
-          "embodiment": "driving"
-        },
-        {
           "hour": 16.034,
           "event": "FLEE",
           "citizen_id": 48,
@@ -2231,8 +2198,8 @@
           "threat_citizen": 59,
           "target": "ent:1429",
           "reason": "saw undead citizen 59",
-          "x": 339.1,
-          "y": -73.7,
+          "x": 342.9,
+          "y": -67.0,
           "building_id": -1,
           "vehicle_id": null,
           "embodiment": "on_foot"
@@ -2264,8 +2231,8 @@
           "threat_citizen": 59,
           "target": "ent:1893",
           "reason": "saw undead citizen 59",
-          "x": 562.3,
-          "y": 31.1,
+          "x": 564.5,
+          "y": 37.1,
           "building_id": -1,
           "vehicle_id": null,
           "embodiment": "on_foot"
@@ -2277,71 +2244,11 @@
           "threat_citizen": 45,
           "target": "ent:1187",
           "reason": "saw undead citizen 45",
-          "x": -288.8,
-          "y": 93.3,
+          "x": -305.7,
+          "y": 91.0,
           "building_id": -1,
           "vehicle_id": null,
           "embodiment": "on_foot"
-        },
-        {
-          "hour": 16.684,
-          "event": "ATTACK",
-          "citizen_id": 45,
-          "victim_citizen": 2,
-          "exposed": true,
-          "victim_health": "susceptible",
-          "x": -89.3,
-          "y": 129.2,
-          "building_id": 1925,
-          "vehicle_id": null,
-          "embodiment": "doing_activity"
-        },
-        {
-          "hour": 16.684,
-          "event": "EXPOSURE",
-          "citizen_id": 2,
-          "source_citizen": 45,
-          "context": "bite",
-          "x": -89.3,
-          "y": 129.2,
-          "building_id": 1925,
-          "vehicle_id": null,
-          "embodiment": "doing_activity"
-        },
-        {
-          "hour": 16.684,
-          "event": "INFECTED",
-          "citizen_id": 2,
-          "source_citizen": 45,
-          "pathogen": "classic_zombie",
-          "symptom_t": 53244.89553373266,
-          "incapacitation_t": 53487.869618805664,
-          "death_t": 55277.37949205185,
-          "reanimate_t": null,
-          "fatal": true,
-          "will_reanimate": false,
-          "lineage": [
-            11,
-            45
-          ],
-          "x": -89.3,
-          "y": 129.2,
-          "building_id": 1925,
-          "vehicle_id": null,
-          "embodiment": "doing_activity"
-        },
-        {
-          "hour": 16.684,
-          "event": "FLEE",
-          "citizen_id": 2,
-          "threat_citizen": 45,
-          "target": "ent:1954",
-          "reason": "attacked",
-          "x": -89.3,
-          "y": 129.2,
-          "building_id": 1925,
-          "vehicle_id": null,
-          "embodiment": "doing_activity"
         },
         {
           "hour": 16.851,
@@ -2363,13 +2270,13 @@
         "events_identical": true,
         "first_difference": null,
         "digest": {
-          "executors": 3346492764,
-          "health": 3213766270,
+          "executors": 899896199,
+          "health": 2312226183,
           "n_execs": 53,
           "n_records": 1
         },
         "note": "full event lists over the first 3 game hours compared verbatim, plus an executor-position and health digest at the same instant",
-        "repeat_s": 1.37
+        "repeat_s": 2.01
       }
     },
     "austin": {
@@ -2377,7 +2284,7 @@
       "status": "INFO",
       "reason": "no data-driven index case: no workplace has >= 2 day-shift (06:00-10:00) workers among the 60 registered citizens (largest workplace: 2 worker(s), 1 shared workplaces)",
       "bundle_dir": "/home/user/Asphodel/godot/bundles/austin",
-      "setup_s": 4.46,
+      "setup_s": 4.65,
       "n_citizens": 60,
       "contact_structure": {
         "n_workplaces": 45,
@@ -2401,7 +2308,7 @@
       "status": "PASS",
       "reason": "",
       "bundle_dir": "/home/user/Asphodel/godot/bundles/san_antonio",
-      "setup_s": 4.51,
+      "setup_s": 4.71,
       "n_citizens": 60,
       "contact_structure": {
         "n_workplaces": 41,
@@ -2437,27 +2344,28 @@
       "end_hour": 17.0,
       "step_s": 60.0,
       "game_minutes": 720,
-      "run_s": 27.86,
-      "ms_per_game_minute_total": 38.689,
-      "ms_per_game_minute_mobility": 36.257,
-      "ms_per_game_minute_outbreak": 2.41,
-      "ms_per_game_minute_other": 0.023,
-      "n_events": 38,
-      "n_events_in_runtime_ring": 38,
+      "run_s": 26.13,
+      "ms_per_game_minute_total": 36.298,
+      "ms_per_game_minute_mobility": 33.894,
+      "ms_per_game_minute_outbreak": 2.384,
+      "ms_per_game_minute_other": 0.02,
+      "n_events": 39,
+      "n_events_in_runtime_ring": 39,
       "n_events_dropped_between_drains": 0,
       "events_by_kind": {
         "ATTACK": 2,
         "CORPSE_CREATED": 2,
         "DEATH": 2,
         "EXPOSURE": 3,
-        "FLEE": 2,
-        "HUNT": 4,
+        "FLEE": 3,
+        "HUNT": 3,
         "INCAPACITATED": 2,
         "INFECTED": 3,
         "PLAN_INVALIDATED": 6,
         "REANIMATION": 1,
         "ROAM": 7,
         "SYMPTOM_ONSET": 2,
+        "THREAT_OBSERVED": 1,
         "WORKPLACE_DISRUPTED": 2
       },
       "health": {
@@ -2498,7 +2406,7 @@
           "bite": 2
         },
         "first": {
-          "hour": 11.45,
+          "hour": 11.434,
           "citizen_id": 41,
           "source_citizen": 20,
           "context": "bite",
@@ -2506,13 +2414,13 @@
         },
         "chain": [
           {
-            "hour": 11.45,
+            "hour": 11.434,
             "citizen_id": 41,
             "source_citizen": 20,
             "context": "bite"
           },
           {
-            "hour": 14.2,
+            "hour": 14.184,
             "citizen_id": 0,
             "source_citizen": 20,
             "context": "bite"
@@ -2521,7 +2429,7 @@
       },
       "disrupted_buildings": {
         "442": {
-          "hour": 14.417,
+          "hour": 14.4,
           "reason": "1/2 workers down",
           "n_workers": 2
         },
@@ -2578,8 +2486,8 @@
           "hour": 10.242,
           "event": "INCAPACITATED",
           "citizen_id": 20,
-          "x": 834.9,
-          "y": -2086.4,
+          "x": 839.3,
+          "y": -2087.8,
           "building_id": -1,
           "vehicle_id": null,
           "embodiment": "incapacitated"
@@ -2604,8 +2512,8 @@
           "citizen_id": 20,
           "will_reanimate": true,
           "reanimate_t": 22328.011604726435,
-          "x": 834.9,
-          "y": -2086.4,
+          "x": 839.3,
+          "y": -2087.8,
           "building_id": -1,
           "vehicle_id": null,
           "embodiment": "corpse"
@@ -2616,14 +2524,14 @@
           "citizen_id": 20,
           "original_citizen_id": 20,
           "lineage": [],
-          "x": 834.9,
-          "y": -2086.4,
+          "x": 839.3,
+          "y": -2087.8,
           "building_id": -1,
           "vehicle_id": null,
           "embodiment": "undead"
         },
         {
-          "hour": 11.45,
+          "hour": 11.434,
           "event": "ATTACK",
           "citizen_id": 20,
           "victim_citizen": 41,
@@ -2636,7 +2544,7 @@
           "embodiment": "doing_activity"
         },
         {
-          "hour": 11.45,
+          "hour": 11.434,
           "event": "EXPOSURE",
           "citizen_id": 41,
           "source_citizen": 20,
@@ -2648,14 +2556,14 @@
           "embodiment": "doing_activity"
         },
         {
-          "hour": 11.45,
+          "hour": 11.434,
           "event": "INFECTED",
           "citizen_id": 41,
           "source_citizen": 20,
           "pathogen": "classic_zombie",
-          "symptom_t": 33468.510259357085,
-          "incapacitation_t": 33894.445905105,
-          "death_t": 35181.82283136617,
+          "symptom_t": 33408.510259357085,
+          "incapacitation_t": 33834.445905105,
+          "death_t": 35121.82283136617,
           "reanimate_t": null,
           "fatal": true,
           "will_reanimate": false,
@@ -2669,7 +2577,7 @@
           "embodiment": "doing_activity"
         },
         {
-          "hour": 11.45,
+          "hour": 11.434,
           "event": "FLEE",
           "citizen_id": 41,
           "threat_citizen": 20,
@@ -2682,7 +2590,7 @@
           "embodiment": "doing_activity"
         },
         {
-          "hour": 14.2,
+          "hour": 14.184,
           "event": "ATTACK",
           "citizen_id": 20,
           "victim_citizen": 0,
@@ -2695,7 +2603,7 @@
           "embodiment": "doing_activity"
         },
         {
-          "hour": 14.2,
+          "hour": 14.184,
           "event": "EXPOSURE",
           "citizen_id": 0,
           "source_citizen": 20,
@@ -2707,15 +2615,15 @@
           "embodiment": "doing_activity"
         },
         {
-          "hour": 14.2,
+          "hour": 14.184,
           "event": "INFECTED",
           "citizen_id": 0,
           "source_citizen": 20,
           "pathogen": "classic_zombie",
-          "symptom_t": 53233.51937499686,
-          "incapacitation_t": 53499.507394267726,
-          "death_t": 54921.392188267055,
-          "reanimate_t": 55881.47154501509,
+          "symptom_t": 53173.51937499686,
+          "incapacitation_t": 53439.507394267726,
+          "death_t": 54861.392188267055,
+          "reanimate_t": 55821.47154501509,
           "fatal": true,
           "will_reanimate": true,
           "lineage": [
@@ -2728,7 +2636,7 @@
           "embodiment": "doing_activity"
         },
         {
-          "hour": 14.2,
+          "hour": 14.184,
           "event": "FLEE",
           "citizen_id": 0,
           "threat_citizen": 20,
@@ -2741,7 +2649,7 @@
           "embodiment": "doing_activity"
         },
         {
-          "hour": 14.297,
+          "hour": 14.28,
           "event": "SYMPTOM_ONSET",
           "citizen_id": 41,
           "x": 863.6,
@@ -2751,7 +2659,7 @@
           "embodiment": "doing_activity"
         },
         {
-          "hour": 14.415,
+          "hour": 14.399,
           "event": "INCAPACITATED",
           "citizen_id": 41,
           "x": 863.6,
@@ -2761,7 +2669,7 @@
           "embodiment": "incapacitated"
         },
         {
-          "hour": 14.417,
+          "hour": 14.4,
           "event": "WORKPLACE_DISRUPTED",
           "building_id": 442,
           "reason": "1/2 workers down",
@@ -2775,7 +2683,7 @@
           "hazard": []
         },
         {
-          "hour": 14.773,
+          "hour": 14.756,
           "event": "DEATH",
           "citizen_id": 41,
           "will_reanimate": false,
@@ -2785,6 +2693,19 @@
           "building_id": 9253,
           "vehicle_id": null,
           "embodiment": "corpse"
+        },
+        {
+          "hour": 16.05,
+          "event": "FLEE",
+          "citizen_id": 22,
+          "threat_citizen": 20,
+          "target": "ent:623",
+          "reason": "saw undead citizen 20",
+          "x": 833.6,
+          "y": -2055.5,
+          "building_id": -1,
+          "vehicle_id": null,
+          "embodiment": "on_foot"
         }
       ],
       "determinism": {
@@ -2794,13 +2715,13 @@
         "events_identical": true,
         "first_difference": null,
         "digest": {
-          "executors": 1805771193,
-          "health": 2269336551,
+          "executors": 1504298570,
+          "health": 1727676236,
           "n_execs": 60,
           "n_records": 1
         },
         "note": "full event lists over the first 3 game hours compared verbatim, plus an executor-position and health digest at the same instant",
-        "repeat_s": 14.26
+        "repeat_s": 14.68
       }
     },
     "boulder": {

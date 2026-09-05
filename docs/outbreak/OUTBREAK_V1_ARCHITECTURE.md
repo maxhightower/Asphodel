@@ -212,6 +212,14 @@ The hunter's planner is also given the prey's node metadata (building id,
 entrance) so an `ENTER_BUILDING` step toward another citizen's home can be
 built.
 
+A fourth defect belonged to the population, not the outbreak: with 300
+citizens a pedestrian walking the street centreline stood in a physical car's
+lane and the car crawled behind it (the mobility gate's drive failed on the
+certification population). Walking legs are now executed along the kerb
+(`KERB_OFFSET_M` = 4.5 m right of the centreline on real street segments;
+connectors and the leg's end points keep their true geometry, so the walk
+still ends at the door or the car). Godot bodies inherit the same path.
+
 ## 11. Extension points (for Smart Objects / work execution)
 
 `OutbreakRuntime` reads only `TripExecutor` situation fields
