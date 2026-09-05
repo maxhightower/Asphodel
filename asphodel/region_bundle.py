@@ -53,11 +53,52 @@ def _stats_from_grid(h: np.ndarray, step_m: float) -> dict:
     }
 
 
+REGION_SCHEMA_VERSION = 2
+DEFAULT_PLATEAU_BLEND_M = 3000.0
+
+
+def _smoothstep(t):
+    t = np.clip(t, 0.0, 1.0)
+    return t * t * (3.0 - 2.0 * t)
+
+
+def apply_city_plateau(heights: np.ndarray, x0: float, z0: float, step_m: float,
+                       center, radius_m: float, blend_m: float,
+                       datum: Optional[float] = None) -> tuple:
+    """Flatten the terrain under the detailed city to one datum elevation.
+
+    The compiled city (buildings, roads, sidewalks, interiors) is authored on a
+    flat plane at y = 0 in the bundle frame; without this step the regional
+    heightmap would put that plane a dozen metres under (or above) the ground.
+    Inside ``radius_m`` the surface IS the datum; between ``radius_m`` and
+    ``radius_m + blend_m`` it blends smoothly into the regional relief; outside
+    it is untouched. ``datum`` defaults to the mean eroded elevation inside the
+    city radius, so the city sits at the height the terrain wanted anyway.
+
+    Returns ``(heights, datum)``. Pure numpy, deterministic.
+    """
+    h = np.asarray(heights, dtype=np.float64)
+    rows, cols = h.shape
+    xs = x0 + np.arange(cols) * step_m
+    zs = z0 + np.arange(rows) * step_m
+    gx, gz = np.meshgrid(xs, zs)
+    r = np.hypot(gx - center[0], gz - center[1])
+    inside = r <= radius_m
+    if datum is None:
+        datum = float(h[inside].mean()) if inside.any() else float(h.mean())
+    t = _smoothstep((r - radius_m) / max(1.0, blend_m))
+    out = datum * (1.0 - t) + h * t
+    return out, float(datum)
+
+
 def build_region_artifact(georef: GeoReference, archetype_name: str,
                           extent: Optional[RegionalExtent] = None,
                           seed: int = 0, focus=(0.0, 0.0),
                           heightmap_step_m: float = 800.0,
-                          max_depth: int = 6) -> dict:
+                          max_depth: int = 6,
+                          plateau: bool = True,
+                          plateau_blend_m: float = DEFAULT_PLATEAU_BLEND_M,
+                          datum: Optional[float] = None) -> dict:
     """Build the regional terrain artifact for a city (§3).
 
     Ships a coarse baked heightmap (offline runtime source), the archetype macro
@@ -65,6 +106,13 @@ def build_region_artifact(georef: GeoReference, archetype_name: str,
     chunk manifest describing the quadtree LOD for a default focus. Fine chunk
     meshes are rebuilt at runtime from the cached heightmap — the artifact stays
     small.
+
+    Schema v2 adds the **city plateau** (see :func:`apply_city_plateau`): the
+    detailed city disc is flat at ``georef.origin_elevation`` so the compiled
+    city at y = 0 sits exactly on the ground, and ``georef.origin_elevation`` in
+    the artifact is always that datum. Terrain provenance is recorded per
+    artifact: today every region is ``synthetic`` (archetype form + seed-stable
+    noise); a real DEM bake replaces the provider, not the schema.
     """
     extent = extent or RegionalExtent.from_km(3, 40, 60, center=focus)
     arch = archetype_for(archetype_name)
@@ -78,9 +126,31 @@ def build_region_artifact(georef: GeoReference, archetype_name: str,
     hydro = erode_and_hydrology(raw, heightmap["step_m"], seed=seed,
                                 mountainous=mountainous)
     eroded = hydro["heights"]
+    water_mask = np.asarray(hydro["water_mask"], dtype=bool)
+    plateau_info = None
+    if plateau:
+        # A caller-supplied datum (a real surveyed origin elevation, e.g. Denver
+        # 1609 m) wins; otherwise the city sits at its own mean terrain height.
+        eroded, datum_used = apply_city_plateau(
+            eroded, heightmap["x0"], heightmap["z0"], heightmap["step_m"],
+            extent.center, extent.detailed_city_radius, plateau_blend_m,
+            datum=datum)
+        # The city disc is built ground: no baked river/sea cells inside it.
+        xs = heightmap["x0"] + np.arange(eroded.shape[1]) * heightmap["step_m"]
+        zs = heightmap["z0"] + np.arange(eroded.shape[0]) * heightmap["step_m"]
+        gx, gz = np.meshgrid(xs, zs)
+        inside = np.hypot(gx - extent.center[0], gz - extent.center[1]) <= extent.detailed_city_radius
+        water_mask = water_mask & ~inside
+        georef = GeoReference(georef.origin_lat, georef.origin_lon,
+                              origin_elevation=datum_used,
+                              projected_crs=georef.projected_crs,
+                              regional_origin=georef.regional_origin)
+        plateau_info = {"radius_m": extent.detailed_city_radius,
+                        "blend_m": plateau_blend_m,
+                        "datum_elevation": round(datum_used, 2)}
     heightmap["heights"] = [[round(float(v), 2) for v in row] for row in eroded]
     heightmap["eroded"] = True
-    water_cells = [[int(r), int(c)] for r, c in zip(*np.where(hydro["water_mask"]))]
+    water_cells = [[int(r), int(c)] for r, c in zip(*np.where(water_mask))]
 
     stats = _stats_from_grid(eroded, heightmap["step_m"])
 
@@ -106,9 +176,17 @@ def build_region_artifact(georef: GeoReference, archetype_name: str,
         })
 
     return {
-        "version": "1",
+        "version": REGION_SCHEMA_VERSION,
         "georef": georef.to_dict(),
         "archetype": arch.name,
+        "city_plateau": plateau_info,
+        "provenance": {
+            "terrain": "synthetic",
+            "provider": provider.provenance(),
+            "note": ("elevation is PROCEDURAL (archetype macro-form + seed-stable "
+                     "noise), not surveyed; replace the provider with a DEM bake "
+                     "to source it"),
+        },
         "extent": {
             "detailed_city_radius": extent.detailed_city_radius,
             "regional_radius": extent.regional_radius,
@@ -197,6 +275,52 @@ def augment_bundle(bundle_dir: str, archetype_name: str, seed: int = 0) -> dict:
     _write_json(os.path.join(bundle_dir, "streetmap.json"), mobility)
     _write_json(os.path.join(bundle_dir, "physics.json"), physics)
     return {"region": region, "mobility": mobility, "physics": physics}
+
+
+def _terrain_seed(seed: int, city: str) -> int:
+    """Per-city terrain seed: two cities sharing an archetype and bundle seed
+    must not share a heightmap (Austin and San Antonio did). Deterministic."""
+    import zlib
+    return int(seed) ^ (zlib.crc32(city.encode("utf-8")) & 0xFFFF)
+
+
+def rebake_region(bundle_dir: str, archetype_name: Optional[str] = None,
+                  seed: Optional[int] = None) -> dict:
+    """Rewrite ONLY ``region.json`` for a bundle (schema v2, city plateau).
+
+    The archetype defaults to the one recorded in the existing region.json; the
+    seed to the bundle's ``meta.seed``. A surveyed ``meta.origin_elevation`` (the
+    synthetic mountain cities carry one) becomes the plateau datum; otherwise
+    the datum is the mean synthetic elevation under the city.
+    """
+    city = os.path.basename(bundle_dir.rstrip("/"))
+    meta = {}
+    meta_path = os.path.join(bundle_dir, "meta.json")
+    if os.path.exists(meta_path):
+        with open(meta_path) as f:
+            meta = json.load(f)
+    old = {}
+    old_path = os.path.join(bundle_dir, "region.json")
+    if os.path.exists(old_path):
+        with open(old_path) as f:
+            old = json.load(f)
+    if archetype_name is None:
+        archetype_name = old.get("archetype", "rolling_inland")
+    if seed is None:
+        seed = int(meta.get("seed", old.get("seed", 0)))
+    if meta:
+        georef = GeoReference.from_bundle_meta(meta)
+    else:
+        georef = GeoReference.from_dict(old["georef"])
+    datum = None
+    if "origin_elevation" in meta or (not meta and georef.origin_elevation != 0.0):
+        datum = float(georef.origin_elevation)
+    region = build_region_artifact(georef, archetype_name,
+                                   seed=_terrain_seed(seed, city), datum=datum)
+    if old.get("name"):
+        region["name"] = old["name"]
+    _write_json(old_path, region)
+    return region
 
 
 def write_region_only_bundle(out_dir: str, name: str, lat: float, lon: float,

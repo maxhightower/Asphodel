@@ -99,3 +99,60 @@ def test_committed_denver_region_artifact_is_mountainous_if_present():
         region = json.load(f)
     assert region["archetype"] == "mountain_front"
     assert region["terrain_stats"]["relief_span"] > 800.0
+
+
+# --------------------------------------------------------------------------- #
+# Schema v2: the city plateau — the compiled city at y = 0 sits ON the ground
+# --------------------------------------------------------------------------- #
+def _inside_city(a):
+    import numpy as np
+    hm = a["heightmap"]
+    h = np.array(hm["heights"])
+    xs = hm["x0"] + np.arange(h.shape[1]) * hm["step_m"]
+    zs = hm["z0"] + np.arange(h.shape[0]) * hm["step_m"]
+    gx, gz = np.meshgrid(xs, zs)
+    r = np.hypot(gx - a["extent"]["center"][0], gz - a["extent"]["center"][1])
+    return h, r
+
+
+def test_region_schema_v2_city_plateau_is_flat_at_datum():
+    g = GeoReference(39.74, -104.99, origin_elevation=1609.0)
+    a = build_region_artifact(g, "mountain_front", seed=0, datum=1609.0)
+    assert a["version"] == 2
+    assert a["city_plateau"]["datum_elevation"] == 1609.0
+    assert a["georef"]["origin_elevation"] == 1609.0
+    h, r = _inside_city(a)
+    inside = r <= a["extent"]["detailed_city_radius"]
+    assert inside.any()
+    assert abs(h[inside] - 1609.0).max() < 0.011          # flat to rounding
+    outside = r > a["extent"]["detailed_city_radius"] + a["city_plateau"]["blend_m"]
+    assert (h[outside].max() - h[outside].min()) > 800.0  # mountains survive
+    # No baked water inside the built city disc.
+    step = a["heightmap"]["step_m"]
+    for row, col in a["water_cells"]:
+        x = a["heightmap"]["x0"] + col * step
+        z = a["heightmap"]["z0"] + row * step
+        assert (x * x + z * z) ** 0.5 > a["extent"]["detailed_city_radius"]
+
+
+def test_region_plateau_datum_defaults_to_mean_city_height():
+    g = GeoReference(29.82, -95.46)
+    a = build_region_artifact(g, "coastal_plain", seed=0)
+    d = a["city_plateau"]["datum_elevation"]
+    assert a["georef"]["origin_elevation"] == pytest.approx(d, abs=0.01)
+    h, r = _inside_city(a)
+    assert abs(h[r <= 3000.0] - d).max() < 0.011
+
+
+def test_committed_bundles_carry_v2_region_with_provenance():
+    for city in ("houston", "madisonville_tx", "austin", "san_antonio",
+                 "boulder", "denver_region"):
+        path = os.path.join(BUNDLES, city, "region.json")
+        if not os.path.exists(path):
+            pytest.skip(f"{city} bundle absent")
+        with open(path) as f:
+            a = json.load(f)
+        assert a["version"] == 2, city
+        assert a["provenance"]["terrain"] == "synthetic", city
+        assert a["city_plateau"]["datum_elevation"] == pytest.approx(
+            a["georef"]["origin_elevation"], abs=0.01), city
