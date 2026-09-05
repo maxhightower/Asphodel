@@ -69,6 +69,7 @@ class OutbreakRuntime:
         self.disrupted_buildings: Dict[int, dict] = {}     # bid -> {t, reason}
         self.obstructions: List[str] = []                  # obstruction ids we applied
         self.undead_targets: Dict[int, int] = {}           # undead cid -> victim cid
+        self.undead_roam: Dict[int, int] = {}              # undead cid -> roam leg counter
         self.attack_cooldown: Dict[int, float] = {}
         self._known_threats: Dict[int, set] = {}           # witness cid -> threat ids seen
         self.workers_by_building: Dict[int, List[int]] = {}
@@ -207,6 +208,9 @@ class OutbreakRuntime:
                 veh.driver = None
             ex.vehicle_id = None
         ex.set_override("undead", self.now_s, speed=self.pathogen.undead_speed)
+        rt.has_vehicle = False
+        rt.in_vehicle = False
+        rt.inside_building = ex.inside
         rt.goals.goals = []
         rt.active_goal = None
         rt.goals._active = None
@@ -363,6 +367,7 @@ class OutbreakRuntime:
                     best, bestd = vcid, d
             if best is None:
                 self.undead_targets.pop(ucid, None)
+                self._roam(ucid, ux, urt)
                 continue
             vx = execs[best]
             same_place = (ux.inside and vx.inside and ux.building_id == vx.building_id)
@@ -383,6 +388,28 @@ class OutbreakRuntime:
                 urt.push_goal(g, self.mobility.graph)
                 self.event("HUNT", citizen_id=ucid, target_citizen=best, distance_m=round(bestd, 1),
                            **self._where(ux))
+
+    def _roam(self, ucid: int, ux: TripExecutor, urt) -> None:
+        """No prey in range: shamble around the neighbourhood the citizen knew
+        (home <-> its errand building), sensing as it goes. Planner + executor
+        move it; nothing here sets a position."""
+        if urt.active_goal is not None and urt.itinerary is not None and ux.current_step is not None:
+            return
+        nodes = [n for n in (urt.home_node,) + tuple(
+            n for n, m in sorted(urt.node_meta.items())
+            if n.startswith("ent:") and n != urt.home_node and m.get("building_id") is not None)]
+        if not nodes:
+            return
+        here = urt.current_node
+        candidates = [n for n in nodes if n != here] or nodes
+        k = self.undead_roam.get(ucid, 0)
+        target = candidates[k % len(candidates)]
+        self.undead_roam[ucid] = k + 1
+        urt.goals.goals = []
+        g = Goal(GoalKind.ARRIVE_AT, target=target, reason="roaming", source="emergency",
+                 priority=0.5)
+        urt.push_goal(g, self.mobility.graph)
+        self.event("ROAM", citizen_id=ucid, target=target, **self._where(ux))
 
     def _attack(self, ucid: int, vcid: int) -> None:
         p = self.pathogen
@@ -531,6 +558,7 @@ class OutbreakRuntime:
                 "disrupted_buildings": {str(k): v for k, v in sorted(self.disrupted_buildings.items())},
                 "obstructions": list(self.obstructions),
                 "undead_targets": {str(k): v for k, v in sorted(self.undead_targets.items())},
+                "undead_roam": {str(k): v for k, v in sorted(self.undead_roam.items())},
                 "attack_cooldown": {str(k): v for k, v in sorted(self.attack_cooldown.items())},
                 "known_threats": {str(k): sorted(str(x) for x in v) for k, v in sorted(self._known_threats.items())}}
 
@@ -547,6 +575,7 @@ class OutbreakRuntime:
         o.disrupted_buildings = {int(k): v for k, v in (st.get("disrupted_buildings") or {}).items()}
         o.obstructions = list(st.get("obstructions") or [])
         o.undead_targets = {int(k): int(v) for k, v in (st.get("undead_targets") or {}).items()}
+        o.undead_roam = {int(k): int(v) for k, v in (st.get("undead_roam") or {}).items()}
         o.attack_cooldown = {int(k): float(v) for k, v in (st.get("attack_cooldown") or {}).items()}
         kt = {}
         for k, v in (st.get("known_threats") or {}).items():

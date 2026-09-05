@@ -39,7 +39,7 @@ class OutbreakPathogen:
     undead_infectious: float = 1.2             # relative weight of an undead source (co-occupancy)
     # --- progression (means; per-citizen jitter in [1-jitter, 1+jitter]) -----
     incubation_s: float = 4.0 * H              # exposure -> symptom onset
-    symptomatic_s: float = 0.15 * H            # symptom onset -> incapacitation (a fast collapse)
+    symptomatic_s: float = 0.1 * H             # symptom onset -> incapacitation (a rapid collapse)
     incapacitated_s: float = 0.5 * H           # incapacitation -> death (if fatal)
     jitter: float = 0.4
     asymptomatic_fraction: float = 0.05        # never symptomatic; recover
