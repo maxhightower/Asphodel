@@ -321,14 +321,14 @@ in the manifest carry the authoritative rows at capture time.
 
 | file | what the frame shows |
 |---|---|
-| `00_arrival.png` | the shop floor cutaway with gondolas/fridge cases; the worker's body on the floor after the commute delivered it inside (a holder ring is visible) |
-| `01_walk_to_station.png` | the same room seconds later, the worker mid-floor between shelf rows walking to `so:12013:5` |
-| `02_using_station.png` | the worker at the register mesh, tinted with the `using` look, a gold holder ring at the station |
-| `03_service_interaction.png` | the register at the instant the SERVED event was drained; the cashier at the station. The customer body is not distinguishable in this frame — the service is evidenced by the event, not the pixels |
+| `00_arrival.png` | the sales-floor cutaway of workplace 12013 (gondolas and fridge cases) with the cashier's body on the floor after the commute delivered it inside (`doing_activity`, room 0). The white ring in the middle of the frame is the player marker, not a holder ring |
+| `01_walk_to_station.png` | the same room seconds later, the body a few metres further along between the shelf rows, walking to `so:12013:5` (`to_object`). Two stills cannot prove motion; the manifest row carries the phase |
+| `02_using_station.png` | the worker standing at the register fixture with the gold `using` highlight and holder ring at the station (`GET_ROOMS` holders = [68]) |
+| `03_service_interaction.png` | the register at the instant the SERVED event was drained (cashier 68 served customer 260); the cashier at the station with the ring. The customer body is not distinguishable in this frame — the service is evidenced by the event, not the pixels |
 | `04_task_switch.png` | after the cashier's task switched from `man_register` to `take_break` (object `so:12013:488`, phase `to_object`): the worker's body is on the sales floor between the gondolas, away from the register, walking toward the back room. The frame shows a body in motion; the task order itself is the authority's row in the manifest, not something the pixels prove |
 | `05_contention.png` | `so:12013:488` set `working=false` while held: the authority evicted the worker (`OBJECT_UNAVAILABLE`) and re-targeted it to `so:12013:494`; the frame, captured within the same second, is nearly identical to `04` (the body has barely moved). Substitution is evidenced by the manifest row and `GET_ROOMS` holders, not by this frame |
-| `06_interruption.png` | the back room after the shift ended: no interior body for the worker (it is outside), matching `state on_foot` |
-| `07_leaving.png` | the exterior parking lot; **the body exists but is not visible** — exterior bodies sit below this lot's surface mesh because the scene never calls `set_ground_y` (pre-existing, §19) |
+| `06_interruption.png` | after the shift ended (`CLOCK_OUT shift_end`, phase null, state `on_foot`): the exterior lot at the shop's door; **no worker body is visible** — the citizen is outside, and exterior bodies here sit below the lot surface (§19). The frame proves the interior no longer holds the worker, nothing more |
+| `07_leaving.png` | the exterior parking lot moments later; **the body exists (`exterior CitizenBody drawn: true`) but is not visible** for the same ground-height reason (pre-existing, §19) |
 | `08_after_promotion.png` | the back room (chairs, racks, lockers) after 10 game minutes with the player 1.5 km away and no body: the worker's body is recreated at the authoritative interior pose (0.00 m from it) on chair `so:12013:494`, with its gold holder ring |
 
 ## 18. Multi-agent interaction

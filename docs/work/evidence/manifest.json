@@ -5,10 +5,10 @@
   "shots": [
     {
       "building_id": 12013,
-      "caption": "citizen 68 (cashier) inside workplace 12013 at hour 8.581: state doing_activity, room 0.0 (sales_floor) — the player is in the same staged interior, 2 worker bodies driven from authoritative interior positions",
+      "caption": "citizen 68 (cashier) inside workplace 12013 at hour 8.58098966888889: state doing_activity, room 0.0 (sales_floor) — the player is in the same staged interior, 2 worker bodies driven from authoritative interior positions",
       "citizen_id": 68,
       "file": "00_arrival.png",
-      "hour": 8.581,
+      "hour": 8.58098966888889,
       "inside_building": 12013,
       "interior_bodies": 2,
       "markers": [
@@ -60,7 +60,7 @@
       "caption": "phase to_object: citizen 68 walking across sales_floor to so:12013:5 for task man_register (interior locomotion is authoritative Python; the body follows it)",
       "citizen_id": 68,
       "file": "01_walk_to_station.png",
-      "hour": 8.581,
+      "hour": 8.58098966888889,
       "inside_building": 12013,
       "interior_bodies": 2,
       "markers": [
@@ -112,7 +112,7 @@
       "caption": "phase using: citizen 68 at so:12013:5 (task man_register); GET_ROOMS holders of that object = [68.0]; 2 holder rings drawn at stations in use",
       "citizen_id": 68,
       "file": "02_using_station.png",
-      "hour": 8.58961111111111,
+      "hour": 8.58960078,
       "inside_building": 12013,
       "interior_bodies": 2,
       "markers": [
@@ -161,10 +161,10 @@
     },
     {
       "building_id": 12013,
-      "caption": "SERVED in workplace 12013 at hour 10.7785: cashier 68.0 served customer 260.0 at station so:12013:5 (1 served here so far; the followed worker 68 is using at so:12013:5)",
+      "caption": "SERVED in workplace 12013 at hour 10.7784896688889: cashier 68.0 served customer 260.0 at station so:12013:5 (1 served here so far; the followed worker 68 is using at so:12013:5)",
       "citizen_id": 68,
       "file": "03_service_interaction.png",
-      "hour": 10.7785,
+      "hour": 10.7784896688889,
       "inside_building": 12013,
       "interior_bodies": 4,
       "markers": [
@@ -213,76 +213,24 @@
     },
     {
       "building_id": 12013,
-      "caption": "NOT REACHED: the job grammar kept issuing task man_register to citizen 68 for the whole captured hour, so no switch to a different task occurred; the frame shows it on so:12013:5, phase using",
+      "caption": "task switch: citizen 68 moved from task man_register to task take_break (object so:12013:488, phase to_object) — the task order is the authority's job grammar, not the renderer's",
       "citizen_id": 68,
       "file": "04_task_switch.png",
-      "hour": 11.7785,
+      "hour": 11.4662674466667,
       "inside_building": 12013,
       "interior_bodies": 4,
       "markers": [
         "so:12013:15",
-        "so:12013:5"
+        "so:12013:488"
       ],
       "state": "doing_activity",
       "work": {
         "carrying": "",
-        "object_id": "so:12013:5",
-        "phase": "using",
-        "role": "cashier",
-        "room_id": 0.0,
-        "task": "man_register",
-        "workplace_id": 12013.0,
-        "zone": "sales_floor"
-      },
-      "workplace_status": {
-        "building_id": 12013.0,
-        "customers_queued": 0.0,
-        "reduced": false,
-        "staffed": [
-          "so:12013:15",
-          "so:12013:5"
-        ],
-        "stations": [
-          "so:12013:10",
-          "so:12013:15",
-          "so:12013:20",
-          "so:12013:25",
-          "so:12013:30",
-          "so:12013:35",
-          "so:12013:40",
-          "so:12013:45",
-          "so:12013:5",
-          "so:12013:50"
-        ],
-        "status": "open",
-        "workers_present": [
-          68.0,
-          271.0
-        ]
-      },
-      "x": 2782.693,
-      "y": 398.961
-    },
-    {
-      "building_id": 12013,
-      "caption": "station so:12013:5 set working=false: citizen 68 was evicted (OBJECT_UNAVAILABLE x1) and is now on so:12013:20, phase to_object — substitution is the authority's, the renderer only shows where the holder rings moved",
-      "citizen_id": 68,
-      "file": "05_contention.png",
-      "hour": 11.7787777777778,
-      "inside_building": 12013,
-      "interior_bodies": 4,
-      "markers": [
-        "so:12013:15",
-        "so:12013:20"
-      ],
-      "state": "doing_activity",
-      "work": {
-        "carrying": "",
-        "object_id": "so:12013:20",
+        "object_id": "so:12013:488",
         "phase": "to_object",
         "role": "cashier",
         "room_id": 0.0,
-        "task": "man_register",
+        "task": "take_break",
         "workplace_id": 12013.0,
         "zone": "sales_floor"
       },
@@ -291,8 +239,7 @@
         "customers_queued": 0.0,
         "reduced": false,
         "staffed": [
-          "so:12013:15",
-          "so:12013:20"
+          "so:12013:15"
         ],
         "stations": [
           "so:12013:10",
@@ -317,24 +264,24 @@
     },
     {
       "building_id": 12013,
-      "caption": "back after 10 game minutes with the player 1.5 km away and no body: the CitizenBody for citizen 68 is recreated at the authoritative interior pose (0.00 m from it), still on object so:12013:20 task man_register",
+      "caption": "station so:12013:488 set working=false: citizen 68 was evicted (OBJECT_UNAVAILABLE x1) and is now on so:12013:494, phase to_object — substitution is the authority's, the renderer only shows where the holder rings moved",
       "citizen_id": 68,
-      "file": "08_after_promotion.png",
-      "hour": 11.9457222222222,
+      "file": "05_contention.png",
+      "hour": 11.4665452244444,
       "inside_building": 12013,
       "interior_bodies": 4,
       "markers": [
         "so:12013:15",
-        "so:12013:20"
+        "so:12013:494"
       ],
       "state": "doing_activity",
       "work": {
         "carrying": "",
-        "object_id": "so:12013:20",
-        "phase": "using",
+        "object_id": "so:12013:494",
+        "phase": "to_object",
         "role": "cashier",
         "room_id": 0.0,
-        "task": "man_register",
+        "task": "take_break",
         "workplace_id": 12013.0,
         "zone": "sales_floor"
       },
@@ -343,8 +290,7 @@
         "customers_queued": 0.0,
         "reduced": false,
         "staffed": [
-          "so:12013:15",
-          "so:12013:20"
+          "so:12013:15"
         ],
         "stations": [
           "so:12013:10",
@@ -364,15 +310,66 @@
           271.0
         ]
       },
-      "x": 2785.653,
-      "y": 393.057
+      "x": 2782.693,
+      "y": 398.961
     },
     {
       "building_id": 12013,
-      "caption": "end of the session at hour 16.0012777777778: state on_foot, phase <null>; CLOCK_OUT events for citizen 68 = 1 shift_end, WORK_INTERRUPTED = 0 — every hold is released back to the ledger",
+      "caption": "back after 10 game minutes with the player 1.5 km away and no body: the CitizenBody for citizen 68 is recreated at the authoritative interior pose (0.00 m from it), still on object so:12013:494 task take_break",
+      "citizen_id": 68,
+      "file": "08_after_promotion.png",
+      "hour": 11.6334896688889,
+      "inside_building": 12013,
+      "interior_bodies": 4,
+      "markers": [
+        "so:12013:15",
+        "so:12013:494"
+      ],
+      "state": "doing_activity",
+      "work": {
+        "carrying": "",
+        "object_id": "so:12013:494",
+        "phase": "using",
+        "role": "cashier",
+        "room_id": 1.0,
+        "task": "take_break",
+        "workplace_id": 12013.0,
+        "zone": "employee_area"
+      },
+      "workplace_status": {
+        "building_id": 12013.0,
+        "customers_queued": 0.0,
+        "reduced": false,
+        "staffed": [
+          "so:12013:15"
+        ],
+        "stations": [
+          "so:12013:10",
+          "so:12013:15",
+          "so:12013:20",
+          "so:12013:25",
+          "so:12013:30",
+          "so:12013:35",
+          "so:12013:40",
+          "so:12013:45",
+          "so:12013:5",
+          "so:12013:50"
+        ],
+        "status": "open",
+        "workers_present": [
+          68.0,
+          271.0
+        ]
+      },
+      "x": 2700.635,
+      "y": 439.761
+    },
+    {
+      "building_id": 12013,
+      "caption": "end of the session at hour 16.0057118911111: state on_foot, phase <null>; CLOCK_OUT events for citizen 68 = 1 shift_end, WORK_INTERRUPTED = 0 — every hold is released back to the ledger",
       "citizen_id": 68,
       "file": "06_interruption.png",
-      "hour": 16.0012777777778,
+      "hour": 16.0057118911111,
       "inside_building": -1,
       "interior_bodies": 0,
       "markers": [],
@@ -392,8 +389,7 @@
         "customers_queued": 0.0,
         "reduced": false,
         "staffed": [
-          "so:12013:15",
-          "so:12013:20"
+          "so:12013:15"
         ],
         "stations": [
           "so:12013:10",
@@ -413,15 +409,15 @@
           271.0
         ]
       },
-      "x": 2830.535,
-      "y": 394.422
+      "x": 2812.601,
+      "y": 389.334
     },
     {
       "building_id": 12013,
-      "caption": "citizen 68 outside building 12013 on foot at hour 16.0240555555556 (state on_foot, work phase <null>), exterior CitizenBody drawn: true — the shift is over and the ordinary mobility executor owns the citizen again",
+      "caption": "citizen 68 outside building 12013 on foot at hour 16.0284896688889 (state on_foot, work phase <null>), exterior CitizenBody drawn: true — the shift is over and the ordinary mobility executor owns the citizen again",
       "citizen_id": 68,
       "file": "07_leaving.png",
-      "hour": 16.0240555555556,
+      "hour": 16.0284896688889,
       "inside_building": -1,
       "interior_bodies": 0,
       "markers": [],
@@ -441,8 +437,7 @@
         "customers_queued": 0.0,
         "reduced": false,
         "staffed": [
-          "so:12013:15",
-          "so:12013:20"
+          "so:12013:15"
         ],
         "stations": [
           "so:12013:10",
@@ -462,8 +457,8 @@
           271.0
         ]
       },
-      "x": 2720.308,
-      "y": 393.235
+      "x": 2697.983,
+      "y": 395.039
     }
   ]
 }
