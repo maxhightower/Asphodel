@@ -1,0 +1,46 @@
+{
+ "walking": {
+  "hour": 7.504,
+  "state": "on_foot",
+  "restored_identical": true,
+  "step_index_same": true,
+  "vehicle_same": true,
+  "building_same": true,
+  "itinerary_same": true,
+  "continuation_bit_identical": true,
+  "save_bytes": 780314
+ },
+ "driving": {
+  "hour": 7.542,
+  "state": "driving",
+  "restored_identical": true,
+  "step_index_same": true,
+  "vehicle_same": true,
+  "building_same": true,
+  "itinerary_same": true,
+  "continuation_bit_identical": true,
+  "save_bytes": 790827
+ },
+ "parked": {
+  "hour": 7.6,
+  "state": "on_foot",
+  "restored_identical": true,
+  "step_index_same": true,
+  "vehicle_same": true,
+  "building_same": true,
+  "itinerary_same": true,
+  "continuation_bit_identical": true,
+  "save_bytes": 795284
+ },
+ "inside_work": {
+  "hour": 7.638,
+  "state": "doing_activity",
+  "restored_identical": true,
+  "step_index_same": true,
+  "vehicle_same": true,
+  "building_same": true,
+  "itinerary_same": true,
+  "continuation_bit_identical": true,
+  "save_bytes": 798170
+ }
+}

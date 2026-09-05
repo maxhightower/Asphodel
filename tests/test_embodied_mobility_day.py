@@ -318,7 +318,8 @@ def test_12_scheduled_duty(day):
     acts = [e for e in ex.trace if e["event"] == "activity" and e.get("activity") == "work"]
     arrived = [e for e in ex.trace if e["event"] == "entered_building" and e["building_id"] == day["cit"].work_building_id]
     assert acts and arrived and acts[0]["t"] >= arrived[0]["t"]
-    s8 = min((s for s in day["samples"] if 8.0 <= s["hour"] < 9.0), key=lambda s: s["hour"])
+    # the schedule syncs once per game minute: read the first sample after 08:01
+    s8 = min((s for s in day["samples"] if 8.02 <= s["hour"] < 9.0), key=lambda s: s["hour"])
     assert s8["activity"] == "work" and s8["state"] == "doing_activity"
     _status("scheduled_duty", "PASS",
             f"'work' began at {acts[0]['t']:.0f} s only after arrival at {arrived[0]['t']:.0f} s "
