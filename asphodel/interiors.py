@@ -44,7 +44,7 @@ from . import items
 # Bump when the generation algorithm changes in a way that alters geometry for a
 # fixed (world_seed, building_id). A saved delta records the gen_version it was
 # made against; a mismatch is surfaced, never silently reinterpreted.
-INTERIOR_GEN_VERSION = 1
+INTERIOR_GEN_VERSION = 2   # v2: retail back rooms get employee seating (ASPHODEL_SMART_OBJECTS_WORK_V1)
 # Bump on a breaking change to the descriptor *shape* (wire contract).
 INTERIOR_SCHEMA_VERSION = 1
 
@@ -233,7 +233,7 @@ _ROOM_DECOR = {
     "hall": ["bench", "sideboard"],
     "garage": ["workbench", "tool_cabinet", "washer", "dryer", "water_heater", "shelf"],
     "shop_floor": ["gondola", "gondola", "checkout", "fridge_case", "display"],
-    "back_room": ["pallet_rack", "shelf", "crate", "freezer_case"],
+    "back_room": ["pallet_rack", "shelf", "crate", "freezer_case", "chair", "chair"],
     "storeroom": ["pallet_rack", "shelf", "crate"],
     "open_office": ["cubicle", "cubicle", "cubicle", "printer", "filing_cabinet"],
     "meeting": ["table", "chair", "chair", "chair", "chair", "monitor"],
