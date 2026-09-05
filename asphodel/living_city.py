@@ -63,8 +63,13 @@ class _Agent:
 def simulate_commute(bundle_dir: str, n_citizens: int = 130, seed: int = 0,
                      start_hour: float = 6.5, end_hour: float = 9.0,
                      dt_min: float = 3.0, car_fraction: float = 0.55,
-                     peak_hour: float = 7.3, peak_spread: float = 0.5) -> dict:
-    """Run the commute and return the playback dict (also written to the bundle)."""
+                     peak_hour: float = 7.3, peak_spread: float = 0.5,
+                     write: bool = True) -> dict:
+    """Run the commute and return the playback dict.
+
+    ``write=True`` (the bake) also writes ``playback.json`` into the bundle;
+    tests pass ``write=False`` so they never mutate committed bundle data.
+    """
     with open(os.path.join(bundle_dir, "streetmap.json")) as f:
         graph = MobilityGraph.from_artifact(json.load(f))
     rng = random.Random(seed)
@@ -179,6 +184,7 @@ def simulate_commute(bundle_dir: str, n_citizens: int = 130, seed: int = 0,
         "n_cars": sum(1 for a in agents if a.mode == Mode.CAR),
         "frames": frames,
     }
-    with open(os.path.join(bundle_dir, "playback.json"), "w") as f:
-        json.dump(playback, f, separators=(",", ":"))
+    if write:
+        with open(os.path.join(bundle_dir, "playback.json"), "w") as f:
+            json.dump(playback, f, separators=(",", ":"))
     return playback

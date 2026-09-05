@@ -29,7 +29,7 @@ def test_mobility_from_artifact_is_routable():
 
 @pytest.mark.skipif(not _has_mobility(), reason="boulder bundle not present")
 def test_commute_progresses_home_to_work():
-    pb = simulate_commute(BULE, n_citizens=120, seed=5)
+    pb = simulate_commute(BULE, n_citizens=120, seed=5, write=False)
     assert pb["n_citizens"] > 50 and pb["n_cars"] > 0
     frames = pb["frames"]
 
@@ -48,7 +48,7 @@ def test_commute_progresses_home_to_work():
 
 @pytest.mark.skipif(not _has_mobility(), reason="boulder bundle not present")
 def test_commute_positions_move():
-    pb = simulate_commute(BULE, n_citizens=120, seed=5)
+    pb = simulate_commute(BULE, n_citizens=120, seed=5, write=False)
     # An agent's recorded position changes between an early and a later frame.
     early = pb["frames"][2]["cars"] + pb["frames"][2]["peds"]
     late = pb["frames"][len(pb["frames"]) // 2]["cars"] + pb["frames"][len(pb["frames"]) // 2]["peds"]
@@ -59,6 +59,6 @@ def test_commute_positions_move():
 
 @pytest.mark.skipif(not _has_mobility(), reason="boulder bundle not present")
 def test_commute_congestion_emerges():
-    pb = simulate_commute(BULE, n_citizens=150, seed=3)
+    pb = simulate_commute(BULE, n_citizens=150, seed=3, write=False)
     max_cong = max((c[1] for fr in pb["frames"] for c in fr["congestion"]), default=1.0)
     assert max_cong > 1.0                        # jams form where trips converge

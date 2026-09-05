@@ -236,7 +236,7 @@ def test_gate_d_commute_playback_rows_are_canonical_citizen_ids():
     from asphodel.living_city import simulate_commute
     d = _bundle("houston")
     raw = _json(d, "citizens.json")
-    pb = simulate_commute(d, n_citizens=40, seed=0)
+    pb = simulate_commute(d, n_citizens=40, seed=0, write=False)
     assert pb["version"] == 2 and pb["n_canonical_citizens"] > 0
     ids = {row[3] for fr in pb["frames"][:1] for row in fr["peds"] + fr["cars"]}
     canonical = {i for i in ids if not str(i).startswith("synth:")}
