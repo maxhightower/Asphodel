@@ -18,8 +18,8 @@ met on the recorded final SHA.
 | chosen spine | `main` (== `claude/asphodel-houston-scene-outdated-k9aetu`) @ `57ef86a6d73b8d0b5269f8753b41a45f5442f182` |
 | merged line | `claude/asphodel-regional-physics-navigation-v1-1bpcqs` @ `b5cf43a967405fd2383ef8dc37db4b9af0e91345` |
 | convergence branch | `claude/asphodel-canonical-convergence-i6h105` |
-| final SHA | FINAL_SHA_PLACEHOLDER |
-| landing | fast-forward `main` to the final SHA (PR LANDING_PR_PLACEHOLDER); switch the GitHub default branch to `main`; close PR #3 |
+| final certified SHA | `7244855` (all code, bundles and evidence); the report commit on top of it is docs-only and is the landing tip named in the PR |
+| landing | fast-forward `main` to the final SHA (the landing PR from `claude/asphodel-canonical-convergence-i6h105` into `main`); switch the GitHub default branch to `main`; close PR #3 |
 
 Remote re-fetched before landing: no branch moved since the census.
 
@@ -118,7 +118,21 @@ Read strictly: **home → exit → pedestrian navigation → destination → int
 
 ## Test evidence
 
-TESTS_PLACEHOLDER
+| command | result |
+|---|---|
+| `python -m pytest -q` (final tree, 7244855) | **740 passed, 0 failed** (13 min); baseline on the spine was 543 passed + 1 network-only failure, regional line 272 |
+| `python -m pytest tests/test_convergence_gates.py` (Gates A, B, D, E, F, H) | 27 passed |
+| `python -m pytest tests/test_gate_street_parity.py` (Gate C) | 100 % / 100 % parity, Houston + Madisonville |
+| `python -m pytest tests/test_living_city_vertical.py -s` | 10 passed; step table above |
+| `godot --headless --path godot res://tests/{TestRunner,StreetSmoke,ExteriorStream,CitizenHumanoidSmoke,IsometricExteriorSmoke,IsometricCameraSmoke,AssetCatalogSmoke}.tscn` | all exit 0 |
+| `godot/tests/run_gates.sh` (PhysicsGate 16, RegionGate 8, NavGate 4) | all PASS |
+| `godot --headless --path godot res://tests/ConvergenceGate.tscn` (Gates G, I, E, H in-engine) | PASS, 0 failures |
+| `tools/final_cert.sh` (live bridge: LiveSmoke, save/destroy/reload, LiveSurvival, LiveInterior, LiveWalkIn, LiveVertical, InteriorBench, LiveBench) | all 0 failures; save/load BIT-IDENTICAL |
+| `python tools/city_matrix.py` | PASS, 0 failing cells |
+| `python tools/build_catalog_v1.py` + `tests/test_asset_catalog_conformance.py` | twins identical |
+
+Every suite was run on the converged tree, not trusted from older reports.
+`tools/convergence_cert.sh` reproduces the whole table in one command.
 
 ## Godot evidence
 
@@ -230,4 +244,4 @@ until its port lands). See the disposition document.
 
 **All new Asphodel development begins from `main` once the landing PR is
 fast-forwarded; until then from `claude/asphodel-canonical-convergence-i6h105`
-@ FINAL_SHA_PLACEHOLDER.**
+@ the landing tip named in the PR (docs-only commit on top of `7244855`).**
