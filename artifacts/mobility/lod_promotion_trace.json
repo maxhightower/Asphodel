@@ -15,14 +15,14 @@
    "state": "doing_activity"
   },
   {
-   "t": 9075.0,
+   "t": 9060.0,
    "citizen_id": 4,
    "from": "physical",
    "to": "route_simulated",
-   "distance": 294.9,
+   "distance": 231.0,
    "pos": [
-    1503.8,
-    708.0
+    1439.8,
+    706.7
    ],
    "step": 3,
    "state": "driving"
@@ -32,27 +32,18 @@
    "citizen_id": 4,
    "from": "route_simulated",
    "to": "physical",
-   "distance": 119.5,
+   "distance": 87.9,
    "pos": [
-    1327.9,
-    704.4
+    1295.9,
+    703.7
    ],
    "step": 3,
    "state": "driving"
   }
  ],
  "godot": {
-  "demoted": [
-   "PASS",
-   "bodies freed with focus 1.5 km away"
-  ],
-  "promoted_back": [
-   "PASS",
-   "body recreated at authoritative pose (jump 0.00 m)"
-  ],
-  "progressed_far": [
-   "PASS",
-   "authoritative position moved 170 m while no body existed"
-  ]
+  "demoted": null,
+  "promoted_back": null,
+  "progressed_far": null
  }
 }

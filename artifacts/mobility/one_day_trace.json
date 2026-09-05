@@ -34,7 +34,7 @@
   "inside_building",
   "doing_activity"
  ],
- "distance_walked_m": 391.9,
+ "distance_walked_m": 397.9,
  "distance_driven_m": 7445.0,
  "trips_completed": 4,
  "blocked_events": 0,
@@ -113,52 +113,52 @@
   {
    "t": 9003.0,
    "event": "walk_start",
-   "length_m": 40.6,
+   "length_m": 30.7,
    "segments": 1
   },
   {
-   "t": 9031.0,
+   "t": 9024.0,
    "event": "walk_done",
-   "walked_m": 40.6
+   "walked_m": 30.7
   },
   {
-   "t": 9031.0,
+   "t": 9024.0,
    "event": "step_done",
    "step_kind": "walk",
    "step": 1
   },
   {
-   "t": 9034.0,
+   "t": 9027.0,
    "event": "entered_vehicle",
    "vehicle_id": "veh:4"
   },
   {
-   "t": 9034.0,
+   "t": 9027.0,
    "event": "step_done",
    "step_kind": "enter_vehicle",
    "step": 2
   },
   {
-   "t": 9035.0,
+   "t": 9028.0,
    "event": "drive_start",
    "vehicle_id": "veh:4",
    "length_m": 3713.4,
    "segments": 76
   },
   {
-   "t": 9353.0,
+   "t": 9346.0,
    "event": "drive_done",
    "driven_m": 3713.4,
    "blocked": {}
   },
   {
-   "t": 9353.0,
+   "t": 9346.0,
    "event": "step_done",
    "step_kind": "drive",
    "step": 3
   },
   {
-   "t": 9355.0,
+   "t": 9348.0,
    "event": "parked",
    "vehicle_id": "veh:4",
    "anchor": [
@@ -168,52 +168,52 @@
    "node": "park:44971"
   },
   {
-   "t": 9355.0,
+   "t": 9348.0,
    "event": "step_done",
    "step_kind": "park",
    "step": 4
   },
   {
-   "t": 9357.0,
+   "t": 9350.0,
    "event": "exited_vehicle",
    "vehicle_id": "veh:4"
   },
   {
-   "t": 9357.0,
+   "t": 9350.0,
    "event": "step_done",
    "step_kind": "exit_vehicle",
    "step": 5
   },
   {
-   "t": 9358.0,
+   "t": 9351.0,
    "event": "walk_start",
-   "length_m": 90.1,
+   "length_m": 97.4,
    "segments": 2
   },
   {
-   "t": 9422.0,
+   "t": 9420.0,
    "event": "walk_done",
-   "walked_m": 90.1
+   "walked_m": 97.4
   },
   {
-   "t": 9422.0,
+   "t": 9420.0,
    "event": "step_done",
    "step_kind": "walk",
    "step": 6
   },
   {
-   "t": 9424.0,
+   "t": 9422.0,
    "event": "entered_building",
    "building_id": 4517
   },
   {
-   "t": 9424.0,
+   "t": 9422.0,
    "event": "step_done",
    "step_kind": "enter_building",
    "step": 7
   },
   {
-   "t": 9424.0,
+   "t": 9422.0,
    "event": "activity",
    "activity": "arrived",
    "building_id": 4517
@@ -278,52 +278,52 @@
   {
    "t": 39603.0,
    "event": "walk_start",
-   "length_m": 90.1,
+   "length_m": 84.7,
    "segments": 2
   },
   {
-   "t": 39667.0,
+   "t": 39663.0,
    "event": "walk_done",
-   "walked_m": 90.1
+   "walked_m": 84.7
   },
   {
-   "t": 39667.0,
+   "t": 39663.0,
    "event": "step_done",
    "step_kind": "walk",
    "step": 1
   },
   {
-   "t": 39670.0,
+   "t": 39666.0,
    "event": "entered_vehicle",
    "vehicle_id": "veh:4"
   },
   {
-   "t": 39670.0,
+   "t": 39666.0,
    "event": "step_done",
    "step_kind": "enter_vehicle",
    "step": 2
   },
   {
-   "t": 39671.0,
+   "t": 39667.0,
    "event": "drive_start",
    "vehicle_id": "veh:4",
    "length_m": 3731.6,
    "segments": 80
   },
   {
-   "t": 39992.0,
+   "t": 39988.0,
    "event": "drive_done",
    "driven_m": 3731.6,
    "blocked": {}
   },
   {
-   "t": 39992.0,
+   "t": 39988.0,
    "event": "step_done",
    "step_kind": "drive",
    "step": 3
   },
   {
-   "t": 39994.0,
+   "t": 39990.0,
    "event": "parked",
    "vehicle_id": "veh:4",
    "anchor": [
@@ -333,52 +333,52 @@
    "node": "park:31968"
   },
   {
-   "t": 39994.0,
+   "t": 39990.0,
    "event": "step_done",
    "step_kind": "park",
    "step": 4
   },
   {
-   "t": 39996.0,
+   "t": 39992.0,
    "event": "exited_vehicle",
    "vehicle_id": "veh:4"
   },
   {
-   "t": 39996.0,
+   "t": 39992.0,
    "event": "step_done",
    "step_kind": "exit_vehicle",
    "step": 5
   },
   {
-   "t": 39997.0,
+   "t": 39993.0,
    "event": "walk_start",
-   "length_m": 40.6,
+   "length_m": 53.8,
    "segments": 1
   },
   {
-   "t": 40025.0,
+   "t": 40031.0,
    "event": "walk_done",
-   "walked_m": 40.6
+   "walked_m": 53.6
   },
   {
-   "t": 40025.0,
+   "t": 40031.0,
    "event": "step_done",
    "step_kind": "walk",
    "step": 6
   },
   {
-   "t": 40027.0,
+   "t": 40033.0,
    "event": "entered_building",
    "building_id": 13106
   },
   {
-   "t": 40027.0,
+   "t": 40033.0,
    "event": "step_done",
    "step_kind": "enter_building",
    "step": 7
   },
   {
-   "t": 40027.0,
+   "t": 40033.0,
    "event": "activity",
    "activity": "arrived",
    "building_id": 13106
@@ -409,40 +409,40 @@
   {
    "t": 41403.0,
    "event": "walk_start",
-   "length_m": 65.3,
+   "length_m": 78.4,
    "segments": 1
   },
   {
-   "t": 41449.0,
+   "t": 41459.0,
    "event": "walk_done",
-   "walked_m": 65.3
+   "walked_m": 78.4
   },
   {
-   "t": 41449.0,
+   "t": 41459.0,
    "event": "step_done",
    "step_kind": "walk",
    "step": 1
   },
   {
-   "t": 41451.0,
+   "t": 41461.0,
    "event": "entered_building",
    "building_id": 13033
   },
   {
-   "t": 41451.0,
+   "t": 41461.0,
    "event": "step_done",
    "step_kind": "enter_building",
    "step": 2
   },
   {
-   "t": 41452.0,
+   "t": 41462.0,
    "event": "activity",
    "activity": "errand",
    "building_id": 13033,
    "arrived": true
   },
   {
-   "t": 41452.0,
+   "t": 41462.0,
    "event": "step_done",
    "step_kind": "do_activity",
    "step": 3
@@ -473,40 +473,40 @@
   {
    "t": 46803.0,
    "event": "walk_start",
-   "length_m": 65.3,
+   "length_m": 53.1,
    "segments": 1
   },
   {
-   "t": 46849.0,
+   "t": 46840.0,
    "event": "walk_done",
-   "walked_m": 65.3
+   "walked_m": 53.1
   },
   {
-   "t": 46849.0,
+   "t": 46840.0,
    "event": "step_done",
    "step_kind": "walk",
    "step": 1
   },
   {
-   "t": 46851.0,
+   "t": 46842.0,
    "event": "entered_building",
    "building_id": 13106
   },
   {
-   "t": 46851.0,
+   "t": 46842.0,
    "event": "step_done",
    "step_kind": "enter_building",
    "step": 2
   },
   {
-   "t": 46852.0,
+   "t": 46843.0,
    "event": "activity",
    "activity": "leisure",
    "building_id": 13106,
    "arrived": true
   },
   {
-   "t": 46852.0,
+   "t": 46843.0,
    "event": "step_done",
    "step_kind": "do_activity",
    "step": 3
@@ -7730,96 +7730,96 @@
    "hour": 7.504,
    "state": "on_foot",
    "activity": "traveling",
-   "x": 1210.91,
-   "y": 701.9,
+   "x": 1212.21,
+   "y": 695.61,
    "building_id": -1,
    "vehicle_id": null,
    "step": "walk",
-   "progress": 0.4143,
+   "progress": 0.5469,
    "band": "physical"
   },
   {
    "hour": 7.542,
    "state": "driving",
    "activity": "traveling",
-   "x": 1578.69,
-   "y": -92.49,
+   "x": 1579.17,
+   "y": -176.48,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.3149,
+   "progress": 0.3375,
    "band": "route_simulated"
   },
   {
    "hour": 7.579,
    "state": "driving",
    "activity": "traveling",
-   "x": 1559.2,
-   "y": -1563.66,
+   "x": 1468.77,
+   "y": -1586.28,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.7868,
+   "progress": 0.8122,
    "band": "route_simulated"
   },
   {
    "hour": 7.583,
    "state": "driving",
    "activity": "traveling",
-   "x": 1356.78,
-   "y": -1585.85,
+   "x": 1307.29,
+   "y": -1623.55,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.8423,
+   "progress": 0.866,
    "band": "route_simulated"
   },
   {
    "hour": 7.588,
    "state": "driving",
    "activity": "traveling",
-   "x": 1306.84,
-   "y": -1719.49,
+   "x": 1281.27,
+   "y": -1798.88,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.8919,
+   "progress": 0.9145,
    "band": "route_simulated"
   },
   {
    "hour": 7.592,
    "state": "driving",
    "activity": "traveling",
-   "x": 1224.97,
-   "y": -1876.42,
+   "x": 1169.7,
+   "y": -1939.45,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.9404,
+   "progress": 0.963,
    "band": "route_simulated"
   },
   {
    "hour": 7.596,
    "state": "driving",
    "activity": "traveling",
-   "x": 1103.98,
-   "y": -1979.98,
+   "x": 1081.6,
+   "y": -1998.81,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.9859,
+   "progress": 0.9969,
    "band": "route_simulated"
   },
   {
    "hour": 7.6,
    "state": "on_foot",
    "activity": "traveling",
-   "x": 1078.12,
-   "y": -2004.18,
+   "x": 1073.84,
+   "y": -1998.0,
    "building_id": -1,
    "vehicle_id": null,
    "step": "walk",
-   "progress": 0.0311,
+   "progress": 0.1293,
    "band": "route_simulated"
   },
   {
@@ -31826,336 +31826,336 @@
    "hour": 16.004,
    "state": "on_foot",
    "activity": "traveling",
-   "x": 1064.35,
-   "y": -2048.84,
+   "x": 1065.51,
+   "y": -2048.96,
    "building_id": -1,
    "vehicle_id": null,
    "step": "walk",
-   "progress": 0.1865,
+   "progress": 0.1984,
    "band": "route_simulated"
   },
   {
    "hour": 16.008,
    "state": "on_foot",
    "activity": "traveling",
-   "x": 1063.9,
-   "y": -2027.85,
+   "x": 1068.41,
+   "y": -2028.3,
    "building_id": -1,
    "vehicle_id": null,
    "step": "walk",
-   "progress": 0.4195,
+   "progress": 0.4464,
    "band": "route_simulated"
   },
   {
    "hour": 16.012,
    "state": "on_foot",
    "activity": "traveling",
-   "x": 1063.44,
-   "y": -2006.85,
+   "x": 1067.1,
+   "y": -2007.36,
    "building_id": -1,
    "vehicle_id": null,
    "step": "walk",
-   "progress": 0.6526,
+   "progress": 0.6945,
    "band": "route_simulated"
   },
   {
    "hour": 16.017,
    "state": "on_foot",
    "activity": "traveling",
-   "x": 1076.07,
-   "y": -1998.76,
+   "x": 1078.14,
+   "y": -2002.11,
    "building_id": -1,
    "vehicle_id": null,
    "step": "walk",
-   "progress": 0.8857,
+   "progress": 0.9425,
    "band": "route_simulated"
   },
   {
    "hour": 16.021,
    "state": "driving",
    "activity": "traveling",
-   "x": 1087.95,
-   "y": -1998.86,
+   "x": 1103.64,
+   "y": -1990.51,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.0048,
+   "progress": 0.0113,
    "band": "route_simulated"
   },
   {
    "hour": 16.025,
    "state": "driving",
    "activity": "traveling",
-   "x": 1174.78,
-   "y": -1934.45,
+   "x": 1207.15,
+   "y": -1899.14,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.0387,
+   "progress": 0.0516,
    "band": "route_simulated"
   },
   {
    "hour": 16.029,
    "state": "driving",
    "activity": "traveling",
-   "x": 1284.42,
-   "y": -1792.48,
+   "x": 1301.68,
+   "y": -1747.89,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.087,
+   "progress": 0.0998,
    "band": "route_simulated"
   },
   {
    "hour": 16.033,
    "state": "driving",
    "activity": "traveling",
-   "x": 1307.23,
-   "y": -1616.42,
+   "x": 1317.76,
+   "y": -1586.74,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.1352,
+   "progress": 0.1464,
    "band": "route_simulated"
   },
   {
    "hour": 16.038,
    "state": "driving",
    "activity": "traveling",
-   "x": 1469.96,
-   "y": -1586.27,
+   "x": 1525.1,
+   "y": -1577.4,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.1872,
+   "progress": 0.2022,
    "band": "route_simulated"
   },
   {
    "hour": 16.042,
    "state": "driving",
    "activity": "traveling",
-   "x": 1652.79,
-   "y": -1500.64,
+   "x": 1626.34,
+   "y": -1468.97,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.2431,
+   "progress": 0.255,
    "band": "route_simulated"
   },
   {
    "hour": 16.046,
    "state": "driving",
    "activity": "traveling",
-   "x": 1527.22,
-   "y": -1352.52,
+   "x": 1510.86,
+   "y": -1299.08,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.2963,
+   "progress": 0.3113,
    "band": "route_simulated"
   },
   {
    "hour": 16.05,
    "state": "driving",
    "activity": "traveling",
-   "x": 1506.08,
-   "y": -1145.44,
+   "x": 1505.15,
+   "y": -1089.44,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.3525,
+   "progress": 0.3676,
    "band": "route_simulated"
   },
   {
    "hour": 16.054,
    "state": "driving",
    "activity": "traveling",
-   "x": 1503.75,
-   "y": -935.45,
+   "x": 1499.36,
+   "y": -879.69,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.4088,
+   "progress": 0.4238,
    "band": "route_simulated"
   },
   {
    "hour": 16.058,
    "state": "driving",
    "activity": "traveling",
-   "x": 1450.72,
-   "y": -733.8,
+   "x": 1471.37,
+   "y": -723.24,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.4651,
+   "progress": 0.4742,
    "band": "route_simulated"
   },
   {
    "hour": 16.062,
    "state": "driving",
    "activity": "traveling",
-   "x": 1623.23,
-   "y": -721.59,
+   "x": 1614.25,
+   "y": -686.21,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.5149,
+   "progress": 0.5268,
    "band": "route_simulated"
   },
   {
    "hour": 16.067,
    "state": "driving",
    "activity": "traveling",
-   "x": 1595.32,
-   "y": -556.17,
+   "x": 1594.75,
+   "y": -508.18,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.5622,
+   "progress": 0.5751,
    "band": "route_simulated"
   },
   {
    "hour": 16.071,
    "state": "driving",
    "activity": "traveling",
-   "x": 1588.79,
-   "y": -376.35,
+   "x": 1587.42,
+   "y": -328.37,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.6104,
+   "progress": 0.6233,
    "band": "route_simulated"
   },
   {
    "hour": 16.075,
    "state": "driving",
    "activity": "traveling",
-   "x": 1579.18,
-   "y": -196.78,
+   "x": 1579.14,
+   "y": -148.78,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.6587,
+   "progress": 0.6715,
    "band": "route_simulated"
   },
   {
    "hour": 16.079,
    "state": "driving",
    "activity": "traveling",
-   "x": 1577.11,
-   "y": -16.8,
+   "x": 1576.28,
+   "y": 31.19,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.7069,
+   "progress": 0.7198,
    "band": "route_simulated"
   },
   {
    "hour": 16.083,
    "state": "driving",
    "activity": "traveling",
-   "x": 1575.2,
-   "y": 163.18,
+   "x": 1572.46,
+   "y": 211.1,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.7551,
+   "progress": 0.768,
    "band": "route_simulated"
   },
   {
    "hour": 16.087,
    "state": "driving",
    "activity": "traveling",
-   "x": 1568.02,
-   "y": 343.01,
+   "x": 1566.95,
+   "y": 391.0,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.8034,
+   "progress": 0.8162,
    "band": "route_simulated"
   },
   {
    "hour": 16.092,
    "state": "driving",
    "activity": "traveling",
-   "x": 1565.92,
-   "y": 522.99,
+   "x": 1564.74,
+   "y": 570.97,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.8516,
+   "progress": 0.8645,
    "band": "route_simulated"
   },
   {
    "hour": 16.096,
    "state": "driving",
    "activity": "traveling",
-   "x": 1562.11,
-   "y": 702.95,
+   "x": 1535.87,
+   "y": 708.68,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.8999,
+   "progress": 0.9085,
    "band": "route_simulated"
   },
   {
    "hour": 16.1,
    "state": "driving",
    "activity": "traveling",
-   "x": 1447.89,
-   "y": 706.85,
+   "x": 1415.9,
+   "y": 706.19,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.9321,
+   "progress": 0.9407,
    "band": "route_simulated"
   },
   {
    "hour": 16.104,
    "state": "driving",
    "activity": "traveling",
-   "x": 1327.91,
-   "y": 704.35,
+   "x": 1295.92,
+   "y": 703.69,
    "building_id": -1,
    "vehicle_id": "veh:4",
    "step": "drive",
-   "progress": 0.9643,
+   "progress": 0.9729,
    "band": "physical"
   },
   {
    "hour": 16.108,
-   "state": "driving",
+   "state": "parked",
    "activity": "traveling",
-   "x": 1214.75,
-   "y": 698.15,
+   "x": 1215.09,
+   "y": 681.99,
    "building_id": -1,
    "vehicle_id": "veh:4",
-   "step": "drive",
-   "progress": 0.9957,
+   "step": "park",
+   "progress": 0.0,
    "band": "physical"
   },
   {
    "hour": 16.113,
    "state": "on_foot",
    "activity": "traveling",
-   "x": 1214.85,
-   "y": 693.19,
+   "x": 1217.04,
+   "y": 698.85,
    "building_id": -1,
    "vehicle_id": null,
    "step": "walk",
-   "progress": 0.2762,
+   "progress": 0.3157,
    "band": "physical"
   },
   {
    "hour": 16.117,
    "state": "on_foot",
    "activity": "traveling",
-   "x": 1209.54,
-   "y": 694.93,
+   "x": 1206.71,
+   "y": 702.09,
    "building_id": -1,
    "vehicle_id": null,
    "step": "walk",
-   "progress": 0.794,
+   "progress": 0.7063,
    "band": "physical"
   },
   {
@@ -33266,47 +33266,47 @@
    "hour": 16.504,
    "state": "on_foot",
    "activity": "traveling",
-   "x": 1207.89,
-   "y": 701.83,
+   "x": 1212.22,
+   "y": 703.19,
    "building_id": -1,
    "vehicle_id": null,
    "step": "walk",
-   "progress": 0.2573,
+   "progress": 0.2142,
    "band": "physical"
   },
   {
    "hour": 16.508,
    "state": "on_foot",
    "activity": "traveling",
-   "x": 1199.41,
-   "y": 689.39,
+   "x": 1196.13,
+   "y": 702.33,
    "building_id": -1,
    "vehicle_id": null,
    "step": "walk",
-   "progress": 0.5789,
+   "progress": 0.482,
    "band": "physical"
   },
   {
    "hour": 16.512,
    "state": "on_foot",
    "activity": "traveling",
-   "x": 1199.85,
-   "y": 668.4,
+   "x": 1198.13,
+   "y": 681.43,
    "building_id": -1,
    "vehicle_id": null,
    "step": "walk",
-   "progress": 0.9005,
+   "progress": 0.7498,
    "band": "physical"
   },
   {
    "hour": 16.517,
-   "state": "doing_activity",
-   "activity": "errand",
+   "state": "on_foot",
+   "activity": "traveling",
    "x": 1199.99,
    "y": 661.9,
-   "building_id": 13033,
+   "building_id": -1,
    "vehicle_id": null,
-   "step": null,
+   "step": "enter_building",
    "progress": 0.0,
    "band": "physical"
   },
@@ -37586,36 +37586,36 @@
    "hour": 18.004,
    "state": "on_foot",
    "activity": "traveling",
-   "x": 1199.63,
-   "y": 678.7,
+   "x": 1201.09,
+   "y": 678.66,
    "building_id": -1,
    "vehicle_id": null,
    "step": "walk",
-   "progress": 0.2573,
+   "progress": 0.3163,
    "band": "physical"
   },
   {
    "hour": 18.008,
    "state": "on_foot",
    "activity": "traveling",
-   "x": 1199.19,
-   "y": 699.69,
+   "x": 1203.48,
+   "y": 698.56,
    "building_id": -1,
    "vehicle_id": null,
    "step": "walk",
-   "progress": 0.5789,
+   "progress": 0.7116,
    "band": "physical"
   },
   {
    "hour": 18.012,
-   "state": "on_foot",
-   "activity": "traveling",
-   "x": 1209.58,
-   "y": 693.08,
-   "building_id": -1,
+   "state": "doing_activity",
+   "activity": "leisure",
+   "x": 1209.72,
+   "y": 686.58,
+   "building_id": 13106,
    "vehicle_id": null,
-   "step": "walk",
-   "progress": 0.9005,
+   "step": null,
+   "progress": 0.0,
    "band": "physical"
   },
   {
@@ -51994,27 +51994,27 @@
   ],
   "pedestrian_navigation": [
    "PASS",
-   "6 walk legs executed on the street graph, 392 m walked in 1 s substeps at 1.4 m/s (no teleport); in-engine CitizenBody: PASS body walked 38.9 m; within leash 300/300 frames"
+   "6 walk legs executed on the street graph, 398 m walked in 1 s substeps at 1.4 m/s (no teleport); in-engine CitizenBody: PASS body walked 38.9 m; within leash 300/300 frames"
   ],
   "vehicle_entry": [
    "PASS",
-   "ON_FOOT -> ENTERING_VEHICLE -> IN_VEHICLE for persistent veh:4 (owner 4), walked to the car, 9034 s; in-engine PASS"
+   "ON_FOOT -> ENTERING_VEHICLE -> IN_VEHICLE for persistent veh:4 (owner 4), walked to the car, 9027 s; in-engine PASS"
   ],
   "road_navigation": [
    "PASS",
    "DRIVE leg 3713 m over 76 real streetmap segments, route = MobilityGraph route projected onto street polylines (one route authority)"
   ],
   "physical_driving": [
-   "PASS",
-   "VehicleBody drove 3700 m under physics following the canonical route (max lag 28.0 m, impacts 171); body drove 3700 m; within leash 3832/3850 frames; max lag 28.0 m; impacts 171"
+   "FAIL",
+   "VehicleBody drove 1506 m under physics following the canonical route (max lag 26.8 m, impacts 7015); body drove 1506 m; within leash 7207/7991 frames; max lag 26.8 m; impacts 7015"
   ],
   "traffic_interaction": [
-   "PASS",
-   "solid vehicle ahead: body stopped (PASS), authority held (PASS); controller following/junction/closed-road logic in tests/test_embodied_controllers.py"
+   "FAIL",
+   "solid vehicle ahead: body stopped (FAIL), authority held (PASS); controller following/junction/closed-road logic in tests/test_embodied_controllers.py"
   ],
   "parking": [
    "PASS",
-   "PARKING_ANCHOR #44971 chosen 61 m from the work entrance (rejected: {}), reached by the DRIVE leg, veh:4 parked at it; in-engine PASS"
+   "PARKING_ANCHOR #44971 chosen 61 m from the work entrance (rejected: {}), reached by the DRIVE leg, veh:4 parked at it; in-engine FAIL"
   ],
   "vehicle_exit": [
    "PASS",
@@ -52030,7 +52030,7 @@
   ],
   "scheduled_duty": [
    "PASS",
-   "'work' began at 10800 s only after arrival at 9424 s (scheduled != arrived is distinguished by EmbodimentState.DOING_ACTIVITY)"
+   "'work' began at 10800 s only after arrival at 9422 s (scheduled != arrived is distinguished by EmbodimentState.DOING_ACTIVITY)"
   ],
   "return_trip": [
    "PASS",
@@ -52038,15 +52038,15 @@
   ],
   "return_home": [
    "PASS",
-   "home again at 46851 s; evening activities ['leisure']"
+   "home again at 46842 s; evening activities ['leisure']"
   ],
   "save_load": [
    "PASS",
    "saved during walking, driving, parked and inside work: identity, itinerary, step, progress, building and vehicle restored; 2-minute continuation bit-identical"
   ],
   "lod_promotion_demotion": [
-   "PASS",
-   "3 authoritative band transitions; in-engine: demoted PASS, progressed while far PASS, promoted back same identity PASS (body recreated at authoritative pose (jump 0.00 m))"
+   "PARTIAL",
+   "3 band transitions in Python; no Godot probe trace"
   ]
  }
 }

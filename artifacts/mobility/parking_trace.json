@@ -31,7 +31,7 @@
  ],
  "parked": [
   {
-   "t": 9355.0,
+   "t": 9348.0,
    "event": "parked",
    "vehicle_id": "veh:4",
    "anchor": [
@@ -41,7 +41,7 @@
    "node": "park:44971"
   },
   {
-   "t": 39994.0,
+   "t": 39990.0,
    "event": "parked",
    "vehicle_id": "veh:4",
    "anchor": [
