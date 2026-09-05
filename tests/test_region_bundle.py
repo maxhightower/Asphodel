@@ -90,7 +90,10 @@ def test_mobility_artifact_is_byte_deterministic():
 
 def test_mobility_graph_load_reads_the_baked_streetmap():
     g = MobilityGraph.load(os.path.join(BUNDLES, "boulder"))
-    assert g.version == 1                       # the synthetic grid stays legacy
+    # The synthetic grid has no Overture packet: it is baked by the polyline
+    # fallback, which still emits schema v2 and says where it came from.
+    assert g.version == 2
+    assert "polylines" in (g.source or "")
     assert g.stats()["segments"] > 0
 
 
