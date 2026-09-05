@@ -51994,7 +51994,7 @@
   ],
   "pedestrian_navigation": [
    "PASS",
-   "6 walk legs executed on the street graph, 392 m walked in 1 s substeps at 1.4 m/s (no teleport); in-engine CitizenBody: PASS body walked 38.8 m; within leash 120/120 frames"
+   "6 walk legs executed on the street graph, 392 m walked in 1 s substeps at 1.4 m/s (no teleport); in-engine CitizenBody: PASS body walked 38.9 m; within leash 300/300 frames"
   ],
   "vehicle_entry": [
    "PASS",
@@ -52005,16 +52005,16 @@
    "DRIVE leg 3713 m over 76 real streetmap segments, route = MobilityGraph route projected onto street polylines (one route authority)"
   ],
   "physical_driving": [
-   "FAIL",
-   "VehicleBody drove 6703 m under physics following the canonical route (max lag 52.6 m, impacts 4); body drove 6703 m; within leash 329/7996 frames; max lag 52.6 m; impacts 4"
+   "PASS",
+   "VehicleBody drove 3700 m under physics following the canonical route (max lag 28.0 m, impacts 171); body drove 3700 m; within leash 3832/3850 frames; max lag 28.0 m; impacts 171"
   ],
   "traffic_interaction": [
-   "FAIL",
-   "solid vehicle ahead: body stopped (FAIL), authority held (PASS); controller following/junction/closed-road logic in tests/test_embodied_controllers.py"
+   "PASS",
+   "solid vehicle ahead: body stopped (PASS), authority held (PASS); controller following/junction/closed-road logic in tests/test_embodied_controllers.py"
   ],
   "parking": [
    "PASS",
-   "PARKING_ANCHOR #44971 chosen 61 m from the work entrance (rejected: {}), reached by the DRIVE leg, veh:4 parked at it; in-engine FAIL"
+   "PARKING_ANCHOR #44971 chosen 61 m from the work entrance (rejected: {}), reached by the DRIVE leg, veh:4 parked at it; in-engine PASS"
   ],
   "vehicle_exit": [
    "PASS",
@@ -52045,8 +52045,8 @@
    "saved during walking, driving, parked and inside work: identity, itinerary, step, progress, building and vehicle restored; 2-minute continuation bit-identical"
   ],
   "lod_promotion_demotion": [
-   "PARTIAL",
-   "3 band transitions in Python; no Godot probe trace"
+   "PASS",
+   "3 authoritative band transitions; in-engine: demoted PASS, progressed while far PASS, promoted back same identity PASS (body recreated at authoritative pose (jump 0.00 m))"
   ]
  }
 }

@@ -42,8 +42,17 @@
   }
  ],
  "godot": {
-  "demoted": null,
-  "promoted_back": null,
-  "progressed_far": null
+  "demoted": [
+   "PASS",
+   "bodies freed with focus 1.5 km away"
+  ],
+  "promoted_back": [
+   "PASS",
+   "body recreated at authoritative pose (jump 0.00 m)"
+  ],
+  "progressed_far": [
+   "PASS",
+   "authoritative position moved 170 m while no body existed"
+  ]
  }
 }
