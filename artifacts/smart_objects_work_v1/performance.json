@@ -1,0 +1,2005 @@
+{
+  "version": 1,
+  "milestone": "ASPHODEL_SMART_OBJECTS_WORK_V1",
+  "city": "houston",
+  "seed": 0,
+  "repeats": 3,
+  "unit": "milliseconds",
+  "machine": {
+    "python": "3.11.15",
+    "implementation": "CPython",
+    "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "processor": "x86_64",
+    "cpu_count": 4,
+    "loadavg_1_5_15": [
+      3.06,
+      2.4,
+      2.19
+    ],
+    "loadavg_note": "this repository's CI machine is shared; a load average above the cpu count means the milliseconds below are inflated by other work on the box"
+  },
+  "wall_s": 187.9,
+  "world": {
+    "n_citizens": 297,
+    "n_vehicles": 224,
+    "start_world_ms": 5077.0,
+    "n_employed": 211,
+    "n_workplaces": 167,
+    "n_objects_at_workplaces": 12046,
+    "note": "START_WORLD enables work by default and employs every citizen with a workplace"
+  },
+  "registration": {
+    "note": "a fresh WorkRuntime on a work:false world, so every registry is cold; registry(bid) builds the SmartObjectRegistry and the RoomGraph and internally calls World.interior_descriptor(bid), whose cost is measured separately on the same buildings",
+    "workplaces": {
+      "n_buildings": 167,
+      "total_ms": 712.8,
+      "descriptor_total_ms": 0.3,
+      "objects_and_graph_total_ms": 712.5,
+      "descriptor_share": 0.0,
+      "mean_ms_per_building": 4.266,
+      "median_ms_per_building": 2.295,
+      "max_ms_per_building": 74.383,
+      "max_building_id": 2318,
+      "max_building_objects": 100,
+      "n_objects": 12046,
+      "mean_objects_per_building": 72.1,
+      "n_rooms": 369,
+      "n_descriptor_items": 115979,
+      "slowest": [
+        {
+          "building_id": 2318,
+          "ms": 74.38,
+          "objects": 100
+        },
+        {
+          "building_id": 1614,
+          "ms": 62.68,
+          "objects": 40
+        },
+        {
+          "building_id": 6059,
+          "ms": 25.68,
+          "objects": 119
+        },
+        {
+          "building_id": 3735,
+          "ms": 18.63,
+          "objects": 116
+        },
+        {
+          "building_id": 6725,
+          "ms": 17.53,
+          "objects": 117
+        }
+      ],
+      "warm_repeat_ms": 0.00046
+    },
+    "homes": {
+      "n_buildings": 295,
+      "total_ms": 544.3,
+      "descriptor_total_ms": 0.5,
+      "objects_and_graph_total_ms": 543.9,
+      "descriptor_share": 0.001,
+      "mean_ms_per_building": 1.844,
+      "median_ms_per_building": 0.434,
+      "max_ms_per_building": 338.18,
+      "max_building_id": 2758,
+      "max_building_objects": 11,
+      "n_objects": 9595,
+      "mean_objects_per_building": 32.5,
+      "n_rooms": 794,
+      "n_descriptor_items": 19244,
+      "slowest": [
+        {
+          "building_id": 2758,
+          "ms": 338.18,
+          "objects": 11
+        },
+        {
+          "building_id": 1366,
+          "ms": 13.77,
+          "objects": 164
+        },
+        {
+          "building_id": 7630,
+          "ms": 7.65,
+          "objects": 185
+        },
+        {
+          "building_id": 4074,
+          "ms": 6.76,
+          "objects": 75
+        },
+        {
+          "building_id": 10114,
+          "ms": 3.68,
+          "objects": 76
+        }
+      ],
+      "warm_repeat_ms": 0.00039
+    },
+    "all_buildings_ms": 1257.1
+  },
+  "task_selection": {
+    "hour": 10.0,
+    "game_minutes": 10,
+    "n_calls": 386,
+    "calls_per_game_minute": 38.6,
+    "total_ms_per_game_minute": 3.6864,
+    "mean_ms_per_call": 0.0955,
+    "median_ms_per_call": 0.08464,
+    "max_ms_per_call": 0.28905,
+    "share_of_work_advance": 0.263,
+    "block": {
+      "total_ms_per_game_minute": 30.14,
+      "mobility_ms_per_game_minute": 16.117,
+      "outbreak_ms_per_game_minute": 0.0,
+      "work_ms_per_game_minute": 13.998,
+      "other_ms_per_game_minute": 0.026,
+      "game_minutes": 10
+    },
+    "work_state": {
+      "n_sessions": 295,
+      "sessions_by_kind": {
+        "resident": 136,
+        "worker": 159
+      },
+      "sessions_by_phase": {
+        "done": 47,
+        "to_object": 17,
+        "using": 228,
+        "waiting": 3
+      },
+      "n_employed": 211,
+      "n_registries": 303,
+      "n_holds": 245,
+      "n_queued": 0,
+      "counts": {
+        "CLOCK_IN": 159,
+        "EMPLOYED": 211,
+        "MOVE_TO_OBJECT": 516,
+        "RESERVATION_DENIED": 4,
+        "RESERVATION_RELEASED": 391,
+        "RESERVED": 636,
+        "SESSION_START": 136,
+        "STATE_CHANGE": 276,
+        "TASK_END": 391,
+        "TASK_START": 636,
+        "USE_END": 391,
+        "USE_START": 619,
+        "WAIT": 62
+      }
+    },
+    "note": "_select_work_task is side-effecting (reservations, events), so it is timed in place on a live world rather than replayed on a copy",
+    "largest_workplace": {
+      "building_id": 2254,
+      "n_objects": 152,
+      "n_calls": 6,
+      "mean_ms_per_call": 0.12504,
+      "max_ms_per_call": 0.15385
+    },
+    "by_workplace_top5": [
+      {
+        "building_id": 2254,
+        "n_objects": 152,
+        "n_calls": 6,
+        "mean_ms_per_call": 0.12504,
+        "us_per_object_per_call": 0.8226
+      },
+      {
+        "building_id": 5320,
+        "n_objects": 150,
+        "n_calls": 4,
+        "mean_ms_per_call": 0.1105,
+        "us_per_object_per_call": 0.7367
+      },
+      {
+        "building_id": 5684,
+        "n_objects": 149,
+        "n_calls": 4,
+        "mean_ms_per_call": 0.16009,
+        "us_per_object_per_call": 1.0744
+      },
+      {
+        "building_id": 4587,
+        "n_objects": 146,
+        "n_calls": 6,
+        "mean_ms_per_call": 0.13059,
+        "us_per_object_per_call": 0.8945
+      },
+      {
+        "building_id": 7466,
+        "n_objects": 120,
+        "n_calls": 7,
+        "mean_ms_per_call": 0.13601,
+        "us_per_object_per_call": 1.1334
+      }
+    ]
+  },
+  "reservations": {
+    "n_ops": 100000,
+    "building_id": 535,
+    "n_objects": 152,
+    "note": "a standalone ledger over one real building's objects, cid 0..999",
+    "hold_release_exclusive": {
+      "total_ms": 84.12,
+      "us_per_op": 0.8412,
+      "ops_per_s": 1188796
+    },
+    "is_free_exclusive": {
+      "total_ms": 10.24,
+      "us_per_op": 0.1024,
+      "ops_per_s": 9765388
+    },
+    "holders_of": {
+      "total_ms": 10.47,
+      "us_per_op": 0.1047,
+      "ops_per_s": 9549067
+    },
+    "hold_release_shared": {
+      "total_ms": 81.86,
+      "us_per_op": 0.8186,
+      "ops_per_s": 1221648
+    },
+    "is_free_shared": {
+      "total_ms": 13.22,
+      "us_per_op": 0.1322,
+      "ops_per_s": 7564619
+    },
+    "held_by_scan": {
+      "n_ops": 10000,
+      "n_held_objects": 152,
+      "us_per_op": 8.108,
+      "note": "held_by(cid) scans every held object; release(cid) uses it"
+    }
+  },
+  "advance_by_hour": {
+    "0600": {
+      "total_ms_per_game_minute": 20.078,
+      "mobility_ms_per_game_minute": 14.353,
+      "outbreak_ms_per_game_minute": 0.0,
+      "work_ms_per_game_minute": 5.659,
+      "other_ms_per_game_minute": 0.019,
+      "repeats": 3,
+      "game_minutes_per_block": 10,
+      "blocks": [
+        {
+          "total_ms_per_game_minute": 20.08,
+          "mobility_ms_per_game_minute": 14.47,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 5.592,
+          "other_ms_per_game_minute": 0.019,
+          "game_minutes": 10
+        },
+        {
+          "total_ms_per_game_minute": 19.971,
+          "mobility_ms_per_game_minute": 14.291,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 5.659,
+          "other_ms_per_game_minute": 0.02,
+          "game_minutes": 10
+        },
+        {
+          "total_ms_per_game_minute": 20.078,
+          "mobility_ms_per_game_minute": 14.353,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 5.707,
+          "other_ms_per_game_minute": 0.018,
+          "game_minutes": 10
+        }
+      ],
+      "hour_after": 6.55,
+      "scenario": "06:00 residents asleep at home",
+      "hour": 6.0,
+      "work_state": {
+        "n_sessions": 297,
+        "sessions_by_kind": {
+          "resident": 297
+        },
+        "sessions_by_phase": {
+          "done": 80,
+          "using": 217
+        },
+        "n_employed": 211,
+        "n_registries": 459,
+        "n_holds": 217,
+        "n_queued": 0,
+        "counts": {
+          "EMPLOYED": 211,
+          "MOVE_TO_OBJECT": 217,
+          "RESERVED": 217,
+          "SESSION_START": 297,
+          "TASK_START": 217,
+          "USE_START": 217
+        }
+      }
+    },
+    "0900": {
+      "total_ms_per_game_minute": 28.539,
+      "mobility_ms_per_game_minute": 15.287,
+      "outbreak_ms_per_game_minute": 0.0,
+      "work_ms_per_game_minute": 13.332,
+      "other_ms_per_game_minute": 0.022,
+      "repeats": 3,
+      "game_minutes_per_block": 10,
+      "blocks": [
+        {
+          "total_ms_per_game_minute": 28.889,
+          "mobility_ms_per_game_minute": 15.287,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 13.581,
+          "other_ms_per_game_minute": 0.022,
+          "game_minutes": 10
+        },
+        {
+          "total_ms_per_game_minute": 28.539,
+          "mobility_ms_per_game_minute": 15.184,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 13.332,
+          "other_ms_per_game_minute": 0.022,
+          "game_minutes": 10
+        },
+        {
+          "total_ms_per_game_minute": 28.143,
+          "mobility_ms_per_game_minute": 15.527,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 12.595,
+          "other_ms_per_game_minute": 0.022,
+          "game_minutes": 10
+        }
+      ],
+      "hour_after": 9.55,
+      "walk": {
+        "n_calls": 17367,
+        "ms_per_game_minute": 0.981,
+        "share_of_work_advance": 0.074
+      },
+      "scenario": "09:00 shift start, workers walking to stations",
+      "hour": 9.0,
+      "work_state": {
+        "n_sessions": 295,
+        "sessions_by_kind": {
+          "resident": 136,
+          "worker": 159
+        },
+        "sessions_by_phase": {
+          "done": 47,
+          "to_object": 6,
+          "using": 237,
+          "waiting": 5
+        },
+        "n_employed": 211,
+        "n_registries": 303,
+        "n_holds": 243,
+        "n_queued": 0,
+        "counts": {
+          "CLOCK_IN": 159,
+          "EMPLOYED": 211,
+          "MOVE_TO_OBJECT": 771,
+          "RESERVATION_DENIED": 8,
+          "RESERVATION_RELEASED": 1042,
+          "RESERVED": 1285,
+          "SESSION_START": 136,
+          "STATE_CHANGE": 551,
+          "TASK_END": 1048,
+          "TASK_START": 1291,
+          "USE_END": 1048,
+          "USE_START": 1285,
+          "WAIT": 213
+        }
+      }
+    },
+    "1100": {
+      "total_ms_per_game_minute": 52.826,
+      "mobility_ms_per_game_minute": 34.728,
+      "outbreak_ms_per_game_minute": 0.0,
+      "work_ms_per_game_minute": 16.99,
+      "other_ms_per_game_minute": 0.023,
+      "repeats": 3,
+      "game_minutes_per_block": 10,
+      "blocks": [
+        {
+          "total_ms_per_game_minute": 138.798,
+          "mobility_ms_per_game_minute": 121.785,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 16.99,
+          "other_ms_per_game_minute": 0.023,
+          "game_minutes": 10
+        },
+        {
+          "total_ms_per_game_minute": 52.826,
+          "mobility_ms_per_game_minute": 34.728,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 18.075,
+          "other_ms_per_game_minute": 0.023,
+          "game_minutes": 10
+        },
+        {
+          "total_ms_per_game_minute": 40.721,
+          "mobility_ms_per_game_minute": 25.647,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 15.052,
+          "other_ms_per_game_minute": 0.022,
+          "game_minutes": 10
+        }
+      ],
+      "hour_after": 11.55,
+      "scenario": "11:00 customers in shops",
+      "hour": 11.0,
+      "work_state": {
+        "n_sessions": 290,
+        "sessions_by_kind": {
+          "customer": 80,
+          "resident": 51,
+          "worker": 159
+        },
+        "sessions_by_phase": {
+          "done": 97,
+          "to_object": 6,
+          "using": 180,
+          "waiting": 7
+        },
+        "n_employed": 211,
+        "n_registries": 218,
+        "n_holds": 186,
+        "n_queued": 2,
+        "counts": {
+          "CLOCK_IN": 159,
+          "CUSTOMER_ARRIVED": 80,
+          "CUSTOMER_QUEUED": 80,
+          "CUSTOMER_UNSERVED": 48,
+          "EMPLOYED": 211,
+          "MOVE_TO_OBJECT": 872,
+          "RESERVATION_DENIED": 8,
+          "RESERVATION_RELEASED": 1120,
+          "RESERVED": 1228,
+          "SERVED": 30,
+          "SESSION_START": 131,
+          "STATE_CHANGE": 617,
+          "TASK_END": 1126,
+          "TASK_START": 1312,
+          "USE_END": 1126,
+          "USE_START": 1306,
+          "WAIT": 213,
+          "WORKPLACE_REDUCED_FUNCTION": 18,
+          "WORKPLACE_RESTORED": 6
+        }
+      }
+    },
+    "1700": {
+      "total_ms_per_game_minute": 24.02,
+      "mobility_ms_per_game_minute": 16.735,
+      "outbreak_ms_per_game_minute": 0.0,
+      "work_ms_per_game_minute": 7.262,
+      "other_ms_per_game_minute": 0.021,
+      "repeats": 3,
+      "game_minutes_per_block": 10,
+      "blocks": [
+        {
+          "total_ms_per_game_minute": 32.291,
+          "mobility_ms_per_game_minute": 23.735,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 8.535,
+          "other_ms_per_game_minute": 0.021,
+          "game_minutes": 10
+        },
+        {
+          "total_ms_per_game_minute": 24.02,
+          "mobility_ms_per_game_minute": 16.735,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 7.262,
+          "other_ms_per_game_minute": 0.023,
+          "game_minutes": 10
+        },
+        {
+          "total_ms_per_game_minute": 21.732,
+          "mobility_ms_per_game_minute": 15.254,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 6.459,
+          "other_ms_per_game_minute": 0.019,
+          "game_minutes": 10
+        }
+      ],
+      "hour_after": 17.55,
+      "scenario": "17:00 shift end, commute home",
+      "hour": 17.0,
+      "work_state": {
+        "n_sessions": 297,
+        "sessions_by_kind": {
+          "customer": 161,
+          "resident": 136
+        },
+        "sessions_by_phase": {
+          "done": 208,
+          "using": 89
+        },
+        "n_employed": 211,
+        "n_registries": 459,
+        "n_holds": 89,
+        "n_queued": 0,
+        "counts": {
+          "CUSTOMER_ARRIVED": 161,
+          "CUSTOMER_UNSERVED": 51,
+          "EMPLOYED": 211,
+          "MOVE_TO_OBJECT": 233,
+          "RESERVATION_RELEASED": 144,
+          "RESERVED": 89,
+          "SESSION_START": 297,
+          "STATE_CHANGE": 45,
+          "TASK_END": 144,
+          "TASK_START": 233,
+          "USE_END": 144,
+          "USE_START": 233
+        }
+      }
+    }
+  },
+  "navigation": {
+    "note": "route() is BFS over the doorway graph; the pairs are the centres of every room pair (capped), which is the worst case a walk can ask for",
+    "by_building": [
+      {
+        "building_id": 2318,
+        "n_rooms": 3,
+        "n_objects": 100,
+        "n_pairs": 6,
+        "total_ms": 0.03,
+        "us_per_route": 4.442,
+        "mean_waypoints": 2.33
+      },
+      {
+        "building_id": 6059,
+        "n_rooms": 3,
+        "n_objects": 119,
+        "n_pairs": 6,
+        "total_ms": 0.02,
+        "us_per_route": 2.581,
+        "mean_waypoints": 2.33
+      }
+    ],
+    "walk_share_0900": {
+      "n_calls": 17367,
+      "ms_per_game_minute": 0.981,
+      "share_of_work_advance": 0.074
+    }
+  },
+  "focus": {
+    "far": {
+      "total_ms_per_game_minute": 27.581,
+      "mobility_ms_per_game_minute": 15.156,
+      "outbreak_ms_per_game_minute": 0.0,
+      "work_ms_per_game_minute": 12.209,
+      "other_ms_per_game_minute": 0.023,
+      "repeats": 3,
+      "game_minutes_per_block": 10,
+      "blocks": [
+        {
+          "total_ms_per_game_minute": 27.581,
+          "mobility_ms_per_game_minute": 15.156,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 12.402,
+          "other_ms_per_game_minute": 0.023,
+          "game_minutes": 10
+        },
+        {
+          "total_ms_per_game_minute": 27.352,
+          "mobility_ms_per_game_minute": 15.123,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 12.209,
+          "other_ms_per_game_minute": 0.02,
+          "game_minutes": 10
+        },
+        {
+          "total_ms_per_game_minute": 27.88,
+          "mobility_ms_per_game_minute": 15.652,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 12.203,
+          "other_ms_per_game_minute": 0.024,
+          "game_minutes": 10
+        }
+      ],
+      "hour_after": 9.55,
+      "focus_xy": [
+        9000.0,
+        9000.0
+      ],
+      "bands": {
+        "route_simulated": 297
+      }
+    },
+    "near": {
+      "total_ms_per_game_minute": 29.606,
+      "mobility_ms_per_game_minute": 16.971,
+      "outbreak_ms_per_game_minute": 0.0,
+      "work_ms_per_game_minute": 12.583,
+      "other_ms_per_game_minute": 0.022,
+      "repeats": 3,
+      "game_minutes_per_block": 10,
+      "blocks": [
+        {
+          "total_ms_per_game_minute": 30.111,
+          "mobility_ms_per_game_minute": 16.688,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 13.401,
+          "other_ms_per_game_minute": 0.022,
+          "game_minutes": 10
+        },
+        {
+          "total_ms_per_game_minute": 29.606,
+          "mobility_ms_per_game_minute": 17.058,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 12.526,
+          "other_ms_per_game_minute": 0.022,
+          "game_minutes": 10
+        },
+        {
+          "total_ms_per_game_minute": 29.577,
+          "mobility_ms_per_game_minute": 16.971,
+          "outbreak_ms_per_game_minute": 0.0,
+          "work_ms_per_game_minute": 12.583,
+          "other_ms_per_game_minute": 0.022,
+          "game_minutes": 10
+        }
+      ],
+      "hour_after": 10.05,
+      "focus_xy": [
+        2830.47,
+        395.82
+      ],
+      "near_building_id": 12013,
+      "bands": {
+        "route_simulated": 294,
+        "physical": 3
+      }
+    },
+    "work_ms_delta": 0.374,
+    "max_active": 1024,
+    "note": "the work runtime never reads focus_xy or the LOD band \u2014 there is no reference to either anywhere in asphodel/smart \u2014 so a NEAR workplace runs exactly the same Python as a FAR one. The measured work delta of 0.374 ms/game-minute is machine noise plus the mobility band change (far bands {'route_simulated': 297}, near bands {'route_simulated': 294, 'physical': 3}); mobility freezes citizens into ABSTRACT only beyond max_active=1024 and this city registers 297, so nothing froze either way. The Godot-side cost of embodying a NEAR worker is measured by the in-engine gate, not here."
+  },
+  "near_embodiment": {
+    "measured": false,
+    "status": "not measured here",
+    "reason": "materialising interior worker bodies, their station animations and the MOBILITY_REPORT rows they add is Godot-side cost; this tool measures the Python authority only",
+    "gate": {
+      "scene": "godot/tests/WorkGate.tscn",
+      "script": "godot/tests/work_gate.gd",
+      "runner": "tools/run_work_gate.sh",
+      "artifacts": "artifacts/smart_objects_work_v1/godot_probe_trace.json"
+    }
+  },
+  "commute_peak": {
+    "total_ms_per_game_minute": 19.185,
+    "mobility_ms_per_game_minute": 13.996,
+    "outbreak_ms_per_game_minute": 0.0,
+    "work_ms_per_game_minute": 5.17,
+    "other_ms_per_game_minute": 0.018,
+    "repeats": 3,
+    "game_minutes_per_block": 10,
+    "blocks": [
+      {
+        "total_ms_per_game_minute": 18.62,
+        "mobility_ms_per_game_minute": 13.657,
+        "outbreak_ms_per_game_minute": 0.0,
+        "work_ms_per_game_minute": 4.946,
+        "other_ms_per_game_minute": 0.018,
+        "game_minutes": 10
+      },
+      {
+        "total_ms_per_game_minute": 19.185,
+        "mobility_ms_per_game_minute": 13.996,
+        "outbreak_ms_per_game_minute": 0.0,
+        "work_ms_per_game_minute": 5.17,
+        "other_ms_per_game_minute": 0.018,
+        "game_minutes": 10
+      },
+      {
+        "total_ms_per_game_minute": 1479.323,
+        "mobility_ms_per_game_minute": 1473.799,
+        "outbreak_ms_per_game_minute": 0.0,
+        "work_ms_per_game_minute": 5.504,
+        "other_ms_per_game_minute": 0.02,
+        "game_minutes": 10
+      }
+    ],
+    "hour_after": 7.55,
+    "scenario": "07:00-08:00 commute peak with workers active",
+    "hour": 7.0,
+    "work_state": {
+      "n_sessions": 137,
+      "sessions_by_kind": {
+        "resident": 137
+      },
+      "sessions_by_phase": {
+        "done": 47,
+        "using": 90
+      },
+      "n_employed": 211,
+      "n_registries": 459,
+      "n_holds": 90,
+      "n_queued": 0,
+      "counts": {
+        "EMPLOYED": 211,
+        "MOVE_TO_OBJECT": 217,
+        "RESERVATION_RELEASED": 127,
+        "RESERVED": 217,
+        "SESSION_END": 160,
+        "SESSION_START": 297,
+        "TASK_START": 217,
+        "USE_START": 217
+      }
+    },
+    "full_hour_0700_0800": {
+      "hour_from": 7.0,
+      "hour_to": 8.0,
+      "minutes": 60,
+      "mean_total_ms_per_game_minute": 545.39,
+      "median_total_ms_per_game_minute": 126.83,
+      "mean_work_ms_per_game_minute": 7.82,
+      "worst_minute": {
+        "minute": 27,
+        "hour": 7.5,
+        "total_ms": 10886.757,
+        "mobility_ms": 10879.351,
+        "work_ms": 7.385,
+        "n_sessions": 137,
+        "n_registries": 459
+      },
+      "worst_work_minute": {
+        "minute": 42,
+        "hour": 7.75,
+        "total_ms": 188.634,
+        "mobility_ms": 175.815,
+        "work_ms": 12.782,
+        "n_sessions": 234,
+        "n_registries": 459
+      },
+      "n_minutes_over_budget": 3,
+      "per_minute": [
+        {
+          "minute": 0,
+          "hour": 7.05,
+          "total_ms": 19.262,
+          "mobility_ms": 14.151,
+          "work_ms": 5.091,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 1,
+          "hour": 7.0667,
+          "total_ms": 20.266,
+          "mobility_ms": 15.158,
+          "work_ms": 5.09,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 2,
+          "hour": 7.0833,
+          "total_ms": 19.157,
+          "mobility_ms": 14.007,
+          "work_ms": 5.132,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 3,
+          "hour": 7.1,
+          "total_ms": 18.016,
+          "mobility_ms": 12.86,
+          "work_ms": 5.14,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 4,
+          "hour": 7.1167,
+          "total_ms": 17.892,
+          "mobility_ms": 12.775,
+          "work_ms": 5.101,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 5,
+          "hour": 7.1333,
+          "total_ms": 17.859,
+          "mobility_ms": 13.08,
+          "work_ms": 4.763,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 6,
+          "hour": 7.15,
+          "total_ms": 17.852,
+          "mobility_ms": 13.091,
+          "work_ms": 4.745,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 7,
+          "hour": 7.1667,
+          "total_ms": 16.909,
+          "mobility_ms": 12.199,
+          "work_ms": 4.694,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 8,
+          "hour": 7.1833,
+          "total_ms": 17.329,
+          "mobility_ms": 12.753,
+          "work_ms": 4.562,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 9,
+          "hour": 7.2,
+          "total_ms": 17.081,
+          "mobility_ms": 12.489,
+          "work_ms": 4.577,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 10,
+          "hour": 7.2167,
+          "total_ms": 17.068,
+          "mobility_ms": 12.358,
+          "work_ms": 4.693,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 11,
+          "hour": 7.2333,
+          "total_ms": 16.9,
+          "mobility_ms": 12.057,
+          "work_ms": 4.824,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 12,
+          "hour": 7.25,
+          "total_ms": 19.085,
+          "mobility_ms": 13.892,
+          "work_ms": 5.176,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 13,
+          "hour": 7.2667,
+          "total_ms": 18.229,
+          "mobility_ms": 13.183,
+          "work_ms": 5.03,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 14,
+          "hour": 7.2833,
+          "total_ms": 18.344,
+          "mobility_ms": 13.249,
+          "work_ms": 5.08,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 15,
+          "hour": 7.3,
+          "total_ms": 18.835,
+          "mobility_ms": 13.787,
+          "work_ms": 5.031,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 16,
+          "hour": 7.3167,
+          "total_ms": 17.975,
+          "mobility_ms": 12.702,
+          "work_ms": 5.258,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 17,
+          "hour": 7.3333,
+          "total_ms": 18.802,
+          "mobility_ms": 13.658,
+          "work_ms": 5.124,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 18,
+          "hour": 7.35,
+          "total_ms": 19.173,
+          "mobility_ms": 13.596,
+          "work_ms": 5.558,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 19,
+          "hour": 7.3667,
+          "total_ms": 19.145,
+          "mobility_ms": 14.064,
+          "work_ms": 5.063,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 20,
+          "hour": 7.3833,
+          "total_ms": 17.781,
+          "mobility_ms": 12.682,
+          "work_ms": 5.082,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 21,
+          "hour": 7.4,
+          "total_ms": 17.496,
+          "mobility_ms": 12.458,
+          "work_ms": 5.023,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 22,
+          "hour": 7.4167,
+          "total_ms": 17.538,
+          "mobility_ms": 12.517,
+          "work_ms": 5.006,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 23,
+          "hour": 7.4333,
+          "total_ms": 17.974,
+          "mobility_ms": 12.872,
+          "work_ms": 5.088,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 24,
+          "hour": 7.45,
+          "total_ms": 17.366,
+          "mobility_ms": 12.553,
+          "work_ms": 4.8,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 25,
+          "hour": 7.4667,
+          "total_ms": 17.94,
+          "mobility_ms": 13.038,
+          "work_ms": 4.888,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 26,
+          "hour": 7.4833,
+          "total_ms": 18.819,
+          "mobility_ms": 13.469,
+          "work_ms": 5.333,
+          "n_sessions": 297,
+          "n_registries": 459
+        },
+        {
+          "minute": 27,
+          "hour": 7.5,
+          "total_ms": 10886.757,
+          "mobility_ms": 10879.351,
+          "work_ms": 7.385,
+          "n_sessions": 137,
+          "n_registries": 459
+        },
+        {
+          "minute": 28,
+          "hour": 7.5167,
+          "total_ms": 1712.929,
+          "mobility_ms": 1708.666,
+          "work_ms": 4.244,
+          "n_sessions": 137,
+          "n_registries": 459
+        },
+        {
+          "minute": 29,
+          "hour": 7.5333,
+          "total_ms": 2090.457,
+          "mobility_ms": 2086.347,
+          "work_ms": 4.088,
+          "n_sessions": 137,
+          "n_registries": 459
+        },
+        {
+          "minute": 30,
+          "hour": 7.55,
+          "total_ms": 2518.089,
+          "mobility_ms": 2513.2,
+          "work_ms": 4.869,
+          "n_sessions": 139,
+          "n_registries": 459
+        },
+        {
+          "minute": 31,
+          "hour": 7.5667,
+          "total_ms": 2554.432,
+          "mobility_ms": 2547.203,
+          "work_ms": 7.209,
+          "n_sessions": 150,
+          "n_registries": 459
+        },
+        {
+          "minute": 32,
+          "hour": 7.5833,
+          "total_ms": 2255.115,
+          "mobility_ms": 2248.083,
+          "work_ms": 7.013,
+          "n_sessions": 160,
+          "n_registries": 459
+        },
+        {
+          "minute": 33,
+          "hour": 7.6,
+          "total_ms": 1684.265,
+          "mobility_ms": 1674.259,
+          "work_ms": 9.985,
+          "n_sessions": 176,
+          "n_registries": 459
+        },
+        {
+          "minute": 34,
+          "hour": 7.6167,
+          "total_ms": 1267.377,
+          "mobility_ms": 1256.995,
+          "work_ms": 10.362,
+          "n_sessions": 192,
+          "n_registries": 459
+        },
+        {
+          "minute": 35,
+          "hour": 7.6333,
+          "total_ms": 869.197,
+          "mobility_ms": 857.855,
+          "work_ms": 11.319,
+          "n_sessions": 202,
+          "n_registries": 459
+        },
+        {
+          "minute": 36,
+          "hour": 7.65,
+          "total_ms": 516.009,
+          "mobility_ms": 504.389,
+          "work_ms": 11.599,
+          "n_sessions": 212,
+          "n_registries": 459
+        },
+        {
+          "minute": 37,
+          "hour": 7.6667,
+          "total_ms": 351.262,
+          "mobility_ms": 338.828,
+          "work_ms": 12.41,
+          "n_sessions": 221,
+          "n_registries": 459
+        },
+        {
+          "minute": 38,
+          "hour": 7.6833,
+          "total_ms": 254.119,
+          "mobility_ms": 243.68,
+          "work_ms": 10.415,
+          "n_sessions": 225,
+          "n_registries": 459
+        },
+        {
+          "minute": 39,
+          "hour": 7.7,
+          "total_ms": 206.006,
+          "mobility_ms": 195.578,
+          "work_ms": 10.406,
+          "n_sessions": 229,
+          "n_registries": 459
+        },
+        {
+          "minute": 40,
+          "hour": 7.7167,
+          "total_ms": 189.067,
+          "mobility_ms": 177.179,
+          "work_ms": 11.864,
+          "n_sessions": 232,
+          "n_registries": 459
+        },
+        {
+          "minute": 41,
+          "hour": 7.7333,
+          "total_ms": 187.821,
+          "mobility_ms": 177.391,
+          "work_ms": 10.411,
+          "n_sessions": 233,
+          "n_registries": 459
+        },
+        {
+          "minute": 42,
+          "hour": 7.75,
+          "total_ms": 188.634,
+          "mobility_ms": 175.815,
+          "work_ms": 12.782,
+          "n_sessions": 234,
+          "n_registries": 459
+        },
+        {
+          "minute": 43,
+          "hour": 7.7667,
+          "total_ms": 170.701,
+          "mobility_ms": 159.945,
+          "work_ms": 10.735,
+          "n_sessions": 235,
+          "n_registries": 459
+        },
+        {
+          "minute": 44,
+          "hour": 7.7833,
+          "total_ms": 140.569,
+          "mobility_ms": 129.313,
+          "work_ms": 11.232,
+          "n_sessions": 237,
+          "n_registries": 459
+        },
+        {
+          "minute": 45,
+          "hour": 7.8,
+          "total_ms": 137.344,
+          "mobility_ms": 125.987,
+          "work_ms": 11.296,
+          "n_sessions": 238,
+          "n_registries": 459
+        },
+        {
+          "minute": 46,
+          "hour": 7.8167,
+          "total_ms": 138.587,
+          "mobility_ms": 126.422,
+          "work_ms": 12.141,
+          "n_sessions": 239,
+          "n_registries": 459
+        },
+        {
+          "minute": 47,
+          "hour": 7.8333,
+          "total_ms": 139.506,
+          "mobility_ms": 127.327,
+          "work_ms": 12.155,
+          "n_sessions": 240,
+          "n_registries": 459
+        },
+        {
+          "minute": 48,
+          "hour": 7.85,
+          "total_ms": 139.3,
+          "mobility_ms": 127.604,
+          "work_ms": 11.672,
+          "n_sessions": 241,
+          "n_registries": 459
+        },
+        {
+          "minute": 49,
+          "hour": 7.8667,
+          "total_ms": 139.207,
+          "mobility_ms": 128.418,
+          "work_ms": 10.764,
+          "n_sessions": 241,
+          "n_registries": 459
+        },
+        {
+          "minute": 50,
+          "hour": 7.8833,
+          "total_ms": 139.378,
+          "mobility_ms": 128.093,
+          "work_ms": 11.259,
+          "n_sessions": 241,
+          "n_registries": 459
+        },
+        {
+          "minute": 51,
+          "hour": 7.9,
+          "total_ms": 139.245,
+          "mobility_ms": 127.409,
+          "work_ms": 11.811,
+          "n_sessions": 241,
+          "n_registries": 459
+        },
+        {
+          "minute": 52,
+          "hour": 7.9167,
+          "total_ms": 131.164,
+          "mobility_ms": 120.834,
+          "work_ms": 10.308,
+          "n_sessions": 243,
+          "n_registries": 459
+        },
+        {
+          "minute": 53,
+          "hour": 7.9333,
+          "total_ms": 126.937,
+          "mobility_ms": 116.232,
+          "work_ms": 10.682,
+          "n_sessions": 243,
+          "n_registries": 459
+        },
+        {
+          "minute": 54,
+          "hour": 7.95,
+          "total_ms": 126.722,
+          "mobility_ms": 115.048,
+          "work_ms": 11.651,
+          "n_sessions": 244,
+          "n_registries": 459
+        },
+        {
+          "minute": 55,
+          "hour": 7.9667,
+          "total_ms": 128.298,
+          "mobility_ms": 117.769,
+          "work_ms": 10.506,
+          "n_sessions": 244,
+          "n_registries": 459
+        },
+        {
+          "minute": 56,
+          "hour": 7.9833,
+          "total_ms": 131.022,
+          "mobility_ms": 119.359,
+          "work_ms": 11.64,
+          "n_sessions": 244,
+          "n_registries": 459
+        },
+        {
+          "minute": 57,
+          "hour": 8.0,
+          "total_ms": 2376.031,
+          "mobility_ms": 2366.881,
+          "work_ms": 9.127,
+          "n_sessions": 243,
+          "n_registries": 459
+        },
+        {
+          "minute": 58,
+          "hour": 8.0167,
+          "total_ms": 97.762,
+          "mobility_ms": 86.815,
+          "work_ms": 10.915,
+          "n_sessions": 243,
+          "n_registries": 459
+        },
+        {
+          "minute": 59,
+          "hour": 8.0333,
+          "total_ms": 100.292,
+          "mobility_ms": 90.451,
+          "work_ms": 9.82,
+          "n_sessions": 243,
+          "n_registries": 459
+        }
+      ],
+      "note": "one timed game minute at a time; the departure peak is a mobility route-planning spike, not a work-runtime cost"
+    }
+  },
+  "outbreak_plus_work": {
+    "total_ms_per_game_minute": 40.119,
+    "mobility_ms_per_game_minute": 21.336,
+    "outbreak_ms_per_game_minute": 5.716,
+    "work_ms_per_game_minute": 12.876,
+    "other_ms_per_game_minute": 0.02,
+    "repeats": 3,
+    "game_minutes_per_block": 10,
+    "blocks": [
+      {
+        "total_ms_per_game_minute": 44.783,
+        "mobility_ms_per_game_minute": 24.108,
+        "outbreak_ms_per_game_minute": 7.775,
+        "work_ms_per_game_minute": 12.876,
+        "other_ms_per_game_minute": 0.024,
+        "game_minutes": 10
+      },
+      {
+        "total_ms_per_game_minute": 40.119,
+        "mobility_ms_per_game_minute": 21.336,
+        "outbreak_ms_per_game_minute": 5.716,
+        "work_ms_per_game_minute": 13.046,
+        "other_ms_per_game_minute": 0.02,
+        "game_minutes": 10
+      },
+      {
+        "total_ms_per_game_minute": 34.771,
+        "mobility_ms_per_game_minute": 16.512,
+        "outbreak_ms_per_game_minute": 5.499,
+        "work_ms_per_game_minute": 12.74,
+        "other_ms_per_game_minute": 0.019,
+        "game_minutes": 10
+      }
+    ],
+    "hour_after": 11.5,
+    "scenario": "outbreak (classic_zombie, data-driven index case) + work, seeded 05:00, measured 11:00-11:20",
+    "pathogen": "classic_zombie",
+    "warmup_0500_to_1100_s": 46.1,
+    "health": {
+      "incapacitated": 1,
+      "incubating": 2,
+      "susceptible": 293,
+      "undead": 1
+    },
+    "n_records": 6,
+    "work_state": {
+      "n_sessions": 289,
+      "sessions_by_kind": {
+        "customer": 85,
+        "resident": 51,
+        "worker": 153
+      },
+      "sessions_by_phase": {
+        "done": 100,
+        "idle": 1,
+        "to_object": 1,
+        "using": 179,
+        "waiting": 8
+      },
+      "n_employed": 211,
+      "n_registries": 460,
+      "n_holds": 180,
+      "n_queued": 4,
+      "counts": {
+        "BREAK_END": 37,
+        "BREAK_START": 46,
+        "CLOCK_IN": 155,
+        "CUSTOMER_ARRIVED": 85,
+        "CUSTOMER_QUEUED": 84,
+        "CUSTOMER_UNSERVED": 50,
+        "EMPLOYED": 211,
+        "MOVE_TO_OBJECT": 1268,
+        "RESERVATION_DENIED": 8,
+        "RESERVATION_RELEASED": 7149,
+        "RESERVED": 7244,
+        "SERVED": 31,
+        "SESSION_END": 246,
+        "SESSION_START": 382,
+        "STATE_CHANGE": 777,
+        "TASK_END": 7205,
+        "TASK_START": 7572,
+        "USE_END": 7205,
+        "USE_START": 7571,
+        "WAIT": 1783,
+        "WORKPLACE_REDUCED_FUNCTION": 18,
+        "WORK_INTERRUPTED": 2
+      }
+    }
+  },
+  "worker_heavy": {
+    "total_ms_per_game_minute": 37.194,
+    "mobility_ms_per_game_minute": 27.661,
+    "outbreak_ms_per_game_minute": 0.0,
+    "work_ms_per_game_minute": 9.516,
+    "other_ms_per_game_minute": 0.016,
+    "repeats": 3,
+    "game_minutes_per_block": 10,
+    "blocks": [
+      {
+        "total_ms_per_game_minute": 117.002,
+        "mobility_ms_per_game_minute": 104.757,
+        "outbreak_ms_per_game_minute": 0.0,
+        "work_ms_per_game_minute": 12.225,
+        "other_ms_per_game_minute": 0.019,
+        "game_minutes": 10
+      },
+      {
+        "total_ms_per_game_minute": 37.194,
+        "mobility_ms_per_game_minute": 27.661,
+        "outbreak_ms_per_game_minute": 0.0,
+        "work_ms_per_game_minute": 9.516,
+        "other_ms_per_game_minute": 0.016,
+        "game_minutes": 10
+      },
+      {
+        "total_ms_per_game_minute": 27.721,
+        "mobility_ms_per_game_minute": 19.88,
+        "outbreak_ms_per_game_minute": 0.0,
+        "work_ms_per_game_minute": 7.826,
+        "other_ms_per_game_minute": 0.016,
+        "game_minutes": 10
+      }
+    ],
+    "hour_after": 11.55,
+    "scenario": "worker-heavy 11:00 \u2014 every citizen employed at the 5 largest workplaces",
+    "hour": 11.0,
+    "workplaces": [
+      2254,
+      535,
+      5320,
+      5684,
+      4726
+    ],
+    "workplace_objects": {
+      "2254": 152,
+      "535": 152,
+      "5320": 150,
+      "5684": 149,
+      "4726": 149
+    },
+    "n_employed": 297,
+    "roles": {
+      "cleaner": 85,
+      "desk_worker": 183,
+      "stocker": 29
+    },
+    "employ_all_ms": 37.7,
+    "work_state": {
+      "n_sessions": 133,
+      "sessions_by_kind": {
+        "customer": 80,
+        "resident": 51,
+        "worker": 2
+      },
+      "sessions_by_phase": {
+        "done": 99,
+        "to_object": 1,
+        "using": 33
+      },
+      "n_employed": 297,
+      "n_registries": 87,
+      "n_holds": 34,
+      "n_queued": 0,
+      "counts": {
+        "CLOCK_IN": 2,
+        "CUSTOMER_ARRIVED": 80,
+        "CUSTOMER_UNSERVED": 80,
+        "EMPLOYED": 297,
+        "MOVE_TO_OBJECT": 137,
+        "RESERVATION_RELEASED": 104,
+        "RESERVED": 60,
+        "SESSION_START": 131,
+        "STATE_CHANGE": 88,
+        "TASK_END": 104,
+        "TASK_START": 138,
+        "USE_END": 104,
+        "USE_START": 137
+      }
+    },
+    "caveat": "employment alone does not create work sessions: WorkRuntime only opens a worker session when the TripExecutor has actually delivered the citizen into emp.workplace_id with activity 'work' (smart/runtime.py:234), and the mobility runtime still routes everyone to the workplace in their own bundle profile. This scenario therefore measures a maximal employment table and a maximal per-workplace object/registry load, not 297 simultaneous worker sessions."
+  },
+  "profile": {
+    "hour": 10.0,
+    "game_minutes": 20,
+    "profiled_total_s": 1.322,
+    "ms_per_game_minute_under_profiler": 66.1,
+    "by_cumtime": [
+      {
+        "function": "asphodel/orchestrator.py:321(advance_seconds)",
+        "file": "asphodel/orchestrator.py",
+        "name": "advance_seconds",
+        "ncalls": 20,
+        "tottime_s": 0.0004,
+        "cumtime_s": 1.322,
+        "tottime_pct": 0.03,
+        "cumtime_pct": 100.0,
+        "calls_per_game_minute": 1.0
+      },
+      {
+        "function": "embodied/runtime.py:466(advance)",
+        "file": "embodied/runtime.py",
+        "name": "advance",
+        "ncalls": 20,
+        "tottime_s": 0.001,
+        "cumtime_s": 0.6779,
+        "tottime_pct": 0.08,
+        "cumtime_pct": 51.28,
+        "calls_per_game_minute": 1.0
+      },
+      {
+        "function": "embodied/runtime.py:477(_substep)",
+        "file": "embodied/runtime.py",
+        "name": "_substep",
+        "ncalls": 1200,
+        "tottime_s": 0.1882,
+        "cumtime_s": 0.6769,
+        "tottime_pct": 14.24,
+        "cumtime_pct": 51.2,
+        "calls_per_game_minute": 60.0
+      },
+      {
+        "function": "smart/runtime.py:192(advance)",
+        "file": "smart/runtime.py",
+        "name": "advance",
+        "ncalls": 20,
+        "tottime_s": 0.0012,
+        "cumtime_s": 0.6435,
+        "tottime_pct": 0.09,
+        "cumtime_pct": 48.68,
+        "calls_per_game_minute": 1.0
+      },
+      {
+        "function": "smart/runtime.py:202(_substep)",
+        "file": "smart/runtime.py",
+        "name": "_substep",
+        "ncalls": 1200,
+        "tottime_s": 0.2586,
+        "cumtime_s": 0.6421,
+        "tottime_pct": 19.56,
+        "cumtime_pct": 48.57,
+        "calls_per_game_minute": 60.0
+      },
+      {
+        "function": "transport/traffic.py:51(update_congestion)",
+        "file": "transport/traffic.py",
+        "name": "update_congestion",
+        "ncalls": 20,
+        "tottime_s": 0.2667,
+        "cumtime_s": 0.3614,
+        "tottime_pct": 20.18,
+        "cumtime_pct": 27.34,
+        "calls_per_game_minute": 1.0
+      },
+      {
+        "function": "smart/runtime.py:326(_advance_session)",
+        "file": "smart/runtime.py",
+        "name": "_advance_session",
+        "ncalls": 20226,
+        "tottime_s": 0.0192,
+        "cumtime_s": 0.2863,
+        "tottime_pct": 1.46,
+        "cumtime_pct": 21.66,
+        "calls_per_game_minute": 1011.3
+      },
+      {
+        "function": "smart/runtime.py:394(_select_work_task)",
+        "file": "smart/runtime.py",
+        "name": "_select_work_task",
+        "ncalls": 808,
+        "tottime_s": 0.0031,
+        "cumtime_s": 0.1611,
+        "tottime_pct": 0.23,
+        "cumtime_pct": 12.18,
+        "calls_per_game_minute": 40.4
+      },
+      {
+        "function": "smart/runtime.py:447(_select_target)",
+        "file": "smart/runtime.py",
+        "name": "_select_target",
+        "ncalls": 967,
+        "tottime_s": 0.0014,
+        "cumtime_s": 0.0903,
+        "tottime_pct": 0.1,
+        "cumtime_pct": 6.83,
+        "calls_per_game_minute": 48.4
+      },
+      {
+        "function": "embodied/executor.py:149(inside)",
+        "file": "embodied/executor.py",
+        "name": "inside",
+        "ncalls": 377826,
+        "tottime_s": 0.0823,
+        "cumtime_s": 0.0823,
+        "tottime_pct": 6.23,
+        "cumtime_pct": 6.23,
+        "calls_per_game_minute": 18891.3
+      },
+      {
+        "function": "~:0(<built-in method builtins.max>)",
+        "file": "~",
+        "name": "<built-in method builtins.max>",
+        "ncalls": 726027,
+        "tottime_s": 0.0719,
+        "cumtime_s": 0.0719,
+        "tottime_pct": 5.44,
+        "cumtime_pct": 5.44,
+        "calls_per_game_minute": 36301.3
+      },
+      {
+        "function": "~:0(<method 'get' of 'dict' objects>)",
+        "file": "~",
+        "name": "<method 'get' of 'dict' objects>",
+        "ncalls": 840568,
+        "tottime_s": 0.0699,
+        "cumtime_s": 0.0699,
+        "tottime_pct": 5.29,
+        "cumtime_pct": 5.29,
+        "calls_per_game_minute": 42028.4
+      },
+      {
+        "function": "smart/runtime.py:441(_candidates)",
+        "file": "smart/runtime.py",
+        "name": "_candidates",
+        "ncalls": 975,
+        "tottime_s": 0.0014,
+        "cumtime_s": 0.0641,
+        "tottime_pct": 0.11,
+        "cumtime_pct": 4.85,
+        "calls_per_game_minute": 48.8
+      },
+      {
+        "function": "embodied/executor.py:136(current_step)",
+        "file": "embodied/executor.py",
+        "name": "current_step",
+        "ncalls": 711600,
+        "tottime_s": 0.058,
+        "cumtime_s": 0.058,
+        "tottime_pct": 4.39,
+        "cumtime_pct": 4.39,
+        "calls_per_game_minute": 35580.0
+      },
+      {
+        "function": "smart/runtime.py:359(_walk)",
+        "file": "smart/runtime.py",
+        "name": "_walk",
+        "ncalls": 12545,
+        "tottime_s": 0.0254,
+        "cumtime_s": 0.0539,
+        "tottime_pct": 1.93,
+        "cumtime_pct": 4.08,
+        "calls_per_game_minute": 627.2
+      }
+    ],
+    "by_tottime": [
+      {
+        "function": "transport/traffic.py:51(update_congestion)",
+        "file": "transport/traffic.py",
+        "name": "update_congestion",
+        "ncalls": 20,
+        "tottime_s": 0.2667,
+        "cumtime_s": 0.3614,
+        "tottime_pct": 20.18,
+        "cumtime_pct": 27.34,
+        "calls_per_game_minute": 1.0
+      },
+      {
+        "function": "smart/runtime.py:202(_substep)",
+        "file": "smart/runtime.py",
+        "name": "_substep",
+        "ncalls": 1200,
+        "tottime_s": 0.2586,
+        "cumtime_s": 0.6421,
+        "tottime_pct": 19.56,
+        "cumtime_pct": 48.57,
+        "calls_per_game_minute": 60.0
+      },
+      {
+        "function": "embodied/runtime.py:477(_substep)",
+        "file": "embodied/runtime.py",
+        "name": "_substep",
+        "ncalls": 1200,
+        "tottime_s": 0.1882,
+        "cumtime_s": 0.6769,
+        "tottime_pct": 14.24,
+        "cumtime_pct": 51.2,
+        "calls_per_game_minute": 60.0
+      },
+      {
+        "function": "embodied/executor.py:149(inside)",
+        "file": "embodied/executor.py",
+        "name": "inside",
+        "ncalls": 377826,
+        "tottime_s": 0.0823,
+        "cumtime_s": 0.0823,
+        "tottime_pct": 6.23,
+        "cumtime_pct": 6.23,
+        "calls_per_game_minute": 18891.3
+      },
+      {
+        "function": "~:0(<built-in method builtins.max>)",
+        "file": "~",
+        "name": "<built-in method builtins.max>",
+        "ncalls": 726027,
+        "tottime_s": 0.0719,
+        "cumtime_s": 0.0719,
+        "tottime_pct": 5.44,
+        "cumtime_pct": 5.44,
+        "calls_per_game_minute": 36301.3
+      },
+      {
+        "function": "~:0(<method 'get' of 'dict' objects>)",
+        "file": "~",
+        "name": "<method 'get' of 'dict' objects>",
+        "ncalls": 840568,
+        "tottime_s": 0.0699,
+        "cumtime_s": 0.0699,
+        "tottime_pct": 5.29,
+        "cumtime_pct": 5.29,
+        "calls_per_game_minute": 42028.4
+      },
+      {
+        "function": "embodied/executor.py:136(current_step)",
+        "file": "embodied/executor.py",
+        "name": "current_step",
+        "ncalls": 711600,
+        "tottime_s": 0.058,
+        "cumtime_s": 0.058,
+        "tottime_pct": 4.39,
+        "cumtime_pct": 4.39,
+        "calls_per_game_minute": 35580.0
+      },
+      {
+        "function": "smart/runtime.py:359(_walk)",
+        "file": "smart/runtime.py",
+        "name": "_walk",
+        "ncalls": 12545,
+        "tottime_s": 0.0254,
+        "cumtime_s": 0.0539,
+        "tottime_pct": 1.93,
+        "cumtime_pct": 4.08,
+        "calls_per_game_minute": 627.2
+      },
+      {
+        "function": "smart/runtime.py:238(_session_kind)",
+        "file": "smart/runtime.py",
+        "name": "_session_kind",
+        "ncalls": 21426,
+        "tottime_s": 0.0247,
+        "cumtime_s": 0.0387,
+        "tottime_pct": 1.87,
+        "cumtime_pct": 2.92,
+        "calls_per_game_minute": 1071.3
+      },
+      {
+        "function": "smart/runtime.py:326(_advance_session)",
+        "file": "smart/runtime.py",
+        "name": "_advance_session",
+        "ncalls": 20226,
+        "tottime_s": 0.0192,
+        "cumtime_s": 0.2863,
+        "tottime_pct": 1.46,
+        "cumtime_pct": 21.66,
+        "calls_per_game_minute": 1011.3
+      },
+      {
+        "function": "smart/objects.py:192(affordance)",
+        "file": "smart/objects.py",
+        "name": "affordance",
+        "ncalls": 69033,
+        "tottime_s": 0.0188,
+        "cumtime_s": 0.0188,
+        "tottime_pct": 1.42,
+        "cumtime_pct": 1.42,
+        "calls_per_game_minute": 3451.7
+      },
+      {
+        "function": "smart/rooms.py:74(room_of)",
+        "file": "smart/rooms.py",
+        "name": "room_of",
+        "ncalls": 13622,
+        "tottime_s": 0.0162,
+        "cumtime_s": 0.019,
+        "tottime_pct": 1.23,
+        "cumtime_pct": 1.44,
+        "calls_per_game_minute": 681.1
+      },
+      {
+        "function": "~:0(<built-in method builtins.sorted>)",
+        "file": "~",
+        "name": "<built-in method builtins.sorted>",
+        "ncalls": 4849,
+        "tottime_s": 0.0156,
+        "cumtime_s": 0.0163,
+        "tottime_pct": 1.18,
+        "cumtime_pct": 1.23,
+        "calls_per_game_minute": 242.4
+      },
+      {
+        "function": "smart/objects.py:279(<listcomp>)",
+        "file": "smart/objects.py",
+        "name": "<listcomp>",
+        "ncalls": 975,
+        "tottime_s": 0.0144,
+        "cumtime_s": 0.0325,
+        "tottime_pct": 1.09,
+        "cumtime_pct": 2.46,
+        "calls_per_game_minute": 48.8
+      },
+      {
+        "function": "smart/objects.py:201(available)",
+        "file": "smart/objects.py",
+        "name": "available",
+        "ncalls": 20006,
+        "tottime_s": 0.0114,
+        "cumtime_s": 0.0166,
+        "tottime_pct": 0.86,
+        "cumtime_pct": 1.26,
+        "calls_per_game_minute": 1000.3
+      }
+    ],
+    "work_state": {
+      "n_sessions": 295,
+      "sessions_by_kind": {
+        "resident": 136,
+        "worker": 159
+      },
+      "sessions_by_phase": {
+        "done": 47,
+        "to_object": 5,
+        "using": 239,
+        "waiting": 4
+      },
+      "n_employed": 211,
+      "n_registries": 303,
+      "n_holds": 244,
+      "n_queued": 0,
+      "counts": {
+        "CLOCK_IN": 159,
+        "EMPLOYED": 211,
+        "MOVE_TO_OBJECT": 694,
+        "RESERVATION_DENIED": 8,
+        "RESERVATION_RELEASED": 785,
+        "RESERVED": 1029,
+        "SESSION_START": 136,
+        "STATE_CHANGE": 468,
+        "TASK_END": 785,
+        "TASK_START": 1029,
+        "USE_END": 785,
+        "USE_START": 1024,
+        "WAIT": 152
+      }
+    },
+    "note": "cProfile inflates absolute cost; read the shares, not the milliseconds. The unprofiled cost of the same window is the 'advance' rows above."
+  },
+  "hotspots": [
+    {
+      "function": "transport/traffic.py:update_congestion",
+      "where": "transport/traffic.py:51(update_congestion)",
+      "tottime_pct": 20.18,
+      "cumtime_pct": 27.34,
+      "calls_per_game_minute": 1.0,
+      "scaling": "not annotated (see the profile rows)"
+    },
+    {
+      "function": "smart/runtime.py:_substep",
+      "where": "smart/runtime.py:202(_substep)",
+      "tottime_pct": 19.56,
+      "cumtime_pct": 48.57,
+      "calls_per_game_minute": 60.0,
+      "scaling": "per registered citizen per 1 s substep \u2014 the `for cid in sorted(execs)` loop has no skip list, so it is O(citizens) x 60 per game minute even when nobody is working; the sorted() itself is O(n log n) per substep"
+    },
+    {
+      "function": "embodied/runtime.py:_substep",
+      "where": "embodied/runtime.py:477(_substep)",
+      "tottime_pct": 14.24,
+      "cumtime_pct": 51.2,
+      "calls_per_game_minute": 60.0,
+      "scaling": "per registered citizen per 1 s substep \u2014 the mobility baseline this milestone adds to; citizens settled inside a building are skipped (embodied/runtime.py:464-471)"
+    },
+    {
+      "function": "embodied/executor.py:inside",
+      "where": "embodied/executor.py:149(inside)",
+      "tottime_pct": 6.23,
+      "cumtime_pct": 6.23,
+      "calls_per_game_minute": 18891.3,
+      "scaling": "per citizen per substep per caller \u2014 mobility and work each ask independently"
+    },
+    {
+      "function": "~:<built-in method builtins.max>",
+      "where": "~:0(<built-in method builtins.max>)",
+      "tottime_pct": 5.44,
+      "cumtime_pct": 5.44,
+      "calls_per_game_minute": 36301.3,
+      "scaling": "not annotated (see the profile rows)"
+    },
+    {
+      "function": "~:<method 'get' of 'dict' objects>",
+      "where": "~:0(<method 'get' of 'dict' objects>)",
+      "tottime_pct": 5.29,
+      "cumtime_pct": 5.29,
+      "calls_per_game_minute": 42028.4,
+      "scaling": "not annotated (see the profile rows)"
+    },
+    {
+      "function": "embodied/executor.py:current_step",
+      "where": "embodied/executor.py:136(current_step)",
+      "tottime_pct": 4.39,
+      "cumtime_pct": 4.39,
+      "calls_per_game_minute": 35580.0,
+      "scaling": "per citizen per substep per caller"
+    },
+    {
+      "function": "smart/runtime.py:_walk",
+      "where": "smart/runtime.py:359(_walk)",
+      "tottime_pct": 1.93,
+      "cumtime_pct": 4.08,
+      "calls_per_game_minute": 627.2,
+      "scaling": "per citizen currently walking to an object, per 1 s substep"
+    },
+    {
+      "function": "smart/runtime.py:_session_kind",
+      "where": "smart/runtime.py:238(_session_kind)",
+      "tottime_pct": 1.87,
+      "cumtime_pct": 2.92,
+      "calls_per_game_minute": 1071.3,
+      "scaling": "per registered citizen per 1 s substep (60 per game minute), whether or not that citizen is anywhere near a building \u2014 WorkRuntime._substep classifies every executor every substep (smart/runtime.py:202-223)"
+    },
+    {
+      "function": "smart/runtime.py:_advance_session",
+      "where": "smart/runtime.py:326(_advance_session)",
+      "tottime_pct": 1.46,
+      "cumtime_pct": 21.66,
+      "calls_per_game_minute": 1011.3,
+      "scaling": "per citizen with an open session per substep, gated by a.next_s wake scheduling"
+    },
+    {
+      "function": "smart/objects.py:affordance",
+      "where": "smart/objects.py:192(affordance)",
+      "tottime_pct": 1.42,
+      "cumtime_pct": 1.42,
+      "calls_per_game_minute": 3451.7,
+      "scaling": "not annotated (see the profile rows)"
+    },
+    {
+      "function": "smart/rooms.py:room_of",
+      "where": "smart/rooms.py:74(room_of)",
+      "tottime_pct": 1.23,
+      "cumtime_pct": 1.44,
+      "calls_per_game_minute": 681.1,
+      "scaling": "per walking citizen per substep x rooms in the building (linear scan over every room rectangle)"
+    },
+    {
+      "function": "WorkRuntime.advance (whole work runtime)",
+      "where": "smart/runtime.py:192(advance)",
+      "tottime_pct": 0.09,
+      "cumtime_pct": 48.68,
+      "calls_per_game_minute": 1.0,
+      "scaling": "per game minute: 60 substeps x O(citizens)"
+    },
+    {
+      "function": "WorkRuntime._select_work_task",
+      "where": "smart/runtime.py:394(_select_work_task)",
+      "tottime_pct": 0.23,
+      "cumtime_pct": 12.18,
+      "calls_per_game_minute": 40.4,
+      "scaling": "per task selection x objects in the workplace",
+      "measured": {
+        "calls_per_game_minute": 38.6,
+        "mean_ms_per_call": 0.0955,
+        "largest_workplace": {
+          "building_id": 2254,
+          "n_objects": 152,
+          "n_calls": 6,
+          "mean_ms_per_call": 0.12504,
+          "max_ms_per_call": 0.15385
+        }
+      }
+    }
+  ],
+  "budget": {
+    "clock_multiplier": 24.0,
+    "real_seconds_per_game_minute": 2.5,
+    "budget_ms": 2500.0,
+    "worst_total_ms_per_game_minute": 52.826,
+    "worst_scenario": "11:00 customers in shops",
+    "worst_work_ms_per_game_minute": 16.99,
+    "budget_used_fraction_worst": 0.0211,
+    "headroom_x": 47.3,
+    "headroom_x_worst_single_minute": 0.23,
+    "work_share_worst": 0.322,
+    "registration_one_off_ms": 1257.1,
+    "worst_single_game_minute": {
+      "scenario": "07:00-08:00 measured minute by minute",
+      "hour": 7.5,
+      "total_ms": 10886.757,
+      "mobility_ms": 10879.351,
+      "work_ms": 7.385,
+      "budget_used_fraction": 4.355,
+      "n_minutes_over_budget_in_that_hour": 3,
+      "mean_over_that_hour_ms": 545.39
+    },
+    "note": "at 24x one game minute is 2.5 s of real time (2500 ms). The heaviest measured game-minute (52.826 ms, 297 citizens) uses 2.11% of it; the work runtime is 16.99 ms of that. The 07:00-08:00 hour, measured minute by minute, averages 545.39 ms and peaks at 10886.757 ms in one game minute (10879.351 ms of it mobility route planning), 3 minute(s) of that hour over budget. Registration is a one-off 1257 ms for every workplace and home in the city, paid lazily per building on first entry."
+  }
+}

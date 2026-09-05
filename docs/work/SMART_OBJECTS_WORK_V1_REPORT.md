@@ -241,7 +241,13 @@ it is listed as debt with the measurement, not fixed here. Hotspots (cProfile,
 
 ## 14. Multi-city smoke (`tools/work_city_smoke.py`, 05:00→17:00, 60 s steps)
 
-SMOKE_TABLE_PLACEHOLDER
+| city | status | citizens | employed (roles) | workplaces with objects | objects | registers / desks / shelves | clock-ins | uses | state changes | served / queued / unserved | denied | interrupted | clock-outs | workers who used an object | invariants (721 checks) | 3 h replay | ms per game-min |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| houston | PASS | 297 | 211 (cashier 52, cleaner 118, desk 31, stocker 10) | 166 | 11 935 | 848 / 282 / 3 882 | 155 | 16 794 | 929 | 31 / 99 / 94 | 13 | 0 | 155 | 155 / 155 | 0 violations | identical | 133 |
+| madisonville_tx | PASS | 53 | 41 (cashier 8, cleaner 25, desk 7, stocker 1) | 30 | 2 390 | 178 / 36 / 833 | 29 | 3 543 | 164 | 4 / 11 / 13 | 3 | 0 | 29 | 29 / 29 | 0 violations | identical | 6 |
+| austin | PASS | 60 | 46 (cashier 6, cleaner 26, desk 14) | 45 | 3 385 | 156 / 177 / 808 | 35 | 3 679 | 262 | 2 / 14 / 20 | 0 | 0 | 35 | 35 / 35 | 0 violations | identical | 42 |
+| san_antonio | PASS | 60 | 46 (cashier 4, cleaner 29, desk 11, stocker 2) | 41 | 3 185 | 132 / 138 / 746 | 35 | 3 666 | 243 | 1 / 11 / 18 | 0 | 0 | 35 | 35 / 35 | 0 violations | identical | 32 |
+| boulder | INFO | — | no compiled world (`world/spawn_anchors.json.gz` absent) | | | | | | | | | | | | | | |
 
 Every usable city employs its citizens from its own data, generates objects
 for its own workplaces, clocks in, uses objects, changes state, serves
@@ -260,7 +266,7 @@ city-name branching exists (S28 greps the layer and the tools).
 * Mobility day suites (25) and outbreak certification (O1–O22, all PASS)
   re-run after the errand change and the kerb/interior changes.
 * Godot: `godot/tests/run_gates.sh` 85 PASS / 0 FAIL; MobilityGate
-  MOBGATE_PLACEHOLDER; OutbreakGate OBGATE_PLACEHOLDER; WorkGate 22/22.
+  24/24 PASS; OutbreakGate 18/18 PASS (the abandoned-car row is INFO in this run: the index case collapsed on foot); WorkGate 22/22 PASS, re-run on the final runtime.
   (`artifacts/smart_objects_work_v1/regression.json`.)
 * Two tests were updated for the milestone: the outbreak bridge test accepts
   protocol ≥ 5.

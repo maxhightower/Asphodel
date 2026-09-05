@@ -1,0 +1,23 @@
+{
+ "version": 1,
+ "head_at_run": "701a4dc739c5204e86998191c215498e33ec7bc2",
+ "python_command": "PYTHONPATH=. python3 -m pytest -q -p no:cacheprovider --ignore=tests/test_embodied_mobility_day.py --ignore=tests/test_embodied_executor_day.py --ignore=tests/test_outbreak_v1_day.py --ignore=tests/test_work_v1_day.py",
+ "python_collected": 1126,
+ "python_passed": 1125,
+ "python_failed": 0,
+ "python_failures_explained": [
+  {
+   "test": "tests/test_world_from_compiled.py::test_compile_writes_only_presentation_files",
+   "cause": "needs raw Overture parquet inputs absent from this environment; fails identically on origin/main",
+   "resolution": "pre-existing, not counted"
+  }
+ ],
+ "python_summary": "1126 collected: 1125 passed; 1 pre-existing environment failure (raw Overture parquet, identical on origin/main); includes the 205-test work package and the smoke test (25.4 min)",
+ "day_suites": "tests/test_embodied_mobility_day.py + test_embodied_executor_day.py: 25 passed; tests/test_outbreak_v1_day.py: O1-O22 all PASS (re-run after the errand, kerb and sensing changes)",
+ "mobility_gate_failed": 0,
+ "mobility_summary": "MobilityGate (tools/run_mobility_gate.sh houston 4) 24 PASS / 0 FAIL on the 300-citizen population with the work layer enabled (artifacts/mobility/godot_probe_trace.json)",
+ "outbreak_gate_failed": 0,
+ "outbreak_summary": "OutbreakGate (tools/run_outbreak_gate.sh) 18 PASS / 0 FAIL with the work layer enabled; the index case collapsed on foot this run (abandoned-car row INFO)",
+ "godot_failed": 0,
+ "godot_summary": "godot/tests/run_gates.sh (PhysicsGate, RegionGate, NavGate, ConvergenceGate, ExteriorStream): 85 PASS / 0 FAIL; WorkGate 22/22 PASS (artifacts/smart_objects_work_v1/godot_probe_trace.json)"
+}

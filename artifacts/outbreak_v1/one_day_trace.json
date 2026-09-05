@@ -1381,7 +1381,7 @@
    "event": "FLEE",
    "citizen_id": 188,
    "threat_citizen": 127,
-   "target": "ent:9180",
+   "target": "ent:8439",
    "reason": "attacked",
    "x": 1335.3,
    "y": -179.2,
@@ -10269,7 +10269,7 @@
   ],
   "O10": [
    "PASS",
-   "CitizenBody for cit:42 with the undead look, 217 frames"
+   "CitizenBody for cit:42 with the undead look, 263 frames"
   ],
   "O16": [
    "PASS",
@@ -10289,11 +10289,11 @@
   ],
   "O20": [
    "PASS",
-   "906 collected: 905 passed; 1 pre-existing environment failure (raw Overture parquet, identical on origin/main); 0 new failures (22.7 min)"
+   "906 collected: 905 passed; 1 pre-existing environment failure (raw Overture parquet, identical on origin/main); 0 new failures (21.5 min, final run after the kerb offset)"
   ],
   "O21": [
    "PASS",
-   "godot/tests/run_gates.sh (PhysicsGate, RegionGate, NavGate, ConvergenceGate, ExteriorStream): 89 PASS / 0 FAIL after the embodiment changes; OutbreakGate 19/19 PASS with 2 body re-materializations (artifacts/outbreak_v1/godot_probe_trace.json); MobilityGate: see report"
+   "godot/tests/run_gates.sh (PhysicsGate, RegionGate, NavGate, ConvergenceGate, ExteriorStream): 89 PASS / 0 FAIL after the embodiment changes; MobilityGate 24/24 PASS (artifacts/mobility/godot_probe_trace.json, body drove 3697 m, 178 impacts); OutbreakGate 19/19 PASS with 2 body re-materializations (artifacts/outbreak_v1/godot_probe_trace.json)"
   ],
   "O22": [
    "PASS",
