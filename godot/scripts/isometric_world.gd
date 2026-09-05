@@ -60,6 +60,10 @@ var _spawn_pos: Vector3
 # --- interior state ---------------------------------------------------------
 var _active_interior: Node3D = null
 var _inside_building := -1
+## The translation _enter_building staged the active interior with
+## (INTERIOR_STAGE_ANCHOR - hull centre). Authoritative interior coordinates are
+## WORLD metres, so a point p reported by Python renders at _interior_offset + p.
+var _interior_offset := Vector3.ZERO
 var _interior_return_pos := Vector3.ZERO
 
 # --- HUD --------------------------------------------------------------------
@@ -666,9 +670,18 @@ func _enter_building(bid: int) -> void:
 			sx += float(p[0]); sy += float(p[1])
 		hc = Vector3(sx / hull.size(), 0.0, sy / hull.size())
 	var offset := INTERIOR_STAGE_ANCHOR - hc
+	_interior_offset = offset
 	_active_interior = InteriorBuilder.build(desc, offset)
 	add_child(_active_interior)
 	_inside_building = bid
+	# ASPHODEL_SMART_OBJECTS_WORK_V1: embody the occupants/workers of THIS
+	# building inside the staged interior (authoritative interior positions) and
+	# ring the smart objects that currently have a holder.
+	if _embodied != null:
+		_embodied.set_interior(bid, offset, _active_interior, InteriorBuilder.FLOOR_Y)
+		if not SimBridge.last_mobility.is_empty():
+			_embodied.apply(SimBridge.last_mobility, 0.0)
+		_embodied.refresh_object_markers()
 	var ents: Array = desc.get("entrances", [])
 	var spawn := offset + hc + Vector3(0, 1.5, 0)
 	if ents.size() > 0:
@@ -695,8 +708,11 @@ func _leave_building() -> void:
 		return
 	if _cutaway != null:
 		_cutaway.clear()
+	if _embodied != null:
+		_embodied.clear_interior()
 	_active_interior.queue_free()
 	_active_interior = null
+	_interior_offset = Vector3.ZERO
 	var bid := _inside_building
 	_inside_building = -1
 	SimBridge.leave_building()
@@ -925,6 +941,9 @@ func get_interaction() -> Node: return _interaction
 func get_cutaway() -> Node: return _cutaway
 func active_interior() -> Node3D: return _active_interior
 func inside_building() -> int: return _inside_building
+## The offset the active interior is staged with: world point p (authoritative
+## interior metres) renders at interior_offset() + Vector3(p.x, floor_y, p.y).
+func interior_offset() -> Vector3: return _interior_offset
 func focus_zone() -> int: return _current_focus_zone
 func building_count() -> int: return _building_aabb.size()
 

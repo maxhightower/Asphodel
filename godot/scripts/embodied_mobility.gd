@@ -18,6 +18,23 @@ extends Node3D
 ## citizen inside a building or inside a car has NO citizen body (the car body
 ## carries them), so nothing is ever drawn twice. The node never decides where
 ## anything goes — it only realises and reports.
+##
+## INTERIOR EMBODIMENT (ASPHODEL_SMART_OBJECTS_WORK_V1). While the player is
+## inside a building (IsometricWorld.inside_building() >= 0), `set_interior()`
+## puts this node in interior mode for that building: every citizen row with
+## `building_id == bid` and state doing_activity / inside_building becomes a
+## CitizenBody INSIDE THE STAGED INTERIOR at
+##     interior_offset + Vector3(row.x, floor_y + body_height, row.y)
+## — `row.x/row.y` are the citizen's authoritative interior position in WORLD
+## metres (Python's WorkRuntime owns interior locomotion) and `interior_offset`
+## is exactly the offset IsometricWorld._enter_building staged the interior
+## with, so a worker walking between smart objects is visible walking between
+## the rendered objects. The bodies are follow-mode only and are NEVER included
+## in MOBILITY_REPORT: there is no physics reconciliation indoors (interior
+## locomotion is authoritative Python; a wall the body snags on must not hold
+## the authority back). Identity stays single: an interior body reuses the same
+## "cit:<id>" key as the exterior body would, and the InteriorBuilder's static
+## "Occupant_<id>" avatar is hidden for any citizen this node embodies.
 
 const V = preload("res://scripts/citizen_visual_identity.gd")
 
@@ -43,6 +60,22 @@ var _since_report := 0.0
 var _game_dt_accum := 0.0
 var _ground_y := 0.0
 
+# --- interior mode (work / smart objects) ----------------------------------
+const INTERIOR_STATES := ["doing_activity", "inside_building"]
+const MARKER_REFRESH_S := 2.0        # wall seconds between GET_ROOMS marker refreshes
+@export var interior_walk_speed: float = 1.3   # WorkRuntime WALK_SPEED (m/s), for the follow cap
+var interior_building := -1                    # building whose interior is staged, or -1
+var interior_offset := Vector3.ZERO            # IsometricWorld._enter_building's stage offset
+var interior_floor_y := 0.0                    # InteriorBuilder.FLOOR_Y of the staged interior
+var interior_bodies := 0                       # bodies currently driven from interior positions
+var _interior_root: Node3D = null
+var _interior_ids := {}                        # id -> true for bodies driven inside the interior
+var _marker_root: Node3D = null
+var _markers := {}                             # object_id -> MeshInstance3D
+var _since_markers := 0.0
+var _marker_mat: StandardMaterial3D = null
+var _using_mat: StandardMaterial3D = null
+
 
 func _ready() -> void:
 	_material = V.build_material()
@@ -50,6 +83,36 @@ func _ready() -> void:
 
 func set_ground_y(y: float) -> void:
 	_ground_y = y
+
+
+func set_interior(building_id: int, offset: Vector3, root: Node3D = null, floor_y: float = 0.0) -> void:
+	## Enter interior mode for `building_id`. `offset` MUST be the offset the
+	## interior was staged with (IsometricWorld.interior_offset()), else bodies
+	## would be drawn away from the rooms they are authoritatively in.
+	interior_building = int(building_id)
+	interior_offset = offset
+	interior_floor_y = floor_y
+	_interior_root = root
+	_since_markers = MARKER_REFRESH_S      # refresh markers on the next frame
+
+
+func clear_interior() -> void:
+	## Leave interior mode: free every interior body (the player can no longer
+	## see the room) and every holder marker. Exterior bodies are untouched.
+	for id in _interior_ids.keys():
+		if bodies.has(id):
+			bodies[id].queue_free()
+			bodies.erase(id)
+			demotions += 1
+	_interior_ids.clear()
+	interior_bodies = 0
+	interior_building = -1
+	_interior_root = null
+	_clear_markers()
+
+
+func interior_body_ids() -> Array:
+	return _interior_ids.keys()
 
 
 func apply(block: Dictionary, game_dt: float = 0.0) -> void:
@@ -115,6 +178,36 @@ func apply(block: Dictionary, game_dt: float = 0.0) -> void:
 			body.set_parked(pose, float(row.get("heading", 0.0)))
 			body.set_meta("parked_at", pose)
 		keep[vid] = true
+	# --- interior: everyone inside the building the player is standing in ----
+	# The authoritative interior position (row.x/row.y, world metres) placed in
+	# the staged interior. Not gated on the NEAR band: the player is in the room.
+	var inside := {}
+	if interior_building >= 0:
+		for id in citizens:
+			var row: Dictionary = citizens[id]
+			if int(row.get("building_id", -1)) != interior_building:
+				continue
+			if not (str(row.get("state", "")) in INTERIOR_STATES):
+				continue
+			if keep.has(id):
+				continue      # already embodied outside (never two bodies per identity)
+			var body := _ensure_citizen(id, row, true)
+			var target := interior_offset + Vector3(float(row["x"]),
+				interior_floor_y + body_height, float(row["y"]))
+			var spd: float = maxf(float(row.get("speed", 0.0)), interior_walk_speed)
+			body.set_follow_target(target, spd * time_scale)
+			_set_gait(body, spd)
+			_apply_health_look(body, str(row.get("health", "susceptible")), str(row.get("state", "")))
+			_apply_work_look(body, row.get("work", {}))
+			_hide_static_occupant(int(row["citizen_id"]))
+			inside[id] = true
+			keep[id] = true
+	for id in _interior_ids.keys():
+		if not inside.has(id):
+			_interior_ids.erase(id)
+	for id in inside:
+		_interior_ids[id] = true
+	interior_bodies = _interior_ids.size()
 	# --- demote everything that left the band --------------------------------
 	for id in bodies.keys():
 		if not keep.has(id):
@@ -138,8 +231,14 @@ func _physics_process(delta: float) -> void:
 
 
 func collect_report() -> Array:
+	## EXTERIOR bodies only. Interior bodies are deliberately never reported:
+	## indoor locomotion is authoritative Python (WorkRuntime walks the room
+	## graph) and there is no physics reconciliation indoors — a body snagged on
+	## a staged wall must not hold a worker's task back.
 	var out := []
 	for id in bodies:
+		if _interior_ids.has(id):
+			continue
 		var b = bodies[id]
 		out.append({"id": id, "x": b.global_position.x, "z": b.global_position.z,
 			"blocked": bool(b.is_blocked())})
@@ -186,16 +285,24 @@ func _free_spot(p: Vector3) -> Vector3:
 	return p
 
 
-func _ensure_citizen(id: String, row: Dictionary) -> CitizenBody:
+func _ensure_citizen(id: String, row: Dictionary, interior: bool = false) -> CitizenBody:
 	if bodies.has(id):
 		return bodies[id]
 	var b := CitizenBody.new()
 	b.semantic_id = id
 	b.name = id.replace(":", "_")
-	# Materialization safety (1): never spawn inside a static collider (a
-	# building hull at its own entrance anchor, a wreck) — the nearest free
-	# spot within a few metres, else the authoritative point itself.
-	b.position = _free_spot(Vector3(float(row["x"]), _ground_y + body_height, float(row["y"])))
+	if interior:
+		# Inside the staged interior the authoritative point IS a legal spot
+		# (Python walks the room graph through doorways), and a free-spot search
+		# against interior walls would push the body off its authoritative pose:
+		# spawn exactly where the authority says it is (LOD promotion, jump 0).
+		b.position = interior_offset + Vector3(float(row["x"]),
+			interior_floor_y + body_height, float(row["y"]))
+	else:
+		# Materialization safety (1): never spawn inside a static collider (a
+		# building hull at its own entrance anchor, a wreck) — the nearest free
+		# spot within a few metres, else the authoritative point itself.
+		b.position = _free_spot(Vector3(float(row["x"]), _ground_y + body_height, float(row["y"])))
 	var cid := int(row["citizen_id"])
 	b.set_meta("citizen_id", cid)
 	# The same deterministic look as the crowd (citizen_visual_identity.gd).
@@ -289,3 +396,123 @@ func _ensure_vehicle(vid: String, row: Dictionary) -> VehicleBody:
 	bodies[vid] = b
 	promotions += 1
 	return b
+
+
+# ---------------------------------------------------------------- interior look
+func _apply_work_look(b: CitizenBody, work) -> void:
+	## Truthful, minimal presentation of the authoritative work phase: a worker
+	## reported `phase == "using"` gets a slight warm highlight so the station in
+	## use reads at iso scale. Nothing here decides a phase — it only draws one.
+	if not (work is Dictionary):
+		return
+	var phase := str(work.get("phase", ""))
+	var want: String = "using" if phase == "using" else ""
+	if str(b.get_meta("work_look", "")) == want:
+		return
+	b.set_meta("work_look", want)
+	b.set_meta("work_phase", phase)
+	if str(b.get_meta("health_look", "")) != "":
+		return    # a health look (undead/corpse/sick) is the stronger truth; leave it
+	for c in b.get_children():
+		if c is CitizenAvatar:
+			if want == "using":
+				if _using_mat == null:
+					_using_mat = StandardMaterial3D.new()
+					_using_mat.albedo_color = Color(0.92, 0.86, 0.62)
+					_using_mat.emission_enabled = true
+					_using_mat.emission = Color(0.35, 0.28, 0.10)
+					_using_mat.emission_energy_multiplier = 0.5
+				c.set_material_override(_using_mat)
+			else:
+				c.set_material_override(_material)
+
+
+func _hide_static_occupant(cid: int) -> void:
+	## One body per identity: the InteriorBuilder's static "Occupant_<cid>"
+	## avatar (the descriptor's presentational anchor) is hidden for any citizen
+	## this node embodies, so a worker is never drawn twice in the same room.
+	if _interior_root == null or not is_instance_valid(_interior_root):
+		return
+	var occ := _interior_root.get_node_or_null("Occupants")
+	if occ == null:
+		return
+	var node := occ.get_node_or_null("Occupant_%d" % cid)
+	if node != null and node.visible:
+		node.visible = false
+
+
+# ------------------------------------------------ smart-object holder markers
+func _process(delta: float) -> void:
+	if interior_building < 0 or not enabled:
+		return
+	_since_markers += delta
+	if _since_markers < MARKER_REFRESH_S:
+		return
+	_since_markers = 0.0
+	refresh_object_markers()
+
+
+func refresh_object_markers() -> void:
+	## A thin ring at the interaction point of every smart object that currently
+	## HAS A HOLDER, straight from GET_ROOMS (authoritative `holders`): the
+	## station actually in use is visible in the room. Presentation only.
+	if interior_building < 0 or not SimBridge.is_connected_to_sim():
+		return
+	var r: Dictionary = SimBridge.get_rooms(interior_building)
+	if not r.get("ok", false):
+		return
+	var held := {}
+	for o in r.get("objects", []):
+		var holders: Array = o.get("holders", [])
+		if holders.is_empty():
+			continue
+		held[str(o["object_id"])] = o
+	if _marker_root == null or not is_instance_valid(_marker_root):
+		_marker_root = Node3D.new()
+		_marker_root.name = "SmartObjectMarkers"
+		add_child(_marker_root)
+	for oid in held:
+		var o: Dictionary = held[oid]
+		var pos := interior_offset + Vector3(float(o["x"]), interior_floor_y + 0.05, float(o["y"]))
+		var mi: MeshInstance3D = _markers.get(oid, null)
+		if mi == null or not is_instance_valid(mi):
+			if _marker_mat == null:
+				_marker_mat = StandardMaterial3D.new()
+				_marker_mat.albedo_color = Color(1.0, 0.78, 0.25)
+				_marker_mat.emission_enabled = true
+				_marker_mat.emission = Color(0.9, 0.65, 0.15)
+				_marker_mat.emission_energy_multiplier = 1.4
+			var ring := TorusMesh.new()
+			ring.inner_radius = 0.5
+			ring.outer_radius = 0.62
+			ring.material = _marker_mat
+			mi = MeshInstance3D.new()
+			mi.name = "Marker_" + oid.replace(":", "_")
+			mi.mesh = ring
+			_marker_root.add_child(mi)
+			_markers[oid] = mi
+		mi.global_position = pos
+		mi.set_meta("object_id", oid)
+		mi.set_meta("holders", o.get("holders", []))
+		mi.visible = true
+	for oid in _markers.keys():
+		if not held.has(oid):
+			var m = _markers[oid]
+			if is_instance_valid(m):
+				m.queue_free()
+			_markers.erase(oid)
+
+
+func marker_ids() -> Array:
+	return _markers.keys()
+
+
+func _clear_markers() -> void:
+	for oid in _markers.keys():
+		var m = _markers[oid]
+		if is_instance_valid(m):
+			m.queue_free()
+	_markers.clear()
+	if _marker_root != null and is_instance_valid(_marker_root):
+		_marker_root.queue_free()
+	_marker_root = null

@@ -20,7 +20,7 @@ signal connected_changed(is_connected: bool)
 signal world_started(summary: Dictionary)
 signal advanced(tick: int, outbreak: float, summary: Dictionary)
 
-const PROTOCOL_VERSION := 5   # v5: + SEED_OUTBREAK / GET_OUTBREAK (outbreak on persistent citizens)
+const PROTOCOL_VERSION := 6   # v6: + GET_WORK / GET_ROOMS / SET_OBJECT_STATE (rooms, smart objects, work)
 
 var _peer: StreamPeerTCP = null
 var _id := 0
@@ -43,6 +43,14 @@ var last_mobility: Dictionary = {}
 # --- Outbreak (v5) ---------------------------------------------------------------
 var outbreak_enabled := false
 var last_outbreak: Dictionary = {}
+# --- smart objects / work (v6) ---------------------------------------------------
+# Whether the started world runs the WorkRuntime (START_WORLD reply
+# `work_enabled`; `work: false` opts out). When true, mobility citizen rows carry
+# a `work` block (role/workplace_id/task/phase/object_id/room_id/zone/carrying)
+# and GET_ROOMS/GET_WORK describe the building's rooms, smart objects and events.
+var work_enabled := false
+var last_work: Dictionary = {}
+var last_rooms: Dictionary = {}
 
 
 func is_connected_to_sim() -> bool:
@@ -93,6 +101,7 @@ func start_world(bundle: String, opts: Dictionary = {}) -> Dictionary:
 		last_summary = r
 		mobility_enabled = bool(r.get("mobility_enabled", false))
 		outbreak_enabled = bool(r.get("outbreak_enabled", false))
+		work_enabled = bool(r.get("work_enabled", false))
 		world_started.emit(r)
 	return r
 
@@ -158,6 +167,36 @@ func get_outbreak(since_seq: int = 0) -> Dictionary:
 	if _ok(r) and r.has("outbreak") and r["outbreak"] != null:
 		last_outbreak = r["outbreak"]
 	return r
+
+
+# ------------------------------------------------- smart objects / work (v6)
+func get_work(since_seq: int = 0) -> Dictionary:
+	## Live work state: sessions, reservations, queues and the event log since
+	## `since_seq` (EMPLOYED, CLOCK_IN, TASK_START, MOVE_TO_OBJECT, RESERVED,
+	## USE_START/USE_END, SERVED, STATE_CHANGE, CLOCK_OUT, ...). Read-only truth:
+	## Godot never invents a session, a reservation or an event.
+	var r := _send("GET_WORK", {"since_seq": since_seq})
+	if _ok(r) and r.has("work") and r["work"] != null:
+		last_work = r["work"]
+	return r
+
+
+func get_rooms(building_id: int) -> Dictionary:
+	## The rooms (kind + zone + AABB + doors), smart objects (stable
+	## "so:<building>:<k>" ids, live state, holders, queue), entrance, occupants
+	## by room and workplace status of one building. Interior coordinates are
+	## WORLD metres — a staged interior adds IsometricWorld.interior_offset().
+	var r := _send("GET_ROOMS", {"building_id": building_id})
+	if _ok(r):
+		last_rooms = r
+	return r
+
+
+func set_object_state(object_id: String, key: String, value) -> Dictionary:
+	## Authoritative external change to one smart object (e.g. key "working"
+	## value false breaks a station: Python evicts its holders and they re-select).
+	## Godot asks; Python decides and reports the consequences.
+	return _send("SET_OBJECT_STATE", {"object_id": object_id, "key": key, "value": value})
 
 
 func get_mobility(routes: bool = true) -> Dictionary:
@@ -279,6 +318,7 @@ func load(path: String) -> Dictionary:
 		last_summary = r
 		mobility_enabled = bool(r.get("mobility_enabled", mobility_enabled))
 		outbreak_enabled = bool(r.get("outbreak_enabled", outbreak_enabled))
+		work_enabled = bool(r.get("work_enabled", work_enabled))
 	return r
 
 
