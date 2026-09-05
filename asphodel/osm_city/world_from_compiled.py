@@ -65,8 +65,10 @@ def _polygon_area(ring) -> float:
 
 def street_map_from_compiled(bundle_dir: str) -> StreetMap:
     """Build the canonical StreetMap from compiled buildings + bundle roads."""
+    from ..embodiment import validate_buildings_doc
     with open(os.path.join(bundle_dir, "buildings.json")) as f:
         bjson = json.load(f)
+    validate_buildings_doc(bjson, os.path.join(bundle_dir, "buildings.json"))
     with open(os.path.join(bundle_dir, "roads.json")) as f:
         rjson = json.load(f)
     world_bounds = None

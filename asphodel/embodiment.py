@@ -115,6 +115,36 @@ def _poly_centroid(poly: list) -> tuple[float, float]:
     return (float(cx), float(cy))
 
 
+BUILDINGS_SCHEMA_VERSION = 1
+
+
+def validate_buildings_doc(doc, where: str = "buildings.json") -> list:
+    """Return the building list of a CANONICAL ``buildings.json`` or raise.
+
+    The one accepted shape (Gate A) is ``{"version": 1, "buildings": [{"poly":
+    [[x, z], ...], "height": m, ...}, ...]}``; ``key``/``arch``/``cat`` are
+    optional extras the compiled cities add. A bare list (the retired synth
+    generator's output) or any other version fails loudly here instead of
+    misplacing every citizen later. ``None`` (file absent) returns ``[]``.
+    """
+    if doc is None:
+        return []
+    if not isinstance(doc, dict):
+        raise ValueError(f"{where}: not a canonical buildings document "
+                         f"(expected an object, got {type(doc).__name__})")
+    if doc.get("version") != BUILDINGS_SCHEMA_VERSION:
+        raise ValueError(f"{where}: unsupported buildings schema version "
+                         f"{doc.get('version')!r} (expected {BUILDINGS_SCHEMA_VERSION})")
+    blist = doc.get("buildings")
+    if not isinstance(blist, list):
+        raise ValueError(f"{where}: 'buildings' is not a list")
+    for i, b in enumerate(blist[:3] + blist[-1:] if blist else []):
+        if not isinstance(b, dict) or not isinstance(b.get("poly"), list) \
+                or "height" not in b:
+            raise ValueError(f"{where}: building record {i} lacks poly/height")
+    return blist
+
+
 class CitySpatialContext:
     """Static, read-only geometry for one city bundle.
 
@@ -163,8 +193,7 @@ class CitySpatialContext:
                 return json.load(f)
 
         buildings_doc = _load("buildings.json")
-        blist = (buildings_doc.get("buildings", []) if isinstance(buildings_doc, dict)
-                 else (buildings_doc or []))
+        blist = validate_buildings_doc(buildings_doc, os.path.join(bundle_dir, "buildings.json"))
         if blist:
             centroids = np.array([_poly_centroid(b["poly"]) for b in blist], dtype=float)
             building_polys = [[[float(p[0]), float(p[1])] for p in b.get("poly", [])]
@@ -351,14 +380,28 @@ def resolve_physical_location(*, citizen_id: int, schedule: list, hour: float,
                               action: str = "continue_schedule",
                               zone: Optional[int] = None,
                               ctx: Optional[CitySpatialContext] = None,
-                              commute_hours: float = 0.5) -> PhysicalLocation:
+                              commute_hours: float = 0.5,
+                              home_building_id: Optional[int] = None,
+                              work_building_id: Optional[int] = None
+                              ) -> PhysicalLocation:
     """The one canonical physical location for a citizen at ``hour``.
 
     Pure and deterministic — no RNG, no side effects. ``action`` is the citizen's
     reactive behaviour label; ``shelter``/``flee`` make the reaction *physically
     consequential* (they move the citizen), while routine actions follow the
     schedule. ``zone`` is the reported macro zone (falls back to ``home_zone``).
+
+    Building identity: when the citizen record carries ``home_building_id`` /
+    ``work_building_id`` (buildings.json index == authoritative building_id)
+    those ARE the home/work buildings; the nearest-footprint lookup is only the
+    fallback for records baked before identity was stored (Gate B).
     """
+    def _bid(explicit, anchor):
+        if explicit is not None and ctx is not None \
+                and 0 <= int(explicit) < ctx.building_centroids.shape[0]:
+            return int(explicit)
+        return ctx.nearest_building(anchor) if ctx is not None else -1
+
     block = _current_block(schedule, hour % 24.0) if schedule else None
     activity = block.activity if block is not None else "idle"
 
@@ -375,8 +418,7 @@ def resolve_physical_location(*, citizen_id: int, schedule: list, hour: float,
         x, y = work_anchor
         mode = LocationMode.BUILDING
         movement = Movement.STATIONARY
-        if ctx is not None:
-            building_id = ctx.nearest_building(work_anchor)
+        building_id = _bid(work_building_id, work_anchor)
     elif activity == "commute":
         # Progress through the commute block (handle past-midnight wrap).
         if block is not None and block.end_hour > block.start_hour:
@@ -413,8 +455,7 @@ def resolve_physical_location(*, citizen_id: int, schedule: list, hour: float,
         x, y = home_anchor
         mode = LocationMode.BUILDING
         movement = Movement.STATIONARY
-        if ctx is not None:
-            building_id = ctx.nearest_building(home_anchor)
+        building_id = _bid(home_building_id, home_anchor)
 
     # --- 2. reaction makes the behaviour physically consequential --------
     act = (action or "continue_schedule").lower()

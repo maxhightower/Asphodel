@@ -4,6 +4,7 @@
     "current_activity": "work",
     "current_location": "East commercial 1920",
     "environment": "retail",
+    "home_building_id": 342,
     "home_district": "South-West",
     "home_xy": [
       -2237.78,
@@ -50,6 +51,7 @@
       902.16,
       163.54
     ],
+    "work_building_id": 1920,
     "work_district": "East",
     "work_xy": [
       901.85,
@@ -61,6 +63,7 @@
     "current_activity": "commute",
     "current_location": "North-East commercial 2792",
     "environment": "street",
+    "home_building_id": 1187,
     "home_district": "West",
     "home_xy": [
       -1825.88,
@@ -108,6 +111,7 @@
       -1009.81,
       -35.36
     ],
+    "work_building_id": 2792,
     "work_district": "North-East",
     "work_xy": [
       1604.42,
@@ -119,6 +123,7 @@
     "current_activity": "leisure",
     "current_location": "Old Town residential 1954",
     "environment": "residential",
+    "home_building_id": 1954,
     "home_district": "Old Town",
     "home_xy": [
       -95.84,
@@ -164,6 +169,7 @@
       -102.19,
       156.3
     ],
+    "work_building_id": 1234,
     "work_district": "Old Town",
     "work_xy": [
       -704.6,
@@ -175,6 +181,7 @@
     "current_activity": "sleep",
     "current_location": "South-West residential 649",
     "environment": "residential",
+    "home_building_id": 649,
     "home_district": "South-West",
     "home_xy": [
       -1810.48,
@@ -222,6 +229,7 @@
       -1804.62,
       -1013.11
     ],
+    "work_building_id": 912,
     "work_district": "West",
     "work_xy": [
       -949.77,
@@ -233,6 +241,7 @@
     "current_activity": "commute",
     "current_location": "West commercial 979",
     "environment": "street",
+    "home_building_id": 1598,
     "home_district": "Old Town",
     "home_xy": [
       -291.09,
@@ -281,6 +290,7 @@
       -864.51,
       -640.98
     ],
+    "work_building_id": 979,
     "work_district": "West",
     "work_xy": [
       -984.64,
@@ -292,6 +302,7 @@
     "current_activity": "commute",
     "current_location": "Old Town residential 2117",
     "environment": "street",
+    "home_building_id": 2117,
     "home_district": "Old Town",
     "home_xy": [
       356.23,
@@ -341,6 +352,7 @@
       409.34,
       -40.8
     ],
+    "work_building_id": 1713,
     "work_district": "Old Town",
     "work_xy": [
       -775.09,
@@ -352,6 +364,7 @@
     "current_activity": "leisure",
     "current_location": "South-West residential 263",
     "environment": "residential",
+    "home_building_id": 263,
     "home_district": "South-West",
     "home_xy": [
       -859.56,
@@ -402,6 +415,7 @@
       -849.99,
       -1624.85
     ],
+    "work_building_id": null,
     "work_district": "",
     "work_xy": null
   },
@@ -410,6 +424,7 @@
     "current_activity": "sleep",
     "current_location": "South-West residential 320",
     "environment": "residential",
+    "home_building_id": 320,
     "home_district": "South-West",
     "home_xy": [
       -2142.72,
@@ -455,6 +470,7 @@
       -2140.0,
       -1557.69
     ],
+    "work_building_id": 2873,
     "work_district": "North",
     "work_xy": [
       500.1,
@@ -466,6 +482,7 @@
     "current_activity": "sleep",
     "current_location": "Old Town residential 2388",
     "environment": "residential",
+    "home_building_id": 2388,
     "home_district": "Old Town",
     "home_xy": [
       358.67,
@@ -512,6 +529,7 @@
       349.85,
       575.31
     ],
+    "work_building_id": null,
     "work_district": "",
     "work_xy": null
   },
@@ -520,6 +538,7 @@
     "current_activity": "sleep",
     "current_location": "West residential 2532",
     "environment": "residential",
+    "home_building_id": 2532,
     "home_district": "West",
     "home_xy": [
       -1267.93,
@@ -566,6 +585,7 @@
       -1270.37,
       810.4
     ],
+    "work_building_id": 2581,
     "work_district": "North-East",
     "work_xy": [
       1339.23,
@@ -577,6 +597,7 @@
     "current_activity": "leisure",
     "current_location": "Old Town residential 1271",
     "environment": "residential",
+    "home_building_id": 1271,
     "home_district": "Old Town",
     "home_xy": [
       14.81,
@@ -623,6 +644,7 @@
       21.63,
       -452.1
     ],
+    "work_building_id": null,
     "work_district": "",
     "work_xy": null
   },
@@ -631,6 +653,7 @@
     "current_activity": "errand",
     "current_location": "South-West commercial 703",
     "environment": "retail",
+    "home_building_id": 621,
     "home_district": "South-West",
     "home_xy": [
       -2106.73,
@@ -678,6 +701,7 @@
       -2145.61,
       -1092.99
     ],
+    "work_building_id": 580,
     "work_district": "South",
     "work_xy": [
       -131.04,
@@ -689,6 +713,7 @@
     "current_activity": "leisure",
     "current_location": "Old Town residential 1694",
     "environment": "residential",
+    "home_building_id": 1694,
     "home_district": "Old Town",
     "home_xy": [
       -836.6,
@@ -735,6 +760,7 @@
       -833.13,
       -84.37
     ],
+    "work_building_id": null,
     "work_district": "",
     "work_xy": null
   },
@@ -743,6 +769,7 @@
     "current_activity": "leisure",
     "current_location": "North-West residential 2829",
     "environment": "residential",
+    "home_building_id": 2829,
     "home_district": "North-West",
     "home_xy": [
       -2235.81,
@@ -792,6 +819,7 @@
       -2242.05,
       1640.21
     ],
+    "work_building_id": 626,
     "work_district": "South",
     "work_xy": [
       629.46,
@@ -803,6 +831,7 @@
     "current_activity": "work",
     "current_location": "North industrial 2883",
     "environment": "industrial",
+    "home_building_id": 808,
     "home_district": "South-West",
     "home_xy": [
       -1907.17,
@@ -853,6 +882,7 @@
       407.06,
       2016.28
     ],
+    "work_building_id": 2883,
     "work_district": "North",
     "work_xy": [
       404.11,
@@ -864,6 +894,7 @@
     "current_activity": "sleep",
     "current_location": "South residential 452",
     "environment": "residential",
+    "home_building_id": 452,
     "home_district": "South",
     "home_xy": [
       -822.62,
@@ -914,6 +945,7 @@
       -810.92,
       -1351.25
     ],
+    "work_building_id": 1634,
     "work_district": "West",
     "work_xy": [
       -1451.36,
@@ -925,6 +957,7 @@
     "current_activity": "sleep",
     "current_location": "South residential 359",
     "environment": "residential",
+    "home_building_id": 359,
     "home_district": "South",
     "home_xy": [
       -290.05,
@@ -975,6 +1008,7 @@
       -292.22,
       -1491.15
     ],
+    "work_building_id": null,
     "work_district": "",
     "work_xy": null
   },
@@ -983,6 +1017,7 @@
     "current_activity": "sleep",
     "current_location": "North-West residential 2779",
     "environment": "residential",
+    "home_building_id": 2779,
     "home_district": "North-West",
     "home_xy": [
       -1456.88,
@@ -1032,6 +1067,7 @@
       -1457.18,
       1398.68
     ],
+    "work_building_id": 435,
     "work_district": "South",
     "work_xy": [
       -745.21,
@@ -1043,6 +1079,7 @@
     "current_activity": "sleep",
     "current_location": "West residential 1422",
     "environment": "residential",
+    "home_building_id": 1422,
     "home_district": "West",
     "home_xy": [
       -1359.09,
@@ -1085,6 +1122,7 @@
       -1347.94,
       -325.67
     ],
+    "work_building_id": null,
     "work_district": "",
     "work_xy": null
   },
@@ -1093,6 +1131,7 @@
     "current_activity": "leisure",
     "current_location": "North residential 2831",
     "environment": "residential",
+    "home_building_id": 2831,
     "home_district": "North",
     "home_xy": [
       -835.76,
@@ -1141,6 +1180,7 @@
       -839.37,
       1630.92
     ],
+    "work_building_id": null,
     "work_district": "",
     "work_xy": null
   },
@@ -1149,6 +1189,7 @@
     "current_activity": "sleep",
     "current_location": "Old Town residential 1429",
     "environment": "residential",
+    "home_building_id": 1429,
     "home_district": "Old Town",
     "home_xy": [
       -99.75,
@@ -1196,6 +1237,7 @@
       -106.59,
       -315.2
     ],
+    "work_building_id": 1781,
     "work_district": "Old Town",
     "work_xy": [
       586.01,
@@ -1207,6 +1249,7 @@
     "current_activity": "sleep",
     "current_location": "West residential 862",
     "environment": "residential",
+    "home_building_id": 862,
     "home_district": "West",
     "home_xy": [
       -1246.19,
@@ -1251,6 +1294,7 @@
       -1239.84,
       -782.32
     ],
+    "work_building_id": 2671,
     "work_district": "North-East",
     "work_xy": [
       2259.7,
@@ -1262,6 +1306,7 @@
     "current_activity": "leisure",
     "current_location": "South residential 48",
     "environment": "residential",
+    "home_building_id": 48,
     "home_district": "South",
     "home_xy": [
       -753.68,
@@ -1306,6 +1351,7 @@
       -744.15,
       -2049.39
     ],
+    "work_building_id": 435,
     "work_district": "South",
     "work_xy": [
       -745.21,
@@ -1317,6 +1363,7 @@
     "current_activity": "leisure",
     "current_location": "West residential 2530",
     "environment": "residential",
+    "home_building_id": 2530,
     "home_district": "West",
     "home_xy": [
       -1707.5,
@@ -1362,6 +1409,7 @@
       -1714.22,
       801.17
     ],
+    "work_building_id": 435,
     "work_district": "South",
     "work_xy": [
       -745.21,
@@ -1373,6 +1421,7 @@
     "current_activity": "errand",
     "current_location": "West commercial 1349",
     "environment": "retail",
+    "home_building_id": 1394,
     "home_district": "West",
     "home_xy": [
       -1038.54,
@@ -1417,6 +1466,7 @@
       -1042.31,
       -359.99
     ],
+    "work_building_id": 1634,
     "work_district": "West",
     "work_xy": [
       -1451.36,
@@ -1428,6 +1478,7 @@
     "current_activity": "leisure",
     "current_location": "North-West residential 2703",
     "environment": "residential",
+    "home_building_id": 2703,
     "home_district": "North-West",
     "home_xy": [
       -1597.78,
@@ -1472,6 +1523,7 @@
       -1592.78,
       1238.7
     ],
+    "work_building_id": null,
     "work_district": "",
     "work_xy": null
   },
@@ -1480,6 +1532,7 @@
     "current_activity": "sleep",
     "current_location": "Old Town residential 1745",
     "environment": "residential",
+    "home_building_id": 1745,
     "home_district": "Old Town",
     "home_xy": [
       342.12,
@@ -1527,6 +1580,7 @@
       334.26,
       -24.91
     ],
+    "work_building_id": 580,
     "work_district": "South",
     "work_xy": [
       -131.04,
@@ -1538,6 +1592,7 @@
     "current_activity": "errand",
     "current_location": "South-West commercial 703",
     "environment": "retail",
+    "home_building_id": 526,
     "home_district": "South-West",
     "home_xy": [
       -1600.28,
@@ -1584,6 +1639,7 @@
       -1624.06,
       -1212.58
     ],
+    "work_building_id": 2870,
     "work_district": "North-West",
     "work_xy": [
       -1212.81,
@@ -1595,6 +1651,7 @@
     "current_activity": "work",
     "current_location": "North commercial 2873",
     "environment": "retail",
+    "home_building_id": 883,
     "home_district": "West",
     "home_xy": [
       -2136.3,
@@ -1641,6 +1698,7 @@
       426.36,
       1915.93
     ],
+    "work_building_id": 2873,
     "work_district": "North",
     "work_xy": [
       500.1,
@@ -1652,6 +1710,7 @@
     "current_activity": "work",
     "current_location": "South medical 398",
     "environment": "medical",
+    "home_building_id": 1755,
     "home_district": "Old Town",
     "home_xy": [
       -807.1,
@@ -1696,6 +1755,7 @@
       -672.58,
       -1403.51
     ],
+    "work_building_id": 398,
     "work_district": "South",
     "work_xy": [
       -659.17,
@@ -1707,6 +1767,7 @@
     "current_activity": "sleep",
     "current_location": "South residential 558",
     "environment": "residential",
+    "home_building_id": 558,
     "home_district": "South",
     "home_xy": [
       -653.32,
@@ -1754,6 +1815,7 @@
       -661.19,
       -1159.62
     ],
+    "work_building_id": 1883,
     "work_district": "East",
     "work_xy": [
       1494.82,
@@ -1765,6 +1827,7 @@
     "current_activity": "work",
     "current_location": "Old Town commercial 1857",
     "environment": "retail",
+    "home_building_id": 1064,
     "home_district": "West",
     "home_xy": [
       -1488.72,
@@ -1815,6 +1878,7 @@
       874.71,
       101.71
     ],
+    "work_building_id": 1857,
     "work_district": "Old Town",
     "work_xy": [
       835.72,
@@ -1826,6 +1890,7 @@
     "current_activity": "leisure",
     "current_location": "South residential 796",
     "environment": "residential",
+    "home_building_id": 796,
     "home_district": "South",
     "home_xy": [
       -284.55,
@@ -1869,6 +1934,7 @@
       -331.06,
       -888.7
     ],
+    "work_building_id": 106,
     "work_district": "South",
     "work_xy": [
       -165.94,
@@ -1880,6 +1946,7 @@
     "current_activity": "work",
     "current_location": "South medical 398",
     "environment": "medical",
+    "home_building_id": 1111,
     "home_district": "Old Town",
     "home_xy": [
       -391.52,
@@ -1926,6 +1993,7 @@
       -672.58,
       -1403.51
     ],
+    "work_building_id": 398,
     "work_district": "South",
     "work_xy": [
       -659.17,
@@ -1937,6 +2005,7 @@
     "current_activity": "leisure",
     "current_location": "Old Town residential 1347",
     "environment": "residential",
+    "home_building_id": 1347,
     "home_district": "Old Town",
     "home_xy": [
       -611.86,
@@ -1983,6 +2052,7 @@
       -618.14,
       -382.22
     ],
+    "work_building_id": null,
     "work_district": "",
     "work_xy": null
   },
@@ -1991,6 +2061,7 @@
     "current_activity": "work",
     "current_location": "North commercial 2873",
     "environment": "retail",
+    "home_building_id": 2796,
     "home_district": "North",
     "home_xy": [
       407.86,
@@ -2043,6 +2114,7 @@
       426.36,
       1915.93
     ],
+    "work_building_id": 2873,
     "work_district": "North",
     "work_xy": [
       500.1,
@@ -2054,6 +2126,7 @@
     "current_activity": "sleep",
     "current_location": "West residential 2454",
     "environment": "residential",
+    "home_building_id": 2454,
     "home_district": "West",
     "home_xy": [
       -1585.18,
@@ -2104,6 +2177,7 @@
       -1588.52,
       675.88
     ],
+    "work_building_id": null,
     "work_district": "",
     "work_xy": null
   },
@@ -2112,6 +2186,7 @@
     "current_activity": "sleep",
     "current_location": "Old Town residential 1476",
     "environment": "residential",
+    "home_building_id": 1476,
     "home_district": "Old Town",
     "home_xy": [
       -252.06,
@@ -2159,6 +2234,7 @@
       -251.87,
       -281.62
     ],
+    "work_building_id": 736,
     "work_district": "South",
     "work_xy": [
       98.13,
@@ -2170,6 +2246,7 @@
     "current_activity": "sleep",
     "current_location": "South residential 558",
     "environment": "residential",
+    "home_building_id": 558,
     "home_district": "South",
     "home_xy": [
       -653.32,
@@ -2214,6 +2291,7 @@
       -661.19,
       -1159.62
     ],
+    "work_building_id": null,
     "work_district": "",
     "work_xy": null
   },
@@ -2222,6 +2300,7 @@
     "current_activity": "work",
     "current_location": "East commercial 1920",
     "environment": "retail",
+    "home_building_id": 1477,
     "home_district": "West",
     "home_xy": [
       -998.41,
@@ -2272,6 +2351,7 @@
       902.16,
       163.54
     ],
+    "work_building_id": 1920,
     "work_district": "East",
     "work_xy": [
       901.85,
@@ -2283,6 +2363,7 @@
     "current_activity": "leisure",
     "current_location": "Old Town residential 1967",
     "environment": "residential",
+    "home_building_id": 1967,
     "home_district": "Old Town",
     "home_xy": [
       223.01,
@@ -2327,6 +2408,7 @@
       223.01,
       163.33
     ],
+    "work_building_id": null,
     "work_district": "",
     "work_xy": null
   },
@@ -2335,6 +2417,7 @@
     "current_activity": "work",
     "current_location": "West commercial 858",
     "environment": "retail",
+    "home_building_id": 686,
     "home_district": "South-West",
     "home_xy": [
       -1457.52,
@@ -2381,6 +2464,7 @@
       -955.8,
       -798.28
     ],
+    "work_building_id": 858,
     "work_district": "West",
     "work_xy": [
       -917.62,
@@ -2392,6 +2476,7 @@
     "current_activity": "work",
     "current_location": "South-West education 528",
     "environment": "education",
+    "home_building_id": 790,
     "home_district": "South-West",
     "home_xy": [
       -1586.9,
@@ -2440,6 +2525,7 @@
       -1738.46,
       -1192.04
     ],
+    "work_building_id": 528,
     "work_district": "South-West",
     "work_xy": [
       -1764.74,
@@ -2451,6 +2537,7 @@
     "current_activity": "work",
     "current_location": "North-East commercial 2791",
     "environment": "retail",
+    "home_building_id": 1876,
     "home_district": "West",
     "home_xy": [
       -1796.3,
@@ -2499,6 +2586,7 @@
       2430.78,
       1479.91
     ],
+    "work_building_id": 2791,
     "work_district": "North-East",
     "work_xy": [
       2454.93,
@@ -2510,6 +2598,7 @@
     "current_activity": "sleep",
     "current_location": "South-West residential 604",
     "environment": "residential",
+    "home_building_id": 604,
     "home_district": "South-West",
     "home_xy": [
       -1954.66,
@@ -2558,6 +2647,7 @@
       -1959.84,
       -1081.36
     ],
+    "work_building_id": 2538,
     "work_district": "North-East",
     "work_xy": [
       2068.39,
@@ -2569,6 +2659,7 @@
     "current_activity": "work",
     "current_location": "South education 580",
     "environment": "education",
+    "home_building_id": 2075,
     "home_district": "Old Town",
     "home_xy": [
       -482.36,
@@ -2619,6 +2710,7 @@
       -130.82,
       -1050.4
     ],
+    "work_building_id": 580,
     "work_district": "South",
     "work_xy": [
       -131.04,
@@ -2630,6 +2722,7 @@
     "current_activity": "sleep",
     "current_location": "North residential 2546",
     "environment": "residential",
+    "home_building_id": 2546,
     "home_district": "North",
     "home_xy": [
       -771.45,
@@ -2674,6 +2767,7 @@
       -779.91,
       832.72
     ],
+    "work_building_id": null,
     "work_district": "",
     "work_xy": null
   },
@@ -2682,6 +2776,7 @@
     "current_activity": "leisure",
     "current_location": "Old Town residential 2504",
     "environment": "residential",
+    "home_building_id": 2504,
     "home_district": "Old Town",
     "home_xy": [
       -692.67,
@@ -2730,6 +2825,7 @@
       -683.53,
       755.82
     ],
+    "work_building_id": null,
     "work_district": "",
     "work_xy": null
   },
@@ -2738,6 +2834,7 @@
     "current_activity": "work",
     "current_location": "North-East commercial 2643",
     "environment": "retail",
+    "home_building_id": 202,
     "home_district": "South",
     "home_xy": [
       -187.92,
@@ -2786,6 +2883,7 @@
       1870.79,
       1031.26
     ],
+    "work_building_id": 2643,
     "work_district": "North-East",
     "work_xy": [
       1889.85,
@@ -2797,6 +2895,7 @@
     "current_activity": "sleep",
     "current_location": "West residential 2318",
     "environment": "residential",
+    "home_building_id": 2318,
     "home_district": "West",
     "home_xy": [
       -1600.98,
@@ -2843,6 +2942,7 @@
       -1607.49,
       510.9
     ],
+    "work_building_id": 2883,
     "work_district": "North",
     "work_xy": [
       404.11,
@@ -2854,6 +2954,7 @@
     "current_activity": "sleep",
     "current_location": "South-West residential 833",
     "environment": "residential",
+    "home_building_id": 833,
     "home_district": "South-West",
     "home_xy": [
       -1317.05,
@@ -2898,6 +2999,7 @@
       -1326.65,
       -828.33
     ],
+    "work_building_id": 691,
     "work_district": "South",
     "work_xy": [
       -836.99,
@@ -2909,6 +3011,7 @@
     "current_activity": "commute",
     "current_location": "West residential 2216",
     "environment": "street",
+    "home_building_id": 2216,
     "home_district": "West",
     "home_xy": [
       -1529.38,
@@ -2954,6 +3057,7 @@
       -581.35,
       -833.16
     ],
+    "work_building_id": 398,
     "work_district": "South",
     "work_xy": [
       -659.17,
@@ -2965,6 +3069,7 @@
     "current_activity": "sleep",
     "current_location": "North-West residential 2736",
     "environment": "residential",
+    "home_building_id": 2736,
     "home_district": "North-West",
     "home_xy": [
       -1471.94,
@@ -3017,6 +3122,7 @@
       -1471.61,
       1304.88
     ],
+    "work_building_id": 1824,
     "work_district": "Old Town",
     "work_xy": [
       779.06,
@@ -3028,6 +3134,7 @@
     "current_activity": "work",
     "current_location": "East commercial 1971",
     "environment": "retail",
+    "home_building_id": 1499,
     "home_district": "West",
     "home_xy": [
       -1657.0,
@@ -3068,6 +3175,7 @@
       900.6,
       160.98
     ],
+    "work_building_id": 1971,
     "work_district": "East",
     "work_xy": [
       949.5,
@@ -3079,6 +3187,7 @@
     "current_activity": "errand",
     "current_location": "South-West commercial 737",
     "environment": "retail",
+    "home_building_id": 997,
     "home_district": "West",
     "home_xy": [
       -1470.06,
@@ -3124,6 +3233,7 @@
       -1483.29,
       -634.44
     ],
+    "work_building_id": 2556,
     "work_district": "North-East",
     "work_xy": [
       1094.22,
@@ -3135,6 +3245,7 @@
     "current_activity": "work",
     "current_location": "West commercial 858",
     "environment": "retail",
+    "home_building_id": 420,
     "home_district": "South",
     "home_xy": [
       -429.23,
@@ -3183,6 +3294,7 @@
       -955.8,
       -798.28
     ],
+    "work_building_id": 858,
     "work_district": "West",
     "work_xy": [
       -917.62,
@@ -3194,6 +3306,7 @@
     "current_activity": "sleep",
     "current_location": "North-West residential 2789",
     "environment": "residential",
+    "home_building_id": 2789,
     "home_district": "North-West",
     "home_xy": [
       -1643.74,
@@ -3240,6 +3353,7 @@
       -1650.08,
       1425.27
     ],
+    "work_building_id": 1951,
     "work_district": "East",
     "work_xy": [
       1597.7,
@@ -3251,6 +3365,7 @@
     "current_activity": "work",
     "current_location": "North commercial 2873",
     "environment": "retail",
+    "home_building_id": 1893,
     "home_district": "Old Town",
     "home_xy": [
       375.56,
@@ -3299,6 +3414,7 @@
       426.36,
       1915.93
     ],
+    "work_building_id": 2873,
     "work_district": "North",
     "work_xy": [
       500.1,
@@ -3310,6 +3426,7 @@
     "current_activity": "work",
     "current_location": "West commercial 937",
     "environment": "retail",
+    "home_building_id": 2479,
     "home_district": "West",
     "home_xy": [
       -1605.95,
@@ -3358,6 +3475,7 @@
       -894.13,
       -666.06
     ],
+    "work_building_id": 937,
     "work_district": "West",
     "work_xy": [
       -888.23,
@@ -3369,6 +3487,7 @@
     "current_activity": "sleep",
     "current_location": "Old Town residential 1840",
     "environment": "residential",
+    "home_building_id": 1840,
     "home_district": "Old Town",
     "home_xy": [
       405.8,
@@ -3418,6 +3537,7 @@
       406.5,
       77.57
     ],
+    "work_building_id": 580,
     "work_district": "South",
     "work_xy": [
       -131.04,

@@ -183,16 +183,19 @@ class _CitizenLite:
     (Package 2) authoritative physical embodiment (home/work coords + zones)."""
 
     __slots__ = ("citizen_id", "home_zone", "work_zone", "schedule",
-                 "home_xy", "work_xy")
+                 "home_xy", "work_xy", "home_building_id", "work_building_id")
 
     def __init__(self, citizen_id, home_zone, schedule,
-                 work_zone=None, home_xy=None, work_xy=None):
+                 work_zone=None, home_xy=None, work_xy=None,
+                 home_building_id=None, work_building_id=None):
         self.citizen_id = citizen_id
         self.home_zone = home_zone
         self.work_zone = work_zone
         self.schedule = schedule
         self.home_xy = home_xy
         self.work_xy = work_xy
+        self.home_building_id = home_building_id
+        self.work_building_id = work_building_id
 
 
 def _xy_or_none(prof, name):
@@ -210,8 +213,11 @@ def _citizen_records(world: World) -> list:
     for cid, prof in world.citizens.items():
         sched = world._schedules.get(cid, [])
         home_xy, work_xy, hz, wz = world._spatial.get(cid, (None, None, None, None))
+        hb, wb = world._buildings.get(cid, (None, None))
         out.append({
             "citizen_id": int(cid),
+            "home_building_id": (None if hb is None else int(hb)),
+            "work_building_id": (None if wb is None else int(wb)),
             "home_zone": (None if hz is None else int(hz)),
             "work_zone": (None if wz is None else int(wz)),
             "home_xy": (None if home_xy is None else [float(home_xy[0]), float(home_xy[1])]),
@@ -236,7 +242,9 @@ def _restore_citizens(records: list) -> list:
             int(r["citizen_id"]), r.get("home_zone"), sched,
             work_zone=r.get("work_zone"),
             home_xy=(tuple(hx) if hx else None),
-            work_xy=(tuple(wx) if wx else None)))
+            work_xy=(tuple(wx) if wx else None),
+            home_building_id=r.get("home_building_id"),
+            work_building_id=r.get("work_building_id")))
     return out
 
 

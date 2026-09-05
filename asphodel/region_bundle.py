@@ -117,6 +117,10 @@ def build_region_artifact(georef: GeoReference, archetype_name: str,
     extent = extent or RegionalExtent.from_km(3, 40, 60, center=focus)
     arch = archetype_for(archetype_name)
     provider = SyntheticElevationProvider(georef, arch, seed=seed)
+    if datum is None and georef.origin_elevation != 0.0:
+        # A surveyed origin elevation on the frame is the city datum; only a
+        # frame with no elevation information falls back to the mean height.
+        datum = float(georef.origin_elevation)
 
     # Bake the raw heightmap, then run the offline erosion + hydrology pass so the
     # terrain gains dendritic valleys and rivers (realism for every city).

@@ -114,7 +114,7 @@ def build_synth_city_bundle(
     from .osm_city import mobility as mob
     from .osm_city import bundle as bnd
     from .osm_city import buildings as bld
-    from .osm_city.citizens import build_population_from_bundle, _write as _write_citizens
+    from .osm_city.citizens import write_citizens_from_bundle
 
     local_floor = 0.1
     dt, n_days = 0.25, 90.0
@@ -159,8 +159,7 @@ def build_synth_city_bundle(
     footprints = bld.generate_procedural(zones, seed=seed, roads=polylines)
     footprints["source"] = "procedural-synthetic"
     bnd._write_json(os.path.join(out_dir, "buildings.json"), footprints)
-    pop = build_population_from_bundle(zones, roads, name, n=60, seed=seed)
-    _write_citizens(out_dir, pop)
+    write_citizens_from_bundle(out_dir, name, n=60, seed=seed)
 
     if augment:
         augment_bundle(out_dir, archetype_name, seed=seed)
