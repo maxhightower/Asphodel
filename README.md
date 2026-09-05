@@ -125,6 +125,23 @@ plot, the belief-cascade heatmap grid (and optional GIF), and the sweep plots.
 
 ---
 
+## Embodied mobility (ASPHODEL_EMBODIED_MOBILITY_V1)
+
+A canonical citizen physically executes its day: `World.advance_seconds`
+drives `asphodel/embodied/` (planner itinerary → walk → car → drive → park →
+work interior → return) and the Godot scene realises the NEAR band as
+`CitizenBody` / `VehicleBody` with physics reported back. Certification:
+
+```bash
+PYTHONPATH=. python3 -m pytest -q tests/test_embodied_*.py            # authority, controllers, save/load, LOD, bridge
+PYTHONPATH=. python3 -m pytest -q tests/test_embodied_mobility_day.py -s   # the one-citizen one-day table (§22)
+tools/run_mobility_gate.sh houston 4        # in-engine gate (live bridge, real physics, headless)
+tools/run_mobility_shots.sh houston 4       # rendered evidence (xvfb) -> docs/mobility/evidence/
+PYTHONPATH=. python3 tools/mobility_city_smoke.py && PYTHONPATH=. python3 tools/mobility_perf.py
+```
+
+See `docs/mobility/EMBODIED_MOBILITY_ARCHITECTURE.md` and `EMBODIED_MOBILITY_REPORT.md`.
+
 ## Key experiments
 
 | Experiment | Question | Plot |

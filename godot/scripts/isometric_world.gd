@@ -409,7 +409,8 @@ func _connect_live_world(dir: String, meta: Dictionary) -> void:
 		push_warning("isometric_world: START_WORLD failed: %s" % str(started))
 		SimBridge.disconnect_from_sim()
 		return
-	_player_home_zone = int(started.get("player_home_zone", -1))
+	var phz = started.get("player_home_zone")
+	_player_home_zone = int(phz) if phz != null else -1
 	GameClock.bind_bridge(SimBridge)
 	_zone_map = ZoneMap.new()
 	_zone_map.load_from_zones(_zones)

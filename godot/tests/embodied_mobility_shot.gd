@@ -122,7 +122,9 @@ func _point_ahead(route: Array, dist: float) -> Vector2:
 func _run() -> void:
 	Session.bundle_dir = "res://bundles/" + _bundle
 	var citizens := BundleLoader.load_citizens(Session.bundle_dir)
-	Session.citizen = citizens[_cid] if _cid < citizens.size() else citizens[0]
+	Session.citizen = (citizens[_cid] if _cid < citizens.size() else citizens[0]).duplicate(true)
+	# citizens.json rows are identified by index; the scene needs the id explicitly
+	Session.citizen["citizen_id"] = _cid if _cid < citizens.size() else 0
 	_scene = preload("res://IsometricWorld.tscn").instantiate()
 	add_child(_scene)
 	for i in range(20):
