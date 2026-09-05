@@ -1,7 +1,7 @@
 # ASPHODEL_OUTBREAK_V1 — Report: embodied outbreak and civil breakdown
 
 **Verdict: `ASPHODEL_OUTBREAK_V1: PASS`** (all 22 gates PASS; see §4 and the
-remaining-debt list in §16 before reading anything into "PASS" beyond what the
+remaining-debt list in §17 before reading anything into "PASS" beyond what the
 gates measure).
 
 ## 1. Provenance
@@ -18,7 +18,7 @@ gates measure).
 | tooling | CPython 3.11.15, Godot 4.4 stable headless + xvfb/Mesa (software GL), 4-core container |
 
 Artifacts: `artifacts/outbreak_v1/{one_day_trace,save_load_trace,godot_probe_trace,city_smoke,performance,regression}.json`.
-Evidence: `docs/outbreak/evidence/` (§15). Architecture: `OUTBREAK_V1_ARCHITECTURE.md`.
+Evidence: `docs/outbreak/evidence/` (§16). Architecture: `OUTBREAK_V1_ARCHITECTURE.md`.
 
 ## 2. Architecture (what became canonical)
 
@@ -67,7 +67,7 @@ HealthRecord (health.py) ── OutbreakRuntime (runtime.py, on World.advance_se
 * **Godot** — `EmbodiedMobility` realises undead (grey-green, walking under
   physics in follow mode), street corpses/incapacitated (solid lying body),
   symptomatic (pale); it now also materializes bodies at a free spot and
-  re-materializes a body that stays stuck (§16, absorbed mobility debt).
+  re-materializes a body that stays stuck (§17, absorbed mobility debt).
 * **FAR statistical tier** — the macro SEIR (`asphodel/model.py`,
   `PathogenGenome`) is untouched and not coupled to the individual outbreak.
 
@@ -86,7 +86,7 @@ Summary of what happened to it:
 | donor concept | disposition | where it landed |
 |---|---|---|
 | archetype names and parameter values (classic shambler, rage, cordyceps, necro-latent) | **reused (values)** | `pathogen.py` archetypes; `classic_shambler` keeps the donor's day-scale numbers verbatim |
-| `reanimation_fraction`, `reanimation_delay`, `turn_on_death`, `undead_infectious` fields | **reused (shape)** | fields of `OutbreakPathogen`; the audit recommended adding them to the macro `PathogenGenome` too — **not done** in V1 (the macro tier is untouched; recorded as debt §16) |
+| `reanimation_fraction`, `reanimation_delay`, `turn_on_death`, `undead_infectious` fields | **reused (shape)** | fields of `OutbreakPathogen`; the audit recommended adding them to the macro `PathogenGenome` too — **not done** in V1 (the macro tier is untouched; recorded as debt §17) |
 | `transmission_route` label | **reused** | label on `OutbreakPathogen`; mixing multipliers on the zone graph **rejected** for the individual tier |
 | macro `U` / `C` compartments, `1/delay` exponential corpse drain | **rejected / rewritten** | per-citizen `reanimate_t` stamped at death; no aggregate compartment is authority |
 | donor `model.py` / `run.py` / belief hunks | **rejected** | ~126 commits stale; ideas re-expressed against current code only where needed (none needed for V1) |
@@ -139,32 +139,35 @@ Headless (focus 9 km away, so no citizen ever had a Godot body: FAR progression)
 | 05:00 | EXPOSURE/INFECTED 42 | index case seeded at home 6353; all timestamps fixed now |
 | 08:17 | EXPOSURE 247 ← 42 | building 2318 co-occupancy (42 presymptomatic, factor 0.6) |
 | 09:46 | EXPOSURE 117 ← 247 | building 2318 |
-| 09:54 | SYMPTOM_ONSET 42 → PLAN_INVALIDATED | at work; `health` goal "going home" replaces the schedule; 42 walks to its car and drives |
-| 09:59 | INCAPACITATED 42 at the wheel → VEHICLE_ABANDONED veh:42 → ROAD_OBSTRUCTED | segment `bf368bb4…#1` closed to cars (persistent wreck) |
+| 09:53 | SYMPTOM_ONSET 42 → PLAN_INVALIDATED | at work; `health` goal "going home" replaces the schedule; 42 walks (kerb-side) to its car and drives |
+| 09:58 | INCAPACITATED 42 at the wheel → VEHICLE_ABANDONED veh:42 → ROAD_OBSTRUCTED | segment `bf368bb4…#1` closed to cars (persistent wreck) |
 | 10:11 | EXPOSURE 170 ← 247 | building 2318 |
-| 10:22 | DEATH 42 → CORPSE_CREATED | in veh:42 on the street at (-1280.1, -1325.7), exactly the collapse position |
-| 10:36 | REANIMATION 42 | same executor, same record, same place; leaves the car; roams home ↔ errand |
+| 10:22 | DEATH 42 → CORPSE_CREATED | in veh:42 on the street at (-1269.4, -1334.7), exactly the collapse position |
+| 10:35 | REANIMATION 42 | same executor, same record, same place; leaves the car; roams home ↔ errand |
 | 10:49 | ATTACK 42 → 127 (bite) → EXPOSURE 127 → FLEE 127; **WORKPLACE_DISRUPTED 6255** | the undead is inside 6255 (127's workplace); 127 flees to its home ent:9578 |
 | 11:07 | ATTACK 42 → 294 (bite) → FLEE 294 | in building 6366; second victim |
-| 11:05–11:36 | 247 symptomatic → incapacitated → DEATH in 7630 | 247 does not reanimate (its `will_reanimate` roll) |
+| 11:04–11:35 | 247 symptomatic → incapacitated → DEATH in 7630 | 247 does not reanimate (its `will_reanimate` roll) |
 | 13:46 | EXPOSURE 87 ← 117 | building 2318 |
 | 14:13–14:20 | 117 symptomatic → INCAPACITATED at 7928; **WORKPLACE_DISRUPTED 2318** (3/6 down) | 87, 135, 170 replanned home (PLAN_INVALIDATED) |
 | 14:46–15:01 | DEATH 117 → REANIMATION 117 | |
-| 15:27 | 127 incapacitated at 9578 | |
+| 15:26 | 127 incapacitated at 9578 | |
 | 15:38 | ATTACK 117 → 191 (bite) → FLEE 191; WORKPLACE_DISRUPTED 4075 | building 4075 |
-| 16:00–16:33 | deaths and reanimations of 127, 170; ATTACK 127 → 188 (bite) in 9091; WORKPLACE_DISRUPTED 8289 | at 16:02 passer-by 173 sees undead 117 on the street (THREAT_OBSERVED) and flees |
-| 17:05–18:03 | 87 symptomatic → dead → undead; ATTACK 87 → 2 (bite) | |
+| 16:00–16:43 | deaths and reanimations of 127, 170; ATTACK 127 → 188 (bite) in 9091; WORKPLACE_DISRUPTED 8289; death of 294 | |
+| 17:05–18:28 | 87 symptomatic → dead → undead; ATTACK 87 → 2 (bite) in 16469 | |
 
-End of day (05:00→18:30): 9 onward exposures (4 building co-occupancy,
-5 bites), 7 deaths, 5 reanimations, 5 attacks, 6 FLEEs, 4 disrupted
-workplaces, 1 obstruction, 1 bystander THREAT_OBSERVED (a passer-by on the
-street who saw an undead, not an attack).
+End of day (05:00→18:45): 9 onward exposures (4 building co-occupancy,
+5 bites), 7 deaths, 5 reanimations, 5 attacks, 5 FLEEs (all attack victims),
+4 disrupted workplaces, 1 obstruction. **No bystander THREAT_OBSERVED occurred
+in this headless day** (it did in the in-engine gate: four co-workers in 2318
+saw the first attack and fled; and in an earlier headless run a passer-by saw
+an undead in the street). The witness path is real but its occurrence is
+contingent on co-presence.
 
 In-engine (OutbreakGate, live bridge, real physics, the player following 42)
-the *same seed* produced the same biological timeline for 42 (onset 09:54,
-collapse 09:59, death 10:22, reanimation 10:36 — identical timestamps, O19)
+the *same seed* produced the same biological timeline for 42 (onset 09:53,
+collapse 09:58, death 10:22, reanimation 10:35 — identical timestamps, O19)
 but a different physical day: 42 reached its car and collapsed at the wheel at
-(-548.7, -1909.5) (the headless run collapsed at (-1280.1, -1325.7)), because
+(-548.7, -1909.5) (the headless run collapsed at (-1269.4, -1334.7)), because
 Godot physics held the walk to the car differently. That is the expected
 relation: health is authoritative and identical; position is authoritative but
 physics-reconciled.
@@ -210,7 +213,7 @@ Death happens where the executor is: in the car (headless day), on the street
 Reanimation flips the override on the same executor and record; lineage is
 kept; the undead leaves the car it died in and can no longer drive (O9). An
 undead that rose inside a building is inside it and leaves through the entrance
-(fixed during certification, §16).
+(fixed during certification, §17).
 
 ## 9. Civil breakdown
 
@@ -239,8 +242,8 @@ still tested in `tests/test_embodied_lod.py`).
 ## 11. Save/load
 
 `artifacts/outbreak_v1/save_load_trace.json`: saves at incubation (06:31),
-symptomatic/incapacitated (09:54), corpse (10:23), undead (10:36) and active
-disruption (14:21); each restore is record/events/override/position identical
+symptomatic/incapacitated (09:54), corpse (10:23), undead (10:36) and the
+first active disruption (10:50, workplace 6255 with the undead inside); each restore is record/events/override/position identical
 and the 10-minute continuation is **byte-identical** to the un-saved world; no
 index case is re-seeded. The in-engine gate also saved/loaded an undead
 mid-walk (`saveload_undead_identical`). Persisting the goal-stack sequence,
@@ -255,20 +258,21 @@ onset → left the workplace under the executor with a body within the leash;
 collapse at the authoritative place (this run: at the wheel, wreck body
 present); corpse frozen; reanimation at the same place; undead body with the
 undead look walked 25 m under physics within the leash for 100 % of frames;
-demoted when the focus left, progressed while far, promoted back with a 0 m
-jump; attacked citizen 294 in building 6366; the victim fled to ent:6189 and
-left the building on foot as a `CitizenBody`. Two body re-materializations
-happened (a body spawned at an entrance anchor inside its building hull).
+demoted when the focus left, progressed while far (28 m with no body),
+promoted back with a 0 m jump; attacked citizen 294 in building 6366; the
+victim fled to ent:6189 and left the building on foot as a `CitizenBody`. In
+this final run the collapse was at the wheel at (-541.4, -1916.7) and the
+abandoned car was a persistent-wreck `VehicleBody`.
 Godot never decided any of it: every transition is a bridge event.
 
 ## 13. Multi-city smoke (`tools/outbreak_city_smoke.py`, 05:00→17:00, 60 s steps)
 
 | city | status | citizens | index | events | onward exposures | end health | disrupted | obstructions | determinism (3 h) | ms/game-min |
 |---|---|---|---|---|---|---|---|---|---|---|
-| houston | PASS | 297 | 42 @ 2318 | 123 | 8 (4 building, 4 bite) | 288 S / 3 incub / 2 dead / 4 undead | 4 | 1 (wreck) | identical | 151 |
-| madisonville_tx | PASS | 53 | 11 @ 580 | 599 | 11 (2 building, 9 bite) | 41 S / 3 incub / 1 corpse / 1 dead / 7 undead | 5 | 0 | identical | 8 |
+| houston | PASS | 297 | 42 @ 2318 | 121 | 8 (4 building, 4 bite) | 288 S / 3 incub / 2 dead / 4 undead | 4 | 1 (wreck) | identical | 147 |
+| madisonville_tx | PASS | 53 | 11 @ 580 | 582 | 10 (2 building, 8 bite) | 42 S / 2 incub / 1 corpse / 1 dead / 7 undead | 5 | 0 | identical | 8 |
 | austin | INFO | 60 | none | — | — | — | — | — | — | — |
-| san_antonio | PASS | 60 | 20 @ 4111 | 38 | 2 (bite) | 57 S / 1 incub / 1 dead / 1 undead | 2 | 0 | identical | 39 |
+| san_antonio | PASS | 60 | 20 @ 4111 | 39 | 2 (bite) | 57 S / 1 incub / 1 dead / 1 undead | 2 | 0 | identical | 36 |
 | boulder | INFO | — | — | — | — | — | — | — | — | — |
 
 Every PASS city completed symptom → incapacitation → death → reanimation for
@@ -282,21 +286,22 @@ runs the same code on each bundle; O22 checks the tool source).
 
 | scenario | total ms / game-min | mobility | outbreak |
 |---|---|---|---|
-| off-peak 05:00, 1 incubating | 21.2 | 20.9 | 0.26 |
-| commute peak 07:00–08:00, 1 incubating | 180.2 | 179.9 | 0.28 |
-| infection-heavy 12:00, 20 seeded index cases, 19 undead, 39 infectious | 252.6 | 79.4 | 179.6 |
-| mobility-only baseline 05:00 / 07:00 | 20.8 / 170.9 | | |
+| off-peak 05:00, 1 incubating | 21.4 | 21.2 | 0.27 |
+| commute peak 07:00–08:00, 1 incubating | 168.7 | 168.3 | 0.29 |
+| infection-heavy 12:00, 20 seeded index cases, 19 undead, 40 infectious | 245.8 | 82.7 | 171.1 |
+| mobility-only baseline 05:00 / 07:00 | 23.5 / 186.9 | | |
 
-Contact scan: 0.44 / 1.65 / 6.0 ms per game minute for 1 / 5 / 20 infectious
-sources (linear). Progression: 1.6 ms per game minute at 68 records (60
-substeps). Snapshot 0.1 ms (66 KB). Save+dumps 5 ms, load 3 ms (210 KB).
-FAR and NEAR focus cost the same (the outbreak does not depend on the band).
-At 24× (2.5 s real per game minute) the heaviest measured minute uses 10 % of
-the budget (9.9× headroom).
+Contact scan: 0.45 / 1.5 / 6.0 ms per game minute for 1 / 5 / 20 infectious
+sources (linear in sources × citizens). Progression: 3.0 ms per game minute at
+69 records (60 substeps). Snapshot 0.1 ms (68 KB). Save+dumps 5 ms, load
+3.4 ms (211 KB). FAR and NEAR focus cost the same (the outbreak does not depend
+on the band). At 24× (2.5 s real per game minute) the heaviest measured minute
+uses 9.8 % of the budget (10.2× headroom). Wall time of the whole measurement:
+208 s.
 
 The first measurement of the heavy scenario was **15.5 s** per game minute,
-96 % in mobility: every undead re-planned a route every second (§16, fixed);
-the number above is after the fix. These are single-machine numbers taken on a
+96 % in mobility: every undead re-planned a route every second (§17, fixed);
+the numbers above are after the fix (a 63× reduction). These are single-machine numbers taken on a
 shared 4-core container while other jobs ran; treat absolute values as ±20 %.
 
 ## 15. Regression (`artifacts/outbreak_v1/regression.json`)
@@ -368,6 +373,11 @@ exposed in the mobility tier; all are now covered by tests or gates):
    at a free spot, count as stuck below the authority leash, and are
    re-materialized when they stay stuck.
 6. A victim attacked at home "fled" home.
+7. With 300 citizens a pedestrian walking the street centreline stood in a
+   physical car's lane and the car crawled behind it (the mobility gate's
+   drive failed on the certification population). Walking legs now run along
+   the kerb, 4.5 m off the centreline on street segments; connectors and leg
+   end points keep their true geometry. MobilityGate 24/24 again.
 
 Still open (not graded as PASS by any gate; do not read the verdict as covering
 them):
