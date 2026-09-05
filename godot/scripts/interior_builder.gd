@@ -115,7 +115,7 @@ static func build(descriptor: Dictionary, offset: Vector3 = Vector3(0, 0, 0)) ->
 	for ri in range(rooms.size()):
 		var r = rooms[ri]
 		_room_walls(body, float(r["x0"]), float(r["y0"]),
-			float(r["x1"]), float(r["y1"]), gaps, int(r.get("id", ri)))
+			float(r["x1"]), float(r["y1"]), gaps, int(r.get("room_id", r.get("id", ri))))
 
 	# --- searchable fixtures ------------------------------------------------
 	var fx_root := Node3D.new()

@@ -1,10 +1,15 @@
 # Asphodel — Simulation Architecture & Roadmap
 
+> **Status note (convergence, 2026-09):** this file documents the epidemic
+> engine contract (macro/micro tiers, `World` façade). The whole-system
+> architecture — geography, buildings, streets, citizens, vehicles, physics,
+> Godot — is `docs/convergence/ASPHODEL_CANONICAL_ARCHITECTURE.md`.
+>
 > **Status note (canonicalization):** the roadmap table in §4 below pre-dates the
 > live bridge and save/load work — it still lists "Phase 9" (save/load) as *next*
 > and "Phase 10" (Godot) as after. Both are **done and certified**. The current
 > record is the M0–M6 findings (`FINDINGS_M0_*` … `FINDINGS_M6_*`) and
-> `FINDINGS_BW_LIVING_CITY.md` (live Python↔Godot bridge, embodied citizens,
+> `docs/findings/FINDINGS_BW_LIVING_CITY.md` (live Python↔Godot bridge, embodied citizens,
 > roster, deterministic save/load). See [`docs/CANONICAL_STATUS.md`](docs/CANONICAL_STATUS.md).
 > The engine-contract sections (§2, §3) remain accurate.
 
@@ -26,7 +31,7 @@ re-architecture.
 ## 1. Where the simulation stands
 
 Two tiers exist and are independently validated (see `FINDINGS.md`,
-`FINDINGS_PHASE4A.md`):
+`docs/findings/FINDINGS_PHASE4A.md`):
 
 | Tier | Module | What it is | Status |
 |---|---|---|---|
@@ -159,7 +164,7 @@ zone holds 800 or 5000 people.
 | 3a | Macro belief-cascade tier | ✅ done |
 | 4a | Single-zone micro tier + calibration + handoff | ✅ done |
 | 5 | Orchestrator (`World`) + inter-zone agent flux + runtime promote/demote + player-focus trigger | ✅ done |
-| **6** | **O(n) spatial-hash neighbour search + measured real-time budget + live-bubble budget cap** | ✅ done — see `FINDINGS_PHASE6.md` |
+| **6** | **O(n) spatial-hash neighbour search + measured real-time budget + live-bubble budget cap** | ✅ done — see `docs/findings/FINDINGS_PHASE6.md` |
 | **7** | **Swappable topology (grid / small-world / commute-hub) + heterogeneous population + multi-seed outbreaks** | ✅ done — see `FINDINGS.md` §9 |
 | **8** | **Player interventions (broadcast / shelter order / staffing / cordon) through `world.intervene`; agent shelter coupled to live belief** | ✅ done |
 | 9 | Save/load: full deterministic state serialization (macro + agents + RNG) | next |

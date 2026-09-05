@@ -434,6 +434,49 @@ class MobilityGraph:
             g.add_segment(seg, u, v)
         return g
 
+    # -- views for the other authorities -------------------------------------
+    def polylines(self) -> List[dict]:
+        """The street network as ``[{"class", "points"}, ...]`` in bundle metres.
+
+        This is the ONE road geometry every other Python consumer derives from
+        (zone-mobility weights for the macro tier, road snapping for
+        embodiment, the citizen-bake street graph); nothing reads roads.json
+        directly when a streetmap exists. Sorted by segment id: deterministic.
+        """
+        return [{"class": seg.road_class,
+                 "points": [[float(p[0]), float(p[1])] for p in seg.polyline]}
+                for _, seg in sorted(self.segments.items())]
+
+    def node_graph(self) -> Tuple[Dict[int, Vec2], List[Tuple[int, int, float]],
+                                  Dict[Tuple[int, int], str]]:
+        """Undirected integer-node view ``(nodes, edges, class_by_edge)``.
+
+        For consumers that want a plain weighted graph (asphodel.world.StreetMap):
+        node ids are the sorted-order index of the string ids, edges carry the
+        baked arc length, and ``class_by_edge`` maps the canonical (min, max)
+        pair to the road class. Deterministic.
+        """
+        order = {nid: i for i, nid in enumerate(sorted(self.nodes))}
+        nodes = {order[nid]: self.nodes[nid] for nid in order}
+        edges: List[Tuple[int, int, float]] = []
+        classes: Dict[Tuple[int, int], str] = {}
+        endpoints: Dict[str, Tuple[str, str]] = {}
+        for u, adj in self._adj.items():
+            for (v, sid, fwd) in adj:
+                if fwd:
+                    endpoints[sid] = (u, v)
+        for sid, seg in sorted(self.segments.items()):
+            uv = endpoints.get(sid)
+            if uv is None:
+                continue
+            a, b = order[uv[0]], order[uv[1]]
+            if a == b:
+                continue
+            edges.append((a, b, float(seg.length)))
+            key = (a, b) if a <= b else (b, a)
+            classes.setdefault(key, seg.road_class)
+        return nodes, edges, classes
+
     # -- introspection -------------------------------------------------------
     def stats(self) -> dict:
         directed_edges = sum(len(v) for v in self._adj.values())

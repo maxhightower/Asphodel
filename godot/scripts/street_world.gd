@@ -56,6 +56,7 @@ var _interior_return_pos: Vector3 = Vector3.ZERO
 # blocks / OSM-mesh road & site-detail construction with chunked streaming.
 const ExteriorWorld = preload("res://scripts/exterior_world.gd")
 var _exterior: ExteriorWorld = null
+var _region_loader: RegionLoader = null
 var _has_compiled_world: bool = false
 const EXTERIOR_FOCUS_INTERVAL := 0.5
 
@@ -103,6 +104,7 @@ func _ready() -> void:
 	_spawn_player(_bounds, bundle["roads"])
 	if _has_compiled_world:
 		_setup_exterior_streaming(dir)
+	_setup_regional_terrain(dir)
 	_build_hud()
 	_build_pause_overlay()
 
@@ -253,6 +255,27 @@ func _index_buildings(footprints: Array) -> void:
 		else:
 			_building_centroids.append(Vector2(INF, INF))
 			_building_aabb.append(Rect2(INF, INF, 0, 0))
+
+
+func _setup_regional_terrain(dir: String) -> void:
+	## Regional terrain beyond the compiled city (region.json, schema v2). The
+	## city itself sits on the plateau at y = 0 — the loader lowers terrain under
+	## the city disc and skips chunks the ExteriorWorld ground already covers, so
+	## hills/mountains/coast exist because the regional model says so, not
+	## because a mesh was placed by hand. Absent region.json => flat world.
+	if not FileAccess.file_exists(dir.path_join("region.json")):
+		return
+	var region := RegionLoader.new()
+	region.name = "RegionalTerrain"
+	region.bundle_dir = dir
+	region.own_atmosphere = false          # the scene owns its WorldEnvironment
+	region.omit_city_interior = true
+	add_child(region)                      # _ready -> load_region
+	_region_loader = region
+
+
+func get_region_loader() -> RegionLoader:
+	return _region_loader
 
 
 func _setup_exterior_streaming(dir: String) -> void:

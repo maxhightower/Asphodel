@@ -78,7 +78,13 @@ func _load_all() -> void:
 		_nodes[nid] = Vector2(p[0], p[1])
 	for s in mob["segments"]:
 		if s["u"] != null and s["v"] != null:
-			_seg[s["id"]] = [_nodes[s["u"]], _nodes[s["v"]]]
+			var pts: Array = []
+			if s.has("pts"):
+				for p in s["pts"]:
+					pts.append(Vector2(float(p[0]), float(p[1])))
+			else:
+				pts = [_nodes[s["u"]], _nodes[s["v"]]]
+			_seg[s["id"]] = pts
 	var pb: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(BUNDLE.path_join("playback.json")))
 	_frames = pb["frames"]
 
@@ -149,18 +155,27 @@ func _build_terrain_mesh() -> void:
 
 func _build_city_static() -> void:
 	var L := SUN.normalized()
-	var zones: Array = JSON.parse_string(FileAccess.get_file_as_string(BUNDLE.path_join("zones.json")))
 	var st := SurfaceTool.new(); st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for zone in zones:
-		for blk in zone["blocks"]:
-			var xy: Array = blk["xy"]; var w: float = float(blk["footprint"]); var hgt: float = float(blk["height"])
-			_add_box(st, Vector3(xy[0], terrain_y(xy[0], xy[1]) + hgt * 0.5, xy[1]), Vector3(w, hgt, w), Color(0.67, 0.67, 0.70), L)
+	# The SAME buildings the game renders and the citizens live in: canonical
+	# buildings.json footprints (index == building_id), extruded on the terrain.
+	# (The June density blocks in zones.json are no longer drawn anywhere.)
+	var footprints: Array = BundleLoader.load_buildings(BUNDLE)
+	var drawn := 0
+	for b in footprints:
+		var poly: Array = b.get("poly", [])
+		if poly.size() < 3:
+			continue
+		var hgt: float = maxf(float(b.get("height", 6.0)), 3.0)
+		_add_prism(st, poly, hgt, Color(0.67, 0.67, 0.70), L)
+		drawn += 1
+	print("living_city: %d canonical footprints drawn" % drawn)
 	_unshaded(st.commit())
 	# base street grid (dark), from mobility segments, draped on terrain
 	var rst := SurfaceTool.new(); rst.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for sid in _seg:
 		var e: Array = _seg[sid]
-		_add_ribbon(rst, e[0], e[1], 5.0, Color(0.24, 0.24, 0.26), 0.4)
+		for i in range(e.size() - 1):
+			_add_ribbon(rst, e[i], e[i + 1], 5.0, Color(0.24, 0.24, 0.26), 0.4)
 	_unshaded(rst.commit())
 
 
@@ -177,7 +192,8 @@ func _draw_frame(fr: Dictionary) -> void:
 			if _seg.has(sid):
 				var e: Array = _seg[sid]
 				var f: float = clamp((cong[sid] - 1.0) / 0.8, 0.0, 1.0)
-				_add_ribbon(rst, e[0], e[1], 9.0, Color(0.85, 0.25 * (1.0 - f), 0.12), 1.2)
+				for i in range(e.size() - 1):
+					_add_ribbon(rst, e[i], e[i + 1], 9.0, Color(0.85, 0.25 * (1.0 - f), 0.12), 1.2)
 		var mi := _unshaded(rst.commit())
 		_reparent(mi)
 	# moving agents: only those EN_ROUTE (state == 1)
@@ -225,6 +241,36 @@ func _add_box(st: SurfaceTool, c: Vector3, s: Vector3, base: Color, L: Vector3) 
 		var q: Array = face[1]
 		for vi in [0, 1, 2, 0, 2, 3]:
 			st.set_color(col); st.add_vertex(c + q[vi])
+
+
+func _add_prism(st: SurfaceTool, poly: Array, hgt: float, base: Color, L: Vector3) -> void:
+	## Extrude a footprint polygon (bundle metres) into walls + a flat roof,
+	## draped on the regional terrain at its centroid height.
+	var ring := PackedVector2Array()
+	var cx := 0.0; var cz := 0.0
+	for p in poly:
+		ring.append(Vector2(float(p[0]), float(p[1])))
+		cx += float(p[0]); cz += float(p[1])
+	cx /= poly.size(); cz /= poly.size()
+	var y0 := terrain_y(cx, cz)
+	var y1 := y0 + hgt
+	var n := ring.size()
+	for i in range(n):
+		var a := ring[i]; var b := ring[(i + 1) % n]
+		var nrm := Vector3((b - a).y, 0.0, -(b - a).x).normalized()
+		var sh: float = 0.40 + 0.70 * maxf(0.0, nrm.dot(L))
+		var col := Color(minf(base.r * sh, 1), minf(base.g * sh, 1), minf(base.b * sh, 1))
+		var v00 := Vector3(a.x, y0, a.y); var v01 := Vector3(a.x, y1, a.y)
+		var v10 := Vector3(b.x, y0, b.y); var v11 := Vector3(b.x, y1, b.y)
+		for v in [v00, v01, v11, v00, v11, v10]:
+			st.set_color(col); st.add_vertex(v)
+	var tris := Geometry2D.triangulate_polygon(ring)
+	var roof_sh: float = 0.40 + 0.70 * maxf(0.0, Vector3.UP.dot(L))
+	var roof := Color(minf(base.r * roof_sh, 1), minf(base.g * roof_sh, 1), minf(base.b * roof_sh, 1))
+	for k in range(0, tris.size(), 3):
+		for j in [0, 1, 2]:
+			var q := ring[tris[k + j]]
+			st.set_color(roof); st.add_vertex(Vector3(q.x, y1, q.y))
 
 
 func _add_ribbon(st: SurfaceTool, a: Vector2, b: Vector2, width: float, col: Color, lift: float) -> void:

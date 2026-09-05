@@ -169,6 +169,7 @@ class CitySpatialContext:
         self.building_heights = building_heights or []     # list[float]
         self.building_archs = building_archs or []         # list[str] exterior arch
         self.road_vertices = road_vertices                 # (V, 2) or (0, 2)
+        self.street_graph = None                           # MobilityGraph when loaded from a bundle
         self.zone_ids = zone_ids                           # (Z,)
         self.zone_centers = zone_centers                   # (Z, 2)
         self.bbox = bbox                                   # (xmin, ymin, xmax, ymax)
@@ -206,14 +207,18 @@ class CitySpatialContext:
             building_heights = []
             building_archs = []
 
-        roads_doc = _load("roads.json") or {}
+        # One road authority: the street graph (streetmap.json, every rendered
+        # street; roads.json only as the never-baked fallback). Its vertices
+        # feed the cheap point cloud and its polylines the exact projection.
+        street_graph = None
         verts = []
-        for pl in roads_doc.get("polylines", []):
-            # A polyline is either a bare list of [x,y] points, or a dict
-            # {"class": ..., "points": [[x,y], ...]}.
-            pts = pl.get("points", []) if isinstance(pl, dict) else pl
-            for pt in pts:
-                verts.append((float(pt[0]), float(pt[1])))
+        if os.path.exists(os.path.join(bundle_dir, "streetmap.json")) \
+                or os.path.exists(os.path.join(bundle_dir, "roads.json")):
+            from .mobility import MobilityGraph
+            street_graph = MobilityGraph.load(bundle_dir)
+            for pl in street_graph.polylines():
+                for pt in pl["points"]:
+                    verts.append((float(pt[0]), float(pt[1])))
         road_vertices = (np.array(verts, dtype=float) if verts
                          else np.zeros((0, 2), dtype=float))
 
@@ -235,11 +240,13 @@ class CitySpatialContext:
             bbox = (float(stacked[:, 0].min()), float(stacked[:, 1].min()),
                     float(stacked[:, 0].max()), float(stacked[:, 1].max()))
 
-        return cls(building_centroids=centroids, road_vertices=road_vertices,
-                   zone_ids=zone_ids, zone_centers=zone_centers, bbox=bbox,
-                   cell_m=cell_m, name=meta.get("name", os.path.basename(bundle_dir)),
-                   building_polys=building_polys, building_heights=building_heights,
-                   building_archs=building_archs)
+        ctx = cls(building_centroids=centroids, road_vertices=road_vertices,
+                  zone_ids=zone_ids, zone_centers=zone_centers, bbox=bbox,
+                  cell_m=cell_m, name=meta.get("name", os.path.basename(bundle_dir)),
+                  building_polys=building_polys, building_heights=building_heights,
+                  building_archs=building_archs)
+        ctx.street_graph = street_graph
+        return ctx
 
     def building_arch(self, building_id: int) -> Optional[str]:
         """Exterior building archetype (BUILDING_ARCHETYPES member) or None."""
@@ -288,8 +295,17 @@ class CitySpatialContext:
         return None
 
     def nearest_road_xy(self, xy) -> Optional[tuple]:
-        """Nearest road vertex to ``xy`` (snaps a point onto the real road
-        network). None if the bundle has no roads."""
+        """Nearest point ON the real street network to ``xy``.
+
+        With a street graph this is an exact projection onto the nearest
+        segment polyline (the same geometry the client renders); without one it
+        falls back to the nearest polyline vertex. None if the bundle has no
+        roads."""
+        g = getattr(self, "street_graph", None)
+        if g is not None:
+            hit = g.nearest_segment_point((float(xy[0]), float(xy[1])))
+            if hit is not None:
+                return (float(hit[1][0]), float(hit[1][1]))
         if self.road_vertices.shape[0] == 0:
             return None
         d2 = ((self.road_vertices[:, 0] - xy[0]) ** 2

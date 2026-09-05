@@ -151,6 +151,12 @@ def category_from_osm_tags(tags: dict) -> Optional[str]:
 # ===========================================================================
 # Buildings, interiors, the street map
 # ===========================================================================
+# CONVERGENCE NOTE: ``StreetMap``/``Building`` are the citizen-bake view of a
+# city. For committed bundles they are built FROM the canonical authorities
+# (buildings.json footprints + the streetmap MobilityGraph, see
+# osm_city/world_from_compiled.py). ``Interior``/``generate_interior`` below are
+# the synthetic-city helper only; the walk-in interior authority is
+# asphodel/interiors.py (InteriorDescriptor v1).
 @dataclass
 class Room:
     """One procedurally-generated room on a building floor (local metres)."""

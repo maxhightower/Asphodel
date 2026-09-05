@@ -46,7 +46,10 @@ MODE_TOP_SPEED = {
 # dispatch — a new class is a new row, not a new branch.
 _CLASS_DEFAULTS = {
     "motorway": (31.0, 3, {Mode.CAR, Mode.HEAVY, Mode.EMERGENCY}),
-    "trunk": (25.0, 2, {Mode.CAR, Mode.HEAVY, Mode.EMERGENCY}),
+    # A trunk is a surface highway that runs through towns (Madisonville is
+    # bisected by one): pedestrians and cyclists can walk beside/cross it, so
+    # the foot network does not split in two. Motorways stay car-only.
+    "trunk": (25.0, 2, {Mode.FOOT, Mode.BICYCLE, Mode.CAR, Mode.HEAVY, Mode.EMERGENCY}),
     "primary": (18.0, 2, {Mode.FOOT, Mode.BICYCLE, Mode.CAR, Mode.HEAVY, Mode.EMERGENCY}),
     "secondary": (14.0, 1, {Mode.FOOT, Mode.BICYCLE, Mode.CAR, Mode.HEAVY, Mode.EMERGENCY}),
     "tertiary": (12.0, 1, {Mode.FOOT, Mode.BICYCLE, Mode.CAR, Mode.HEAVY, Mode.EMERGENCY}),
