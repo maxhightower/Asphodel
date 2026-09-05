@@ -28,6 +28,10 @@ var movement_enabled: bool = true # gate (e.g. while a modal UI is open)
 
 
 func _ready() -> void:
+	# Authoritative collision identity (AS-PHYS-0), same profile as the
+	# first-person walker — the presentation differs, the body does not.
+	collision_layer = CollisionLayers.PLAYER
+	collision_mask = CollisionLayers.PROFILES["player"]["mask"]
 	var capsule := CapsuleShape3D.new()
 	capsule.radius = _CAPSULE_R
 	capsule.height = _CAPSULE_H

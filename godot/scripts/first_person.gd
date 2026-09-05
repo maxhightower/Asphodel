@@ -26,6 +26,10 @@ func get_camera() -> Camera3D:
 
 func _ready() -> void:
 	add_to_group("player")
+	# Authoritative collision identity (AS-PHYS-0): the player body lives on the
+	# PLAYER layer and collides with exactly what the Python matrix says it does.
+	collision_layer = CollisionLayers.PLAYER
+	collision_mask = CollisionLayers.PROFILES["player"]["mask"]
 	var capsule := CapsuleShape3D.new()
 	capsule.radius = 0.35
 	capsule.height = 1.8

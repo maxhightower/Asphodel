@@ -77,6 +77,13 @@ func _ready() -> void:
 	if bundle.is_empty():
 		push_error("isometric_world: failed to load bundle at %s" % dir)
 		return
+	# Gate I: the schema contract at the Godot boundary. Rendering a bundle we
+	# only half-understand would draw a city Python does not believe in, so a
+	# version/shape skew stops the scene here rather than downstream.
+	var schema_err := BundleLoader.validate_bundle_schema(dir)
+	if schema_err != "":
+		push_error("isometric_world: bundle schema rejected at %s -- %s" % [dir, schema_err])
+		return
 	var meta: Dictionary = bundle["meta"]
 	_zones = bundle["zones"]
 	_add_environment_and_light()
@@ -168,6 +175,9 @@ func _build_ground(b: Rect2) -> void:
 	mi.position = center
 	add_child(mi)
 	var body := StaticBody3D.new()
+	body.name = "Ground"
+	body.collision_layer = CollisionLayers.WORLD_STATIC
+	body.collision_mask = 0
 	var shape := BoxShape3D.new()
 	shape.size = Vector3(sx, 1.0, sz)
 	var cs := CollisionShape3D.new()
@@ -205,6 +215,9 @@ func _build_fallback_buildings(footprints: Array) -> void:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var body := StaticBody3D.new()
+	body.name = "FallbackBuildingCollision"
+	body.collision_layer = CollisionLayers.WORLD_STATIC
+	body.collision_mask = 0
 	add_child(body)
 	for b in footprints:
 		var poly_xy: Array = b.get("poly", [])

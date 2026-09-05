@@ -759,6 +759,8 @@ func _build_t2(chunk: Dictionary, root: Node3D) -> Dictionary:
 		if body == null:
 			body = StaticBody3D.new()
 			body.name = "BuildingCollision"
+			body.collision_layer = CollisionLayers.WORLD_STATIC
+			body.collision_mask = 0
 			root.add_child(body)
 		var h := float(b.get("h", 3.0))
 		var cs := CollisionShape3D.new()

@@ -31,13 +31,10 @@ func _ready() -> void:
 
 
 func load_region(dir_path: String) -> bool:
-	var path := dir_path.path_join("region.json")
-	if not FileAccess.file_exists(path):
-		push_error("region.json missing: %s" % path)
-		return false
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
-	if not (parsed is Dictionary):
-		push_error("region.json invalid: %s" % path)
+	# One schema contract for region.json, shared with the world scenes' Gate I
+	# check — the loader never re-implements (or relaxes) the boundary rules.
+	var parsed := BundleLoader.load_region(dir_path)
+	if parsed.is_empty():
 		return false
 	_region = parsed
 	var hm: Dictionary = _region["heightmap"]

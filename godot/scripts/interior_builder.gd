@@ -109,6 +109,8 @@ static func build(descriptor: Dictionary, offset: Vector3 = Vector3(0, 0, 0)) ->
 	# --- per-room walls with doorway/entrance gaps --------------------------
 	var body := StaticBody3D.new()
 	body.name = "InteriorCollision"
+	body.collision_layer = CollisionLayers.WORLD_STATIC
+	body.collision_mask = 0
 	root.add_child(body)
 	for ri in range(rooms.size()):
 		var r = rooms[ri]
@@ -210,6 +212,8 @@ static func _floor(x0: float, y0: float, x1: float, y1: float) -> Node3D:
 	var d = maxf(y1 - y0, 0.5)
 	var n := StaticBody3D.new()
 	n.name = "Floor"
+	n.collision_layer = CollisionLayers.WORLD_STATIC
+	n.collision_mask = 0
 	var mi := _box(Vector3(w, 0.1, d), FLOOR_COL)
 	mi.position = Vector3((x0 + x1) * 0.5, FLOOR_Y - 0.05, (y0 + y1) * 0.5)
 	n.add_child(mi)
@@ -308,6 +312,10 @@ static func _fixture(descriptor: Dictionary, f: Dictionary) -> Node3D:
 	var size: Vector3 = FIXTURE_SIZE.get(kind, Vector3(0.8, 0.9, 0.6))
 	var n := StaticBody3D.new()
 	n.name = "Fixture_%d" % int(f.get("fixture_id", -1))
+	# Fixtures are world geometry you bump into; the searchable container they
+	# carry is authoritative in Python, not a Godot interaction body.
+	n.collision_layer = CollisionLayers.WORLD_STATIC
+	n.collision_mask = 0
 	# Real furniture mesh (pivot on the floor); the collision box + authoritative
 	# container metadata are unchanged, so searchable-container linkage is intact.
 	var mi := MeshInstance3D.new()
