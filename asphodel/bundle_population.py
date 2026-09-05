@@ -183,5 +183,11 @@ def load_bundle_population(bundle_dir: str) -> list[CitizenProfile]:
             current_task=str(c.get("current_task", "")),
             home_xy=tuple(home_xy) if home_xy else None,
             work_xy=tuple(work_xy) if work_xy else None,
+            # Explicit building identity (buildings.json index). Older bakes
+            # omit it; embodiment then falls back to nearest-footprint lookup.
+            home_building_id=(None if c.get("home_building_id") is None
+                              else int(c["home_building_id"])),
+            work_building_id=(None if c.get("work_building_id") is None
+                              else int(c["work_building_id"])),
         ))
     return out

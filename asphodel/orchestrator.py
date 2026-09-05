@@ -115,6 +115,7 @@ class World:
         # embodiment falls back to zone-centre / synthetic anchors (still
         # deterministic, still calibration-neutral).
         self._spatial: dict[int, tuple] = {}       # cid -> (home_xy,work_xy,hz,wz)
+        self._buildings: dict[int, tuple] = {}     # cid -> (home_building_id, work_building_id)
         self.spatial_ctx = None
         # Package 3: the authoritative survival-resource runtime (player state,
         # container world-delta store, dropped items). Created on demand so a
@@ -164,6 +165,7 @@ class World:
         self._zone_citizens = {}
         self._schedules = {}
         self._spatial = {}
+        self._buildings = {}
         for c in citizens:
             cid, home_zone, schedule = _citizen_fields(c)
             if cid is None or home_zone is None:
@@ -171,6 +173,7 @@ class World:
             self.citizens[cid] = c
             self._schedules[cid] = schedule
             self._spatial[cid] = _citizen_spatial_fields(c, home_zone)
+            self._buildings[cid] = _citizen_building_fields(c)
             self._zone_citizens.setdefault(int(home_zone), []).append(cid)
         # Deterministic assignment order within a zone: ascending citizen id.
         for z in self._zone_citizens:
@@ -300,6 +303,7 @@ class World:
             return None
         home_xy, work_xy, home_zone, work_zone = self._spatial.get(
             cid, (None, None, None, None))
+        home_bid, work_bid = self._buildings.get(cid, (None, None))
         # Report the zone the macro currently associates with the citizen (home
         # zone is the stable authoritative association).
         return embodiment.resolve_physical_location(
@@ -307,7 +311,8 @@ class World:
             hour=self.current_hour(), home_xy=home_xy, work_xy=work_xy,
             home_zone=home_zone, work_zone=work_zone,
             action=self._citizen_action(cid), zone=home_zone,
-            ctx=self.spatial_ctx)
+            ctx=self.spatial_ctx,
+            home_building_id=home_bid, work_building_id=work_bid)
 
     def set_citizen_tags(self, tags_by_id: dict) -> None:
         """Register per-citizen environment/hazard tags the affordance layer reads
@@ -549,12 +554,14 @@ class World:
             if cid >= 0 and cid in self.citizens:
                 home_xy, work_xy, hz, wz = self._spatial.get(
                     cid, (None, None, None, None))
+                home_bid, work_bid = self._buildings.get(cid, (None, None))
                 loc = embodiment.resolve_physical_location(
                     citizen_id=cid, schedule=self._schedules.get(cid, []),
                     hour=hour, home_xy=home_xy, work_xy=work_xy,
                     home_zone=hz, work_zone=wz,
                     action=npc.action_name(int(zone.chosen_action[slot])),
-                    zone=z, ctx=ctx)
+                    zone=z, ctx=ctx,
+                    home_building_id=home_bid, work_building_id=work_bid)
                 world_xy[slot] = [loc.x, loc.y]
                 mode[slot] = loc.mode
                 building_id[slot] = loc.building_id
@@ -873,6 +880,15 @@ def _citizen_fields(c):
     if cid is None:
         return None, None, []
     return int(cid), (None if home is None else int(home)), schedule
+
+
+def _citizen_building_fields(c):
+    """Extract (home_building_id, work_building_id) — explicit building identity
+    (buildings.json index) when the record carries it, else (None, None)."""
+    def _get(name):
+        v = c.get(name) if isinstance(c, dict) else getattr(c, name, None)
+        return None if v is None else int(v)
+    return (_get("home_building_id"), _get("work_building_id"))
 
 
 def _citizen_spatial_fields(c, home_zone):

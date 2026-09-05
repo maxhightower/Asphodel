@@ -2,7 +2,7 @@
 
 **Status:** **CLOSED — M0–M6 all PASS.** M6 was certified in-engine on Godot 4.4.1 by
 the follow-on *Bundle-Wired Living City* initiative. See `FINDINGS_M<N>_*.md`,
-`FINDINGS_BW_LIVING_CITY.md`, and `FINDINGS_INITIATIVE_SUMMARY.md`.
+`docs/findings/FINDINGS_BW_LIVING_CITY.md`, and `docs/findings/FINDINGS_INITIATIVE_SUMMARY.md`.
 **Canonical branch:** `claude/asphodel-authoritative-world-55z0qw`
 **Baseline:** descendant of `claude/asphodel-gameplay-integrity-de72g6` (real-road mobility head)
 plus the Phase 11 NPC design/research/plan documents carried forward from

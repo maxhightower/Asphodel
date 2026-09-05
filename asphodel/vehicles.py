@@ -22,6 +22,12 @@ index those expectations are meant to track.
 Distances are metres (the world frame), speeds km/h internally, times seconds.
 """
 
+# CONVERGENCE NOTE: this module is the citizen-spawn traffic ESTIMATOR (aggregate
+# trip assignment over the citizen-bake StreetMap, used for travel events). It
+# is not the vehicle entity model; that is asphodel/transport (VehicleInstance,
+# TrafficReconciler) over asphodel/mobility. See
+# docs/convergence/ASPHODEL_CANONICAL_ARCHITECTURE.md §6.
+
 from __future__ import annotations
 
 import heapq

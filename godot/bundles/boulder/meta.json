@@ -1,0 +1,42 @@
+{
+  "bbox": [
+    39.99433884297521,
+    -105.29982299145358,
+    40.03566115702479,
+    -105.24117700854642
+  ],
+  "center": [
+    40.015,
+    -105.2705
+  ],
+  "dt": 0.25,
+  "genome": {
+    "R0": 3.0,
+    "asymptomatic_fraction": 0.4,
+    "incubation_period": 5.0,
+    "infectious_period": 7.0,
+    "mortality_fraction": 0.02,
+    "symptom_onset_delay": 2.0
+  },
+  "grid": {
+    "cell_m": 400.0,
+    "cols": 13,
+    "rows": 12
+  },
+  "mobility": {
+    "connected_components": 1,
+    "local_floor": 0.1,
+    "n_edges": 287,
+    "source": "roads"
+  },
+  "n_days": 90.0,
+  "n_ticks": 360,
+  "name": "Boulder, Colorado",
+  "origin_elevation": 1655.0,
+  "projection": "equirectangular",
+  "query": "Boulder, Colorado",
+  "seed": 7,
+  "seed_zone": 71,
+  "source": "synthetic",
+  "version": "1"
+}

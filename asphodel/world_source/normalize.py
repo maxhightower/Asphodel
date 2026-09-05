@@ -97,33 +97,44 @@ def _first_rule_value(rules):
     return rules[0].get("value") if rules[0] else None
 
 
-def load_world_source(city: str, release: str,
-                      data_root: str = "data/raw") -> WorldSourceV1:
-    w, s, e, n = city_bbox(city)
-    lat0 = (s + n) / 2.0
-    lon0 = (w + e) / 2.0
-    min_x, min_z = project(s, w, lat0, lon0)
-    max_x, max_z = project(n, e, lat0, lon0)
+def _oneway_from_access(rules):
+    """Read a one-way rule out of Overture ``access_restrictions``.
 
-    ws = WorldSourceV1()
-    ws.meta = {
-        "city": city,
-        "release": release,
-        "bbox": [w, s, e, n],
-        "origin": [lat0, lon0],
-        "bounds_m": (min_x, min_z, max_x, max_z),
-    }
+    Overture encodes a one-way street as a whole-span ``access_type='denied'``
+    restriction scoped to a heading: denying the *backward* heading means the
+    carriageway is legal only *forward* along its linestring, and vice versa.
+    Returns ``None`` (two-way) unless such a rule is present.
 
-    src = f"overture@{release}"
+    Authority note: this is a pure read of the source packet — the routing
+    consequence lives in the mobility bake, not here.
+    """
+    if not rules:
+        return None
+    for r in rules:
+        if not r or r.get("access_type") != "denied":
+            continue
+        if r.get("between") is not None:
+            continue                      # partial-span rule: not a one-way
+        heading = (r.get("when") or {}).get("heading")
+        if heading == "backward":
+            return "forward"
+        if heading == "forward":
+            return "backward"
+    return None
 
-    # ---- roads / paths -------------------------------------------------
-    tbl = _table(data_root, release, city, "segment")
+
+def _road_features(tbl, lat0, lon0, src):
+    """Normalize the transportation/segment table into road line Features."""
     geoms = shapely.from_wkb(tbl.column("geometry").to_pylist())
     subtypes = _col(tbl, "subtype")
     classes = _col(tbl, "class")
     widths = _col(tbl, "width_rules")
+    conns = _col(tbl, "connectors")
+    access = _col(tbl, "access_restrictions")
     ids = _col(tbl, "id")
-    for gid, geom, sub, cls, wr in zip(ids, geoms, subtypes, classes, widths):
+    feats = []
+    for gid, geom, sub, cls, wr, cl, ar in zip(
+            ids, geoms, subtypes, classes, widths, conns, access):
         if geom is None or geom.geom_type != "LineString":
             continue
         cls = (cls or "unknown").lower()
@@ -134,28 +145,97 @@ def load_world_source(city: str, release: str,
         pts = _project_ring(geom.coords, lat0, lon0)
         if len(pts) < 2:
             continue
-        ws.roads.append(Feature(
+        # Graph topology carried alongside the geometry: the connector GERS
+        # ids this segment touches and the fraction along it where each sits.
+        # The exterior compiler ignores both; the mobility bake splits on them.
+        connectors = sorted(
+            ([c["connector_id"], float(c["at"])] for c in (cl or [])
+             if c and c.get("connector_id") is not None and c.get("at") is not None),
+            key=lambda ca: (ca[1], ca[0]))
+        feats.append(Feature(
             stable_key=gid, geometry=pts, geom_type="line",
             properties={
                 "class": cls,
                 "subtype": sub,
                 "width_m": _first_rule_value(wr),
                 "lanes_total": None,
+                "connectors": connectors,
+                "oneway": _oneway_from_access(ar),
             },
             source=f"{src}/transportation/segment", source_id=gid,
         ))
+    return feats
 
-    tbl = _table(data_root, release, city, "connector")
+
+def _connector_features(tbl, lat0, lon0, src):
+    """Normalize the transportation/connector table into point Features."""
     geoms = shapely.from_wkb(tbl.column("geometry").to_pylist())
+    feats = []
     for gid, geom in zip(_col(tbl, "id"), geoms):
         if geom is None or geom.geom_type != "Point":
             continue
         x, z = project(geom.y, geom.x, lat0, lon0)
-        ws.connectors.append(Feature(
+        feats.append(Feature(
             stable_key=gid, geometry=[(x, z)], geom_type="point",
             properties={}, source=f"{src}/transportation/connector",
             source_id=gid,
         ))
+    return feats
+
+
+def _frame(city: str, release: str):
+    """The bundle metre frame + meta block shared by every loader here."""
+    w, s, e, n = city_bbox(city)
+    lat0 = (s + n) / 2.0
+    lon0 = (w + e) / 2.0
+    min_x, min_z = project(s, w, lat0, lon0)
+    max_x, max_z = project(n, e, lat0, lon0)
+    meta = {
+        "city": city,
+        "release": release,
+        "bbox": [w, s, e, n],
+        "origin": [lat0, lon0],
+        "bounds_m": (min_x, min_z, max_x, max_z),
+    }
+    return lat0, lon0, meta, (min_x, min_z, max_x, max_z)
+
+
+def load_world_source_roads(city: str, release: str,
+                            data_root: str = "data/raw") -> WorldSourceV1:
+    """Load ONLY the transportation layers (segment + connector).
+
+    The mobility bake needs the street network and nothing else; loading the
+    full world source would pull in buildings/land/places (hundreds of MB of
+    parquet) for no benefit. The returned WorldSourceV1 carries the same
+    ``meta``/``roads``/``connectors`` this module's full loader produces, in
+    the same bundle metre frame, so the bake cannot drift from the compiler.
+    """
+    lat0, lon0, meta, _ = _frame(city, release)
+    ws = WorldSourceV1()
+    ws.meta = meta
+    src = f"overture@{release}"
+    ws.roads = _road_features(
+        _table(data_root, release, city, "segment"), lat0, lon0, src)
+    ws.connectors = _connector_features(
+        _table(data_root, release, city, "connector"), lat0, lon0, src)
+    return ws
+
+
+def load_world_source(city: str, release: str,
+                      data_root: str = "data/raw") -> WorldSourceV1:
+    lat0, lon0, meta, bounds = _frame(city, release)
+    min_x, min_z, max_x, max_z = bounds
+
+    ws = WorldSourceV1()
+    ws.meta = meta
+
+    src = f"overture@{release}"
+
+    # ---- roads / paths -------------------------------------------------
+    ws.roads = _road_features(
+        _table(data_root, release, city, "segment"), lat0, lon0, src)
+    ws.connectors = _connector_features(
+        _table(data_root, release, city, "connector"), lat0, lon0, src)
 
     # ---- buildings -----------------------------------------------------
     tbl = _table(data_root, release, city, "building")

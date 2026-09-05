@@ -47,16 +47,15 @@ def rebake_mobility(bundle_dir: str, local_floor=DEFAULT_LOCAL_FLOOR) -> dict:
         meta = json.load(f)
     with open(os.path.join(bundle_dir, "zones.json")) as f:
         zones = json.load(f)
-    with open(os.path.join(bundle_dir, "roads.json")) as f:
-        roads = json.load(f)
 
     zones = sorted(zones, key=lambda z: z["id"])
     rows = int(meta["grid"]["rows"])
     cols = int(meta["grid"]["cols"])
     populations = [z["population"] for z in zones]
 
+    polylines, road_source = mob.road_polylines_for_bundle(bundle_dir)
     mobility_edges = mob.derive_zone_mobility(
-        zones, roads.get("polylines", []), rows, cols, local_floor=local_floor)
+        zones, polylines, rows, cols, local_floor=local_floor)
 
     genome = PathogenGenome(**meta["genome"])
     cfg = ScenarioConfig(
@@ -72,7 +71,7 @@ def rebake_mobility(bundle_dir: str, local_floor=DEFAULT_LOCAL_FLOOR) -> dict:
     result = run_scenario(cfg)
 
     stats = mob.mobility_stats(mobility_edges, rows * cols)
-    meta["mobility"] = {"source": "roads", "local_floor": local_floor,
+    meta["mobility"] = {"source": road_source, "local_floor": local_floor,
                         "n_edges": stats["n_edges"],
                         "connected_components": stats["connected_components"]}
     timeline = bnd.build_timeline(result.belief_history)

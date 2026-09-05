@@ -65,40 +65,26 @@ def _polygon_area(ring) -> float:
 
 def street_map_from_compiled(bundle_dir: str) -> StreetMap:
     """Build the canonical StreetMap from compiled buildings + bundle roads."""
+    from ..embodiment import validate_buildings_doc
     with open(os.path.join(bundle_dir, "buildings.json")) as f:
         bjson = json.load(f)
-    with open(os.path.join(bundle_dir, "roads.json")) as f:
-        rjson = json.load(f)
+    validate_buildings_doc(bjson, os.path.join(bundle_dir, "buildings.json"))
     world_bounds = None
     meta_path = os.path.join(bundle_dir, "world", "world_meta.json")
     if os.path.exists(meta_path):
         with open(meta_path) as f:
             world_bounds = json.load(f).get("bounds_m")
 
-    # Street graph from the bundle's (already metre-frame) polylines.
-    nodes: dict[int, tuple[float, float]] = {}
-    node_of: dict[tuple[int, int], int] = {}
-    edges: list[tuple[int, int, float]] = []
-
-    def node_id(x: float, z: float) -> int:
-        key = (int(round(x)), int(round(z)))
-        nid = node_of.get(key)
-        if nid is None:
-            nid = len(nodes)
-            node_of[key] = nid
-            nodes[nid] = (float(x), float(z))
-        return nid
-
-    for pl in rjson.get("polylines", []):
-        prev = None
-        for x, z in pl.get("points", []):
-            nid = node_id(x, z)
-            if prev is not None and prev != nid:
-                a, b = nodes[prev], nodes[nid]
-                length = math.hypot(a[0] - b[0], a[1] - b[1])
-                if length > 0:
-                    edges.append((prev, nid, length))
-            prev = nid
+    # Street graph = the canonical MobilityGraph (streetmap.json: every
+    # rendered street, connector-exact junctions; roads.json only as the
+    # never-baked fallback). Citizens therefore route on the same streets the
+    # client draws and the vehicles drive.
+    from ..mobility import MobilityGraph
+    from ..world import HIGHWAY, SURFACE
+    graph = MobilityGraph.load(bundle_dir)
+    nodes, edges, classes = graph.node_graph()
+    edge_attrs = {key: {"structure": HIGHWAY if cls in ("motorway", "trunk") else SURFACE}
+                  for key, cls in classes.items()}
 
     xs, zs = [], []
     tmp = []
@@ -129,7 +115,9 @@ def street_map_from_compiled(bundle_dir: str) -> StreetMap:
         nodes = {0: ((bbox_m[0] + bbox_m[2]) / 2.0, (bbox_m[1] + bbox_m[3]) / 2.0)}
 
     sm = StreetMap(nodes=nodes, edges=edges, buildings=[], bbox=bbox_m,
-                   source=f"compiled:{os.path.basename(bundle_dir)}")
+                   source=f"compiled:{os.path.basename(bundle_dir)}",
+                   edge_attrs=edge_attrs)
+    sm.street_graph = graph
     built = []
     for i, item in enumerate(tmp):
         if item is None:

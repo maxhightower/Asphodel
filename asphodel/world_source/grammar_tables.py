@@ -721,7 +721,8 @@ PROP_KINDS = [
     "road_barrier",
 ]
 
-VEHICLE_KINDS = ["sedan", "suv", "pickup", "van", "box_truck"]
+VEHICLE_KINDS = ["sedan", "suv", "pickup", "van", "box_truck", "jeep",
+                 "sports_car", "semi_truck", "oil_tanker"]
 
 TREE_KINDS = ["tree_round", "tree_conical", "tree_columnar"]
 

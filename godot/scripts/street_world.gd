@@ -56,6 +56,7 @@ var _interior_return_pos: Vector3 = Vector3.ZERO
 # blocks / OSM-mesh road & site-detail construction with chunked streaming.
 const ExteriorWorld = preload("res://scripts/exterior_world.gd")
 var _exterior: ExteriorWorld = null
+var _region_loader: RegionLoader = null
 var _has_compiled_world: bool = false
 const EXTERIOR_FOCUS_INTERVAL := 0.5
 
@@ -68,6 +69,13 @@ func _ready() -> void:
 	var bundle := BundleLoader.load_bundle(dir)
 	if bundle.is_empty():
 		push_error("street_world: failed to load bundle at %s — see errors above." % dir)
+		return
+	# Gate I: the schema contract at the Godot boundary. Rendering a bundle we
+	# only half-understand would draw a city Python does not believe in, so a
+	# version/shape skew stops the scene here rather than downstream.
+	var schema_err := BundleLoader.validate_bundle_schema(dir)
+	if schema_err != "":
+		push_error("street_world: bundle schema rejected at %s -- %s" % [dir, schema_err])
 		return
 	var meta: Dictionary = bundle["meta"]
 	var zones: Array = bundle["zones"]
@@ -96,6 +104,7 @@ func _ready() -> void:
 	_spawn_player(_bounds, bundle["roads"])
 	if _has_compiled_world:
 		_setup_exterior_streaming(dir)
+	_setup_regional_terrain(dir)
 	_build_hud()
 	_build_pause_overlay()
 
@@ -203,6 +212,9 @@ func _build_ground(b: Rect2) -> void:
 	add_child(mi)
 
 	var body := StaticBody3D.new()
+	body.name = "Ground"
+	body.collision_layer = CollisionLayers.WORLD_STATIC
+	body.collision_mask = 0
 	var shape := BoxShape3D.new()
 	shape.size = Vector3(sx, 1.0, sz)
 	var cs := CollisionShape3D.new()
@@ -243,6 +255,27 @@ func _index_buildings(footprints: Array) -> void:
 		else:
 			_building_centroids.append(Vector2(INF, INF))
 			_building_aabb.append(Rect2(INF, INF, 0, 0))
+
+
+func _setup_regional_terrain(dir: String) -> void:
+	## Regional terrain beyond the compiled city (region.json, schema v2). The
+	## city itself sits on the plateau at y = 0 — the loader lowers terrain under
+	## the city disc and skips chunks the ExteriorWorld ground already covers, so
+	## hills/mountains/coast exist because the regional model says so, not
+	## because a mesh was placed by hand. Absent region.json => flat world.
+	if not FileAccess.file_exists(dir.path_join("region.json")):
+		return
+	var region := RegionLoader.new()
+	region.name = "RegionalTerrain"
+	region.bundle_dir = dir
+	region.own_atmosphere = false          # the scene owns its WorldEnvironment
+	region.omit_city_interior = true
+	add_child(region)                      # _ready -> load_region
+	_region_loader = region
+
+
+func get_region_loader() -> RegionLoader:
+	return _region_loader
 
 
 func _setup_exterior_streaming(dir: String) -> void:
@@ -303,6 +336,9 @@ func _build_buildings(footprints: Array) -> void:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var body := StaticBody3D.new()
+	body.name = "BuildingCollision"
+	body.collision_layer = CollisionLayers.WORLD_STATIC
+	body.collision_mask = 0
 	add_child(body)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 0x5EED * 65537 + footprints.size()
@@ -448,6 +484,9 @@ func _build_blocks(meta: Dictionary, zones: Array) -> void:
 	mm.instance_count = total
 
 	var body := StaticBody3D.new()   # one body, a box shape per building
+	body.name = "BlockCollision"
+	body.collision_layer = CollisionLayers.WORLD_STATIC
+	body.collision_mask = 0
 	add_child(body)
 
 	var i := 0
@@ -745,6 +784,7 @@ func _spawn_player(b: Rect2, roads: Dictionary) -> void:
 
 	_player = CharacterBody3D.new()
 	_player.set_script(load("res://scripts/first_person.gd"))
+	# first_person.gd stamps the authoritative PLAYER layer/mask in its _ready.
 	_player.position = _spawn_pos
 	# PAUSABLE so player physics freezes when the world is paused.
 	_player.process_mode = Node.PROCESS_MODE_PAUSABLE

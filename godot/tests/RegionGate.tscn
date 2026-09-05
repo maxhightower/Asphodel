@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8regiongate01"]
+
+[ext_resource type="Script" path="res://tests/region_gate.gd" id="1_rgate"]
+
+[node name="RegionGate" type="Node3D"]
+script = ExtResource("1_rgate")

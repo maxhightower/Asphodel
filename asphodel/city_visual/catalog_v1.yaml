@@ -29,6 +29,10 @@ render_variants:
   pickup: 5
   van: 5
   box_truck: 5
+  jeep: 5
+  sports_car: 5
+  semi_truck: 5
+  oil_tanker: 5
   tree_oak: 5
   tree_round: 5
   tree_conical: 5
@@ -1268,6 +1272,206 @@ families:
     weight: 1.0
     resource: null
     procedural: box_truck
+    conditions:
+    - NORMAL
+- semantic_id: vehicle_jeep
+  category: vehicle
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 2.0
+    depth_m: 4.2
+    height_m: 1.9
+  clearance: {}
+  collision: mesh
+  interaction: none
+  material_family: null
+  room_tags: []
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: vehicle_jeep
+  render_kind: jeep
+  lod_fallback: jeep
+  variants:
+  - id: vehicle_jeep_00
+    weight: 1.0
+    resource: null
+    procedural: jeep
+    conditions:
+    - NORMAL
+  - id: vehicle_jeep_01
+    weight: 1.0
+    resource: null
+    procedural: jeep
+    conditions:
+    - NORMAL
+  - id: vehicle_jeep_02
+    weight: 1.0
+    resource: null
+    procedural: jeep
+    conditions:
+    - NORMAL
+  - id: vehicle_jeep_03
+    weight: 1.0
+    resource: null
+    procedural: jeep
+    conditions:
+    - NORMAL
+  - id: vehicle_jeep_04
+    weight: 1.0
+    resource: null
+    procedural: jeep
+    conditions:
+    - NORMAL
+- semantic_id: vehicle_sports_car
+  category: vehicle
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 1.9
+    depth_m: 4.4
+    height_m: 1.3
+  clearance: {}
+  collision: mesh
+  interaction: none
+  material_family: null
+  room_tags: []
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: vehicle_sports_car
+  render_kind: sports_car
+  lod_fallback: sports_car
+  variants:
+  - id: vehicle_sports_car_00
+    weight: 1.0
+    resource: null
+    procedural: sports_car
+    conditions:
+    - NORMAL
+  - id: vehicle_sports_car_01
+    weight: 1.0
+    resource: null
+    procedural: sports_car
+    conditions:
+    - NORMAL
+  - id: vehicle_sports_car_02
+    weight: 1.0
+    resource: null
+    procedural: sports_car
+    conditions:
+    - NORMAL
+  - id: vehicle_sports_car_03
+    weight: 1.0
+    resource: null
+    procedural: sports_car
+    conditions:
+    - NORMAL
+  - id: vehicle_sports_car_04
+    weight: 1.0
+    resource: null
+    procedural: sports_car
+    conditions:
+    - NORMAL
+- semantic_id: vehicle_semi_truck
+  category: vehicle
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 2.6
+    depth_m: 16.5
+    height_m: 4.0
+  clearance: {}
+  collision: mesh
+  interaction: none
+  material_family: null
+  room_tags: []
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: vehicle_semi_truck
+  render_kind: semi_truck
+  lod_fallback: semi_truck
+  variants:
+  - id: vehicle_semi_truck_00
+    weight: 1.0
+    resource: null
+    procedural: semi_truck
+    conditions:
+    - NORMAL
+  - id: vehicle_semi_truck_01
+    weight: 1.0
+    resource: null
+    procedural: semi_truck
+    conditions:
+    - NORMAL
+  - id: vehicle_semi_truck_02
+    weight: 1.0
+    resource: null
+    procedural: semi_truck
+    conditions:
+    - NORMAL
+  - id: vehicle_semi_truck_03
+    weight: 1.0
+    resource: null
+    procedural: semi_truck
+    conditions:
+    - NORMAL
+  - id: vehicle_semi_truck_04
+    weight: 1.0
+    resource: null
+    procedural: semi_truck
+    conditions:
+    - NORMAL
+- semantic_id: vehicle_oil_tanker
+  category: vehicle
+  placement: ground
+  outdoor: true
+  dimensions:
+    width_m: 2.6
+    depth_m: 15.0
+    height_m: 3.8
+  clearance: {}
+  collision: mesh
+  interaction: none
+  material_family: null
+  room_tags: []
+  parcel_tags: []
+  building_tags: []
+  climate_tags: []
+  seed_tag: vehicle_oil_tanker
+  render_kind: oil_tanker
+  lod_fallback: oil_tanker
+  variants:
+  - id: vehicle_oil_tanker_00
+    weight: 1.0
+    resource: null
+    procedural: oil_tanker
+    conditions:
+    - NORMAL
+  - id: vehicle_oil_tanker_01
+    weight: 1.0
+    resource: null
+    procedural: oil_tanker
+    conditions:
+    - NORMAL
+  - id: vehicle_oil_tanker_02
+    weight: 1.0
+    resource: null
+    procedural: oil_tanker
+    conditions:
+    - NORMAL
+  - id: vehicle_oil_tanker_03
+    weight: 1.0
+    resource: null
+    procedural: oil_tanker
+    conditions:
+    - NORMAL
+  - id: vehicle_oil_tanker_04
+    weight: 1.0
+    resource: null
+    procedural: oil_tanker
     conditions:
     - NORMAL
 - semantic_id: live_oak

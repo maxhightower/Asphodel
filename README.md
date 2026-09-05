@@ -2,24 +2,22 @@
 
 > ## ⚠️ Canonical status — read first
 >
-> **This section of the README describes the original _Phase 3a macro
-> prototype_. It is no longer the whole system.** Asphodel has since grown an
-> authoritative living-city substrate: real OSM city bundles, a live Python↔Godot
-> bridge, embodied citizens, a bounded persistent roster, deterministic
-> versioned save/load, and (in progress) an embodied survival-resource loop.
+> **Build from `main`.** Asphodel has one canonical architecture, documented in
+> [`docs/convergence/ASPHODEL_CANONICAL_ARCHITECTURE.md`](docs/convergence/ASPHODEL_CANONICAL_ARCHITECTURE.md),
+> and one canonical branch, recorded in
+> [`docs/CANONICAL_STATUS.md`](docs/CANONICAL_STATUS.md). The `claude/*`
+> branches are retired history (see
+> [`docs/convergence/ASPHODEL_BRANCH_DISPOSITION.md`](docs/convergence/ASPHODEL_BRANCH_DISPOSITION.md)).
 >
 > **Python owns simulation truth; Godot renders it and submits player intent.**
 > The macro model documented below is still real and still the population
 > authority — but it is now *one tier* of a larger "one world, one authority,
-> scalable fidelity" engine, not the whole game.
+> scalable fidelity" engine, not the whole game. Historical milestone reports
+> live in `docs/findings/`.
 >
-> For what is actually canonical, see **[`docs/CANONICAL_STATUS.md`](docs/CANONICAL_STATUS.md)**
-> and the milestone findings (`FINDINGS_M0_*` … `FINDINGS_M6_*`,
-> `FINDINGS_BW_LIVING_CITY.md`, `FINDINGS_P1_CANONICALIZATION.md`, and the
-> embodiment/survival findings). The canonical branch is
-> `claude/asphodel-authoritative-world-55z0qw` (continued by
-> `claude/asphodel-embodied-survival-qlizmu`) — **not** the stale GitHub default
-> `claude/asphodel-belief-cascade-kvKKv`.
+> Run it: `python -m asphodel.bridge.server`, then open `godot/`
+> (`MainMenu.tscn`). Certify it: `python -m pytest -q`,
+> `godot/tests/run_gates.sh`, `tools/final_cert.sh`, `python tools/city_matrix.py`.
 
 ---
 
@@ -35,7 +33,7 @@ The single research question this prototype exists to answer:
 > dynamics — a period of normalcy while infection silently climbs, then a rapid
 > social tipping point into panic — and can we control it?**
 
-The short answer (see [`FINDINGS.md`](FINDINGS.md)): **yes, and yes.** The arc
+The short answer (see [`docs/findings/FINDINGS.md`](docs/findings/FINDINGS.md)): **yes, and yes.** The arc
 emerges robustly and the tipping point is tunable from "gradual diffusion wave"
 to "near-instant runaway" via a single social-contagion weight.
 
@@ -136,7 +134,7 @@ plot, the belief-cascade heatmap grid (and optional GIF), and the sweep plots.
 | **Authority-lag sweep** | Does more lag fire the alarm later relative to true spread? | `output/exp_authority_lag_sweep.png` |
 | **Infra coupling on/off** | Does the infrastructure cascade meaningfully change collapse? | `output/exp_coupling_onoff.png` |
 
-See **[`FINDINGS.md`](FINDINGS.md)** for the numbers, the controllable envelope,
+See **[`docs/findings/FINDINGS.md`](docs/findings/FINDINGS.md)** for the numbers, the controllable envelope,
 the failure modes, and the answer to the research question.
 
 ---
@@ -177,7 +175,7 @@ python -m asphodel.bench            # Phase 6: tick-cost benchmark + budget tabl
 **Phase 6** made the agent neighbour search genuinely O(n) (a spatial hash, ~600×
 faster at 10k agents, bit-identical to the old pairwise scan) and measured the
 engine budget: a 1000-agent live zone costs <1 ms/tick, so dozens run in real
-time. See **[`FINDINGS_PHASE6.md`](FINDINGS_PHASE6.md)**.
+time. See **[`docs/findings/FINDINGS_PHASE6.md`](docs/findings/FINDINGS_PHASE6.md)**.
 
 **Phase 7** made the zone graph's topology a swappable dial (`grid` /
 `small_world` / `commute`, with per-zone populations and multi-seed outbreaks).
@@ -189,7 +187,7 @@ not randomness, synchronizes the panic (`FINDINGS.md` §9).
 `broadcast`, `cordon`, `shelter_order`, `allocate_staffing` — flowing through both
 the macro fields and any live agent zone. Finding: propping up infrastructure can
 *increase* deaths by muting an alarm the population relied on
-(`FINDINGS_PHASE8.md`).
+(`docs/findings/FINDINGS_PHASE8.md`).
 
 ```python
 world.intervene("cordon", zones=[seed_zone])         # quarantine a zone
@@ -531,7 +529,7 @@ statistical question:
 > epidemic curve *in expectation*, so that promoting a zone to agents does not
 > change how fast the disease spreads — for any pathogen genome?**
 
-The short answer (see [`FINDINGS_PHASE4A.md`](FINDINGS_PHASE4A.md)): **yes.** A
+The short answer (see [`docs/findings/FINDINGS_PHASE4A.md`](docs/findings/FINDINGS_PHASE4A.md)): **yes.** A
 closed-form genome→micro-parameter relation (plus a small, genome-stable ≈1.04×
 correction) makes the mean micro epidemic track the macro single-zone curve
 across four genomes (β = 0.20–1.00) — growth rate, peak timing and final attack
@@ -576,7 +574,7 @@ zone-mobility graph**: two zones exchange infection/belief in proportion to the
 real roads that cross between them (a `mobility.json` edge list persisted in the
 bundle), not by mere grid adjacency — so a city's highways, rivers and
 chokepoints shape the outbreak. Cities with no roads fall back to grid mobility.
-See [`FINDINGS_ROAD_MOBILITY.md`](FINDINGS_ROAD_MOBILITY.md).
+See [`docs/findings/FINDINGS_ROAD_MOBILITY.md`](docs/findings/FINDINGS_ROAD_MOBILITY.md).
 
 ```bash
 # Geocode a city, fetch OSM, run the sim, write a bundle

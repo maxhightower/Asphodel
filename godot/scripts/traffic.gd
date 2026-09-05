@@ -1,5 +1,11 @@
 extends Node3D
 
+## LEGACY PRESENTATION (canonical convergence, 2026-09): ambient movers on the
+## roads.json polylines, first-person scene only. They carry no identity and no
+## collision; the canonical vehicle model is asphodel/transport (VehicleInstance,
+## TrafficReconciler) realised by vehicle_body.gd / playback rows. Scheduled for
+## replacement in the Godot session — do not extend.
+
 ## Presentation-only traffic: placeholder vehicles (cars, trucks, motorcycles/
 ## bikes) driving along the bundle's road polylines. The authoritative Python
 ## world models commute *modes*, not individual vehicle positions, so this is

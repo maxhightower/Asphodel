@@ -5,64 +5,56 @@ trusting any older prose in this repo._
 
 ## The canonical line
 
-The current canonical implementation line is the **authoritative-world** line,
-continued by the **embodied-survival** milestone branch:
+**All new Asphodel development begins from `main`.**
 
-* `claude/asphodel-authoritative-world-55z0qw` — the certified authoritative
-  living-city substrate (head `4728113` at milestone start).
-* `claude/asphodel-embodied-survival-qlizmu` — the active milestone branch,
-  started from that head. **New work goes here.**
+`main` is being fast-forwarded to the canonical convergence tree
+(`claude/asphodel-canonical-convergence-i6h105`); until that lands, build from
+that convergence branch. The GitHub default branch was
+`claude/asphodel-belief-cascade-kvKKv` (June 12, 2026) — it is **stale** and
+must be switched to `main` in the repository settings; see
+`docs/convergence/ASPHODEL_BRANCH_DISPOSITION.md` for the exact landing steps.
 
-The GitHub repository's configured **default branch is stale**
-(`claude/asphodel-belief-cascade-kvKKv`, an ancestor 34 commits behind). Do not
-treat it as the frontier. Changing the default is a manual repo-settings action
-(see `FINDINGS_P1_CANONICALIZATION.md`).
+Every other `claude/*` branch is retired or historical evidence. The census
+(`docs/convergence/ASPHODEL_BRANCH_CENSUS.md`) shows that thirteen of them are
+already inside `main`, the regional-physics-navigation line was merged in the
+convergence, and the two remaining unmerged June branches (zombie outbreak
+archetypes; Phase 4b research harness) carry recorded decisions.
 
-## What is proven (inherited, do not rebuild)
+## What the canonical tree is
 
-The **Authoritative Playable World** initiative (M0–M6) is CLOSED/PASS and the
-follow-on **Bundle-Wired Living City** initiative PASSed in real Godot 4.4.1:
+`docs/convergence/ASPHODEL_CANONICAL_ARCHITECTURE.md` is the architecture:
+one world (`asphodel/orchestrator.py`), one building identity
+(`buildings.json` index), one street graph (`streetmap.json` v2 baked from the
+same Overture packet as the rendered city), one citizen identity from
+statistic to humanoid, one vehicle identity across fidelity, one collision
+matrix, one terrain pipeline (region v2 with the city plateau), one Godot
+runtime that renders truth and submits intent.
 
-* one world, one authority, scalable fidelity — **Python owns simulation truth;
-  Godot renders truth and submits intent**;
-* real OSM-derived city bundles (`godot/bundles/{houston,austin,san_antonio,madisonville_tx}`)
-  — real roads, real/synthesized building footprints, road-derived mobility graph;
-* live Python↔Godot bridge (newline-delimited JSON, versioned protocol);
-* player-position-driven promotion/focus; live citizens rendered from snapshots;
-* bounded persistent named roster; interaction → roster persistence;
-* interventions change future authoritative world state;
-* deterministic versioned save → destroy server → reload → bit-identical
-  continuation;
-* **255 Python tests green** on the canonical baseline.
+Certified on the convergence tree: the Python suite, the in-engine Godot suites
+(TestRunner, StreetSmoke, ExteriorStream, CitizenHumanoidSmoke, the isometric
+smokes, PhysicsGate/RegionGate/NavGate, ConvergenceGate), the live-bridge
+Live* scenes, and the multi-city matrix (Houston, Madisonville, Austin,
+San Antonio, Boulder, Denver region). The exact commands and results are in
+the convergence report in the pull request that lands this tree.
 
 ## Architectural invariants (preserve unless a package needs a new causal channel)
 
 * Python owns simulation truth; Godot renders and submits input.
 * The macro float ledger is authoritative for population.
 * Macro → promoted agents → bounded persistent named roster is the fidelity
-  hierarchy.
+  hierarchy; promotion never changes an identity.
 * Same config + city + seed + player-input sequence ⇒ same authoritative
-  trajectory.
+  trajectory. Visual randomness never consumes simulation RNG.
+* One schema per artifact, versioned; loaders reject what they do not know.
 * Simulation-neutral presentation work stays simulation-neutral.
 * Any gameplay feature that changes outcomes flows through an explicit
   authoritative Python state transition.
 * Save/load preserves deterministic continuation.
 
-## In flight (this milestone)
+## Historical reports
 
-See `FINDINGS_P1_CANONICALIZATION.md`, `FINDINGS_P2_EMBODIMENT.md`,
-`FINDINGS_P3_SURVIVAL.md`:
-
-1. Canonical repository closure — **done**.
-2. Physical citizen embodiment.
-3. First authoritative survival-resource loop.
-
-## Environment note
-
-Originally the certification environment had `xvfb-run` but no `godot4` binary, so
-the embodied-survival milestone shipped as a truthful PARTIAL. In the follow-on
-initiative Godot **4.4.1** was installed and the full in-engine surface was run
-against the live server and real bundles — TestRunner, StreetSmoke, LiveSmoke,
-save/destroy/reload, survival, and the new walk-in interior scenes all pass. Both
-the embodied-survival milestone and Walk-In Interiors v1 are now **PASS in-engine**.
-See `FINDINGS_GATE0_CERT_CLOSURE.md` and `FINDINGS_INTERIORS_V1.md`.
+The milestone findings that used to sit at the repository root are in
+`docs/findings/` (M0–M6, embodiment, interiors, outside world, isometric
+presentation, residential architecture, the regional/physics/nav
+architecture). They describe how each system was certified when it landed;
+where they name a branch as "canonical", this file supersedes them.

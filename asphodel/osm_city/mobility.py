@@ -30,9 +30,32 @@ import math
 # the Overpass query today; the rest are here for completeness/future use.
 ROAD_CAPACITY = {
     "motorway": 8.0, "trunk": 6.0, "primary": 4.0, "secondary": 2.5,
-    "tertiary": 1.5, "residential": 1.0,
+    "tertiary": 1.5, "residential": 1.0, "unclassified": 1.0, "unknown": 1.0,
+    "living_street": 0.6, "service": 0.5, "track": 0.3,
+    # Pedestrian-only ways move people, but few of them.
+    "footway": 0.2, "path": 0.2, "cycleway": 0.2, "pedestrian": 0.2,
+    "sidewalk": 0.2, "steps": 0.1, "bridleway": 0.1,
 }
 DEFAULT_CAPACITY = 1.0
+
+
+def road_polylines_for_bundle(bundle_dir: str) -> tuple[list[dict], str]:
+    """The road polylines the macro tier derives zone mobility from.
+
+    One road authority: the bundle's ``streetmap.json`` (every rendered street,
+    baked from the same public data as the exterior) when present; the legacy
+    ``roads.json`` major-road polylines only for a bundle that was never baked.
+    Returns ``(polylines, source_label)``.
+    """
+    import os
+    from ..mobility import MobilityGraph
+    if os.path.exists(os.path.join(bundle_dir, "streetmap.json")):
+        g = MobilityGraph.load(bundle_dir)
+        return g.polylines(), f"streetmap ({g.source})"
+    import json
+    with open(os.path.join(bundle_dir, "roads.json")) as f:
+        roads = json.load(f)
+    return roads.get("polylines", []), "roads.json"
 
 
 def road_capacity(road_class: str) -> float:

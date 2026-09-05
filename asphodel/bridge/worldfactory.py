@@ -1,7 +1,7 @@
 """Deterministic ``World`` construction from a committed city bundle (M1).
 
 ``START_WORLD`` names a *bundle* (a real city baked under ``godot/bundles/<city>``:
-``meta.json`` + ``zones.json`` + ``roads.json``), a ``seed``, optional micro
+``meta.json`` + ``zones.json`` + ``streetmap.json``), a ``seed``, optional micro
 params and live-bubble budget. This module turns that into the exact
 :class:`~asphodel.config.ScenarioConfig` the offline pipeline used to bake the
 city (``asphodel.osm_city.pipeline._rebuild_sim_products``) so the *live* world
@@ -60,8 +60,6 @@ def config_from_bundle(bundle: str, seed: int | None = None) -> ScenarioConfig:
         meta = json.load(f)
     with open(os.path.join(bundle_dir, "zones.json")) as f:
         zones = json.load(f)
-    with open(os.path.join(bundle_dir, "roads.json")) as f:
-        roads = json.load(f)
 
     zones = sorted(zones, key=lambda z: z["id"])
     rows = int(meta["grid"]["rows"])
@@ -69,8 +67,11 @@ def config_from_bundle(bundle: str, seed: int | None = None) -> ScenarioConfig:
     populations = [z["population"] for z in zones]
     local_floor = float(meta.get("mobility", {}).get("local_floor", 0.1))
 
+    # The macro tier rides the SAME street network the citizens walk and the
+    # client renders (streetmap.json); roads.json is only the un-baked fallback.
+    polylines, _source = _mob.road_polylines_for_bundle(bundle_dir)
     mobility_edges = _mob.derive_zone_mobility(
-        zones, roads.get("polylines", []), rows, cols, local_floor=local_floor)
+        zones, polylines, rows, cols, local_floor=local_floor)
 
     genome = PathogenGenome(**meta["genome"])
     cfg = ScenarioConfig(

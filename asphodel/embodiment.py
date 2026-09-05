@@ -115,6 +115,36 @@ def _poly_centroid(poly: list) -> tuple[float, float]:
     return (float(cx), float(cy))
 
 
+BUILDINGS_SCHEMA_VERSION = 1
+
+
+def validate_buildings_doc(doc, where: str = "buildings.json") -> list:
+    """Return the building list of a CANONICAL ``buildings.json`` or raise.
+
+    The one accepted shape (Gate A) is ``{"version": 1, "buildings": [{"poly":
+    [[x, z], ...], "height": m, ...}, ...]}``; ``key``/``arch``/``cat`` are
+    optional extras the compiled cities add. A bare list (the retired synth
+    generator's output) or any other version fails loudly here instead of
+    misplacing every citizen later. ``None`` (file absent) returns ``[]``.
+    """
+    if doc is None:
+        return []
+    if not isinstance(doc, dict):
+        raise ValueError(f"{where}: not a canonical buildings document "
+                         f"(expected an object, got {type(doc).__name__})")
+    if doc.get("version") != BUILDINGS_SCHEMA_VERSION:
+        raise ValueError(f"{where}: unsupported buildings schema version "
+                         f"{doc.get('version')!r} (expected {BUILDINGS_SCHEMA_VERSION})")
+    blist = doc.get("buildings")
+    if not isinstance(blist, list):
+        raise ValueError(f"{where}: 'buildings' is not a list")
+    for i, b in enumerate(blist[:3] + blist[-1:] if blist else []):
+        if not isinstance(b, dict) or not isinstance(b.get("poly"), list) \
+                or "height" not in b:
+            raise ValueError(f"{where}: building record {i} lacks poly/height")
+    return blist
+
+
 class CitySpatialContext:
     """Static, read-only geometry for one city bundle.
 
@@ -139,6 +169,7 @@ class CitySpatialContext:
         self.building_heights = building_heights or []     # list[float]
         self.building_archs = building_archs or []         # list[str] exterior arch
         self.road_vertices = road_vertices                 # (V, 2) or (0, 2)
+        self.street_graph = None                           # MobilityGraph when loaded from a bundle
         self.zone_ids = zone_ids                           # (Z,)
         self.zone_centers = zone_centers                   # (Z, 2)
         self.bbox = bbox                                   # (xmin, ymin, xmax, ymax)
@@ -163,8 +194,7 @@ class CitySpatialContext:
                 return json.load(f)
 
         buildings_doc = _load("buildings.json")
-        blist = (buildings_doc.get("buildings", []) if isinstance(buildings_doc, dict)
-                 else (buildings_doc or []))
+        blist = validate_buildings_doc(buildings_doc, os.path.join(bundle_dir, "buildings.json"))
         if blist:
             centroids = np.array([_poly_centroid(b["poly"]) for b in blist], dtype=float)
             building_polys = [[[float(p[0]), float(p[1])] for p in b.get("poly", [])]
@@ -177,14 +207,18 @@ class CitySpatialContext:
             building_heights = []
             building_archs = []
 
-        roads_doc = _load("roads.json") or {}
+        # One road authority: the street graph (streetmap.json, every rendered
+        # street; roads.json only as the never-baked fallback). Its vertices
+        # feed the cheap point cloud and its polylines the exact projection.
+        street_graph = None
         verts = []
-        for pl in roads_doc.get("polylines", []):
-            # A polyline is either a bare list of [x,y] points, or a dict
-            # {"class": ..., "points": [[x,y], ...]}.
-            pts = pl.get("points", []) if isinstance(pl, dict) else pl
-            for pt in pts:
-                verts.append((float(pt[0]), float(pt[1])))
+        if os.path.exists(os.path.join(bundle_dir, "streetmap.json")) \
+                or os.path.exists(os.path.join(bundle_dir, "roads.json")):
+            from .mobility import MobilityGraph
+            street_graph = MobilityGraph.load(bundle_dir)
+            for pl in street_graph.polylines():
+                for pt in pl["points"]:
+                    verts.append((float(pt[0]), float(pt[1])))
         road_vertices = (np.array(verts, dtype=float) if verts
                          else np.zeros((0, 2), dtype=float))
 
@@ -206,11 +240,13 @@ class CitySpatialContext:
             bbox = (float(stacked[:, 0].min()), float(stacked[:, 1].min()),
                     float(stacked[:, 0].max()), float(stacked[:, 1].max()))
 
-        return cls(building_centroids=centroids, road_vertices=road_vertices,
-                   zone_ids=zone_ids, zone_centers=zone_centers, bbox=bbox,
-                   cell_m=cell_m, name=meta.get("name", os.path.basename(bundle_dir)),
-                   building_polys=building_polys, building_heights=building_heights,
-                   building_archs=building_archs)
+        ctx = cls(building_centroids=centroids, road_vertices=road_vertices,
+                  zone_ids=zone_ids, zone_centers=zone_centers, bbox=bbox,
+                  cell_m=cell_m, name=meta.get("name", os.path.basename(bundle_dir)),
+                  building_polys=building_polys, building_heights=building_heights,
+                  building_archs=building_archs)
+        ctx.street_graph = street_graph
+        return ctx
 
     def building_arch(self, building_id: int) -> Optional[str]:
         """Exterior building archetype (BUILDING_ARCHETYPES member) or None."""
@@ -259,8 +295,17 @@ class CitySpatialContext:
         return None
 
     def nearest_road_xy(self, xy) -> Optional[tuple]:
-        """Nearest road vertex to ``xy`` (snaps a point onto the real road
-        network). None if the bundle has no roads."""
+        """Nearest point ON the real street network to ``xy``.
+
+        With a street graph this is an exact projection onto the nearest
+        segment polyline (the same geometry the client renders); without one it
+        falls back to the nearest polyline vertex. None if the bundle has no
+        roads."""
+        g = getattr(self, "street_graph", None)
+        if g is not None:
+            hit = g.nearest_segment_point((float(xy[0]), float(xy[1])))
+            if hit is not None:
+                return (float(hit[1][0]), float(hit[1][1]))
         if self.road_vertices.shape[0] == 0:
             return None
         d2 = ((self.road_vertices[:, 0] - xy[0]) ** 2
@@ -351,14 +396,28 @@ def resolve_physical_location(*, citizen_id: int, schedule: list, hour: float,
                               action: str = "continue_schedule",
                               zone: Optional[int] = None,
                               ctx: Optional[CitySpatialContext] = None,
-                              commute_hours: float = 0.5) -> PhysicalLocation:
+                              commute_hours: float = 0.5,
+                              home_building_id: Optional[int] = None,
+                              work_building_id: Optional[int] = None
+                              ) -> PhysicalLocation:
     """The one canonical physical location for a citizen at ``hour``.
 
     Pure and deterministic — no RNG, no side effects. ``action`` is the citizen's
     reactive behaviour label; ``shelter``/``flee`` make the reaction *physically
     consequential* (they move the citizen), while routine actions follow the
     schedule. ``zone`` is the reported macro zone (falls back to ``home_zone``).
+
+    Building identity: when the citizen record carries ``home_building_id`` /
+    ``work_building_id`` (buildings.json index == authoritative building_id)
+    those ARE the home/work buildings; the nearest-footprint lookup is only the
+    fallback for records baked before identity was stored (Gate B).
     """
+    def _bid(explicit, anchor):
+        if explicit is not None and ctx is not None \
+                and 0 <= int(explicit) < ctx.building_centroids.shape[0]:
+            return int(explicit)
+        return ctx.nearest_building(anchor) if ctx is not None else -1
+
     block = _current_block(schedule, hour % 24.0) if schedule else None
     activity = block.activity if block is not None else "idle"
 
@@ -375,8 +434,7 @@ def resolve_physical_location(*, citizen_id: int, schedule: list, hour: float,
         x, y = work_anchor
         mode = LocationMode.BUILDING
         movement = Movement.STATIONARY
-        if ctx is not None:
-            building_id = ctx.nearest_building(work_anchor)
+        building_id = _bid(work_building_id, work_anchor)
     elif activity == "commute":
         # Progress through the commute block (handle past-midnight wrap).
         if block is not None and block.end_hour > block.start_hour:
@@ -413,8 +471,7 @@ def resolve_physical_location(*, citizen_id: int, schedule: list, hour: float,
         x, y = home_anchor
         mode = LocationMode.BUILDING
         movement = Movement.STATIONARY
-        if ctx is not None:
-            building_id = ctx.nearest_building(home_anchor)
+        building_id = _bid(home_building_id, home_anchor)
 
     # --- 2. reaction makes the behaviour physically consequential --------
     act = (action or "continue_schedule").lower()

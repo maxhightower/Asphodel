@@ -12,7 +12,7 @@ extends Node3D
 ## and adds only PRESENTATION: an orthographic follow camera, a direct WASD walker
 ## with no eye-camera, continuous-distance interaction targeting, and an interior
 ## cutaway. No simulation logic is duplicated here and NO tile authority is
-## introduced — the world stays continuous (see FINDINGS_ISO0_SURFACE_CENSUS.md).
+## introduced — the world stays continuous (see docs/findings/FINDINGS_ISO0_SURFACE_CENSUS.md).
 
 const InteriorBuilder = preload("res://scripts/interior_builder.gd")
 const ExteriorWorld = preload("res://scripts/exterior_world.gd")
@@ -41,6 +41,7 @@ var _cutaway: Node
 var _env: Environment
 var _sun: DirectionalLight3D
 var _exterior: ExteriorWorld = null
+var _region_loader: RegionLoader = null
 var _citizen_render: Node3D
 var _has_compiled_world := false
 
@@ -77,6 +78,13 @@ func _ready() -> void:
 	if bundle.is_empty():
 		push_error("isometric_world: failed to load bundle at %s" % dir)
 		return
+	# Gate I: the schema contract at the Godot boundary. Rendering a bundle we
+	# only half-understand would draw a city Python does not believe in, so a
+	# version/shape skew stops the scene here rather than downstream.
+	var schema_err := BundleLoader.validate_bundle_schema(dir)
+	if schema_err != "":
+		push_error("isometric_world: bundle schema rejected at %s -- %s" % [dir, schema_err])
+		return
 	var meta: Dictionary = bundle["meta"]
 	_zones = bundle["zones"]
 	_add_environment_and_light()
@@ -90,6 +98,7 @@ func _ready() -> void:
 		_setup_exterior_streaming(dir)
 	elif not footprints.is_empty():
 		_build_fallback_buildings(footprints)
+	_setup_regional_terrain(dir)
 
 	_spawn_player(_bundle_roads(bundle))
 	_setup_camera()
@@ -168,6 +177,9 @@ func _build_ground(b: Rect2) -> void:
 	mi.position = center
 	add_child(mi)
 	var body := StaticBody3D.new()
+	body.name = "Ground"
+	body.collision_layer = CollisionLayers.WORLD_STATIC
+	body.collision_mask = 0
 	var shape := BoxShape3D.new()
 	shape.size = Vector3(sx, 1.0, sz)
 	var cs := CollisionShape3D.new()
@@ -205,6 +217,9 @@ func _build_fallback_buildings(footprints: Array) -> void:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var body := StaticBody3D.new()
+	body.name = "FallbackBuildingCollision"
+	body.collision_layer = CollisionLayers.WORLD_STATIC
+	body.collision_mask = 0
 	add_child(body)
 	for b in footprints:
 		var poly_xy: Array = b.get("poly", [])
@@ -250,6 +265,27 @@ func _build_fallback_buildings(footprints: Array) -> void:
 		cs.shape = shape
 		cs.position = Vector3(r.position.x + r.size.x * 0.5, 12.0, r.position.y + r.size.y * 0.5)
 		body.add_child(cs)
+
+
+func _setup_regional_terrain(dir: String) -> void:
+	## Regional terrain beyond the compiled city (region.json, schema v2). The
+	## city itself sits on the plateau at y = 0 — the loader lowers terrain under
+	## the city disc and skips chunks the ExteriorWorld ground already covers, so
+	## hills/mountains/coast exist because the regional model says so, not
+	## because a mesh was placed by hand. Absent region.json => flat world.
+	if not FileAccess.file_exists(dir.path_join("region.json")):
+		return
+	var region := RegionLoader.new()
+	region.name = "RegionalTerrain"
+	region.bundle_dir = dir
+	region.own_atmosphere = false          # the scene owns its WorldEnvironment
+	region.omit_city_interior = true
+	add_child(region)                      # _ready -> load_region
+	_region_loader = region
+
+
+func get_region_loader() -> RegionLoader:
+	return _region_loader
 
 
 func _setup_exterior_streaming(dir: String) -> void:

@@ -15,6 +15,11 @@ geometry the bundle is built from. Both terminate in the identical canonical
 ``StreetMap``, so the citizen model and ``resolve_collapse_situation`` are
 unchanged.
 """
+
+# CONVERGENCE NOTE: street_map_from_bundle (zones-blocks scatter) is the LEGACY
+# citizen-bake path for a bundle that has no buildings.json. Every committed
+# bundle now has one, so the canonical path is world_from_compiled
+# (footprint identity == building_id). Do not extend the blocks path.
 from __future__ import annotations
 
 import math

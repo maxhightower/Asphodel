@@ -86,10 +86,13 @@ fam("road_barrier", "infrastructure", "road_barrier", (1.5, 0.5, 0.8))
 fam("guardrail", "infrastructure", "guardrail", (2.0, 0.1, 0.7))
 
 # ---- vehicles (5 baked colour variants each) ----------------------------------
-for v in ("sedan", "suv", "pickup", "van", "box_truck"):
+for v in ("sedan", "suv", "pickup", "van", "box_truck", "jeep", "sports_car",
+          "semi_truck", "oil_tanker"):
     dims = {"sedan": (2.0, 4.6, 1.5), "suv": (2.1, 4.8, 1.8),
             "pickup": (2.1, 5.4, 1.8), "van": (2.2, 5.2, 2.2),
-            "box_truck": (2.5, 7.0, 3.2)}[v]
+            "box_truck": (2.5, 7.0, 3.2), "jeep": (2.0, 4.2, 1.9),
+            "sports_car": (1.9, 4.4, 1.3), "semi_truck": (2.6, 16.5, 4.0),
+            "oil_tanker": (2.6, 15.0, 3.8)}[v]
     fam(f"vehicle_{v}", "vehicle", v, dims, collision="mesh", variants=5)
 
 # ---- vegetation (regional families; ages via scale at placement) --------------

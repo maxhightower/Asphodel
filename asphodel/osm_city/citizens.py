@@ -171,9 +171,15 @@ def _flatten(tag: str, citizen, catalog: CitizenSpawnCatalog,
         # "On hand" is on-person only; other scopes are separate.
         "inventory": dict(scopes["on_person"]),
         "inventory_scopes": scopes,
-        # Authoritative spatial data (bundle metre frame).
+        # Authoritative spatial data (bundle metre frame) + explicit building
+        # identity (index into buildings.json == authoritative building_id), so
+        # "which building is home" is stored, never re-derived by proximity.
         "home_xy": _xy(citizen.home_xy),
         "work_xy": _xy(citizen.work_xy),
+        "home_building_id": (None if citizen.home_building_id is None
+                             else int(citizen.home_building_id)),
+        "work_building_id": (None if citizen.work_building_id is None
+                             else int(citizen.work_building_id)),
         "spawn_xy": spawn_xy,
         "spawn_context": situ.context,             # home | workplace | commute | errand
         "spawn_approx": spawn_approx,
@@ -248,10 +254,18 @@ def write_citizens_from_bundle(bundle_dir: str, city_name: str,
     stock + spawn anchors); legacy bundles keep the historical
     zones-blocks reconstruction.
     """
-    from .world_from_compiled import has_compiled_world
+    from .world_from_compiled import has_compiled_world, street_map_from_compiled
     if has_compiled_world(bundle_dir):
         pop = build_population_from_compiled(bundle_dir, city_name, n=n,
                                              seed=seed)
+        return _write(bundle_dir, pop)
+    if os.path.exists(os.path.join(bundle_dir, "buildings.json")):
+        # Canonical footprints without a compiled world/ stream (a synthetic
+        # city): citizens still live in buildings.json entries, so their
+        # home/work_building_id is the same identity Godot renders — never
+        # the decorative zone blocks.
+        sm = street_map_from_compiled(bundle_dir)
+        pop = build_population_from_world(sm, city_name, n=n, seed=seed)
         return _write(bundle_dir, pop)
     with open(os.path.join(bundle_dir, "zones.json")) as f:
         zones = json.load(f)

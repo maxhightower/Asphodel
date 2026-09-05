@@ -20,6 +20,11 @@ Both return the same schema, written to ``buildings.json``::
      "buildings": [{"poly": [[x, z], ...], "height": float}, ...]}
 """
 
+# CONVERGENCE NOTE: the canonical building producer is asphodel/world_source
+# (Overture footprints -> buildings.json v1 + world/ chunks). generate_procedural
+# here is the offline fallback for a SYNTHETIC city (asphodel.synth_city) and
+# project_osm_buildings the June OSM path; both write the same v1 schema.
+
 from __future__ import annotations
 
 import random
