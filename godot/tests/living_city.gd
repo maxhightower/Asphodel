@@ -6,13 +6,13 @@ extends Node3D
 ## Software GL under Xvfb — no GPU. Terrain/city are built once; only the moving
 ## agents + congestion overlay are rebuilt each frame.
 
-const OUT_DIR := "/home/user/Asphodel/shots/living"
-const BUNDLE := "res://bundles/boulder"
 const GRID := 200
 const HALF := 60000.0
 const SUN := Vector3(0.48, 0.72, 0.30)
-const PED_R := 9.0        # exaggerated so map-scale agents are visible
-const CAR_S := Vector3(22, 9, 22)
+
+var OUT_DIR := "/home/user/Asphodel/shots/living"
+var BUNDLE := "res://bundles/boulder"
+var _mscale := 9.0        # marker size, set from camera height (map-scale dots)
 
 var _heights: Array
 var _rows: int
@@ -33,6 +33,12 @@ var _car_mesh: BoxMesh
 
 
 func _ready() -> void:
+	var envb := OS.get_environment("ASPHODEL_BUNDLE")
+	if envb != "":
+		BUNDLE = envb
+	var envo := OS.get_environment("ASPHODEL_OUT")
+	if envo != "":
+		OUT_DIR = envo
 	DirAccess.make_dir_recursive_absolute(OUT_DIR)
 	get_window().size = Vector2i(960, 540)
 	await get_tree().process_frame
@@ -40,9 +46,10 @@ func _ready() -> void:
 	_build_terrain_mesh()
 	_build_city_static()
 	_setup_env()
-	_setup_camera()
-	_ped_mesh = SphereMesh.new(); _ped_mesh.radius = PED_R; _ped_mesh.height = PED_R * 2.0
-	_car_mesh = BoxMesh.new(); _car_mesh.size = CAR_S
+	var cam_h := _setup_camera()
+	_mscale = clampf(cam_h / 105.0, 6.0, 34.0)
+	_ped_mesh = SphereMesh.new(); _ped_mesh.radius = _mscale; _ped_mesh.height = _mscale * 2.0
+	_car_mesh = BoxMesh.new(); _car_mesh.size = Vector3(_mscale * 2.2, _mscale, _mscale * 2.2)
 	_agents_node = Node3D.new(); add_child(_agents_node)
 
 	for i in range(_frames.size()):
@@ -174,8 +181,8 @@ func _draw_frame(fr: Dictionary) -> void:
 		var mi := _unshaded(rst.commit())
 		_reparent(mi)
 	# moving agents: only those EN_ROUTE (state == 1)
-	_draw_markers(fr["peds"], _ped_mesh, Color(0.20, 0.45, 0.95), PED_R)
-	_draw_markers(fr["cars"], _car_mesh, Color(0.98, 0.55, 0.10), CAR_S.y * 0.5)
+	_draw_markers(fr["peds"], _ped_mesh, Color(0.20, 0.45, 0.95), _mscale)
+	_draw_markers(fr["cars"], _car_mesh, Color(0.98, 0.55, 0.10), _mscale * 0.5)
 
 
 func _draw_markers(rows: Array, mesh: Mesh, color: Color, half_h: float) -> void:
@@ -241,8 +248,20 @@ func _setup_env() -> void:
 	var we := WorldEnvironment.new(); we.environment = env; add_child(we)
 
 
-func _setup_camera() -> void:
-	var gy := terrain_y(1200.0, 0.0)
-	var cam := Camera3D.new(); cam.far = 200000.0; cam.fov = 64.0; add_child(cam)
-	cam.global_position = Vector3(3400, gy + 520, 2400)
-	cam.look_at(Vector3(-3500, gy + 200, -600), Vector3.UP)
+func _setup_camera() -> float:
+	var gy := terrain_y(0.0, 0.0)
+	var cam := Camera3D.new(); cam.far = 200000.0; cam.fov = 62.0; add_child(cam)
+	var mountainous := (_hi - _lo) > 400.0
+	var height: float
+	if mountainous:
+		# low oblique over downtown toward the range
+		height = 520.0
+		cam.global_position = Vector3(3400, gy + height, 2400)
+		cam.look_at(Vector3(-3500, gy + 200, -600), Vector3.UP)
+	else:
+		# a flat big city: a 3/4 aerial closer over the busy core
+		height = 1350.0
+		cam.fov = 56.0
+		cam.global_position = Vector3(2400, gy + height, 2400)
+		cam.look_at(Vector3(-200, gy, -200), Vector3.UP)
+	return height
