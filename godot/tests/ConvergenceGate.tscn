@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8convergencegate1"]
+
+[ext_resource type="Script" path="res://tests/convergence_gate.gd" id="1_cgate"]
+
+[node name="ConvergenceGate" type="Node3D"]
+script = ExtResource("1_cgate")
