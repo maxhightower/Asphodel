@@ -96,12 +96,13 @@ func _focus(row: Dictionary) -> void:
 		_ext.update_focus(Vector3(float(row["x"]), 0.0, float(row["y"])))
 
 
-func _step() -> Dictionary:
-	var r: Dictionary = SimBridge.advance_time(_game_dt, "mobility")
+func _step(dt: float = -1.0) -> Dictionary:
+	var d := _game_dt if dt <= 0.0 else dt
+	var r: Dictionary = SimBridge.advance_time(d, "mobility")
 	if r.get("ok", false) != true:
 		return {}
 	var block: Dictionary = r.get("mobility", {})
-	_emb.apply(block, _game_dt)
+	_emb.apply(block, d)
 	return block
 
 
@@ -240,8 +241,9 @@ func _run() -> void:
 	var wreck_seen := false
 	var corpse_seen := false
 	var re_row := {}
-	for i in range(16000):
-		var block := _step()
+	for i in range(40000):
+		# the corpse does not move: step 4 game-seconds per physics frame here
+		var block := _step(4.0)
 		if block.is_empty():
 			break
 		row = _row(block, _cid)
