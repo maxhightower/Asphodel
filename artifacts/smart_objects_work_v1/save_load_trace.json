@@ -1,0 +1,50 @@
+{
+ "multi_step": {
+  "hour": 7.633,
+  "activities_identical": true,
+  "ledger_identical": true,
+  "object_state_identical": true,
+  "continuation_bit_identical": true,
+  "save_bytes": 4843228
+ },
+ "walking_to_station": {
+  "hour": 8.017,
+  "activities_identical": true,
+  "ledger_identical": true,
+  "object_state_identical": true,
+  "continuation_bit_identical": true,
+  "save_bytes": 3060875
+ },
+ "using_station": {
+  "hour": 8.517,
+  "activities_identical": true,
+  "ledger_identical": true,
+  "object_state_identical": true,
+  "continuation_bit_identical": true,
+  "save_bytes": 3080910
+ },
+ "interrupted": {
+  "hour": 9.917,
+  "activities_identical": true,
+  "ledger_identical": true,
+  "object_state_identical": true,
+  "continuation_bit_identical": true,
+  "save_bytes": 3129247
+ },
+ "waiting": {
+  "hour": 10.583,
+  "activities_identical": true,
+  "ledger_identical": true,
+  "object_state_identical": true,
+  "continuation_bit_identical": true,
+  "save_bytes": 3750118
+ },
+ "work_to_home": {
+  "hour": 16.017,
+  "activities_identical": true,
+  "ledger_identical": true,
+  "object_state_identical": true,
+  "continuation_bit_identical": true,
+  "save_bytes": 6596187
+ }
+}
