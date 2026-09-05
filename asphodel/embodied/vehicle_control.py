@@ -170,6 +170,13 @@ class VehicleController:
             proj = self.path.point_at(along)
             if math.hypot(o.xy[0] - proj[0], o.xy[1] - proj[1]) > self.params.lateral_tolerance:
                 continue
+            # Streets are one centerline polyline (no lanes in V1): an oncoming
+            # car on a two-way street is not a lead vehicle. Only same-direction
+            # traffic and wrecks are followed.
+            if not o.wreck:
+                my_h = self.path.heading_at(along)
+                if math.cos(o.heading - my_h) < 0.3:
+                    continue
             gap = along - self.dist - self.params.length
             if gap < best:
                 best, who = gap, o.vehicle_id
