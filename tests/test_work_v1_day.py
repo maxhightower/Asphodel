@@ -211,12 +211,13 @@ def day():
                    "holders": wk.ledger.holders_of(b0["object_id"]) if b0 and b0["object_id"] else []}
         # save/load at work-meaningful points (each once)
         ca = wk.activities.get(cleaner)
-        keys = {"walking_to_station": a is not None and a.phase == "to_object" and a.kind == "worker",
+        walking = [c for c, x in wk.activities.items() if x.kind == "worker" and x.phase == "to_object"]
+        keys = {"walking_to_station": bool(walking) and hour > 8.0,
                 "using_station": a is not None and a.phase == "using" and a.task_id == "man_register" and hour > 8.5,
                 "waiting": any(x.kind == "customer" and x.phase == "waiting" for x in wk.activities.values())
                            or (a is not None and a.phase == "waiting"),
                 "multi_step": ca is not None and ca.carrying == "supplies" and ca.phase == "to_object",
-                "interrupted": any(e["event"] == "WORK_INTERRUPTED" for e in events[-40:]),
+                "interrupted": any(e["event"] == "WORK_INTERRUPTED" for e in snap["events"]),
                 "work_to_home": ex_c.state != EmbodimentState.DOING_ACTIVITY and hour > 15.0 and ex_c.building_id != shop}
         for k, cond in keys.items():
             if cond and k not in saves:

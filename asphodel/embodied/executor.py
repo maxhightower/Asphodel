@@ -680,6 +680,8 @@ class TripExecutor:
         if st.get("ped") is not None and step is not None and step.route is not None:
             ex.ped = PedestrianController(walk_path(env.graph, step.route))
             ex.ped.restore(st["ped"])
+            if ex.speed_override > 0.0:          # an undead keeps its shambling speed
+                ex.ped.desired_speed = ex.speed_override
         if st.get("car") is not None and step is not None and step.route is not None:
             veh = env.vehicles.get(ex.vehicle_id or "")
             path = PhysicalPath.from_route(env.graph, step.route)
