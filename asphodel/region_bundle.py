@@ -26,7 +26,7 @@ from .region import (
     landcover,
 )
 from .region.elevation import CachedDEMProvider
-from .mobility import MobilityGraph, Mode
+from .mobility.bake import streetmap_from_polylines, streetmap_from_world_source
 from .physics import (
     godot_layer_names,
     BODY_PROFILES,
@@ -215,31 +215,22 @@ def build_region_artifact(georef: GeoReference, archetype_name: str,
     }
 
 
-def build_mobility_artifact(roads: dict, snap: float = 3.0) -> dict:
-    """Export a routable directed mobility graph from legacy roads polylines."""
-    g = MobilityGraph.from_polylines(roads.get("polylines", []), snap=snap)
-    segs = []
-    # Recover endpoints for each segment from adjacency.
-    endpoints = {}
-    for u, adj in g._adj.items():
-        for (v, sid, fwd) in adj:
-            if fwd:
-                endpoints[sid] = (u, v)
-    for sid, seg in g.segments.items():
-        u, v = endpoints.get(sid, (None, None))
-        segs.append({
-            "id": sid, "u": u, "v": v, "class": seg.road_class,
-            "length": round(seg.length, 2),
-            "directionality": seg.directionality.value,
-            "modes": sorted(m.value for m in seg.allowed_modes),
-            "speed_limit": seg.speed_limit, "lanes": seg.lanes,
-        })
-    return {
-        "version": "1",
-        "nodes": {nid: [round(p[0], 2), round(p[1], 2)] for nid, p in g.nodes.items()},
-        "segments": segs,
-        "stats": g.stats(),
-    }
+def build_mobility_artifact(roads: dict, ws=None, snap: float = 3.0,
+                            source_label: Optional[str] = None) -> dict:
+    """Export the routable street graph for a bundle (schema version 2).
+
+    The bake itself lives in :mod:`asphodel.mobility.bake`; this is the bundle
+    writer's seam onto it. When ``ws`` (a normalized WorldSourceV1 carrying the
+    Overture transportation layers) is supplied the graph is split at the real
+    connectors, which makes every rendered street routable. Without it we fall
+    back to snapping the legacy ``roads.json`` polyline endpoints — the only
+    thing a geometry-only source supports.
+    """
+    if ws is not None:
+        label = source_label or "world_source/overture"
+        return streetmap_from_world_source(ws, label)
+    label = source_label or "roads.json/polylines"
+    return streetmap_from_polylines(roads, label, snap=snap)
 
 
 def build_physics_artifact() -> dict:
@@ -263,8 +254,38 @@ def _write_json(path: str, obj) -> None:
         f.write("\n")
 
 
-def augment_bundle(bundle_dir: str, archetype_name: str, seed: int = 0) -> dict:
-    """Read a compiled bundle and write region/mobility/physics artifacts into it."""
+def street_source_for(bundle_dir: str, release: str,
+                      data_root: str = "data/raw"):
+    """Load the Overture transportation source for a bundle, or None.
+
+    A bundle is named after its city, and the raw packet lives under
+    ``<data_root>/overture/<release>/<city>/``. Only ``segment`` + ``connector``
+    are read (``load_world_source_roads``) — the mobility bake has no use for
+    buildings or places, and loading them would cost hundreds of megabytes.
+    Returns ``None`` when the packet is not on disk, which is the signal to
+    fall back to the legacy polyline bake.
+    """
+    city = os.path.basename(os.path.normpath(bundle_dir))
+    base = os.path.join(data_root, "overture", release, city)
+    if not (os.path.exists(os.path.join(base, "segment.parquet"))
+            and os.path.exists(os.path.join(base, "connector.parquet"))):
+        return None
+    from .world_source.normalize import load_world_source_roads
+
+    return load_world_source_roads(city, release, data_root=data_root)
+
+
+def augment_bundle(bundle_dir: str, archetype_name: str, seed: int = 0,
+                   release: str = "2026-08-19.0",
+                   data_root: str = "data/raw") -> dict:
+    """Read a compiled bundle and write region/mobility/physics artifacts into it.
+
+    The street graph is baked from the same Overture packet the exterior
+    compiler consumed whenever that packet is present, so the routable city and
+    the rendered city are the same city; otherwise it degrades to the legacy
+    polyline bake. Which source was used is printed and recorded in the
+    artifact's ``source`` field.
+    """
     with open(os.path.join(bundle_dir, "meta.json")) as f:
         meta = json.load(f)
     with open(os.path.join(bundle_dir, "roads.json")) as f:
@@ -272,7 +293,16 @@ def augment_bundle(bundle_dir: str, archetype_name: str, seed: int = 0) -> dict:
 
     georef = GeoReference.from_bundle_meta(meta)
     region = build_region_artifact(georef, archetype_name, seed=seed)
-    mobility = build_mobility_artifact(roads)
+    ws = street_source_for(bundle_dir, release, data_root=data_root)
+    if ws is not None:
+        label = f"world_source/overture@{release}"
+        print(f"[streetmap] {bundle_dir}: baking from {label} "
+              f"({len(ws.roads)} roads, {len(ws.connectors)} connectors)")
+    else:
+        label = "roads.json/polylines"
+        print(f"[streetmap] {bundle_dir}: no Overture packet for release "
+              f"{release}; falling back to {label}")
+    mobility = build_mobility_artifact(roads, ws=ws, source_label=label)
     physics = build_physics_artifact()
 
     _write_json(os.path.join(bundle_dir, "region.json"), region)

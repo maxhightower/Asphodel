@@ -69,6 +69,40 @@ def test_mobility_artifact_from_real_roads_is_routable():
     art = build_mobility_artifact(roads)
     assert art["stats"]["directed_edges"] > 0
     assert len(art["segments"]) == art["stats"]["segments"]
+    # Schema version 2: geometry survives the bake, so Python and the client
+    # measure the same street.
+    assert art["version"] == 2
+    assert art["frame"] == "bundle_metres"
+    assert all(len(s["pts"]) >= 2 for s in art["segments"])
+    assert any(len(s["pts"]) > 2 for s in art["segments"])  # bends kept
+
+
+def test_mobility_artifact_is_byte_deterministic():
+    with open(os.path.join(BUNDLES, "houston", "roads.json")) as f:
+        roads = json.load(f)
+    a = build_mobility_artifact(roads, source_label="t")
+    b = build_mobility_artifact(roads, source_label="t")
+    assert json.dumps(a, sort_keys=True) == json.dumps(b, sort_keys=True)
+    ids = [s["id"] for s in a["segments"]]
+    assert ids == sorted(ids)
+    assert list(a["nodes"]) == sorted(a["nodes"])
+
+
+def test_mobility_graph_load_reads_the_baked_streetmap():
+    g = MobilityGraph.load(os.path.join(BUNDLES, "boulder"))
+    assert g.version == 1                       # the synthetic grid stays legacy
+    assert g.stats()["segments"] > 0
+
+
+def test_mobility_graph_load_falls_back_to_roads_json(tmp_path):
+    with open(os.path.join(BUNDLES, "houston", "roads.json")) as f:
+        roads = json.load(f)
+    roads["polylines"] = roads["polylines"][:50]
+    with open(tmp_path / "roads.json", "w") as f:
+        json.dump(roads, f)
+    g = MobilityGraph.load(str(tmp_path))       # no streetmap.json here
+    assert "roads.json" in g.source
+    assert g.stats()["segments"] > 0
 
 
 def test_physics_artifact_matches_authority():

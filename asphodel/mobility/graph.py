@@ -14,14 +14,30 @@ Key capabilities:
 from __future__ import annotations
 
 import heapq
+import json
 import math
+import os
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Sequence, Tuple
 
+from .bake import streetmap_from_polylines
 from .segments import Direction, Mode, RoadSegment, polyline_length
 from .obstructions import MobilityObstruction
 
 Vec2 = Tuple[float, float]
+
+
+def _ring_cells(cx0: int, cz0: int, r: int):
+    """The cells exactly ``r`` steps (Chebyshev) from (cx0, cz0), in order."""
+    if r == 0:
+        yield (cx0, cz0)
+        return
+    for cx in range(cx0 - r, cx0 + r + 1):
+        yield (cx, cz0 - r)
+        yield (cx, cz0 + r)
+    for cz in range(cz0 - r + 1, cz0 + r):
+        yield (cx0 - r, cz)
+        yield (cx0 + r, cz)
 
 
 @dataclass(frozen=True)
@@ -46,6 +62,13 @@ class MobilityGraph:
         # node -> list of (to_node, seg_id, forward_along_polyline)
         self._adj: Dict[str, List[Tuple[str, str, bool]]] = {}
         self._obstructions: Dict[str, MobilityObstruction] = {}
+        # Which streetmap this graph came from (set by from_artifact/load).
+        self.source: Optional[str] = None
+        self.version: Optional[int] = None
+        # Lazily built bucket index over segment polylines (nearest_segment_point).
+        self._grid: Optional[Dict[Tuple[int, int], List[str]]] = None
+        self._grid_cell: float = 0.0
+        self._grid_span: int = 0
 
     # -- construction --------------------------------------------------------
     def add_node(self, node_id: str, xy: Vec2) -> str:
@@ -57,6 +80,7 @@ class MobilityGraph:
         if u not in self.nodes or v not in self.nodes:
             raise KeyError("segment endpoints must be added as nodes first")
         self.segments[seg.id] = seg
+        self._grid = None                      # geometry changed: reindex on demand
         d = seg.directionality
         if d in (Direction.BIDIRECTIONAL, Direction.FORWARD):
             self._adj[u].append((v, seg.id, True))
@@ -74,6 +98,120 @@ class MobilityGraph:
             if d < bestd:
                 best, bestd = nid, d
         return best
+
+    # -- nearest point on the street network ---------------------------------
+    _GRID_CELL_M = 64.0
+
+    def _build_grid(self) -> None:
+        """Bucket every segment polyline into a uniform grid (lazy, O(n))."""
+        cell = self._GRID_CELL_M
+        grid: Dict[Tuple[int, int], List[str]] = {}
+        for sid, seg in self.segments.items():
+            pl = seg.polyline
+            for a, b in zip(pl, pl[1:]):
+                # Stamp the cells the sub-segment's bounding box touches. Road
+                # sub-segments are short relative to the cell, so this stays
+                # near-constant work per edge.
+                cx0 = int(math.floor(min(a[0], b[0]) / cell))
+                cx1 = int(math.floor(max(a[0], b[0]) / cell))
+                cz0 = int(math.floor(min(a[1], b[1]) / cell))
+                cz1 = int(math.floor(max(a[1], b[1]) / cell))
+                for cx in range(cx0, cx1 + 1):
+                    for cz in range(cz0, cz1 + 1):
+                        bucket = grid.setdefault((cx, cz), [])
+                        if not bucket or bucket[-1] != sid:
+                            bucket.append(sid)
+        # De-duplicate and sort so ties break identically every run.
+        self._grid = {k: sorted(set(v)) for k, v in grid.items()}
+        self._grid_cell = cell
+        if grid:
+            xs = [k[0] for k in grid]
+            zs = [k[1] for k in grid]
+            self._grid_span = max(max(xs) - min(xs), max(zs) - min(zs)) + 2
+        else:
+            self._grid_span = 0
+
+    @staticmethod
+    def _project_on_polyline(pts: Sequence[Vec2], xy: Vec2
+                             ) -> Tuple[Vec2, float]:
+        """Closest point on a polyline to ``xy`` and its squared distance."""
+        best: Vec2 = (pts[0][0], pts[0][1])
+        bestd = math.inf
+        px, pz = xy[0], xy[1]
+        for a, b in zip(pts, pts[1:]):
+            dx, dz = b[0] - a[0], b[1] - a[1]
+            L2 = dx * dx + dz * dz
+            if L2 <= 0.0:
+                t = 0.0
+            else:
+                t = ((px - a[0]) * dx + (pz - a[1]) * dz) / L2
+                t = 0.0 if t < 0.0 else (1.0 if t > 1.0 else t)
+            qx, qz = a[0] + dx * t, a[1] + dz * t
+            d = (qx - px) ** 2 + (qz - pz) ** 2
+            if d < bestd:
+                best, bestd = (qx, qz), d
+        return best, bestd
+
+    def nearest_segment_point(self, xy: Vec2, mode: Optional[Mode] = None
+                              ) -> Optional[Tuple[str, Vec2, float]]:
+        """Project ``xy`` onto the nearest segment polyline.
+
+        Returns ``(segment_id, (x, z), distance)`` or ``None`` when nothing is
+        reachable for ``mode``. This is the "where on the street am I" query —
+        an agent leaving a building, a wreck landing on a carriageway, a
+        parity check against the rendered ribbons — and is why v2 keeps the
+        polyline: snapping to the nearest *node* would land you at a junction
+        that can be hundreds of metres away.
+
+        The bucket index is built on first use and reused afterwards; rings of
+        cells are searched outward until the ring's own distance floor exceeds
+        the best hit, so the answer is exact, not approximate.
+        """
+        if not self.segments:
+            return None
+        if self._grid is None:
+            self._build_grid()
+        cell = self._grid_cell
+        cx0 = int(math.floor(xy[0] / cell))
+        cz0 = int(math.floor(xy[1] / cell))
+        best_sid: Optional[str] = None
+        best_pt: Vec2 = (0.0, 0.0)
+        bestd = math.inf
+        seen = set()
+        max_ring = self._grid_span
+        for r in range(0, max_ring + 1):
+            # A cell in ring r is at least (r-1)*cell away; once that floor
+            # beats the best hit no further ring can improve it.
+            if best_sid is not None and ((r - 1) * cell) ** 2 > bestd:
+                break
+            for cx, cz in _ring_cells(cx0, cz0, r):
+                bucket = self._grid.get((cx, cz))
+                if not bucket:
+                    continue
+                for sid in bucket:
+                    if sid in seen:
+                        continue
+                    seen.add(sid)
+                    seg = self.segments[sid]
+                    if mode is not None and not seg.allows(mode):
+                        continue
+                    pt, d = self._project_on_polyline(seg.polyline, xy)
+                    if d < bestd or (d == bestd and (
+                            best_sid is None or sid < best_sid)):
+                        best_sid, best_pt, bestd = sid, pt, d
+        if best_sid is None:
+            # Query far outside the indexed extent (or every near segment is
+            # closed to the mode): one exact scan beats an unbounded expansion.
+            for sid in sorted(self.segments):
+                seg = self.segments[sid]
+                if mode is not None and not seg.allows(mode):
+                    continue
+                pt, d = self._project_on_polyline(seg.polyline, xy)
+                if d < bestd:
+                    best_sid, best_pt, bestd = sid, pt, d
+        if best_sid is None:
+            return None
+        return best_sid, best_pt, math.sqrt(bestd)
 
     def _node_serves_mode(self, nid: str, mode: Mode) -> bool:
         for _, sid, _ in self._adj.get(nid, []):
@@ -183,8 +321,34 @@ class MobilityGraph:
     # -- load a baked mobility artifact -------------------------------------
     @classmethod
     def from_artifact(cls, art: dict) -> "MobilityGraph":
-        """Rebuild the graph from a bundle's streetmap.json (nodes + segments)."""
+        """Rebuild the graph from a bundle's ``streetmap.json``.
+
+        Two schema versions are accepted, and only two — an unrecognised or
+        missing ``version`` raises rather than silently loading a graph whose
+        geometry means something else (fail loudly at the artifact boundary):
+
+        * **1** — legacy: no per-segment geometry, so each segment is rebuilt
+          as the straight line between its two nodes. Lengths here can differ
+          from what the renderer draws; that divergence is why v2 exists.
+        * **2** — canonical: ``pts`` carries the segment's own polyline,
+          already oriented ``u -> v``, so Python and the client measure the
+          same street.
+        """
+        version = art.get("version")
+        if version is None:
+            raise ValueError(
+                "streetmap artifact has no 'version' field; expected 1 or 2. "
+                "Re-bake it with asphodel.mobility.bake.")
+        version = str(version)
+        if version not in ("1", "2"):
+            raise ValueError(
+                f"unsupported streetmap version {version!r}; this build reads "
+                "version 1 (legacy 2-point) or 2 (polyline). Re-bake it with "
+                "asphodel.mobility.bake.")
+
         g = cls()
+        g.source = art.get("source")
+        g.version = int(version)
         for nid, xy in art["nodes"].items():
             g.add_node(nid, (float(xy[0]), float(xy[1])))
         for s in art["segments"]:
@@ -192,9 +356,14 @@ class MobilityGraph:
             if u is None or v is None:
                 continue
             modes = {Mode(m) for m in s.get("modes", [])} or None
+            pts = s.get("pts") if version == "2" else None
+            if pts:
+                polyline = [(float(p[0]), float(p[1])) for p in pts]
+            else:
+                polyline = [g.nodes[u], g.nodes[v]]
             seg = RoadSegment(
                 id=s["id"],
-                polyline=[g.nodes[u], g.nodes[v]],
+                polyline=polyline,
                 road_class=s.get("class", "residential"),
                 directionality=Direction(s.get("directionality", "bidirectional")),
                 allowed_modes=modes,
@@ -202,6 +371,34 @@ class MobilityGraph:
                 lanes=s.get("lanes"),
             )
             g.add_segment(seg, u, v)
+        return g
+
+    @classmethod
+    def load(cls, bundle_dir: str) -> "MobilityGraph":
+        """Load a bundle's mobility graph, preferring the baked streetmap.
+
+        ``streetmap.json`` is authoritative when present. A bundle that has
+        never been baked (or one whose packet we cannot reach) falls back to
+        upgrading its legacy ``roads.json`` polylines in memory, so the sim
+        still runs — degraded, and it says so via ``graph.source``.
+        """
+        path = os.path.join(bundle_dir, "streetmap.json")
+        if os.path.exists(path):
+            with open(path) as f:
+                art = json.load(f)
+            g = cls.from_artifact(art)
+            g.source = art.get("source") or f"streetmap.json v{g.version}"
+            return g
+
+        roads_path = os.path.join(bundle_dir, "roads.json")
+        if not os.path.exists(roads_path):
+            raise FileNotFoundError(
+                f"{bundle_dir} has neither streetmap.json nor roads.json")
+        with open(roads_path) as f:
+            roads = json.load(f)
+        art = streetmap_from_polylines(roads, "roads.json (fallback)")
+        g = cls.from_artifact(art)
+        g.source = art["source"]
         return g
 
     # -- import from legacy polylines ---------------------------------------
