@@ -30,6 +30,10 @@ signal arrived()
 @export var stuck_frames: int = 90        # ~1.5 s at 60 Hz of no progress
 @export var progress_epsilon: float = 0.3  # metres that count as "made progress"
 @export var follow_leash: float = 3.0     # metres behind the authoritative point = blocked
+# The authority may lead by up to its own physics leash (3 m) while it waits
+# for us; "stuck" must trigger below that or a body that cannot move at all
+# (spawned inside a hull) is never reported blocked and the plan never escalates.
+@export var stuck_leash: float = 2.0
 
 var semantic_id: String = ""              # stable citizen id across LOD (§12)
 var waypoints: Array = []                 # Array[Vector3] high-level route
@@ -162,7 +166,7 @@ func _follow(delta: float) -> void:
 	move_and_slide()
 	# Blocked = the plan is ahead of us by more than the leash and we are not
 	# closing the gap.
-	if lag > follow_leash:
+	if lag > stuck_leash:
 		if global_position.distance_to(_progress_ref) > progress_epsilon:
 			_progress_ref = global_position
 			_progress_frames = 0
