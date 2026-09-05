@@ -40,6 +40,13 @@ func _ready() -> void:
 	await _run()
 
 
+func _caption(text: String) -> String:
+	## A caption must never claim a state the run did not reach.
+	if _reached:
+		return text
+	return "NOT REACHED within the captured window - frame shows the citizen as it was: " + text
+
+
 func _shot(name: String, caption: String) -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -94,8 +101,12 @@ func _settle(frames: int) -> void:
 		await get_tree().physics_frame
 
 
+var _reached := true   # whether the last _run_until / _coarse_until met its condition
+
+
 func _run_until(pred: Callable, max_frames: int, follow: bool = true) -> Dictionary:
 	var row := {}
+	_reached = false
 	for i in range(max_frames):
 		var block := _step()
 		if block.is_empty():
@@ -104,6 +115,7 @@ func _run_until(pred: Callable, max_frames: int, follow: bool = true) -> Diction
 		if follow:
 			_place_player(row)
 		if pred.call(row, block):
+			_reached = true
 			return row
 		await get_tree().physics_frame
 	return row
@@ -114,6 +126,7 @@ func _run_until(pred: Callable, max_frames: int, follow: bool = true) -> Diction
 # its 1 s substeps; Godot bodies are re-synced from the block afterwards.
 func _coarse_until(pred: Callable, max_game_s: float, chunk_s: float = 4.0) -> Dictionary:
 	var row := {}
+	_reached = false
 	var t := 0.0
 	while t < max_game_s:
 		var r: Dictionary = SimBridge.advance_time(chunk_s, "mobility")
@@ -125,6 +138,7 @@ func _coarse_until(pred: Callable, max_game_s: float, chunk_s: float = 4.0) -> D
 		row = _citizen_row(block)
 		_place_player(row)
 		if pred.call(row, block):
+			_reached = true
 			return row
 		if int(t / chunk_s) % 25 == 0:
 			await get_tree().physics_frame
@@ -190,8 +204,12 @@ func _run() -> void:
 		printerr("index case not seeded: %s" % str(seeded))
 		get_tree().quit(1)
 		return
+	# symptom_t is absolute on the movement clock (t_s); the world may have
+	# started at any hour, so convert relative to the clock reading now.
 	var start_hour := float(SimBridge.last_summary.get("hour", 0.0))
-	var onset_hour := start_hour + float(infected["symptom_t"]) / 3600.0
+	var t_now := float(SimBridge.get_mobility().get("mobility", {}).get("t_s", 0.0))
+	var onset_hour := start_hour + (float(infected["symptom_t"]) - t_now) / 3600.0
+	print("SHOTS: seeded at %.2f h (t_s=%.0f), onset at %.2f h" % [start_hour, t_now, onset_hour])
 	# 1. an ordinary infected morning at work (incubating)
 	var h := float(SimBridge.last_summary.get("hour", 0.0))
 	if h < onset_hour - 0.5:
@@ -208,24 +226,24 @@ func _run() -> void:
 	# 2. onset: leaves work under its own executor (pale look while symptomatic)
 	row = await _run_until(func(r, _b): return str(r.get("health")) == "symptomatic" and str(r.get("state")) in ["on_foot", "approaching_vehicle", "entering_vehicle", "driving"], 12000)
 	await _settle(6)
-	await _shot("01_symptomatic_leaving_work.png", "symptomatic: schedule invalidated, heading home (%s)" % str(row.get("state")))
+	await _shot("01_symptomatic_leaving_work.png", _caption("symptomatic: schedule invalidated, heading home (%s)" % str(row.get("state"))))
 	# 3. collapse at the authoritative place
 	row = await _run_until(func(r, _b): return str(r.get("state")) == "incapacitated", 12000)
 	await _settle(6)
-	await _shot("02_collapse.png", "incapacitated at (%s,%s) building=%s vehicle=%s" % [str(row.get("x")), str(row.get("y")), str(row.get("building_id")), str(row.get("vehicle_id"))])
+	await _shot("02_collapse.png", _caption("incapacitated at (%s,%s) building=%s vehicle=%s" % [str(row.get("x")), str(row.get("y")), str(row.get("building_id")), str(row.get("vehicle_id"))]))
 	var col := Vector2(float(row["x"]), float(row["y"]))
 	# 4. corpse at the same place
 	row = await _coarse_until(func(r, _b): return str(r.get("health")) in ["corpse", "dead"], 3.0 * 3600.0)
 	await _settle(6)
-	await _shot("03_corpse.png", "corpse of citizen %d at (%s,%s) (same place as the collapse: %s)" % [_cid, str(row.get("x")), str(row.get("y")), str(Vector2(float(row["x"]), float(row["y"])).distance_to(col) < 0.01)])
+	await _shot("03_corpse.png", _caption("corpse of citizen %d at (%s,%s) (same place as the collapse: %s)" % [_cid, str(row.get("x")), str(row.get("y")), str(Vector2(float(row["x"]), float(row["y"])).distance_to(col) < 0.01)]))
 	# 5. reanimation at the same place, then the undead walking
 	row = await _coarse_until(func(r, _b): return str(r.get("health")) == "undead", 3.0 * 3600.0)
 	await _settle(6)
-	await _shot("04_reanimated_same_place.png", "citizen %d reanimated at (%s,%s), same identity, same place" % [_cid, str(row.get("x")), str(row.get("y"))])
+	await _shot("04_reanimated_same_place.png", _caption("citizen %d reanimated at (%s,%s), same identity, same place as the corpse: %s" % [_cid, str(row.get("x")), str(row.get("y")), str(Vector2(float(row["x"]), float(row["y"])).distance_to(col) < 0.01)]))
 	var start := Vector2(float(row["x"]), float(row["y"]))
 	row = await _run_until(func(r, _b): return Vector2(float(r["x"]), float(r["y"])).distance_to(start) > 12.0, 6000)
 	await _settle(6)
-	await _shot("05_undead_walking.png", "undead body walking under physics (%.0f m from the death location)" % Vector2(float(row["x"]), float(row["y"])).distance_to(start))
+	await _shot("05_undead_walking.png", _caption("undead body walking under physics (%.0f m from the death location)" % Vector2(float(row["x"]), float(row["y"])).distance_to(start)))
 	# 6. wreck / disruption (when produced): the abandoned car on the street
 	var evs := _events()
 	var aband := {}
