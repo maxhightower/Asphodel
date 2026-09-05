@@ -715,7 +715,9 @@ class WorkRuntime:
                 a.task_id = "unserved"
                 self.event("CUSTOMER_UNSERVED", citizen_id=cid, reason="no register", **self._where(ex, a))
                 return
-            o = min(pool, key=lambda s: (len(self.queues.get(s.object_id, [])), s.object_id))
+            # the shortest queue, nearest first (a deterministic tie-break)
+            o = min(pool, key=lambda s: (len(self.queues.get(s.object_id, [])),
+                                         round(_d(ex.pos, s.use_xy), 3), s.object_id))
             q = self.queues.setdefault(o.object_id, [])
             q.append(cid)
             a.task_id = "checkout"

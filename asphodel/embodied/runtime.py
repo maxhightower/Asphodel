@@ -111,7 +111,7 @@ class MobilityRuntime:
         self.transitions: List[dict] = []           # LOD promotions / demotions
         self.unregistered: Dict[int, str] = {}      # cid -> reason it stays FAR
         self.work = None                            # WorkRuntime, when smart objects are enabled
-        self.shop_predicate = None                  # bid -> bool: "is a shop" (errands go there)
+        self.shop_predicate = getattr(ctx, "shop_predicate", None)   # bid -> bool: errands go to shops
 
     # -- registration --------------------------------------------------------
     def node_for_building(self, bid: int) -> Optional[str]:

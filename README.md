@@ -158,6 +158,24 @@ PYTHONPATH=. python3 tools/outbreak_city_smoke.py && PYTHONPATH=. python3 tools/
 
 See `docs/outbreak/OUTBREAK_V1_ARCHITECTURE.md` and `OUTBREAK_V1_REPORT.md`.
 
+## Smart objects and work (ASPHODEL_SMART_OBJECTS_WORK_V1)
+
+Buildings have rooms and zones, rooms have smart objects, and citizens the
+mobility layer delivered into a building execute real tasks through them
+(`asphodel/smart/`): cashiers man registers and serve queued customers,
+desk workers use workstations, cleaners fetch supplies and clean the dirtiest
+object; residents sleep in beds. Certification:
+
+```bash
+PYTHONPATH=. python3 -m pytest -q tests/test_smart_objects.py tests/test_reservations.py tests/test_jobs.py tests/test_work_*.py
+PYTHONPATH=. python3 -m pytest -q tests/test_work_v1_day.py -s        # the S1–S28 table (Houston, one day)
+tools/run_work_gate.sh                       # in-engine gate (live bridge, interior bodies)
+tools/run_work_shots.sh                      # rendered evidence (xvfb) -> docs/work/evidence/
+PYTHONPATH=. python3 tools/work_city_smoke.py && PYTHONPATH=. python3 tools/work_perf.py
+```
+
+See `docs/work/SMART_OBJECTS_WORK_V1_ARCHITECTURE.md` and `SMART_OBJECTS_WORK_V1_REPORT.md`.
+
 ## Key experiments
 
 | Experiment | Question | Plot |

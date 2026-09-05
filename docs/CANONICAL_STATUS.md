@@ -86,6 +86,20 @@ carried into the per-citizen grammar; its macro-compartment engine was not.
 See `docs/outbreak/OUTBREAK_V1_ARCHITECTURE.md` and
 `docs/outbreak/OUTBREAK_V1_REPORT.md`.
 
+## Smart objects and work (2026-09-05)
+
+`ASPHODEL_SMART_OBJECTS_WORK_V1` replaced "arrived at the building, doing
+work" with execution through `building → room/zone → station → smart object →
+affordance → action` (`asphodel/smart/`): rooms come from the canonical
+interior descriptor, smart objects are generated from its furniture with
+capability-composed affordances and persisted mutable state, one reservation
+ledger prevents double occupancy, a data-driven job/task grammar with
+deterministic employment drives cashiers, desk workers and cleaners (and
+customers and residents through the same affordances), and the existing
+planner/executor interrupt work exactly as they interrupt trips. See
+`docs/work/SMART_OBJECTS_WORK_V1_ARCHITECTURE.md` and
+`docs/work/SMART_OBJECTS_WORK_V1_REPORT.md`.
+
 ## Historical reports
 
 The milestone findings that used to sit at the repository root are in

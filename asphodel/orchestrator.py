@@ -233,6 +233,10 @@ class World:
         from .embodied import MobilityRuntime, load_entrances
         if runtime is None:
             ctx = self.spatial_ctx
+            # errands go to staffed shops: a cheap archetype query the runtime
+            # applies at registration (fresh and restored worlds alike)
+            if ctx is not None and getattr(ctx, "shop_predicate", None) is None:
+                ctx.shop_predicate = self.is_shop
             graph = getattr(ctx, "street_graph", None) if ctx is not None else None
             if graph is None:
                 raise ValueError("enable_mobility needs a spatial context with a street graph")
@@ -248,9 +252,6 @@ class World:
             runtime = MobilityRuntime(graph, entrances, anchors, ctx=ctx,
                                       bundle_dir=bundle_dir, seed=self._seed)
         self.mobility = runtime
-        # errands go to shops: a cheap archetype query (no interior is built)
-        if getattr(runtime, "shop_predicate", None) is None:
-            runtime.shop_predicate = self.is_shop
         if register_all:
             hour = self.current_hour()
             for cid in sorted(self.citizens):

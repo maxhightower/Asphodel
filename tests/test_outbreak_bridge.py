@@ -67,7 +67,7 @@ def _outbreak(s, since_seq=None):
 # --------------------------------------------------------------------------- #
 def test_hello_advertises_v5_and_the_outbreak_commands():
     _s, r = _hello()
-    assert PROTOCOL_VERSION == 5 and r["protocol_version"] == 5
+    assert PROTOCOL_VERSION >= 5 and r["protocol_version"] == PROTOCOL_VERSION
     assert Command.SEED_OUTBREAK in r["commands"]
     assert Command.GET_OUTBREAK in r["commands"]
 
