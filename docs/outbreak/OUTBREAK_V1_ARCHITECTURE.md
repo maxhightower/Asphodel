@@ -120,9 +120,13 @@ VehicleInstances, positions are executor positions.
   died in (beside it), can no longer drive, and its `CitizenRuntime` receives
   the undead policy: **HUNT** (a `RETRIEVE` goal at the nearest living
   citizen's node within `undead_sense_m` outdoors or in the same building;
-  the planner routes, the executor walks at `undead_speed`, buildings are
-  entered through their entrances) or **ROAM** (alternate between its home
-  and its errand building when nothing is in range). **ATTACK** within
+  prey are the living who are not already carrying the pathogen, so a bitten
+  victim is not bitten again every cooldown; the planner routes, the
+  executor walks at `undead_speed`, buildings are entered and left through
+  their entrances: an undead that rose inside a building is still inside it)
+  or **ROAM** (alternate between its home and its errand building when
+  nothing is in range; a roam leg is a route query and is re-planned at most
+  once per minute, the last roam time is saved with the world). **ATTACK** within
   reach → bite roll → `EXPOSURE(bite)`; the victim always **FLEEs**.
 * **Fear** (`_witnesses`, every 5 s): a living citizen in the same building
   as an undead/corpse or within 25 m outdoors of an undead or an attack gets

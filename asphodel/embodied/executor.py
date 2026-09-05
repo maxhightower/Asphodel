@@ -241,13 +241,13 @@ class TripExecutor:
             self.state = EmbodimentState.CORPSE
             self.activity = "dead"
         elif kind == "undead":
-            self.state = EmbodimentState.UNDEAD
+            # an undead that rose inside a building is still inside it (it
+            # leaves through the entrance like anyone else); outdoors it stands
+            self.state = EmbodimentState.INSIDE_BUILDING if self.building_id >= 0 else EmbodimentState.UNDEAD
             self.activity = "undead"
             self.speed_override = float(speed or 0.9)
             self.itinerary = None
             self.step_index = 0
-            if self.in_vehicle or self.state == EmbodimentState.INCAPACITATED:
-                pass
         elif kind == "":
             self.state = EmbodimentState(self._pre_override_state or "on_foot")
         self.event(now_s, "override", override=kind, building_id=self.building_id, vehicle_id=self.vehicle_id)
@@ -299,7 +299,7 @@ class TripExecutor:
         if self.state == EmbodimentState.TRIP_FAILED:
             return
         if self.override == "undead":
-            self.state = EmbodimentState.UNDEAD
+            self.state = EmbodimentState.INSIDE_BUILDING if self.inside else EmbodimentState.UNDEAD
             self.activity = "undead"
             return
         g = rt.active_goal

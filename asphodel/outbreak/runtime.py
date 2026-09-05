@@ -42,6 +42,7 @@ Vec2 = Tuple[float, float]
 OUTBREAK_SCHEMA_VERSION = 1
 CONTACT_INTERVAL_S = 60.0      # co-occupancy hazard is integrated per game minute
 UNDEAD_INTERVAL_S = 5.0        # hunt/attack cadence
+ROAM_MIN_INTERVAL_S = 60.0     # an undead with nothing in range re-plans a roam leg at most this often
 THREAT_RADIUS_M = 25.0         # outdoor witness radius for an undead / attack / corpse
 FLEE_PRIORITY = 0.92           # emergency (goals.SOURCE_BASE_PRIORITY["emergency"])
 HEALTH_PRIORITY = 0.80         # above any schedule goal (<= 0.75), below emergencies
@@ -80,6 +81,7 @@ class OutbreakRuntime:
         self.obstructions: List[str] = []                  # obstruction ids we applied
         self.undead_targets: Dict[int, int] = {}           # undead cid -> victim cid
         self.undead_roam: Dict[int, int] = {}              # undead cid -> roam leg counter
+        self.undead_roam_t: Dict[int, float] = {}          # undead cid -> last roam leg time
         self.attack_cooldown: Dict[int, float] = {}
         self._known_threats: Dict[int, set] = {}           # witness cid -> threat ids seen
         self.workers_by_building: Dict[int, List[int]] = {}
@@ -393,7 +395,9 @@ class OutbreakRuntime:
                 if vcid == ucid:
                     continue
                 vrec = self.records.get(vcid)
-                if vrec is not None and vrec.state not in ALIVE:
+                # prey: the living who are not already carrying the pathogen
+                # (an infected victim would otherwise be bitten every cooldown)
+                if vrec is not None and vrec.state not in (HealthState.SUSCEPTIBLE, HealthState.RECOVERED):
                     continue
                 vx = execs[vcid]
                 if not vx.alive_for_contact():
@@ -441,6 +445,11 @@ class OutbreakRuntime:
         move it; nothing here sets a position."""
         if urt.active_goal is not None and urt.itinerary is not None and ux.current_step is not None:
             return
+        # a roam leg is a route query: never more than one per ROAM_MIN_INTERVAL_S
+        last = self.undead_roam_t.get(ucid)
+        if last is not None and self.now_s - last < ROAM_MIN_INTERVAL_S:
+            return
+        self.undead_roam_t[ucid] = self.now_s
         nodes = [n for n in (urt.home_node,) + tuple(
             n for n, m in sorted(urt.node_meta.items())
             if n.startswith("ent:") and n != urt.home_node and m.get("building_id") is not None)]
@@ -609,6 +618,7 @@ class OutbreakRuntime:
                 "obstructions": list(self.obstructions),
                 "undead_targets": {str(k): v for k, v in sorted(self.undead_targets.items())},
                 "undead_roam": {str(k): v for k, v in sorted(self.undead_roam.items())},
+                "undead_roam_t": {str(k): v for k, v in sorted(self.undead_roam_t.items())},
                 "attack_cooldown": {str(k): v for k, v in sorted(self.attack_cooldown.items())},
                 "known_threats": {str(k): sorted(str(x) for x in v) for k, v in sorted(self._known_threats.items())}}
 
@@ -626,6 +636,7 @@ class OutbreakRuntime:
         o.obstructions = list(st.get("obstructions") or [])
         o.undead_targets = {int(k): int(v) for k, v in (st.get("undead_targets") or {}).items()}
         o.undead_roam = {int(k): int(v) for k, v in (st.get("undead_roam") or {}).items()}
+        o.undead_roam_t = {int(k): float(v) for k, v in (st.get("undead_roam_t") or {}).items()}
         o.attack_cooldown = {int(k): float(v) for k, v in (st.get("attack_cooldown") or {}).items()}
         kt = {}
         for k, v in (st.get("known_threats") or {}).items():
