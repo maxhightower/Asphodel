@@ -76,7 +76,24 @@ Remote re-fetched before landing: no branch moved since the census.
 
 ## City matrix
 
-CITY_MATRIX_PLACEHOLDER
+`python tools/city_matrix.py` on the final tree (Gate H, Python half):
+
+```
+capability         houston         madisonville_tx austin          san_antonio     boulder         denver_region   
+bundle_loads       PASS            PASS            PASS            PASS            PASS            N/A             
+terrain_loads      PASS            PASS            PASS            PASS            PASS            PASS            
+streetmap_loads    PASS            PASS            PASS            PASS            PASS            N/A             
+roads_align        PASS            PASS            PASS            PASS            N/A             N/A             
+buildings_load     PASS            PASS            PASS            PASS            PASS            N/A             
+building_identity  PASS            PASS            PASS            PASS            N/A             N/A             
+citizens_spawn     PASS            PASS            PASS            PASS            PASS            N/A             
+vehicles_spawn     PASS            PASS            PASS            PASS            PASS            N/A             
+collision_matrix   PASS            PASS            PASS            PASS            PASS            PASS            
+world_starts       PASS            PASS            PASS            PASS            PASS            N/A
+CITY_MATRIX: PASS (0 failing cells)
+```
+
+roads_align = Gate C street/mobility parity: 100.0 % / 100.0 % (streetmap→chunks / chunks→streetmap, 120 samples per city, 4 m) for all four compiled cities. Boulder is a synthetic city (no compiled world, no identity table) and denver_region is a terrain-only proving ground; those cells are N/A by design, not failures.
 
 Godot half (`ConvergenceGate.tscn`, in-engine): bundle / buildings /
 streetmap / region / physics / region_chunks / exterior — PASS for Houston,
@@ -85,7 +102,19 @@ PASS, no compiled world (INFO).
 
 ## Living-city vertical (one citizen, one day; `tests/test_living_city_vertical.py`)
 
-VERTICAL_PLACEHOLDER
+```
+  home                     PASS      citizen 4 sleeps in building 13106 (stored identity)
+  exit                     PASS      interior entrance room 2, exterior anchor at (1210,687); in-engine walk-in/out certified by LiveWalkIn
+  pedestrian_navigation    PASS      foot route 3466 m over 70 real segments (41 min); physical walking of a CitizenBody along a route certified in NavGate, not yet driven by World
+  vehicle                  PASS      itinerary [leave_building, enter_vehicle, drive, park, exit_vehicle, enter_building] mode=car
+  road_navigation          PARTIAL   veh:4 progressed 1.00 of 3685 m on car-legal segments (route-simulated); a VehicleBody driving this route in-engine is a seam (PhysicsGate proves the body, not the drive)
+  parking                  PARTIAL   PARK/EXIT_VEHICLE are plan steps and the instance records a parked location; PARKING_ANCHOR selection at the destination is not wired
+  destination_building     PASS      at 11:00 the citizen is at building 4517 == stored work_building_id; it has a compiled entrance anchor
+  interior                 PASS      descriptor: 1 rooms, 3 fixtures == containers; occupants at 11:00 include citizen 4: True
+  scheduled_duty           PASS      schedule -> activity 'work' at 11:00 (World) and goal do_activity 'work' (CitizenRuntime)
+```
+
+Read strictly: **home → exit → pedestrian navigation → destination → interior → duty is PASS** at the authority level, and the in-engine half of it (street → enter a real building → walk the interior → search containers → leave → re-enter → save/load) is the certified `LiveVertical` scene. **Vehicle and road navigation are PARTIAL**: a persistent vehicle with one identity routes on car-legal real streets and its plan parks it, but no physical car drives that route in the playable scene. A scripted teleport was not counted anywhere; a marker following a route was counted as PARTIAL, not PASS.
 
 ## Test evidence
 
@@ -93,11 +122,58 @@ TESTS_PLACEHOLDER
 
 ## Godot evidence
 
-GODOT_EVIDENCE_PLACEHOLDER
+Godot 4.4.1-stable, headless for logic and xvfb + software OpenGL for
+captures (no GPU in this environment; frame rate was therefore not measured).
+
+Headless suites (all exit 0 on the final tree): TestRunner, StreetSmoke,
+ExteriorStream, CitizenHumanoidSmoke, IsometricExteriorSmoke,
+IsometricCameraSmoke, AssetCatalogSmoke, PhysicsGate (16/16), RegionGate
+(8/8), NavGate (4/4), ConvergenceGate (Gates G/I/E/H in-engine, 0 failures).
+
+Live bridge (`tools/final_cert.sh`, Python server + Godot client): LiveSmoke
+0 failures; save → destroy process → reload BIT-IDENTICAL; LiveSurvival,
+LiveInterior, LiveWalkIn, LiveVertical (30-step interiors vertical) all 0
+failures; InteriorBench 40 descriptors, 3.36 ms build avg; LiveBench Houston
+317 live agents, IPC 236 ms, apply 9.4 ms.
+
+Captures (`docs/convergence/evidence/`): Houston isometric exterior, crowd,
+wide, interior cutaway; Madisonville exterior and wide; the living-city
+commute on the region v2 plateau; Boulder with the Front Range behind it;
+Denver and Houston regional horizons. Inspection found no world displaced
+from terrain, no road/building misalignment, no floating citizens, no
+capsule NPCs, no duplicate layers. Limitations: software GL only; the
+regional terrain is not yet visible in the isometric captures at gameplay
+zoom (it sits beyond the 3 km plateau); `traffic.gd` ambient cars exist only
+on the legacy first-person path and were not captured.
 
 ## Performance
 
-PERF_PLACEHOLDER
+Measured on the final tree in this environment (4 vCPU, no GPU); the spine
+`main` @ `57ef86a` was benchmarked in the same session on the same box for
+comparison, so the numbers below isolate the convergence from the machine.
+
+| metric | spine `57ef86a` | converged tree | note |
+|---|---|---|---|
+| ExteriorWorld T1 build (ground + masses), ms/chunk avg / max | 46.2 / 82.2 | 45.3 / 77.6 | `OwPerfBench`, Houston 7×7 sweep, 96 resident chunks, 5,924 MultiMesh instances — no change |
+| ExteriorWorld T2 build (grammar + roads + collision) | 31.5 / 146.6 | 31.7 / 150.0 | no change (collision-layer stamping is free) |
+| ExteriorWorld T3 build (props/vehicles/trees) | 7.15 / 21.8 | 7.18 / 21.9 | no change |
+| IsometricPerfBench T1 / T2 / T3 avg | — | 44.7 / 60.1 / 7.9 | 98 chunks, 6,461 instances (T2 is heavier in the isometric scene: cutaway metadata) |
+| LiveBench Houston, 317 live agents: IPC / apply | 211 ms / 3 ms (OW10 record) | 236 ms / 9.4 ms | same order; the apply now drives humanoid buckets |
+| InteriorBench descriptor build | — | 3.36 ms avg, 84 resident nodes | |
+| RegionLoader (RegionGate) | — | 64 chunks + 16 near colliders per city, ~1 s scene | |
+| `MobilityGraph.load` Houston / San Antonio | (1,088-segment v1) | 1.55 s / 3.37 s (15,988 / 27,336 segments) | new cost of the full street graph |
+| route query median, car, Houston / San Antonio / Madisonville | — | 183 ms / 339 ms / 15 ms | pure-Python Dijkstra; see debt |
+| `nearest_segment_point` | — | 0.4–0.9 ms after a 1 s index build | |
+| `World` build / step, Houston | — | 3.6 s / 3.2 ms per tick | unchanged tier |
+| citizens + spatial context load, Houston / San Antonio | — | 9.4 s / 15.3 s | 22.5k / 35.7k footprints + graph index |
+| Python heap peak (Houston world + graph + context) | — | 139 MB | |
+
+The OW10 findings quoted much lower T1/T2 numbers (9.7 / 4.0 ms); the spine
+already measures 46 / 31 ms on this machine before any convergence change, so
+that gap is environment/renderer-package history, not this session. LOD and
+materialization boundaries were not moved: the crowd cap, avatar pool, chunk
+tiers and near-only terrain colliders are unchanged, and no scene
+materializes the metropolitan population.
 
 ## Remaining splits (why PARTIAL)
 
@@ -119,7 +195,31 @@ PERF_PLACEHOLDER
 
 ## Remaining debt (real, not minimized)
 
-DEBT_PLACEHOLDER
+* Route queries on the full Houston graph (15,988 segments) take ~180 ms
+  median in pure-Python Dijkstra (San Antonio ~340 ms). Fine for bakes and
+  occasional replans; hundreds of simultaneous replans need A*/bidirectional
+  search or a compiled router.
+* Loading a compiled city's spatial context (22.5k footprints + graph index)
+  takes ~9 s for Houston, ~15 s for San Antonio, once per session.
+* `region_loader.gd` still omits the LOD skirts the Python mesh has; the
+  regional terrain is drawn in the gameplay scenes but not yet visible at
+  gameplay zoom, and terrain draping of the compiled city is not implemented.
+* The exterior compiler does not emit `ground_markings` (parking stall
+  paint) or the four newer vehicle kinds; the `tools/repatch_*.py` scripts
+  that patched those into chunks are one-shot legacy patchers whose effect the
+  Houston re-bake dropped. The vocabulary now lives in the compiler tables;
+  the generators still need to place them.
+* `interior_builder.gd` reads fixture `variant` (only decor carries one) and
+  the descriptor's `notes`/`fixture_state` are unread; chunk `parcels` and
+  chunk-level `anchors` have no Godot reader.
+* Only Houston chunks carry residential `architecture` records (the other
+  three compiled cities need a compile with the current grammar).
+* Austin and San Antonio citizens were re-baked on the compiled path this
+  session, but their `world/certification.json` was never generated.
+* `citizen_body.gd`, `vehicle_body.gd`, `mobility_loader.gd`, `debug_overlay.gd`
+  are exercised by gates only; the playable scenes do not instantiate them yet.
+* Version fields: `meta/roads/physics` still carry `"1"` strings; new schemas
+  use integers. Harmless, inconsistent.
 
 ## Retired development lines
 
