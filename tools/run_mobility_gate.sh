@@ -9,6 +9,7 @@ PORT="${PORT:-8765}"
 BUNDLE="${1:-houston}"
 CITIZEN="${2:-4}"
 TRACE="${3:-artifacts/mobility/godot_probe_trace.json}"
+GAME_DT="${GAME_DT:-0.1}"
 GODOT="${GODOT:-godot}"
 mkdir -p "$(dirname "$TRACE")" /tmp/asph_livecert
 pkill -f "asphodel.bridge.server" 2>/dev/null || true
@@ -21,7 +22,7 @@ for i in $(seq 1 300); do
     sleep 0.1
 done
 "$GODOT" --headless --path godot res://tests/EmbodiedMobilityGate.tscn -- \
-    --bundle "$BUNDLE" --citizen "$CITIZEN" --trace "$(pwd)/$TRACE"
+    --bundle "$BUNDLE" --citizen "$CITIZEN" --trace "$(pwd)/$TRACE" --game-dt "$GAME_DT"
 CODE=$?
 kill "$SPID" 2>/dev/null || true
 wait "$SPID" 2>/dev/null || true

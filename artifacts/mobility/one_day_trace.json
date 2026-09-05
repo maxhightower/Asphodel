@@ -52006,11 +52006,11 @@
   ],
   "physical_driving": [
    "FAIL",
-   "VehicleBody drove 11919 m under physics following the canonical route (max lag 52.6 m, impacts 4); body drove 11919 m; within leash 1079/7996 frames; max lag 52.6 m; impacts 4"
+   "VehicleBody drove 6703 m under physics following the canonical route (max lag 52.6 m, impacts 4); body drove 6703 m; within leash 329/7996 frames; max lag 52.6 m; impacts 4"
   ],
   "traffic_interaction": [
-   "PASS",
-   "solid vehicle ahead: body stopped (PASS), authority held (PASS); controller following/junction/closed-road logic in tests/test_embodied_controllers.py"
+   "FAIL",
+   "solid vehicle ahead: body stopped (FAIL), authority held (PASS); controller following/junction/closed-road logic in tests/test_embodied_controllers.py"
   ],
   "parking": [
    "PASS",
@@ -52027,6 +52027,10 @@
   "interior": [
    "PASS",
    "descriptor 1 rooms/3 fixtures; at 11:00 the citizen's authoritative location is building 4517 (state doing_activity), occupancy via World.building_occupants"
+  ],
+  "scheduled_duty": [
+   "PASS",
+   "'work' began at 10800 s only after arrival at 9424 s (scheduled != arrived is distinguished by EmbodimentState.DOING_ACTIVITY)"
   ],
   "return_trip": [
    "PASS",

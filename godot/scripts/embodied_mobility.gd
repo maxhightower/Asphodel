@@ -160,6 +160,9 @@ func _ensure_vehicle(vid: String, row: Dictionary) -> VehicleBody:
 	var b := VehicleBody.new()
 	b.semantic_id = vid
 	b.name = vid.replace(":", "_")
+	# Real-speed ceiling scales with the clock pacing so the body can track a
+	# time-compressed authoritative car (40 m/s of game speed).
+	b.max_speed = 40.0 * time_scale
 	b.position = Vector3(float(row["x"]), _ground_y + 0.7, float(row["y"]))
 	b.rotation.y = -float(row.get("heading", 0.0))
 	b.set_meta("vehicle_id", vid)
