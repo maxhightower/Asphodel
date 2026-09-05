@@ -208,7 +208,13 @@ class WorkRuntime:
             if a is not None and a.next_s > self.now_s and not ex.override \
                     and ex.state is EmbodimentState.DOING_ACTIVITY and ex.building_id == a.building_id \
                     and ex.current_step is None:
-                continue                      # a sleeping session in an unchanged situation
+                # a sleeping session in an unchanged situation: progress is
+                # exactly what the awake path would have added
+                if a.phase == "using":
+                    a.progress_s += dt
+                    if a.kind == "worker" and a.task_id != "take_break":
+                        a.worked_s += dt
+                continue
             if a is None and (ex.state is not EmbodimentState.DOING_ACTIVITY or ex.override):
                 continue                      # nobody to start a session for
             session_kind = self._session_kind(cid, ex)
@@ -329,13 +335,6 @@ class WorkRuntime:
                 self.event("USE_START", citizen_id=cid, **self._where(ex, a))
             return
         if a.phase == "using":
-            # catch up the progress skipped while asleep, then decide the next wake
-            if a.next_s > 0.0 and self.now_s - a.started_s > a.progress_s + 1e-6:
-                skipped = (self.now_s - a.started_s) - a.progress_s - dt
-                if skipped > 0:
-                    a.progress_s += skipped
-                    if a.kind == "worker" and a.task_id != "take_break":
-                        a.worked_s += skipped
             self._use(cid, ex, a, reg, dt)
             if a.phase == "using":
                 serving = a.task_id == "man_register" and bool(self.queues.get(a.object_id or ""))

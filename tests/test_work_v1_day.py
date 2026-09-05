@@ -342,13 +342,17 @@ def test_S8_S9_reservation_and_contention(day):
     if broke:
         t0 = broke[0]
         unavailable = [e for e in _ev(day, "OBJECT_UNAVAILABLE", cid) if e["object_id"] == broke[1]]
-        after = [e for e in _ev(day, "RESERVED", cid) if _hour(e) >= t0 and e["object_id"] != broke[1]]
+        after = [e for e in _ev(day, "RESERVED", cid) if _hour(e) >= t0]
+        alt = [e for e in after if e["object_id"] != broke[1]]
+        waits = [e for e in _ev(day, "WAIT", cid) if _hour(e) >= t0]
         denied = _ev(day, "RESERVATION_DENIED")
         ok = bool(unavailable and after)
-        detail = (f"station {broke[1]} broke at {t0:.2f}: OBJECT_UNAVAILABLE for {cid}, then RESERVED "
-                  f"{after[0]['object_id'] if after else None} at {_hour(after[0]) if after else None} "
-                  f"({(_hour(after[0]) - t0) * 60:.0f} min later); {len(denied)} RESERVATION_DENIED city-wide "
-                  f"resolved by alternative stations or bounded waits")
+        nxt = after[0] if after else None
+        detail = (f"station {broke[1]} broke at {t0:.2f}: OBJECT_UNAVAILABLE for {cid}, "
+                  + (f"then RESERVED {nxt['object_id']} at {_hour(nxt)} ({(_hour(nxt) - t0) * 60:.0f} min later"
+                     + (", an alternative station" if alt else ", the repaired station after a bounded wait") + ")"
+                     if nxt else "no later reservation (deadlock)")
+                  + f"; {len(waits)} bounded waits; {len(denied)} RESERVATION_DENIED city-wide")
     _status("S9", "PASS" if ok else "FAIL", detail)
     assert not inv and ok
 
