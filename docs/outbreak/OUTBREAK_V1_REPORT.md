@@ -107,11 +107,11 @@ OUTBREAK_V1_CERTIFICATION
   O4   PASS     Infection progression deterministic: fresh world reproduces the index record and the first 3 h of events (2 events) exactly; timestamps rolled once via hash64(seed, cid, purpose)
   O5   PASS     Symptoms affect citizen planning: SYMPTOM_ONSET at 9.90 h in building 2318 -> 'health' goal go_home replaced the schedule (PLAN_INVALIDATED)
   O6   PASS     Existing mobility executes replanned behaviour: TripExecutor executed the replanned trip: ['on_foot'] (embodiment states after onset, same executor; left building 2318 at 10.08 h)
-  O7   PASS     Death occurs at authoritative location: DEATH at 10.37 h in vehicle veh:42 on the street at (-1280.1,-1325.7), exactly where the citizen collapsed (corpse)
+  O7   PASS     Death occurs at authoritative location: DEATH at 10.37 h in vehicle veh:42 on the street at (-1269.4,-1334.7), exactly where the citizen collapsed (corpse)
   O8   PASS     Corpse persists: corpse held by the executor override for 21 sampled minutes; HealthRecord.corpse_xy/building/vehicle persisted
   O9   PASS     Reanimation preserves identity: citizen 42 reanimated at 10.60 h at its death location as the same executor/record (jump 0 m); other reanimations keep lineage: {117: [42, 247], 127: [42], 170: [42, 247], 87: [42, 247, 117]}
-  O10  PASS     Undead embodied in Godot: CitizenBody for cit:42 with the undead look, 244 frames
-  O11  PASS     Living citizen reacts to nearby undead: citizen 127 FLEEs (emergency goal, target ent:9578) after undead 42 attacked it in building 6255; 1 bystander THREAT_OBSERVED events
+  O10  PASS     Undead embodied in Godot: CitizenBody for cit:42 with the undead look, 217 frames
+  O11  PASS     Living citizen reacts to nearby undead: citizen 127 FLEEs (emergency goal, target ent:9578) after undead 42 attacked it in building 6255; 0 bystander THREAT_OBSERVED events
   O12  PASS     Undead can cause new exposure/contact: 5 bite exposures: [(127, 42), (294, 42), (191, 117), (188, 127), (2, 87)]; bitten citizens progress like any infected citizen
   O13  PASS     City-system disruption feeds back into simulation: WORKPLACE_DISRUPTED [(6255, '1 incapacitated/dead/undead inside'), (2318, '3/6 workers down'), (4075, '1 incapacitated/dead/undead inside'), (8289, '1/1 workers down')] -> 5 workers replanned home; VEHICLE_ABANDONED veh:42 at 9.98 h -> segment bf368bb4 closed to cars (MobilityObstruction wreck:veh:42), wreck fidelity persistent
   O14  PASS     FAR progression works: with the focus 9 km away (no PHYSICAL band all day) the index case progressed incubating -> symptomatic -> incapacitated -> corpse -> undead
@@ -120,11 +120,11 @@ OUTBREAK_V1_CERTIFICATION
   O17  PASS     Save/load corpse/reanimation: corpse save at 10.38 h and undead save at 10.60 h: identical restore, byte-identical continuation
   O18  PASS     Save/load civil-disruption state: save with active disruption at 10.83 h: disrupted buildings, obstructions and continuation identical
   O19  PASS     Headless and in-engine semantic parity: in-engine run reproduced the index case's biological events [('SYMPTOM_ONSET', 42.0), ('INCAPACITATED', 42.0), ('DEATH', 42.0), ('REANIMATION', 42.0)] at identical timestamps: True
-  O20  PASS     Existing mobility regression suite green: 906 collected: 904 passed; 1 pre-existing environment failure (raw Overture parquet, identical on origin/main); 1 stale v4 pin fixed and re-verified (11 passed)
-  O21  PASS     Existing canonical Godot gates green: existing headless gates (godot/tests/run_gates.sh: PhysicsGate, RegionGate, NavGate, ConvergenceGate): 85 PASS / 0 FAIL; ExteriorStream gate 0 failures; MobilityGate PASS; OutbreakGate 18/18 PASS (artifacts/outbreak_v1/godot_probe_trace.json)
+  O20  PASS     Existing mobility regression suite green: 906 collected: 905 passed; 1 pre-existing environment failure (raw Overture parquet, identical on origin/main); 0 new failures (22.7 min)
+  O21  PASS     Existing canonical Godot gates green: godot/tests/run_gates.sh (PhysicsGate, RegionGate, NavGate, ConvergenceGate, ExteriorStream): 89 PASS / 0 FAIL after the embodiment changes; OutbreakGate 19/19 PASS with 2 body re-materializations (artifacts/outbreak_v1/godot_probe_trace.json); MobilityGate: see report
   O22  PASS     Reduced multi-city smoke has no city-name special casing: houston: PASS; madisonville_tx: PASS; austin: INFO; san_antonio: PASS; boulder: INFO
 .
-17 passed in 208.30s (0:03:28)
+17 passed in 196.08s (0:03:16)
 ```
 
 The row texts are the test's own output (`artifacts/outbreak_v1/one_day_trace.json`
@@ -316,7 +316,7 @@ shared 4-core container while other jobs ran; treat absolute values as ±20 %.
 * Outbreak package: 90 tests (health, contacts, progression/behaviour, save/
   load, LOD, bridge, disruption) + 12 smoke tests, all green.
 * Godot: `godot/tests/run_gates.sh` 89 PASS / 0 FAIL after the embodiment
-  changes; MobilityGate: MOBILITY_GATE_PLACEHOLDER.
+  changes; MobilityGate: MobilityGate (`tools/run_mobility_gate.sh houston 4`) 24/24 PASS on the 300-citizen population after the kerb offset (it had failed before it: the physical car crawled behind a pedestrian in its lane, §17)..
 
 ## 16. Rendered evidence (`docs/outbreak/evidence/`)
 
@@ -332,18 +332,21 @@ and is the caption that counts.
 |---|---|---|
 | `00_infected_ordinary_morning.png` | incubating citizen 42 inside building 2318 (doing_activity) before onset | the flat roof of the workplace from above and the player marker; **no citizen is visible** (an interior has no body). Proves only that the camera is at the workplace while the authority says "incubating, inside". The HUD clock (`Day 1 10:41`) is the scene's paused clock, not the simulation hour. |
 | `01_symptomatic_leaving_work.png` | symptomatic, schedule invalidated, heading home (on_foot) | **the same roof view as 00; no walking body is visible in the frame.** It does not show the citizen leaving; the leaving is evidenced by the gate's body frames (§12), not by this image. |
-| `02_collapse.png` | incapacitated at (-274.4, -2164.9), building −1, vehicle veh:42 | a red car stopped in the middle of the carriageway among parked cars, i.e. the citizen's own car halted mid-street where the driver collapsed. The driver is inside the car, so no separate body. |
+| `02_collapse.png` | incapacitated at (-264.4, -2173.4), building −1, vehicle veh:42 | a red car stopped in the middle of the carriageway among parked cars, i.e. the citizen's own car halted mid-street where the driver collapsed. The driver is inside the car, so no separate body. |
 | `03_corpse.png` | corpse of citizen 42 at the same coordinates (same place as the collapse: true) | the same car in the same place; a corpse in a car has no separate body, so the frame is visually identical to 02. The equality of coordinates is from the rows, not from the pixels. |
 | `04_reanimated_same_place.png` | citizen 42 reanimated at the same coordinates, same identity | a green-tinted figure (the undead look) standing beside the driver's door of that car: the undead has left the car it died in, at the death location. |
 | `05_undead_walking.png` | undead body walking under physics, 13 m from the death location | the same green figure on the road about a car-length-and-a-half from the car, the car unchanged. Shows a body displaced from the death spot; the fact that physics moved it is from the gate's leash metric, not the pixels. |
 | `06_abandoned_vehicle_obstruction.png` | abandoned veh:42: persistent wreck, segment closed to cars | the red car alone in the carriageway with the undead further up the road. The frame shows a car stopped in the road; that it is a wreck that closes the segment to cars is authoritative state (`MobilityObstruction`), not visible here. |
 | `07_attack.png` | undead 42 attacks citizen 294 in building 6366 (exposed=true) | the roof of building 6366 and the player marker; **no bodies** (the attack happened inside). The image proves the camera was at 6366 when the ATTACK event fired; nothing more. |
-| `08_victim_flees.png` | citizen 294 fleeing on foot after the attack (FLEE goal) | the corner of building 6366 at street level; **no fleeing body is clearly visible** in this frame. The flight is evidenced by the gate (`fleeing_citizen_embodied_on_foot`: a CitizenBody for 294 left 6366 on foot), not by this image. |
+| `08_victim_flees.png` | citizen 294 fleeing on foot after the attack (FLEE goal) | the corner of building 6366 at street level with one small body on the pavement north of the building. The rows say it is 294 leaving on foot; the frame alone does not identify it. The flight is evidenced by the gate (`fleeing_citizen_embodied_on_foot`: a CitizenBody for 294 left 6366 on foot). |
 
 Net: frames 02–06 are genuine in-world evidence of the collapse at the wheel,
-the car left in the road, the undead rising beside it and walking away; frames
-00, 01, 07, 08 show only where the camera was (interiors have no bodies) and
-must not be read as showing the captioned behaviour. A first rendered pass
+the car left in the road, the undead rising beside it and walking away; frame
+08 shows a body outside the attacked building; frames 00, 01 and 07 show only
+where the camera was (interiors have no bodies) and must not be read as
+showing the captioned behaviour. In every frame the HUD's `Day 1 10:41` and
+`Outbreak: 0%` are the scene's own paused clock and macro overlay, not the
+simulation hour or the individual outbreak. A first rendered pass
 (discarded) captioned an already-undead citizen as "incubating" because the
 script added an absolute clock time to the current hour; the script now
 computes onset from the movement clock and prefixes any caption whose

@@ -30,35 +30,35 @@
       "bodies": [
         "veh:42"
       ],
-      "caption": "incapacitated at (-274.428,-2164.902) building=-1.0 vehicle=veh:42",
+      "caption": "incapacitated at (-264.352,-2173.359) building=-1.0 vehicle=veh:42",
       "file": "02_collapse.png",
       "hour": 9.98253703944914,
       "state": "incapacitated",
-      "x": -274.428,
-      "y": -2164.902
+      "x": -264.352,
+      "y": -2173.359
     },
     {
       "bodies": [
         "veh:42"
       ],
-      "caption": "corpse of citizen 42 at (-274.428,-2164.902) (same place as the collapse: true)",
+      "caption": "corpse of citizen 42 at (-264.352,-2173.359) (same place as the collapse: true)",
       "file": "03_corpse.png",
       "hour": 10.3703148172269,
       "state": "corpse",
-      "x": -274.428,
-      "y": -2164.902
+      "x": -264.352,
+      "y": -2173.359
     },
     {
       "bodies": [
         "veh:42",
         "cit:42"
       ],
-      "caption": "citizen 42 reanimated at (-274.428,-2164.902), same identity, same place as the corpse: true",
+      "caption": "citizen 42 reanimated at (-264.352,-2173.359), same identity, same place as the corpse: true",
       "file": "04_reanimated_same_place.png",
       "hour": 10.5958703727825,
       "state": "undead",
-      "x": -274.428,
-      "y": -2164.902
+      "x": -264.352,
+      "y": -2173.359
     },
     {
       "bodies": [
@@ -69,32 +69,33 @@
       "file": "05_undead_walking.png",
       "hour": 10.6000370394491,
       "state": "on_foot",
-      "x": -284.08,
-      "y": -2156.803
+      "x": -271.609,
+      "y": -2162.8
     },
     {
       "bodies": [
         "veh:42",
         "cit:42"
       ],
-      "caption": "abandoned veh:42 at (-274.4,-2164.9): persistent wreck, segment closed to cars",
+      "caption": "abandoned veh:42 at (-264.4,-2173.4): persistent wreck, segment closed to cars",
       "file": "06_abandoned_vehicle_obstruction.png",
       "hour": 10.6000370394491,
       "state": "on_foot",
-      "x": -284.08,
-      "y": -2156.803
+      "x": -271.609,
+      "y": -2162.8
     },
     {
       "bodies": [
         "veh:294",
-        "cit:294"
+        "cit:294",
+        "cit:42"
       ],
       "caption": "undead 42 attacks citizen 294 in/at building 6366.0 (exposed=true)",
       "file": "07_attack.png",
-      "hour": 10.9862175950047,
-      "state": "inside_building",
-      "x": -1197.93,
-      "y": -1358.25
+      "hour": 10.9917731505602,
+      "state": "on_foot",
+      "x": -1198.51,
+      "y": -1358.938
     },
     {
       "bodies": [
@@ -104,10 +105,10 @@
       ],
       "caption": "citizen 294 fleeing on foot after the attack (FLEE goal)",
       "file": "08_victim_flees.png",
-      "hour": 10.9877453727825,
+      "hour": 10.993300928338,
       "state": "on_foot",
-      "x": -1198.51,
-      "y": -1358.938
+      "x": -1196.389,
+      "y": -1362.24
     }
   ]
 }
