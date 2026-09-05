@@ -1,21 +1,56 @@
 extends Control
 
 ## City-select screen: pick one of the bundled real cities from a dropdown and
-## load it. The chosen bundle dir is stashed in the Session autoload so CityScene
-## knows which city to render. (Phase 3 will add free-text entry that runs the
-## Python pipeline to fetch any city on demand.)
+## load it. The chosen bundle dir is stashed in the Session autoload so the world
+## scene (IsometricWorld / StreetScene) knows which city to render. (Phase 3 will
+## add free-text entry that runs the Python pipeline to fetch any city on demand.)
 
-const CITIES := [
-	{"name": "Madisonville, TX", "dir": "res://bundles/madisonville_tx"},
-	{"name": "Houston", "dir": "res://bundles/houston"},
-	{"name": "San Antonio", "dir": "res://bundles/san_antonio"},
-	{"name": "Austin", "dir": "res://bundles/austin"},
+## Fallback roster, used only if the bundles/ directory cannot be scanned (e.g. a
+## trimmed export). The live list below is derived from the shipped bundles.
+const FALLBACK_CITIES := [
+	{"name": "Madisonville, Texas", "dir": "res://bundles/madisonville_tx"},
+	{"name": "Houston, Texas", "dir": "res://bundles/houston"},
+	{"name": "San Antonio, Texas", "dir": "res://bundles/san_antonio"},
+	{"name": "Austin, Texas", "dir": "res://bundles/austin"},
 ]
 
+const BUNDLE_ROOT := "res://bundles"
+
+var _cities: Array = []
 var _option: OptionButton
 
 
+static func discover_cities(root: String = BUNDLE_ROOT) -> Array:
+	## Data-driven city roster: every bundle directory that carries BOTH a
+	## meta.json (so it is an Asphodel bundle) and a citizens.json (so a player
+	## citizen can actually be chosen) is playable. Region-only / synthetic
+	## bundles without a citizen roster are skipped rather than hardcoded out.
+	var out: Array = []
+	var d := DirAccess.open(root)
+	if d == null:
+		return out
+	var names := d.get_directories()
+	names.sort()
+	for name in names:
+		var dir: String = root.path_join(name)
+		if not FileAccess.file_exists(dir.path_join("citizens.json")):
+			continue
+		var meta_path := dir.path_join("meta.json")
+		if not FileAccess.file_exists(meta_path):
+			continue
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(meta_path))
+		if not (parsed is Dictionary):
+			continue
+		var label := str((parsed as Dictionary).get("name", name))
+		out.append({"name": label, "dir": dir})
+	return out
+
+
 func _ready() -> void:
+	_cities = discover_cities()
+	if _cities.is_empty():
+		_cities = FALLBACK_CITIES.duplicate(true)
+
 	var bg := ColorRect.new()
 	bg.color = Color(0.07, 0.09, 0.13)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -40,7 +75,7 @@ func _ready() -> void:
 	_option = OptionButton.new()
 	_option.custom_minimum_size = Vector2(300, 44)
 	_option.add_theme_font_size_override("font_size", 22)
-	for city in CITIES:
+	for city in _cities:
 		_option.add_item(city["name"])
 	_option.selected = 0
 	vb.add_child(_option)
@@ -63,7 +98,9 @@ func _make_button(text: String, handler: Callable) -> Button:
 
 
 func _on_load() -> void:
-	var dir: String = CITIES[_option.selected]["dir"]
+	if _option.selected < 0 or _option.selected >= _cities.size():
+		return
+	var dir: String = _cities[_option.selected]["dir"]
 	Session.bundle_dir = dir
 	var pool := BundleLoader.load_citizens(dir)
 	if pool.is_empty():

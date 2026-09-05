@@ -5,27 +5,19 @@ extends CharacterBody3D
 ## look are gated on the mouse being captured, so a pause overlay (which frees the
 ## cursor) naturally freezes the player.
 ##
-## Also owns the survival loop's interaction side: an aim raycast that finds
-## doors and lootable containers (anything exposing prompt()/interact()), and a
-## small resource inventory filled by looting.
-
-signal prompt_changed(text: String)
-signal inventory_changed(inventory: Dictionary)
-signal looted(items: Dictionary)
+## PURE PRESENTATION + LOCOMOTION. It owns no inventory, no loot, and no
+## interaction targets: items, containers and survival state are authoritative in
+## Python (asphodel/items.py, asphodel/survival.py) and reach the client through
+## SimBridge. The world orchestrator (street_world.gd) owns the E-interact path.
 
 @export var walk_speed: float = 4.5
 @export var sprint_speed: float = 9.0
 @export var mouse_sensitivity: float = 0.0025
 @export var eye_height: float = 1.7
-@export var interact_range: float = 2.7
 
 const _GRAVITY := 20.0
 
-var inventory := {"food": 0, "water": 0, "meds": 0, "materials": 0, "valuables": 0}
-
 var _camera: Camera3D
-var _target: Node = null
-var _prompt := ""
 
 
 func get_camera() -> Camera3D:
@@ -34,6 +26,10 @@ func get_camera() -> Camera3D:
 
 func _ready() -> void:
 	add_to_group("player")
+	# Authoritative collision identity (AS-PHYS-0): the player body lives on the
+	# PLAYER layer and collides with exactly what the Python matrix says it does.
+	collision_layer = CollisionLayers.PLAYER
+	collision_mask = CollisionLayers.PROFILES["player"]["mask"]
 	var capsule := CapsuleShape3D.new()
 	capsule.radius = 0.35
 	capsule.height = 1.8
@@ -61,42 +57,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_camera.rotation.x = clampf(_camera.rotation.x, -1.4, 1.4)
 
 
-func add_items(items: Dictionary) -> void:
-	for k in items:
-		inventory[k] = int(inventory.get(k, 0)) + int(items[k])
-	inventory_changed.emit(inventory)
-	looted.emit(items)
-
-
-func _update_interact_target() -> void:
-	var new_target: Node = null
-	if _camera != null and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		var from := _camera.global_position
-		var to := from + (-_camera.global_transform.basis.z) * interact_range
-		var query := PhysicsRayQueryParameters3D.create(from, to)
-		query.exclude = [get_rid()]
-		var hit := get_world_3d().direct_space_state.intersect_ray(query)
-		if not hit.is_empty():
-			var collider: Object = hit.get("collider")
-			if collider is Node and (collider as Object).has_method("interact"):
-				new_target = collider
-	_target = new_target
-	var text := ""
-	if _target != null and _target.has_method("prompt"):
-		text = str(_target.call("prompt"))
-	if text != _prompt:
-		_prompt = text
-		prompt_changed.emit(text)
-
-
-func _unhandled_key_input(event: InputEvent) -> void:
-	if event.is_action_pressed("interact") and _target != null \
-			and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		_target.call("interact", self)
-
-
 func _physics_process(delta: float) -> void:
-	_update_interact_target()
 	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 		var dir := (transform.basis * Vector3(input_dir.x, 0.0, input_dir.y))

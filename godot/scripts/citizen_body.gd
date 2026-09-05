@@ -48,7 +48,8 @@ func _ready() -> void:
 		_sensor = Area3D.new()
 		_sensor.name = "Sensor"
 		_sensor.collision_layer = CollisionLayers.TRIGGER
-		_sensor.collision_mask = CollisionLayers.NPC | CollisionLayers.VEHICLE
+		# Authoritative TRIGGER profile (AS-PHYS-0): sense players, NPCs, vehicles.
+		_sensor.collision_mask = CollisionLayers.PROFILES["trigger"]["mask"]
 		_sensor.monitoring = true
 		var scol := CollisionShape3D.new()
 		var ssh := SphereShape3D.new()
