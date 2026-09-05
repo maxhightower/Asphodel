@@ -24,6 +24,7 @@ const V = preload("res://scripts/citizen_visual_identity.gd")
 @export var report_interval: float = 0.25     # real seconds between reports
 @export var body_height: float = 0.9          # capsule half-height above ground
 @export var enabled: bool = true
+@export var stuck_rematerialize_applies: int = 90   # blocked applies before a body is re-materialized
 ## Game seconds per real second the bodies must keep up with (the GameClock's
 ## pacing: 24x by default; a real-time evidence scene uses 1.0). Follow speeds
 ## are scaled by it so a body can track the authoritative point.
@@ -35,6 +36,8 @@ var promotions := 0
 var demotions := 0
 var reports_sent := 0
 var reports_applied := 0
+var rematerializations := 0                   # bodies moved out of a collider they could not leave
+var _stuck_applies: Dictionary = {}           # id -> consecutive applies with the body blocked
 var _material: ShaderMaterial
 var _since_report := 0.0
 var _game_dt_accum := 0.0
@@ -70,8 +73,22 @@ func apply(block: Dictionary, game_dt: float = 0.0) -> void:
 		var health: String = str(row.get("health", "susceptible"))
 		if st in ["on_foot", "approaching_vehicle", "entering_vehicle", "exiting_vehicle", "undead"]:
 			var body := _ensure_citizen(id, row)
-			body.set_follow_target(Vector3(float(row["x"]), _ground_y + body_height, float(row["y"])),
-				float(row.get("speed", 0.0)) * time_scale)
+			var target := Vector3(float(row["x"]), _ground_y + body_height, float(row["y"]))
+			body.set_follow_target(target, float(row.get("speed", 0.0)) * time_scale)
+			# Materialization safety (2): a body that stays blocked without any
+			# progress is inside something it cannot leave (a hull it was spawned
+			# in, a wreck): re-materialize it at a free spot beside the
+			# authoritative point. The authority never moved for it; it only
+			# stopped holding back.
+			if body.is_blocked():
+				_stuck_applies[id] = int(_stuck_applies.get(id, 0)) + 1
+				if int(_stuck_applies[id]) > stuck_rematerialize_applies:
+					body.global_position = _free_spot(target)
+					body.velocity = Vector3.ZERO
+					rematerializations += 1
+					_stuck_applies[id] = 0
+			else:
+				_stuck_applies[id] = 0
 			_set_gait(body, float(row.get("speed", 0.0)))
 			_apply_health_look(body, health, st)
 			keep[id] = true
@@ -133,13 +150,52 @@ func body_of(id: String) -> Node3D:
 	return bodies.get(id, null)
 
 
+func _free_spot(p: Vector3) -> Vector3:
+	## The nearest point to `p` (p itself first) where a citizen-sized sphere
+	## overlaps no static collider. Other citizens/vehicles do not count.
+	var world := get_world_3d()
+	if world == null:
+		return p
+	var space := world.direct_space_state
+	if space == null:
+		return p
+	var shape := SphereShape3D.new()
+	shape.radius = 0.4
+	var q := PhysicsShapeQueryParameters3D.new()
+	q.shape = shape
+	q.collision_mask = CollisionLayers.PROFILES["npc"]["mask"]
+	q.collide_with_areas = false
+	q.collide_with_bodies = true
+	var cands: Array = [Vector3.ZERO]
+	for r in [0.8, 1.6, 2.4, 3.2, 4.5]:
+		for k in range(8):
+			var a := float(k) * PI / 4.0
+			cands.append(Vector3(cos(a) * r, 0.0, sin(a) * r))
+	for off in cands:
+		q.transform = Transform3D(Basis(), p + off)
+		var hits: Array = space.intersect_shape(q, 8)
+		var solid := false
+		for h in hits:
+			var c = h.get("collider")
+			if c is CitizenBody or c is VehicleBody:
+				continue
+			solid = true
+			break
+		if not solid:
+			return p + off
+	return p
+
+
 func _ensure_citizen(id: String, row: Dictionary) -> CitizenBody:
 	if bodies.has(id):
 		return bodies[id]
 	var b := CitizenBody.new()
 	b.semantic_id = id
 	b.name = id.replace(":", "_")
-	b.position = Vector3(float(row["x"]), _ground_y + body_height, float(row["y"]))
+	# Materialization safety (1): never spawn inside a static collider (a
+	# building hull at its own entrance anchor, a wreck) — the nearest free
+	# spot within a few metres, else the authoritative point itself.
+	b.position = _free_spot(Vector3(float(row["x"]), _ground_y + body_height, float(row["y"])))
 	var cid := int(row["citizen_id"])
 	b.set_meta("citizen_id", cid)
 	# The same deterministic look as the crowd (citizen_visual_identity.gd).

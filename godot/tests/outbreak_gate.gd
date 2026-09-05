@@ -395,7 +395,7 @@ func _run() -> void:
 					break
 			await get_tree().physics_frame
 		_ok("fleeing_citizen_embodied_on_foot", fled_body, "citizen %d left building %s on foot as a CitizenBody" % [victim, str(attack.get("building_id"))])
-	_stats = {"body_frames": body_frames, "body_dist_m": body_dist, "promotions": _emb.promotions,
+	_stats = {"body_frames": body_frames, "body_dist_m": body_dist, "rematerializations": _emb.rematerializations, "promotions": _emb.promotions,
 		"demotions": _emb.demotions, "reports": _emb.reports_sent}
 	SimBridge.disconnect_from_sim()
 

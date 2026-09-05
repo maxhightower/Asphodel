@@ -194,6 +194,24 @@ before, `undead` bodies with a grey-green tint in follow mode (the executor
 walks them), street corpses/incapacitated as lying solid bodies, symptomatic
 citizens pale. Godot never simulates the outbreak.
 
+## 10a. Mobility debt absorbed by this milestone
+
+Three executor defects surfaced only once citizens re-planned mid-walk under
+pressure (a hunt issued while roaming, a flee issued mid-trip):
+
+* a walk leg planned from the last node the citizen *passed* starts up to a
+  street length behind the body; the leg now begins with a straight approach
+  back to its start (within 200 m, at walking speed, never a relocation)
+  instead of failing (`WALK_APPROACH_LIMIT_M`);
+* a failed plan that is re-adopted unchanged keeps its failure streak, so
+  fail → replan → identical plan → fail no longer loops at 1 Hz (each loop was
+  a route query: the cost seen in the first infection-heavy perf run);
+* a trip in `TRIP_FAILED` holds instead of re-executing its step every second.
+
+The hunter's planner is also given the prey's node metadata (building id,
+entrance) so an `ENTER_BUILDING` step toward another citizen's home can be
+built.
+
 ## 11. Extension points (for Smart Objects / work execution)
 
 `OutbreakRuntime` reads only `TripExecutor` situation fields

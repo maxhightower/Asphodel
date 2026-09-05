@@ -62,6 +62,7 @@ PED_BLOCK_REPLAN_S = 20.0
 CAR_BLOCK_REPLAN_S = 45.0
 MAX_TRACE = 400
 RESUME_TOLERANCE_M = 8.0       # how far off a new leg's path we still "are on it"
+WALK_APPROACH_LIMIT_M = 200.0  # a walk leg may begin with a straight approach to its start within this
 
 
 def _resume_dist(path: PhysicalPath, pos: Vec2) -> float:
@@ -179,6 +180,10 @@ class TripExecutor:
 
     # -- plan adoption -------------------------------------------------------
     def adopt(self, itinerary: Optional[Itinerary], serial: int, now_s: float) -> None:
+        # The same plan re-adopted after a failure keeps the failure streak
+        # (otherwise fail -> replan -> identical plan -> fail loops forever).
+        same_plan = (self.failure != "" and itinerary is not None and self.itinerary is not None
+                     and itinerary.describe() == self.itinerary.describe())
         self.itinerary = itinerary
         self.plan_serial = serial
         self.step_index = 0
@@ -194,7 +199,8 @@ class TripExecutor:
         if self.state == EmbodimentState.TRIP_FAILED:
             self.state = EmbodimentState.ON_FOOT if self.building_id < 0 else EmbodimentState.INSIDE_BUILDING
         self.trip_failed = False
-        self.failures = 0
+        if not same_plan:
+            self.failures = 0
         # A citizen that was driving keeps its situation; the new plan (built
         # from the reported situation) starts at DRIVE / EXIT_VEHICLE.
         if self.state in (EmbodimentState.APPROACHING_VEHICLE, EmbodimentState.ENTERING_VEHICLE):
@@ -258,6 +264,10 @@ class TripExecutor:
 
     def _advance(self, dt: float, rt, env) -> None:
         if self.override in ("incapacitated", "corpse"):
+            self.speed = 0.0
+            return
+        if self.trip_failed:
+            # holds until the runtime retries or a new plan is adopted
             self.speed = 0.0
             return
         step = self.current_step
@@ -359,10 +369,27 @@ class TripExecutor:
                 self.ped.desired_speed = self.speed_override
             # start from where we physically are: project onto the path
             rd = _resume_dist(path, self.pos)
-            if rd == 0.0 and math.hypot(path.points[0][0] - self.pos[0], path.points[0][1] - self.pos[1]) > RESUME_TOLERANCE_M:
-                # never relocate: a leg that starts elsewhere is a planning error
+            d0 = math.hypot(path.points[0][0] - self.pos[0], path.points[0][1] - self.pos[1])
+            if rd == 0.0 and d0 > RESUME_TOLERANCE_M:
+                if d0 > WALK_APPROACH_LIMIT_M:
+                    # never relocate: a leg that starts elsewhere is a planning error
+                    self.ped = None
+                    self.fail("walk leg does not start where the citizen is", rt, env)
+                    return False
+                # The plan was built from the last node this citizen passed and
+                # heads off in another direction: walk straight back to where
+                # the leg starts (the street just walked), never relocate.
                 self.ped = None
-                self.fail("walk leg does not start where the citizen is", rt, env)
+                v = self.speed_override if self.speed_override > 0.0 else WALK_SPEED
+                step_m = min(d0, v * dt)
+                self.pos = (self.pos[0] + (path.points[0][0] - self.pos[0]) / d0 * step_m,
+                            self.pos[1] + (path.points[0][1] - self.pos[1]) / d0 * step_m)
+                self.heading = math.atan2(path.points[0][1] - self.pos[1], path.points[0][0] - self.pos[0])
+                self.speed = v
+                self._walk_base += step_m
+                self.distance_walked = self._walk_base
+                self.state = EmbodimentState.ON_FOOT
+                self.activity = "traveling"
                 return False
             self.ped.dist = rd
             self.ped._update_segment_index()

@@ -429,8 +429,12 @@ class OutbreakRuntime:
             # hunt: plan toward the victim's node (the planner + executor move the body)
             vrt = self.mobility.citizens[best]
             tgt = vrt.current_node
-            if self.undead_targets.get(ucid) != best or urt.active_goal is None:
+            if self.undead_targets.get(ucid) != best or urt.active_goal is None or ux.trip_failed:
                 self.undead_targets[ucid] = best
+                # the hunter's planner must know the prey's node (its building
+                # and entrance) to build an ENTER_BUILDING step for it
+                if tgt is not None and tgt not in urt.node_meta and tgt in vrt.node_meta:
+                    urt.node_meta[tgt] = dict(vrt.node_meta[tgt])
                 _drop_goals(urt, "emergency", "schedule", "health", "disruption")
                 urt.goals.goals = []
                 g = Goal(GoalKind.RETRIEVE, target=tgt, reason=f"hunting citizen {best}",
