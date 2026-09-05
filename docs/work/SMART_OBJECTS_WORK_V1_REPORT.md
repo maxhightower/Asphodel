@@ -10,8 +10,8 @@ the gates measure.
 |---|---|
 | starting SHA | `a9192b1` (two documentation commits after the certified outbreak SHA `d72d63c`), branch `claude/asphodel-embodied-mobility-v1-6gl4a8` |
 | merge base with `origin/main` | `bee2f18a1827` |
-| final SHA | `FINAL_SHA_PLACEHOLDER` (pushed to `origin/claude/asphodel-embodied-mobility-v1-6gl4a8`) |
-| commits in this milestone | COMMITS_PLACEHOLDER |
+| final SHA | `02b3ce7 (certification commit; the SHA stamp itself is the following commit)` (pushed to `origin/claude/asphodel-embodied-mobility-v1-6gl4a8`) |
+| commits in this milestone | 16 |
 | certification city | Houston (`godot/bundles/houston`, 300 citizens, 297 registered, 211 employed) |
 | tooling | CPython 3.11.15, Godot 4.4 stable headless + xvfb/Mesa, 4-core shared container |
 
