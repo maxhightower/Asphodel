@@ -366,13 +366,13 @@ def test_O19_parity(day):
         _status("O19", "NOT_RUN", "no Godot probe trace")
         return
     ob, idx = day["ob"], day["index"]
-    mine = [(e["event"], e["citizen_id"]) for e in ob.events if e["event"] in
-            ("SYMPTOM_ONSET", "INCAPACITATED", "DEATH", "REANIMATION") and e["citizen_id"] == idx]
-    theirs = [(e["event"], e["citizen_id"]) for e in p.get("events", []) if e["event"] in
-              ("SYMPTOM_ONSET", "INCAPACITATED", "DEATH", "REANIMATION") and e["citizen_id"] == idx]
+    mine = [(e["event"], e.get("citizen_id")) for e in ob.events if e["event"] in
+            ("SYMPTOM_ONSET", "INCAPACITATED", "DEATH", "REANIMATION") and e.get("citizen_id") == idx]
+    theirs = [(e["event"], e.get("citizen_id")) for e in p.get("events", []) if e["event"] in
+              ("SYMPTOM_ONSET", "INCAPACITATED", "DEATH", "REANIMATION") and e.get("citizen_id") == idx]
     ok = theirs[:len(mine)] == mine[:len(theirs)] and len(theirs) >= 4
-    tm = {e["event"]: e["t"] for e in p.get("events", []) if e["citizen_id"] == idx and e["event"] in ("SYMPTOM_ONSET", "DEATH", "REANIMATION")}
-    tp = {e["event"]: e["t"] for e in ob.events if e["citizen_id"] == idx and e["event"] in ("SYMPTOM_ONSET", "DEATH", "REANIMATION")}
+    tm = {e["event"]: e["t"] for e in p.get("events", []) if e.get("citizen_id") == idx and e["event"] in ("SYMPTOM_ONSET", "DEATH", "REANIMATION")}
+    tp = {e["event"]: e["t"] for e in ob.events if e.get("citizen_id") == idx and e["event"] in ("SYMPTOM_ONSET", "DEATH", "REANIMATION")}
     same_t = all(abs(tm.get(k, -1) - tp.get(k, -2)) < 1e-6 for k in tp)
     _status("O19", "PASS" if ok and same_t else "FAIL",
             f"in-engine run reproduced the index case's biological events {theirs} at identical timestamps: {same_t}")
