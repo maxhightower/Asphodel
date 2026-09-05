@@ -198,8 +198,14 @@ def test_the_band_returns_to_route_simulated_when_the_player_leaves(lod):
 def test_object_state_keeps_accumulating_across_every_band_change(lod):
     seq = [lod[p]["deltas"] for p in ("far_a", "far_b", "near_a", "near_b", "back_a", "back_b")]
     assert seq[0], "the shop's objects never changed state"
+    from asphodel.smart.objects import OBJECT_KINDS
+    reg = lod["world"].work.registry(6059)
     for earlier, later in zip(seq, seq[1:]):
-        assert set(earlier) <= set(later), "an object's persisted state was dropped"
+        # a delta may legitimately disappear when an object's state returns to its
+        # kind default (a dirty object that was cleaned); anything else is a drop
+        dropped = [o for o in set(earlier) - set(later)
+                   if reg.get(o) is None or reg.get(o).state != OBJECT_KINDS.get(reg.get(o).kind, {}).get("state", {})]
+        assert not dropped, f"an object's persisted state was dropped: {dropped}"
 
 
 def test_the_work_event_stream_never_stalls_or_rewinds(lod):

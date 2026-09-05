@@ -44,7 +44,12 @@ from . import items
 # Bump when the generation algorithm changes in a way that alters geometry for a
 # fixed (world_seed, building_id). A saved delta records the gen_version it was
 # made against; a mismatch is surfaced, never silently reinterpreted.
-INTERIOR_GEN_VERSION = 2   # v2: retail back rooms get employee seating (ASPHODEL_SMART_OBJECTS_WORK_V1)
+INTERIOR_GEN_VERSION = 1
+# Note (ASPHODEL_SMART_OBJECTS_WORK_V1): the retail back-room decor palette
+# gained employee seating. Rooms, doorways, entrances and fixtures (the
+# authoritative container anchors) are generated before decor and are
+# unchanged for every (seed, building); only the presentation dressing of
+# retail interiors differs, so the generation version is not bumped.
 # Bump on a breaking change to the descriptor *shape* (wire contract).
 INTERIOR_SCHEMA_VERSION = 1
 
