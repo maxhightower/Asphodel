@@ -159,6 +159,9 @@ class World:
         # for registered citizens), advanced on the same movement clock.
         self.outbreak = None
         self._pending_outbreak_state = None
+        # ASPHODEL_SMART_OBJECTS_WORK_V1: rooms / smart objects / work execution
+        self.work = None
+        self._pending_work_state = None
 
     # ------------------------------------------------------------------ inputs
     def set_focus(self, zones) -> None:
@@ -245,6 +248,9 @@ class World:
             runtime = MobilityRuntime(graph, entrances, anchors, ctx=ctx,
                                       bundle_dir=bundle_dir, seed=self._seed)
         self.mobility = runtime
+        # errands go to shops: a cheap archetype query (no interior is built)
+        if getattr(runtime, "shop_predicate", None) is None:
+            runtime.shop_predicate = self.is_shop
         if register_all:
             hour = self.current_hour()
             for cid in sorted(self.citizens):
@@ -282,6 +288,35 @@ class World:
     def outbreak_snapshot(self, since_seq: int = 0) -> dict | None:
         return None if self.outbreak is None else self.outbreak.snapshot(since_seq)
 
+    # ------------------------------------------------ smart objects / work
+    def enable_work(self, employ: bool = True):
+        """Attach the WorkRuntime (needs mobility): rooms and smart objects
+        are generated per building from the canonical interior descriptor;
+        employment is a deterministic function of seed/citizen/workplace. A
+        pending saved state is restored instead (no re-assignment)."""
+        from .smart import WorkRuntime
+        if self.mobility is None:
+            raise ValueError("enable_work needs enable_mobility first")
+        pending = self._pending_work_state
+        if pending is not None:
+            self.work = WorkRuntime.from_state(pending, self.mobility, self.interior_descriptor)
+            self._pending_work_state = None
+            return self.work
+        w = WorkRuntime(self.mobility, self._seed, self.interior_descriptor)
+        self.work = w
+        if employ:
+            w.employ_all(self.citizens)
+        return w
+
+    def work_snapshot(self, since_seq: int = 0) -> dict | None:
+        return None if self.work is None else self.work.snapshot(since_seq)
+
+    def _merge_work(self, snap: dict) -> None:
+        """Stamp each mobility citizen row with its room/object/task context."""
+        w = self.work
+        for row in snap.get("citizens", []):
+            row["work"] = w.row(int(row["citizen_id"]))
+
     def advance_seconds(self, seconds: float, focus_xy=None, auto_tick: bool = True) -> dict:
         """Advance continuous game time by ``seconds`` (the embodied clock).
 
@@ -304,6 +339,8 @@ class World:
                 self.mobility.advance(chunk, self.current_hour())
                 if self.outbreak is not None:
                     self.outbreak.advance(chunk)
+                if self.work is not None:
+                    self.work.advance(chunk)
             self._subtick_s += chunk
             remaining -= chunk
             if auto_tick and self._subtick_s >= self.tick_seconds - 1e-9:
@@ -321,6 +358,8 @@ class World:
         snap = self.mobility.snapshot(include_routes=include_routes)
         if self.outbreak is not None:
             self._merge_health(snap)
+        if self.work is not None:
+            self._merge_work(snap)
         return snap
 
     def _merge_health(self, snap: dict) -> None:
@@ -370,6 +409,37 @@ class World:
             from .survival import Survival
             self.survival = Survival(world_seed=self._seed)
         return self.survival
+
+    def building_archetype(self, building_id: int) -> str:
+        """The interior archetype a building would get (house / retail /
+        office / clinic / industrial / school / civic), without building it."""
+        from . import interiors
+        ctx = self.spatial_ctx
+        if ctx is None:
+            return "generic"
+        bid = int(building_id)
+        poly = ctx.building_poly(bid)
+        height = ctx.building_height(bid)
+        arch_hint = ctx.building_arch(bid) if hasattr(ctx, "building_arch") else None
+        if not poly:
+            return "generic"
+        xs = [p[0] for p in poly]
+        ys = [p[1] for p in poly]
+        area = (max(xs) - min(xs)) * (max(ys) - min(ys))
+        return interiors.archetype_for(self._seed, bid, area, height, arch_hint)
+
+    def is_shop(self, building_id: int) -> bool:
+        """A retail interior that somebody in the canonical population works
+        at: errands go where there is a till to be served at. Pure data: the
+        workplace set comes from the bundle's citizens, the archetype from the
+        building's footprint/exterior class and the world seed."""
+        bid = int(building_id)
+        wps = getattr(self, "_workplace_ids", None)
+        if wps is None:
+            wps = {int(getattr(c, "work_building_id")) for c in self.citizens.values()
+                   if getattr(c, "work_building_id", None) is not None}
+            self._workplace_ids = wps
+        return bid in wps and self.building_archetype(bid) == "retail"
 
     def interior_descriptor(self, building_id: int, gen_version: int | None = None):
         """The authoritative, deterministic interior for a building (immutable base

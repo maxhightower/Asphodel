@@ -47,6 +47,7 @@ MOBILITY_SCHEMA_VERSION = 1
 SUBSTEP_S = 1.0            # fixed integration step (game seconds); determinism
 CATCHUP_SUBSTEP_S = 5.0    # coarse step used to fast-forward a re-activated citizen
 MAX_FAILURES_PER_GOAL = 3
+ERRAND_SHOP_RADIUS_M = 1200.0      # errands prefer the nearest shop within this radius
 RETRY_WAIT_S = 120.0
 
 
@@ -109,6 +110,8 @@ class MobilityRuntime:
         self.events: List[dict] = []
         self.transitions: List[dict] = []           # LOD promotions / demotions
         self.unregistered: Dict[int, str] = {}      # cid -> reason it stays FAR
+        self.work = None                            # WorkRuntime, when smart objects are enabled
+        self.shop_predicate = None                  # bid -> bool: "is a shop" (errands go there)
 
     # -- registration --------------------------------------------------------
     def node_for_building(self, bid: int) -> Optional[str]:
@@ -130,7 +133,10 @@ class MobilityRuntime:
         return xy
 
     def _errand_building(self, home_bid: int, home_xy: Vec2) -> Optional[int]:
-        """A deterministic nearby non-home building with an entrance."""
+        """A deterministic nearby non-home building with an entrance: the
+        nearest *shop* (a building whose interior is retail, judged by
+        ``shop_predicate`` when the world provides one) within
+        ``ERRAND_SHOP_RADIUS_M``, else the nearest building at least 30 m away."""
         if self.ctx is None:
             return None
         best, bestd = None, math.inf
@@ -139,7 +145,19 @@ class MobilityRuntime:
             return None
         import numpy as np
         d2 = (cents[:, 0] - home_xy[0]) ** 2 + (cents[:, 1] - home_xy[1]) ** 2
-        for idx in np.argsort(d2, kind="stable")[:40]:
+        order = np.argsort(d2, kind="stable")
+        pred = self.shop_predicate
+        if pred is not None:
+            for idx in order[:400]:
+                b = int(idx)
+                d = float(d2[idx])
+                if d > ERRAND_SHOP_RADIUS_M ** 2:
+                    break
+                if b == home_bid or b not in self.entrances or d < 30.0 ** 2:
+                    continue
+                if pred(b):
+                    return b
+        for idx in order[:40]:
             b = int(idx)
             if b == home_bid or b not in self.entrances:
                 continue

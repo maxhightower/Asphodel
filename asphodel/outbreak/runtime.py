@@ -112,9 +112,18 @@ class OutbreakRuntime:
         return row
 
     def _where(self, ex: TripExecutor) -> dict:
-        return {"x": round(ex.pos[0], 1), "y": round(ex.pos[1], 1),
-                "building_id": int(ex.building_id), "vehicle_id": ex.vehicle_id,
-                "embodiment": ex.state.value}
+        d = {"x": round(ex.pos[0], 1), "y": round(ex.pos[1], 1),
+             "building_id": int(ex.building_id), "vehicle_id": ex.vehicle_id,
+             "embodiment": ex.state.value}
+        # ASPHODEL_SMART_OBJECTS_WORK_V1: room / station context when the
+        # smart-object layer is enabled (the building is no longer one room)
+        work = getattr(self.mobility, "work", None)
+        if work is not None and ex.inside and ex.building_id >= 0:
+            c = work.context(ex.citizen_id)
+            d["room_id"] = c.get("room_id")
+            d["zone"] = c.get("zone")
+            d["object_id"] = c.get("object_id")
+        return d
 
     # -- seeding ---------------------------------------------------------------
     def seed_index_case(self, cid: int, context: str = "index_case") -> HealthRecord:

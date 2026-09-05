@@ -33,7 +33,9 @@ from typing import Any
 #      continuous movement clock, NEAR-body physical reports, the movement snapshot).
 # v5: + SEED_OUTBREAK / GET_OUTBREAK and the START_WORLD `outbreak` option
 #      (ASPHODEL_OUTBREAK_V1: per-citizen health, events, disruptions).
-PROTOCOL_VERSION = 5
+# v6: + GET_WORK / GET_ROOMS / SET_OBJECT_STATE and the START_WORLD `work`
+#      option (ASPHODEL_SMART_OBJECTS_WORK_V1: rooms, smart objects, work).
+PROTOCOL_VERSION = 6
 
 
 class Command:
@@ -73,6 +75,10 @@ class Command:
     # --- Outbreak (v5) ----------------------------------------------------
     SEED_OUTBREAK = "SEED_OUTBREAK"          # enable the outbreak runtime / seed an index case
     GET_OUTBREAK = "GET_OUTBREAK"            # health rows + events since a sequence number
+    # --- smart objects / work (v6) --------------------------------------
+    GET_WORK = "GET_WORK"                    # sessions, reservations, queues, events since seq
+    GET_ROOMS = "GET_ROOMS"                  # rooms, zones, smart objects and occupants of a building
+    SET_OBJECT_STATE = "SET_OBJECT_STATE"    # authoritative external object state change
 
     ALL = frozenset({
         HELLO, START_WORLD, SET_FOCUS, ADVANCE, INTERVENE, INTERACT_WITH,
@@ -82,6 +88,7 @@ class Command:
         GET_INTERIOR,
         ADVANCE_TIME, MOBILITY_REPORT, GET_MOBILITY,
         SEED_OUTBREAK, GET_OUTBREAK,
+        GET_WORK, GET_ROOMS, SET_OBJECT_STATE,
     })
 
 

@@ -173,6 +173,10 @@ class WorldSession:
                                       seed_index_case=bool(opts.get("seed_index_case", True)))
             except KeyError as e:
                 raise _BadArg(str(e))
+        # ASPHODEL_SMART_OBJECTS_WORK_V1: rooms / smart objects / work execution,
+        # on by default whenever mobility is on (`work: false` opts out).
+        if world.mobility is not None and bool(msg.get("work", True)):
+            world.enable_work()
         self.world = world
         self.paused = False
         self.bundle = bundle
@@ -287,6 +291,53 @@ class WorldSession:
         return P.response(Command.GET_OUTBREAK, id=rid,
                           outbreak=self.world.outbreak_snapshot(since_seq=since),
                           **self._summary())
+
+    # ---------------------------------------------------- smart objects / work (v6)
+    def _cmd_get_work(self, msg, rid) -> dict:
+        self._require_world(Command.GET_WORK)
+        since = _opt_int(msg.get("since_seq"), "since_seq") or 0
+        return P.response(Command.GET_WORK, id=rid,
+                          work=self.world.work_snapshot(since_seq=since),
+                          **self._summary())
+
+    def _cmd_get_rooms(self, msg, rid) -> dict:
+        """Rooms, zones, smart objects (with live state and holders) and the
+        occupants of each room of one building."""
+        self._require_world(Command.GET_ROOMS)
+        w = self.world.work
+        if w is None:
+            raise _BadArg("work runtime not enabled")
+        bid = _opt_int(msg.get("building_id"), "building_id")
+        if bid is None:
+            raise _BadArg("building_id required")
+        reg = w.registry(bid)
+        g = w.graph(bid)
+        objs = []
+        for oid, o in sorted(reg.objects.items()):
+            r = o.to_row()
+            r["holders"] = w.ledger.holders_of(oid)
+            r["queue"] = list(w.queues.get(oid, []))
+            objs.append(r)
+        return P.response(Command.GET_ROOMS, id=rid, building_id=int(bid),
+                          rooms=g.rows(), objects=objs,
+                          entrance=[round(g.entrance_xy[0], 2), round(g.entrance_xy[1], 2)],
+                          occupants={str(r): c for r, c in sorted(w.occupants_by_room(bid).items())},
+                          status=w.workplace_status(bid), **self._summary())
+
+    def _cmd_set_object_state(self, msg, rid) -> dict:
+        self._require_world(Command.SET_OBJECT_STATE)
+        w = self.world.work
+        if w is None:
+            raise _BadArg("work runtime not enabled")
+        oid = str(msg.get("object_id") or "")
+        key = str(msg.get("key") or "")
+        if not oid.startswith("so:") or not key:
+            raise _BadArg("object_id (so:<building>:<k>) and key required")
+        o = w.set_object_state(oid, key, msg.get("value"))
+        if o is None:
+            raise _BadArg(f"unknown object {oid}")
+        return P.response(Command.SET_OBJECT_STATE, id=rid, object=o.to_row(),
+                          holders=w.ledger.holders_of(oid), **self._summary())
 
     def _cmd_get_mobility(self, msg, rid) -> dict:
         self._require_world(Command.GET_MOBILITY)
@@ -508,6 +559,9 @@ class WorldSession:
                 # Outbreak: restore health records/events; never re-seed.
                 if world._pending_outbreak_state is not None and world.mobility is not None:
                     world.enable_outbreak()
+                # Smart objects / work: restore sessions, reservations and object state.
+                if world._pending_work_state is not None and world.mobility is not None:
+                    world.enable_work()
         except Exception:
             pass
         return P.response(Command.LOAD, id=rid, path=path, **self._summary())
@@ -537,6 +591,7 @@ class WorldSession:
             "game_seconds": float(self.world.game_seconds),
             "mobility_enabled": self.world.mobility is not None,
             "outbreak_enabled": self.world.outbreak is not None,
+            "work_enabled": self.world.work is not None,
         }
 
 

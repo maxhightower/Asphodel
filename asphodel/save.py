@@ -293,6 +293,7 @@ def world_state(world: World, *, bundle: str | None = None,
         "mobility": (None if world.mobility is None else world.mobility.to_state()),
         # ASPHODEL_OUTBREAK_V1: health records, events, disruptions (None when off).
         "outbreak": (None if world.outbreak is None else world.outbreak.to_state()),
+        "work": (None if world.work is None else world.work.to_state()),
         # Package 3: survival runtime (None when the world has no survival loop).
         "survival": (world.survival.to_state() if world.survival is not None
                      else None),
@@ -325,6 +326,7 @@ def load_world(state: dict) -> World:
     # re-attached the bundle's street graph (the session does this on LOAD).
     world._pending_mobility_state = state.get("mobility")
     world._pending_outbreak_state = state.get("outbreak")
+    world._pending_work_state = state.get("work")
     world.focus = set(int(z) for z in w["focus"])
     world.reactions_enabled = bool(w["reactions_enabled"])
     world._proximity = {int(k): int(v) for k, v in w["proximity"].items()}
