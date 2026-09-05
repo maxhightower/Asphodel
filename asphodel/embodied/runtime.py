@@ -91,7 +91,7 @@ class MobilityRuntime:
         self.parking = ParkingIndex(bundle_dir, list(anchors), entrances)
         self.lod = lod or LODController(physical_radius=150.0, near_radius=400.0,
                                         route_radius=2500.0, hysteresis=40.0)
-        self.max_active = 256          # ROUTE_SIMULATED budget before ABSTRACT overflow
+        self.max_active = 1024         # ROUTE_SIMULATED budget before ABSTRACT overflow (covers the canonical populations)
         self.now_s = 0.0
         self.focus_xy: Optional[Vec2] = None
         self.records: Dict[int, CitizenRecord] = {}
