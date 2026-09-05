@@ -250,7 +250,7 @@ class TripExecutor:
                 pass
         elif kind == "":
             self.state = EmbodimentState(self._pre_override_state or "on_foot")
-        self.event(now_s, "override", kind=kind, building_id=self.building_id, vehicle_id=self.vehicle_id)
+        self.event(now_s, "override", override=kind, building_id=self.building_id, vehicle_id=self.vehicle_id)
 
     def alive_for_contact(self) -> bool:
         """Can this citizen be exposed / attacked (alive and not already undead)?"""
