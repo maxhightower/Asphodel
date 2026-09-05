@@ -200,7 +200,7 @@ func _run() -> void:
 	var row := _citizen_row(m)
 	_place_player(row)
 	await _settle(90)
-	await _shot("00_infected_ordinary_morning.png", "incubating citizen %d at work (building %s), ordinary life" % [_cid, str(row.get("building_id"))])
+	await _shot("00_infected_ordinary_morning.png", "incubating citizen %d inside building %s (%s), ordinary life before onset" % [_cid, str(row.get("building_id")), str(row.get("state"))])
 	# incubating inside the workplace: nothing to render, coarse-step to just before onset
 	h = float(SimBridge.last_summary.get("hour", 0.0))
 	if h < onset_hour - 0.05:
