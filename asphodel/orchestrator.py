@@ -155,6 +155,10 @@ class World:
         self.mobility = None
         self._subtick_s = 0.0
         self._pending_mobility_state = None
+        # ASPHODEL_OUTBREAK_V1: the per-citizen outbreak runtime (health authority
+        # for registered citizens), advanced on the same movement clock.
+        self.outbreak = None
+        self._pending_outbreak_state = None
 
     # ------------------------------------------------------------------ inputs
     def set_focus(self, zones) -> None:
@@ -250,6 +254,34 @@ class World:
                 runtime.register(prof, hour)
         return runtime
 
+    def enable_outbreak(self, pathogen="classic_zombie", index_case=None,
+                        seed_index_case: bool = True):
+        """Attach the OutbreakRuntime (needs mobility). ``index_case`` = citizen id
+        or None for the data-driven choice; a pending saved state is restored
+        instead (no re-seeding)."""
+        from .outbreak import OutbreakRuntime, OutbreakPathogen, pathogen_by_name
+        if self.mobility is None:
+            raise ValueError("enable_outbreak needs enable_mobility first")
+        pending = self._pending_outbreak_state
+        if pending is not None:
+            self.outbreak = OutbreakRuntime.from_state(pending, self.mobility)
+            self._pending_outbreak_state = None
+            return self.outbreak
+        p = pathogen if isinstance(pathogen, OutbreakPathogen) else pathogen_by_name(str(pathogen))
+        ob = OutbreakRuntime(self.mobility, self._seed, p)
+        ob.now_s = self.mobility.now_s
+        ob._next_contact_s = ob.now_s
+        ob._next_undead_s = ob.now_s
+        self.outbreak = ob
+        if seed_index_case:
+            cid = index_case if index_case is not None else ob.choose_index_case()
+            if cid is not None:
+                ob.seed_index_case(int(cid))
+        return ob
+
+    def outbreak_snapshot(self, since_seq: int = 0) -> dict | None:
+        return None if self.outbreak is None else self.outbreak.snapshot(since_seq)
+
     def advance_seconds(self, seconds: float, focus_xy=None, auto_tick: bool = True) -> dict:
         """Advance continuous game time by ``seconds`` (the embodied clock).
 
@@ -270,6 +302,8 @@ class World:
             chunk = min(remaining, room) if auto_tick else remaining
             if self.mobility is not None:
                 self.mobility.advance(chunk, self.current_hour())
+                if self.outbreak is not None:
+                    self.outbreak.advance(chunk)
             self._subtick_s += chunk
             remaining -= chunk
             if auto_tick and self._subtick_s >= self.tick_seconds - 1e-9:
@@ -284,7 +318,18 @@ class World:
     def mobility_snapshot(self, include_routes: bool = True) -> dict | None:
         if self.mobility is None:
             return None
-        return self.mobility.snapshot(include_routes=include_routes)
+        snap = self.mobility.snapshot(include_routes=include_routes)
+        if self.outbreak is not None:
+            self._merge_health(snap)
+        return snap
+
+    def _merge_health(self, snap: dict) -> None:
+        """Stamp each mobility citizen row with its health state (one row per
+        citizen on the wire; Godot embodies corpse/undead from it)."""
+        recs = self.outbreak.records
+        for row in snap.get("citizens", []):
+            r = recs.get(int(row["citizen_id"]))
+            row["health"] = "susceptible" if r is None else r.state.value
 
     def _mobility_location(self, cid: int, zone):
         """PhysicalLocation from the executor (MID/NEAR authority), or None."""
@@ -657,6 +702,9 @@ class World:
             out["activity_occupancy"] = self.activity_occupancy()
         if self.mobility is not None:
             out["mobility"] = self.mobility.snapshot(include_routes=True)
+            if self.outbreak is not None:
+                self._merge_health(out["mobility"])
+                out["outbreak"] = self.outbreak.snapshot()
         if len(self.roster) > 0:
             out["roster"] = [
                 {"citizen_id": r.citizen_id,

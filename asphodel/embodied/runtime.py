@@ -462,6 +462,8 @@ class MobilityRuntime:
             ex = self.execs[cid]
             # An idle citizen inside a building with nothing to execute costs
             # nothing between schedule syncs (the LOD budget lives here).
+            if ex.override in ("incapacitated", "corpse"):
+                continue
             if ex.current_step is None and ex.inside and self.citizens[cid].plan_serial == ex.plan_serial:
                 continue
             self._advance_one(cid, dt)
@@ -534,6 +536,7 @@ class MobilityRuntime:
             "band": self.bands.get(cid, LODBand.ROUTE_SIMULATED).name.lower(),
             "goal": None if rt.active_goal is None else rt.active_goal.kind.value,
             "goal_target": None if rt.active_goal is None else rt.active_goal.target,
+            "override": ex.override,
             "failure": ex.failure or rt.current_failure or "",
             "trip_failed": ex.trip_failed,
             "blocked": bool((ex.car and ex.car.blocked) or (ex.ped and ex.ped.blocked)),

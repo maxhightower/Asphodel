@@ -291,6 +291,8 @@ def world_state(world: World, *, bundle: str | None = None,
         # ASPHODEL_EMBODIED_MOBILITY_V1: itineraries, executor state, vehicles,
         # parking occupancy, LOD bands (None when mobility is not enabled).
         "mobility": (None if world.mobility is None else world.mobility.to_state()),
+        # ASPHODEL_OUTBREAK_V1: health records, events, disruptions (None when off).
+        "outbreak": (None if world.outbreak is None else world.outbreak.to_state()),
         # Package 3: survival runtime (None when the world has no survival loop).
         "survival": (world.survival.to_state() if world.survival is not None
                      else None),
@@ -322,6 +324,7 @@ def load_world(state: dict) -> World:
     # Mobility state is restored by World.enable_mobility once the caller has
     # re-attached the bundle's street graph (the session does this on LOAD).
     world._pending_mobility_state = state.get("mobility")
+    world._pending_outbreak_state = state.get("outbreak")
     world.focus = set(int(z) for z in w["focus"])
     world.reactions_enabled = bool(w["reactions_enabled"])
     world._proximity = {int(k): int(v) for k, v in w["proximity"].items()}

@@ -61,17 +61,26 @@ func apply(block: Dictionary, game_dt: float = 0.0) -> void:
 	var citizens: Dictionary = {}
 	for row in block.get("citizens", []):
 		citizens["cit:%d" % int(row["citizen_id"])] = row
-	# --- citizens on foot ----------------------------------------------------
+	# --- citizens on foot (living, undead) and corpses ------------------------
 	for id in near:
 		var row: Dictionary = citizens.get(id, {})
 		if row.is_empty():
 			continue
 		var st: String = str(row.get("state", ""))
-		if st in ["on_foot", "approaching_vehicle", "entering_vehicle", "exiting_vehicle"]:
+		var health: String = str(row.get("health", "susceptible"))
+		if st in ["on_foot", "approaching_vehicle", "entering_vehicle", "exiting_vehicle", "undead"]:
 			var body := _ensure_citizen(id, row)
 			body.set_follow_target(Vector3(float(row["x"]), _ground_y + body_height, float(row["y"])),
 				float(row.get("speed", 0.0)) * time_scale)
 			_set_gait(body, float(row.get("speed", 0.0)))
+			_apply_health_look(body, health, st)
+			keep[id] = true
+		elif st in ["corpse", "incapacitated"] and int(row.get("building_id", -1)) < 0 \
+				and row.get("vehicle_id") == null:
+			# a body on the street at the authoritative death location: solid, lying down
+			var body := _ensure_citizen(id, row)
+			body.set_follow_target(Vector3(float(row["x"]), _ground_y + body_height, float(row["y"])), 0.0)
+			_apply_health_look(body, health, st)
 			keep[id] = true
 	# --- vehicles -------------------------------------------------------------
 	for row in block.get("vehicles", []):
@@ -142,6 +151,52 @@ func _ensure_citizen(id: String, row: Dictionary) -> CitizenBody:
 	bodies[id] = b
 	promotions += 1
 	return b
+
+
+var _undead_mat: StandardMaterial3D = null
+var _corpse_mat: StandardMaterial3D = null
+var _sick_mat: StandardMaterial3D = null
+
+
+func _apply_health_look(b: CitizenBody, health: String, st: String) -> void:
+	## Presentation of the authoritative health state (never decided here):
+	## undead = grey-green tint, corpse/incapacitated = lying down, symptomatic = pale.
+	var want := ""
+	if health == "undead":
+		want = "undead"
+	elif st == "corpse" or st == "incapacitated" or health == "corpse" or health == "dead":
+		want = "corpse"
+	elif health == "symptomatic":
+		want = "sick"
+	if b.get_meta("health_look", "") == want:
+		return
+	b.set_meta("health_look", want)
+	b.set_meta("health", health)
+	for c in b.get_children():
+		if c is CitizenAvatar:
+			if want == "undead":
+				if _undead_mat == null:
+					_undead_mat = StandardMaterial3D.new()
+					_undead_mat.albedo_color = Color(0.45, 0.62, 0.42)
+				c.set_material_override(_undead_mat)
+				c.rotation = Vector3.ZERO
+			elif want == "corpse":
+				if _corpse_mat == null:
+					_corpse_mat = StandardMaterial3D.new()
+					_corpse_mat.albedo_color = Color(0.5, 0.45, 0.42)
+				c.set_material_override(_corpse_mat)
+				c.rotation = Vector3(0.0, 0.0, PI / 2.0)      # lying on the ground
+				c.position = Vector3(0.0, -body_height + 0.35, 0.0)
+			elif want == "sick":
+				if _sick_mat == null:
+					_sick_mat = StandardMaterial3D.new()
+					_sick_mat.albedo_color = Color(0.85, 0.85, 0.7)
+				c.set_material_override(_sick_mat)
+				c.rotation = Vector3.ZERO
+			else:
+				c.set_material_override(_material)
+				c.rotation = Vector3.ZERO
+				c.position = Vector3(0.0, -body_height, 0.0)
 
 
 func _set_gait(b: CitizenBody, speed: float) -> void:

@@ -31,7 +31,9 @@ from typing import Any
 # v3: + GET_INTERIOR (walk-in interiors: authoritative interior descriptor).
 # v4: + ADVANCE_TIME / MOBILITY_REPORT / GET_MOBILITY (embodied mobility: the
 #      continuous movement clock, NEAR-body physical reports, the movement snapshot).
-PROTOCOL_VERSION = 4
+# v5: + SEED_OUTBREAK / GET_OUTBREAK and the START_WORLD `outbreak` option
+#      (ASPHODEL_OUTBREAK_V1: per-citizen health, events, disruptions).
+PROTOCOL_VERSION = 5
 
 
 class Command:
@@ -68,6 +70,10 @@ class Command:
     MOBILITY_REPORT = "MOBILITY_REPORT"      # NEAR bodies report physical positions/blockage
     GET_MOBILITY = "GET_MOBILITY"            # movement snapshot without advancing
 
+    # --- Outbreak (v5) ----------------------------------------------------
+    SEED_OUTBREAK = "SEED_OUTBREAK"          # enable the outbreak runtime / seed an index case
+    GET_OUTBREAK = "GET_OUTBREAK"            # health rows + events since a sequence number
+
     ALL = frozenset({
         HELLO, START_WORLD, SET_FOCUS, ADVANCE, INTERVENE, INTERACT_WITH,
         PAUSE, RESUME, SNAPSHOT, SAVE, LOAD, SHUTDOWN,
@@ -75,6 +81,7 @@ class Command:
         TAKE_ITEM, DROP_ITEM, USE_ITEM, INSPECT_INVENTORY,
         GET_INTERIOR,
         ADVANCE_TIME, MOBILITY_REPORT, GET_MOBILITY,
+        SEED_OUTBREAK, GET_OUTBREAK,
     })
 
 

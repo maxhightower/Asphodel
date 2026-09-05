@@ -156,6 +156,17 @@ class WorldSession:
         elif player_home_zone is not None:
             world.set_focus([player_home_zone])
 
+        # ASPHODEL_OUTBREAK_V1: optional outbreak at start
+        # (`outbreak: {"pathogen": "classic_zombie", "citizen_id": 4}` or `outbreak: true`).
+        ob_opt = msg.get("outbreak")
+        if ob_opt and world.mobility is not None:
+            opts = ob_opt if isinstance(ob_opt, dict) else {}
+            try:
+                world.enable_outbreak(str(opts.get("pathogen", "classic_zombie")),
+                                      index_case=_opt_int(opts.get("citizen_id"), "citizen_id"),
+                                      seed_index_case=bool(opts.get("seed_index_case", True)))
+            except KeyError as e:
+                raise _BadArg(str(e))
         self.world = world
         self.paused = False
         self.bundle = bundle
@@ -234,6 +245,42 @@ class WorldSession:
         if self.world.mobility is not None:
             applied = self.world.mobility.apply_physical_report(bodies, float(dt))
         return P.response(Command.MOBILITY_REPORT, id=rid, applied=applied)
+
+    # ---------------------------------------------------- outbreak (v5)
+    def _cmd_seed_outbreak(self, msg, rid) -> dict:
+        """Enable the outbreak runtime (needs mobility) and seed an index case.
+        ``pathogen`` (archetype name, default classic_zombie), ``citizen_id``
+        (explicit index case; omitted = data-driven choice), ``seed_index_case``
+        (false = enable without an index case)."""
+        self._require_world(Command.SEED_OUTBREAK)
+        if self.world.mobility is None:
+            raise _BadArg("SEED_OUTBREAK needs a world with mobility enabled")
+        pathogen = msg.get("pathogen", "classic_zombie")
+        if not isinstance(pathogen, str):
+            raise _BadArg("SEED_OUTBREAK 'pathogen' must be an archetype name")
+        cid = _opt_int(msg.get("citizen_id"), "citizen_id")
+        if self.world.outbreak is None:
+            try:
+                self.world.enable_outbreak(pathogen, index_case=cid,
+                                           seed_index_case=bool(msg.get("seed_index_case", True)))
+            except KeyError as e:
+                raise _BadArg(str(e))
+        elif cid is not None:
+            if cid not in self.world.mobility.execs:
+                raise _BadArg(f"citizen {cid} is not an embodied citizen")
+            self.world.outbreak.seed_index_case(cid)
+        ob = self.world.outbreak
+        index = [e for e in ob.events if e["event"] == "INFECTED"]
+        return P.response(Command.SEED_OUTBREAK, id=rid, pathogen=ob.pathogen.name,
+                          index_case=(index[0]["citizen_id"] if index else None),
+                          outbreak=ob.snapshot(), **self._summary())
+
+    def _cmd_get_outbreak(self, msg, rid) -> dict:
+        self._require_world(Command.GET_OUTBREAK)
+        since = _opt_int(msg.get("since_seq"), "since_seq") or 0
+        return P.response(Command.GET_OUTBREAK, id=rid,
+                          outbreak=self.world.outbreak_snapshot(since_seq=since),
+                          **self._summary())
 
     def _cmd_get_mobility(self, msg, rid) -> dict:
         self._require_world(Command.GET_MOBILITY)
@@ -452,6 +499,9 @@ class WorldSession:
                 # Embodied mobility: restore trips exactly where they were.
                 if world._pending_mobility_state is not None:
                     self._enable_mobility(world, bdir, True)
+                # Outbreak: restore health records/events; never re-seed.
+                if world._pending_outbreak_state is not None and world.mobility is not None:
+                    world.enable_outbreak()
         except Exception:
             pass
         return P.response(Command.LOAD, id=rid, path=path, **self._summary())
@@ -480,6 +530,7 @@ class WorldSession:
             "hour": float(self.world.current_hour()),
             "game_seconds": float(self.world.game_seconds),
             "mobility_enabled": self.world.mobility is not None,
+            "outbreak_enabled": self.world.outbreak is not None,
         }
 
 

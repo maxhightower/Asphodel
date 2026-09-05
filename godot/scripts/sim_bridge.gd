@@ -20,7 +20,7 @@ signal connected_changed(is_connected: bool)
 signal world_started(summary: Dictionary)
 signal advanced(tick: int, outbreak: float, summary: Dictionary)
 
-const PROTOCOL_VERSION := 4   # v4: + ADVANCE_TIME / MOBILITY_REPORT / GET_MOBILITY (embodied mobility)
+const PROTOCOL_VERSION := 5   # v5: + SEED_OUTBREAK / GET_OUTBREAK (outbreak on persistent citizens)
 
 var _peer: StreamPeerTCP = null
 var _id := 0
@@ -40,6 +40,9 @@ var focus_xy := Vector2.ZERO          # the player's ground position (sim frame:
 var has_focus_xy := false
 # The most recent movement block (World.mobility_snapshot()), or {} if none.
 var last_mobility: Dictionary = {}
+# --- Outbreak (v5) ---------------------------------------------------------------
+var outbreak_enabled := false
+var last_outbreak: Dictionary = {}
 
 
 func is_connected_to_sim() -> bool:
@@ -89,6 +92,7 @@ func start_world(bundle: String, opts: Dictionary = {}) -> Dictionary:
 	if _ok(r):
 		last_summary = r
 		mobility_enabled = bool(r.get("mobility_enabled", false))
+		outbreak_enabled = bool(r.get("outbreak_enabled", false))
 		world_started.emit(r)
 	return r
 
@@ -132,6 +136,28 @@ func mobility_report(bodies: Array, dt: float) -> Dictionary:
 	## is the authority for NEAR progress; it can hold a trip back, never push it).
 	## bodies: [{"id": "cit:4", "x": .., "z": .., "blocked": bool}, ...]
 	return _send("MOBILITY_REPORT", {"bodies": bodies, "dt": dt})
+
+
+# ------------------------------------------------------------ outbreak (v5)
+func seed_outbreak(pathogen: String = "classic_zombie", citizen_id: int = -1) -> Dictionary:
+	## Enable the per-citizen outbreak and seed an index case (citizen_id < 0 =
+	## the data-driven choice). Python decides everything; Godot only embodies.
+	var fields := {"pathogen": pathogen}
+	if citizen_id >= 0:
+		fields["citizen_id"] = citizen_id
+	var r := _send("SEED_OUTBREAK", fields)
+	if _ok(r):
+		outbreak_enabled = true
+		if r.has("outbreak") and r["outbreak"] != null:
+			last_outbreak = r["outbreak"]
+	return r
+
+
+func get_outbreak(since_seq: int = 0) -> Dictionary:
+	var r := _send("GET_OUTBREAK", {"since_seq": since_seq})
+	if _ok(r) and r.has("outbreak") and r["outbreak"] != null:
+		last_outbreak = r["outbreak"]
+	return r
 
 
 func get_mobility(routes: bool = true) -> Dictionary:
@@ -252,6 +278,7 @@ func load(path: String) -> Dictionary:
 	if _ok(r):
 		last_summary = r
 		mobility_enabled = bool(r.get("mobility_enabled", mobility_enabled))
+		outbreak_enabled = bool(r.get("outbreak_enabled", outbreak_enabled))
 	return r
 
 

@@ -42,6 +42,11 @@ class EmbodimentState(str, Enum):
     PARKED = "parked"
     EXITING_VEHICLE = "exiting_vehicle"
     TRIP_FAILED = "trip_failed"
+    # ASPHODEL_OUTBREAK_V1: health overrides (the HealthRecord is the authority;
+    # these are how the executor holds the body where the person really is)
+    INCAPACITATED = "incapacitated"
+    CORPSE = "corpse"
+    UNDEAD = "undead"
 
 
 # Transition dwell times (game seconds): believable, not instantaneous.
@@ -104,6 +109,11 @@ class TripExecutor:
     _walk_base: float = 0.0             # metres walked on completed legs
     _drive_base: float = 0.0            # metres driven on completed legs
     state_log: List[tuple] = field(default_factory=list)   # (t, state) transitions
+    # health override: "" | "incapacitated" | "corpse" | "undead" (outbreak runtime)
+    override: str = ""
+    override_since: float = -1.0
+    speed_override: float = 0.0            # undead walking speed (m/s), 0 = default
+    _pre_override_state: str = ""
 
     # -- helpers -------------------------------------------------------------
     def event(self, now_s: float, kind: str, **info) -> None:
@@ -209,7 +219,47 @@ class TripExecutor:
             if len(self.state_log) > MAX_TRACE:
                 del self.state_log[: len(self.state_log) - MAX_TRACE]
 
+    # -- health overrides (ASPHODEL_OUTBREAK_V1) ---------------------------------
+    def set_override(self, kind: str, now_s: float, speed: Optional[float] = None) -> None:
+        """Hold the citizen where it physically is (incapacitated / corpse) or
+        turn it undead (walks under the same executor at ``speed``). Position,
+        building_id and vehicle_id are preserved: a citizen who collapses at
+        the wheel is still in that car, one who dies at work is still at work."""
+        if kind == self.override:
+            return
+        if not self.override:
+            self._pre_override_state = self.state.value
+        self.override = kind
+        self.override_since = now_s
+        self.speed = 0.0
+        self.ped = None
+        self.car = None
+        if kind == "incapacitated":
+            self.state = EmbodimentState.INCAPACITATED
+            self.activity = "incapacitated"
+        elif kind == "corpse":
+            self.state = EmbodimentState.CORPSE
+            self.activity = "dead"
+        elif kind == "undead":
+            self.state = EmbodimentState.UNDEAD
+            self.activity = "undead"
+            self.speed_override = float(speed or 0.9)
+            self.itinerary = None
+            self.step_index = 0
+            if self.in_vehicle or self.state == EmbodimentState.INCAPACITATED:
+                pass
+        elif kind == "":
+            self.state = EmbodimentState(self._pre_override_state or "on_foot")
+        self.event(now_s, "override", kind=kind, building_id=self.building_id, vehicle_id=self.vehicle_id)
+
+    def alive_for_contact(self) -> bool:
+        """Can this citizen be exposed / attacked (alive and not already undead)?"""
+        return self.override not in ("corpse", "undead")
+
     def _advance(self, dt: float, rt, env) -> None:
+        if self.override in ("incapacitated", "corpse"):
+            self.speed = 0.0
+            return
         step = self.current_step
         if step is None:
             self._in_place(rt, env)
@@ -247,6 +297,10 @@ class TripExecutor:
         the citizen is physically at the goal's location (§15)."""
         self.speed = 0.0
         if self.state == EmbodimentState.TRIP_FAILED:
+            return
+        if self.override == "undead":
+            self.state = EmbodimentState.UNDEAD
+            self.activity = "undead"
             return
         g = rt.active_goal
         if self.inside and g is not None and g.target == rt.current_node \
@@ -301,6 +355,8 @@ class TripExecutor:
             if path.length <= 0.0 and step.anchor_xy is None:
                 return True
             self.ped = PedestrianController(path)
+            if self.speed_override > 0.0:
+                self.ped.desired_speed = self.speed_override
             # start from where we physically are: project onto the path
             self.ped.dist = _resume_dist(path, self.pos)
             self.ped._update_segment_index()
@@ -529,6 +585,9 @@ class TripExecutor:
             "drive_base": float(self._drive_base),
             "blocked_events": int(self.blocked_events),
             "trips_completed": int(self.trips_completed),
+            "override": self.override, "override_since": float(self.override_since),
+            "speed_override": float(self.speed_override),
+            "pre_override_state": self._pre_override_state,
             "itinerary": None if self.itinerary is None else self.itinerary.to_state(),
             "ped": None if self.ped is None else self.ped.to_state(),
             "car": None if self.car is None else self.car.to_state(),
@@ -550,6 +609,10 @@ class TripExecutor:
                  distance_driven=float(st.get("distance_driven", 0.0)),
                  blocked_events=int(st.get("blocked_events", 0)),
                  trips_completed=int(st.get("trips_completed", 0)))
+        ex.override = str(st.get("override", ""))
+        ex.override_since = float(st.get("override_since", -1.0))
+        ex.speed_override = float(st.get("speed_override", 0.0))
+        ex._pre_override_state = str(st.get("pre_override_state", ""))
         ex._walk_base = float(st.get("walk_base", 0.0))
         ex._drive_base = float(st.get("drive_base", 0.0))
         ex.trace = list(st.get("trace") or [])
