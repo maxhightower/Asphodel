@@ -201,9 +201,16 @@ class WorkRuntime:
 
     def _substep(self, dt: float) -> None:
         execs = self.mobility.execs
+        activities = self.activities
         for cid in sorted(execs):
             ex = execs[cid]
-            a = self.activities.get(cid)
+            a = activities.get(cid)
+            if a is not None and a.next_s > self.now_s and not ex.override \
+                    and ex.state is EmbodimentState.DOING_ACTIVITY and ex.building_id == a.building_id \
+                    and ex.current_step is None:
+                continue                      # a sleeping session in an unchanged situation
+            if a is None and (ex.state is not EmbodimentState.DOING_ACTIVITY or ex.override):
+                continue                      # nobody to start a session for
             session_kind = self._session_kind(cid, ex)
             if session_kind is None:
                 if a is not None:
@@ -231,8 +238,8 @@ class WorkRuntime:
             return None
         act = str(ex.activity or "")
         emp = self.employment.get(cid)
-        if emp is not None and ex.building_id == emp.workplace_id and act == "work":
-            return "worker"
+        if emp is not None and ex.building_id == emp.workplace_id and act != "sleep":
+            return "worker"           # at the workplace: on shift (the commute's "arrived" included)
         if act == "sleep":
             return "resident"
         if act in ("errand", "leisure", "idle", "arrived", "rest"):
@@ -274,6 +281,8 @@ class WorkRuntime:
                 q.remove(cid)
                 if not q:
                     self.queues.pop(oid, None)
+                self.event("CUSTOMER_UNSERVED", citizen_id=cid, reason="left the queue", object_id=oid,
+                           building_id=a.building_id)
         summary = {"citizen_id": cid, "building_id": a.building_id, "kind": a.kind, "role": a.role,
                    "start_s": a.session_start_s, "end_s": self.now_s, "served": a.served,
                    "documents": a.documents, "cleaned": a.cleaned, "restocked": a.restocked,
@@ -301,6 +310,8 @@ class WorkRuntime:
         g = rt.active_goal if rt is not None else None
         if g is not None and g.source in ("emergency", "health", "disruption"):
             return f"{g.source}:{g.kind.value}"
+        if g is not None and g.source == "schedule":
+            return "shift_end"
         if not ex.inside:
             return "left"
         return "shift_end"
@@ -464,10 +475,9 @@ class WorkRuntime:
     def _nearest_free(self, objs: List[SmartObject], a: ActivityState, cid: int) -> Optional[SmartObject]:
         ex = self.mobility.execs[cid]
         free = [o for o in objs if self.ledger.is_free(o, o.exclusive) or cid in self.ledger.holders_of(o.object_id)]
-        pool = free or objs
-        if not pool:
-            return None
-        return min(pool, key=lambda o: (_d(ex.pos, o.use_xy), o.object_id))
+        if not free:
+            return None                   # everything is held: the caller waits, no denial storm
+        return min(free, key=lambda o: (_d(ex.pos, o.use_xy), o.object_id))
 
     def _alternative(self, task: TaskDefinition, a: ActivityState, reg: SmartObjectRegistry,
                      emp: Employment, cid: int, exclude: str) -> Optional[SmartObject]:
@@ -479,8 +489,13 @@ class WorkRuntime:
         if task.hold == "none":
             return True
         excl = (task.hold == "exclusive") or obj.exclusive
+        if cid in self.ledger.holders_of(obj.object_id):
+            return True                   # already ours: no duplicate RESERVED
+        old = self.ledger.exclusive_of.get(cid) if excl else None
         ok = self.ledger.hold(obj, cid, self.now_s, exclusive=excl)
         if ok:
+            if old is not None and old != obj.object_id:
+                self.event("RESERVATION_RELEASED", citizen_id=cid, object_id=old, reason="switched station")
             self.event("RESERVED", citizen_id=cid, object_id=obj.object_id, exclusive=excl,
                        task_id=task.task_id)
         return ok
@@ -710,10 +725,15 @@ class WorkRuntime:
         if a.task_id in ("", "browsed"):
             staffed = [o for o in stations if o.available() and self.ledger.holders_of(o.object_id)]
             pool = staffed or [o for o in stations if o.available()]
-            if not pool:
+            workers_here = any(x.kind == "worker" and x.building_id == a.building_id
+                               for x in self.activities.values())
+            if not pool or (not staffed and not workers_here):
+                # no register, or a shop with nobody on duty: the customer leaves at once
                 a.phase = "done"
                 a.task_id = "unserved"
-                self.event("CUSTOMER_UNSERVED", citizen_id=cid, reason="no register", **self._where(ex, a))
+                self.event("CUSTOMER_UNSERVED", citizen_id=cid,
+                           reason="no register" if not pool else "shop closed (no staff present)",
+                           **self._where(ex, a))
                 return
             # the shortest queue, nearest first (a deterministic tie-break)
             o = min(pool, key=lambda s: (len(self.queues.get(s.object_id, [])),
@@ -775,7 +795,7 @@ class WorkRuntime:
             return
         a.task_id = want
         a.object_id = o.object_id
-        a.duration_s = 10.0 * 3600.0 if want == "sleep" else 1800.0
+        a.duration_s = 10.0 * 3600.0 if want == "sleep" else 4.0 * 3600.0
         a.progress_s = 0.0
         a.next_s = 0.0
         self.event("RESERVED", citizen_id=cid, object_id=o.object_id, exclusive=o.exclusive, task_id=want)
@@ -798,7 +818,7 @@ class WorkRuntime:
 
     def _flag_reduced(self, bid: int, reg: SmartObjectRegistry) -> None:
         st = self.workplace_status(bid)
-        if st["status"] != "open" and not self.reduced.get(bid):
+        if st["status"] == "reduced_function" and not self.reduced.get(bid):
             self.reduced[bid] = True
             self.event("WORKPLACE_REDUCED_FUNCTION", building_id=int(bid), status=st["status"],
                        stations=len(st["stations"]), staffed=len(st["staffed"]))

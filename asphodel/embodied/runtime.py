@@ -47,7 +47,7 @@ MOBILITY_SCHEMA_VERSION = 1
 SUBSTEP_S = 1.0            # fixed integration step (game seconds); determinism
 CATCHUP_SUBSTEP_S = 5.0    # coarse step used to fast-forward a re-activated citizen
 MAX_FAILURES_PER_GOAL = 3
-ERRAND_SHOP_RADIUS_M = 1200.0      # errands prefer the nearest shop within this radius
+ERRAND_SHOP_RADIUS_M = 4000.0      # errands prefer the nearest staffed, open shop within this radius
 RETRY_WAIT_S = 120.0
 
 
@@ -132,7 +132,7 @@ class MobilityRuntime:
             xy = self.ctx.building_xy(int(bid))
         return xy
 
-    def _errand_building(self, home_bid: int, home_xy: Vec2) -> Optional[int]:
+    def _errand_building(self, home_bid: int, home_xy: Vec2, hour: Optional[float] = None) -> Optional[int]:
         """A deterministic nearby non-home building with an entrance: the
         nearest *shop* (a building whose interior is retail, judged by
         ``shop_predicate`` when the world provides one) within
@@ -148,14 +148,14 @@ class MobilityRuntime:
         order = np.argsort(d2, kind="stable")
         pred = self.shop_predicate
         if pred is not None:
-            for idx in order[:400]:
+            for idx in order[:6000]:
                 b = int(idx)
                 d = float(d2[idx])
                 if d > ERRAND_SHOP_RADIUS_M ** 2:
                     break
                 if b == home_bid or b not in self.entrances or d < 30.0 ** 2:
                     continue
-                if pred(b):
+                if pred(b, hour) if hour is not None else pred(b):
                     return b
         for idx in order[:40]:
             b = int(idx)
@@ -187,7 +187,10 @@ class MobilityRuntime:
             return False
         work_node = self.node_for_building(int(wb)) if wb is not None else None
         home_xy = self.entrances.get(int(hb)) or tuple(profile.home_xy)
-        errand_bid = self._errand_building(int(hb), home_xy)
+        # the errand block's hour picks a shop whose staff is on shift then
+        errand_hours = [float(e.start_hour) + 0.25 for e in (getattr(profile, "schedule", []) or [])
+                        if getattr(e, "activity", "") == "errand"]
+        errand_bid = self._errand_building(int(hb), home_xy, errand_hours[0] if errand_hours else None)
         errand_node = self.node_for_building(errand_bid) if errand_bid is not None else None
         inv = dict(getattr(profile, "inventory", {}) or {})
         has_vehicle = bool(inv.get("car_keys") or inv.get("keys"))

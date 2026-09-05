@@ -429,18 +429,34 @@ class World:
         area = (max(xs) - min(xs)) * (max(ys) - min(ys))
         return interiors.archetype_for(self._seed, bid, area, height, arch_hint)
 
-    def is_shop(self, building_id: int) -> bool:
+    def is_shop(self, building_id: int, hour: float | None = None) -> bool:
         """A retail interior that somebody in the canonical population works
-        at: errands go where there is a till to be served at. Pure data: the
-        workplace set comes from the bundle's citizens, the archetype from the
+        at (and, when ``hour`` is given, is on shift at that hour): errands go
+        where there is a till to be served at. Pure data: the workplace set and
+        shifts come from the bundle's citizens, the archetype from the
         building's footprint/exterior class and the world seed."""
         bid = int(building_id)
-        wps = getattr(self, "_workplace_ids", None)
-        if wps is None:
-            wps = {int(getattr(c, "work_building_id")) for c in self.citizens.values()
-                   if getattr(c, "work_building_id", None) is not None}
-            self._workplace_ids = wps
-        return bid in wps and self.building_archetype(bid) == "retail"
+        staff = getattr(self, "_workplace_staff", None)
+        if staff is None:
+            staff = {}
+            for c in self.citizens.values():
+                wb = getattr(c, "work_building_id", None)
+                if wb is None:
+                    continue
+                blocks = [(float(e.start_hour), float(e.end_hour))
+                          for e in (getattr(c, "schedule", None) or []) if e.activity == "work"]
+                staff.setdefault(int(wb), []).append(blocks)
+            self._workplace_staff = staff
+        if bid not in staff or self.building_archetype(bid) != "retail":
+            return False
+        if hour is None:
+            return True
+        h = float(hour) % 24.0
+        for blocks in staff[bid]:
+            for a, b in blocks:
+                if a <= h < b or a <= h + 24.0 < b:
+                    return True
+        return False
 
     def interior_descriptor(self, building_id: int, gen_version: int | None = None):
         """The authoritative, deterministic interior for a building (immutable base
@@ -449,6 +465,11 @@ class World:
         to the *existing* containers (building_id, container_index)."""
         from . import interiors
         gv = interiors.INTERIOR_GEN_VERSION if gen_version is None else int(gen_version)
+        cache = self.__dict__.setdefault("_interior_cache", {})
+        key = (int(building_id), gv)
+        hit = cache.get(key)
+        if hit is not None:
+            return hit
         ctx = self.spatial_ctx
         poly = ctx.building_poly(building_id) if ctx is not None else None
         height = ctx.building_height(building_id) if ctx is not None else 6.0
@@ -458,9 +479,11 @@ class World:
             road_xy = ctx.nearest_road_xy(ctx.building_centroids[building_id])
             if hasattr(ctx, "building_arch"):
                 arch_hint = ctx.building_arch(building_id)
-        return interiors.build_interior(
+        desc = interiors.build_interior(
             building_id, self._seed, poly, height=height, road_xy=road_xy,
             gen_version=gv, arch_hint=arch_hint)
+        cache[key] = desc                  # immutable geometry: safe to share
+        return desc
 
     def interior_state(self, building_id: int, gen_version: int | None = None) -> dict:
         """Interior descriptor + the per-fixture *persistent delta* overlay (which

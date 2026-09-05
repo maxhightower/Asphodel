@@ -95,7 +95,7 @@ OBJECT_KINDS: Dict[str, dict] = {
     "crate":        dict(caps={"storage", "goods"}, exclusive=False, capacity=2,
                          aff=[Affordance("retrieve_goods", False, 120.0, ("stocker",))],
                          state={"stock": 100}),
-    "freezer_case": dict(caps={"storage", "goods"}, exclusive=False, capacity=1,
+    "freezer_case": dict(caps={"storage", "goods"}, exclusive=True, capacity=1,
                          aff=[Affordance("retrieve_goods", False, 180.0, ("stocker",))],
                          state={"stock": 100}),
     "locker":       dict(caps={"storage"}, exclusive=True, capacity=1,
