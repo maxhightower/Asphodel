@@ -20,7 +20,7 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from asphodel import MicroParams, embodiment, npc
+from asphodel import MicroParams, embodiment
 from asphodel.bridge.worldfactory import resolve_bundle_dir, world_from_bundle
 from asphodel.bundle_population import load_bundle_population
 from asphodel.embodied.executor import EmbodimentState
