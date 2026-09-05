@@ -54,6 +54,16 @@ def _d(a: Vec2, b: Vec2) -> float:
     return math.hypot(a[0] - b[0], a[1] - b[1])
 
 
+def _drop_goals(rt, *sources: str) -> None:
+    """Remove goals by source through the stack (keeps active_goal consistent,
+    which matters for byte-identical save/load)."""
+    for g in list(rt.goals.goals):
+        if g.source in sources:
+            rt.goals.remove(g.id)
+            if rt.active_goal is not None and rt.active_goal.id == g.id:
+                rt.active_goal = None
+
+
 class OutbreakRuntime:
     def __init__(self, mobility, world_seed: int, pathogen: OutbreakPathogen):
         self.mobility = mobility
@@ -168,7 +178,7 @@ class OutbreakRuntime:
     def _on_recovery(self, cid: int, rec: HealthRecord) -> None:
         rec.state = HealthState.RECOVERED
         rt = self.mobility.citizens[cid]
-        rt.goals.goals = [g for g in rt.goals.goals if g.source != "health"]
+        _drop_goals(rt, "health")
         self.event("RECOVERED", citizen_id=cid, **self._where(self.mobility.execs[cid]))
 
     def _on_incapacitation(self, cid: int, rec: HealthRecord) -> None:
@@ -179,7 +189,7 @@ class OutbreakRuntime:
         if ex.state == EmbodimentState.DRIVING and ex.vehicle_id:
             self._abandon_vehicle(cid, ex, "driver incapacitated")
         ex.set_override("incapacitated", self.now_s)
-        rt.goals.goals = [g for g in rt.goals.goals if g.source != "health"]
+        _drop_goals(rt, "health", "emergency", "disruption")
         self.event("INCAPACITATED", citizen_id=cid, **self._where(ex))
         self.event("PLAN_INVALIDATED", citizen_id=cid, reason="incapacitated", **self._where(ex))
 
@@ -211,6 +221,7 @@ class OutbreakRuntime:
         rt.has_vehicle = False
         rt.in_vehicle = False
         rt.inside_building = ex.inside
+        _drop_goals(rt, "schedule", "health", "emergency", "disruption", "idle", "need", "social", "player")
         rt.goals.goals = []
         rt.active_goal = None
         rt.goals._active = None
@@ -225,7 +236,7 @@ class OutbreakRuntime:
         rt = self.mobility.citizens[cid]
         ex = self.mobility.execs[cid]
         home = rt.home_node
-        rt.goals.goals = [g for g in rt.goals.goals if g.source != "health"]
+        _drop_goals(rt, "health")
         g = Goal(GoalKind.DO_ACTIVITY, target=home, reason=reason, source="health",
                  priority=HEALTH_PRIORITY, activity="rest")
         preempted = rt.push_goal(g, self.mobility.graph)
@@ -252,7 +263,7 @@ class OutbreakRuntime:
         if any(g.source == "emergency" and g.kind == GoalKind.FLEE and g.target == target
                for g in rt.goals.goals):
             return
-        rt.goals.goals = [g for g in rt.goals.goals if g.source != "emergency"]
+        _drop_goals(rt, "emergency")
         g = Goal(GoalKind.FLEE, target=target, reason=reason, source="emergency", priority=FLEE_PRIORITY)
         rt.push_goal(g, self.mobility.graph)
         self.event("FLEE", citizen_id=cid, threat_citizen=threat_id, target=target, reason=reason,
@@ -280,7 +291,7 @@ class OutbreakRuntime:
                     g = Goal(GoalKind.DO_ACTIVITY, target=rt.home_node, source="disruption",
                              reason=f"workplace {bid} disrupted", priority=DISRUPTION_PRIORITY,
                              activity="rest")
-                    rt.goals.goals = [x for x in rt.goals.goals if x.source != "disruption"]
+                    _drop_goals(rt, "disruption")
                     rt.push_goal(g, self.mobility.graph)
                     self.event("PLAN_INVALIDATED", citizen_id=cid, reason=f"workplace {bid} disrupted",
                                goal="go_home", **self._where(self.mobility.execs[cid]))
@@ -387,6 +398,7 @@ class OutbreakRuntime:
             tgt = vrt.current_node
             if self.undead_targets.get(ucid) != best or urt.active_goal is None:
                 self.undead_targets[ucid] = best
+                _drop_goals(urt, "emergency", "schedule", "health", "disruption")
                 urt.goals.goals = []
                 g = Goal(GoalKind.RETRIEVE, target=tgt, reason=f"hunting citizen {best}",
                          source="emergency", priority=UNDEAD_PRIORITY)
@@ -410,6 +422,7 @@ class OutbreakRuntime:
         k = self.undead_roam.get(ucid, 0)
         target = candidates[k % len(candidates)]
         self.undead_roam[ucid] = k + 1
+        _drop_goals(urt, "emergency", "schedule", "health", "disruption")
         urt.goals.goals = []
         g = Goal(GoalKind.ARRIVE_AT, target=target, reason="roaming", source="emergency",
                  priority=0.5)
