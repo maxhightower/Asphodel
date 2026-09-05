@@ -116,10 +116,11 @@ def day():
                 before = w.physical_location(cid).to_dict()
                 after = w2.physical_location(cid).to_dict()
                 ex2 = w2.mobility.execs[cid]
-                # continue both 20 minutes and compare the whole authoritative state
-                for _ in range(20):
-                    w.advance_seconds(60.0, focus_xy=home_xy)
-                    w2.advance_seconds(60.0, focus_xy=home_xy)
+                # continue both 2 minutes (short, so the next interruption
+                # window is not skipped) and compare the whole authoritative state
+                for _ in range(8):
+                    w.advance_seconds(STEP, focus_xy=home_xy)
+                    w2.advance_seconds(STEP, focus_xy=home_xy)
                 cont_a = json.dumps(world_state(w, bundle=CITY, player_citizen=cid), sort_keys=True)
                 cont_b = json.dumps(world_state(w2, bundle=CITY, player_citizen=cid), sort_keys=True)
                 saves[key] = {
@@ -351,7 +352,7 @@ def test_15_save_load(day):
     _write("save_load_trace.json", saves)
     _status("save_load", "PASS",
             "saved during walking, driving, parked and inside work: identity, itinerary, step, progress, "
-            "building and vehicle restored; 20-minute continuation bit-identical")
+            "building and vehicle restored; 2-minute continuation bit-identical")
 
 
 def test_16_lod(day):
