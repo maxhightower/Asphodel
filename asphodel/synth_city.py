@@ -1,11 +1,15 @@
 """Offline synthetic city bundle generator (procedural, deterministic).
 
-When a real OSM city cannot be fetched (offline / restricted egress), this
-produces a plausible detailed-city bundle — a downtown grid of streets and
-buildings with a density gradient — in the same bundle schema Godot loads
-(meta/zones/roads), then augments it with regional terrain, a mobility graph, and
-the physics matrix. It is clearly a *synthesized* city, matching Asphodel's
-"procedurally synthesized worlds converging into common types" direction.
+When a real public-data city cannot be fetched (offline / restricted egress),
+this produces a plausible detailed-city bundle — a downtown grid of streets and
+buildings with a density gradient — in the SAME bundle schema the canonical
+loaders accept (meta/zones/roads/timeline/mobility/buildings/citizens), then
+augments it with regional terrain, the street graph, and the physics matrix.
+It is clearly a *synthesized* city (``meta.source == "synthetic"``); nothing in
+it pretends to be surveyed truth. It has no compiled ``world/`` stream, so Godot
+renders it through the footprint fallback path.
+
+CLI:  python -m asphodel.synth_city boulder  (regenerates the committed bundle)
 """
 from __future__ import annotations
 
@@ -101,25 +105,91 @@ def build_synth_city_bundle(
                 polylines.append({"class": _cls(x, z),
                                    "points": [[x, z], [x, zs[zi + 1]]]})
 
+    # --- the epidemic tier: the same products asphodel.osm_city.pipeline bakes
+    # for a real city, so worldfactory / the bridge / BundleLoader accept this
+    # bundle without a special case.
+    from dataclasses import asdict
+    from .config import ScenarioConfig, ModelParams, GraphParams, PathogenGenome
+    from .runner import run_scenario
+    from .osm_city import mobility as mob
+    from .osm_city import bundle as bnd
+    from .osm_city import buildings as bld
+    from .osm_city.citizens import build_population_from_bundle, _write as _write_citizens
+
+    local_floor = 0.1
+    dt, n_days = 0.25, 90.0
+    genome = PathogenGenome()
+    populations = [z["population"] for z in zones]
+    seed_zone = max(zones, key=lambda z: z["population"])["id"]
+    mobility_edges = mob.derive_zone_mobility(
+        zones, polylines, rows, cols, local_floor=local_floor)
+    cfg = ScenarioConfig(
+        name=name, genome=genome,
+        model=ModelParams(graph=GraphParams(
+            grid_rows=rows, grid_cols=cols, population=populations,
+            mobility_edges=mobility_edges if mobility_edges else None)),
+        dt=dt, n_days=n_days, seed=seed, seed_zone=seed_zone)
+    result = run_scenario(cfg)
+    stats = mob.mobility_stats(mobility_edges, rows * cols)
+
+    # A synthetic bbox implied by the metre bounds (equirectangular inverse).
+    dlat = (z1 - z0) / 111320.0 / 2.0
+    dlon = (x1 - x0) / (111320.0 * math.cos(math.radians(lat))) / 2.0
     meta = {
-        "name": name,
+        "name": name, "query": name,
+        "bbox": [lat - dlat, lon - dlon, lat + dlat, lon + dlon],
         "center": [lat, lon],
         "origin_elevation": elevation,
         "projection": "equirectangular",
         "grid": {"rows": rows, "cols": cols, "cell_m": zone_m},
-        "seed": seed,
+        "dt": dt, "n_days": n_days, "n_ticks": cfg.n_ticks,
+        "genome": asdict(genome), "seed": seed, "seed_zone": seed_zone,
+        "mobility": {"source": "roads", "local_floor": local_floor,
+                     "n_edges": stats["n_edges"],
+                     "connected_components": stats["connected_components"]},
         "source": "synthetic",
         "version": "1",
     }
-
-    os.makedirs(out_dir, exist_ok=True)
-    _write(os.path.join(out_dir, "meta.json"), meta)
-    _write(os.path.join(out_dir, "zones.json"), zones)
-    _write(os.path.join(out_dir, "roads.json"), {"polylines": polylines})
+    roads = {"polylines": polylines}
+    timeline = bnd.build_timeline(result.belief_history)
+    bnd.write_bundle(out_dir, meta, zones, roads, timeline,
+                     mobility={"version": 1, "local_floor": local_floor,
+                               "edges": mobility_edges})
+    # Canonical {version, buildings:[{poly,height}]} footprints, road-aware.
+    footprints = bld.generate_procedural(zones, seed=seed, roads=polylines)
+    footprints["source"] = "procedural-synthetic"
+    bnd._write_json(os.path.join(out_dir, "buildings.json"), footprints)
+    pop = build_population_from_bundle(zones, roads, name, n=60, seed=seed)
+    _write_citizens(out_dir, pop)
 
     if augment:
         augment_bundle(out_dir, archetype_name, seed=seed)
     return meta
+
+
+# Committed synthetic cities: name -> generator arguments.
+SYNTH_CITIES = {
+    "boulder": dict(name="Boulder, Colorado", lat=40.015, lon=-105.2705,
+                    elevation=1655.0, archetype_name="front_range_adjacent",
+                    seed=7),
+}
+
+
+def main(argv=None) -> int:
+    import argparse
+    p = argparse.ArgumentParser(prog="python -m asphodel.synth_city")
+    p.add_argument("city", choices=sorted(SYNTH_CITIES))
+    p.add_argument("--out", default=None,
+                   help="bundle directory (default godot/bundles/<city>)")
+    args = p.parse_args(argv)
+    out = args.out or os.path.join("godot", "bundles", args.city)
+    meta = build_synth_city_bundle(out, **SYNTH_CITIES[args.city])
+    print(f"wrote synthetic bundle {args.city} -> {out} ({meta['grid']})")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
 
 
 def _write(path: str, obj) -> None:

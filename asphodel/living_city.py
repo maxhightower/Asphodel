@@ -1,10 +1,18 @@
 """Headless living-city driver: a morning commute on a real bundle (§19, §25).
 
-Loads a bundle's mobility graph, spawns a commuting population (homes on the
-periphery, workplaces near the core), builds each citizen a route with the
-CitizenRuntime's mode logic, and steps them through the morning peak with the
-TrafficReconciler so congestion emerges from independent trips. Records every
-agent's position each frame to a playback.json the Godot living-city scene renders.
+Loads a bundle's street graph and its CANONICAL citizens (``citizens.json``:
+the same people the bridge/World simulate, keyed by their stable citizen id and
+home/work coordinates), builds each citizen a route with the CitizenRuntime's
+mode logic, and steps them through the morning peak with the TrafficReconciler
+so congestion emerges from independent trips. Records every agent's position
+each frame to a playback.json the Godot living-city scene renders.
+
+Identity rule (convergence Gate D): an agent here IS the bundle citizen — its
+``cid`` is the citizens.json index (== ``CitizenProfile.citizen_id`` ==
+``World`` citizen id), and a vehicle is ``veh:<cid>`` so the car and the
+person are one identity across far-sim, playback and any later physical body.
+When a bundle carries no citizens.json (a bare synthetic grid), a clearly
+labelled synthetic population (``synth:<i>``) is spawned on graph nodes instead.
 
 Everything here is the same authoritative Python layer the tests exercise — this
 just wires it to a concrete city and time window and writes positions out.
@@ -61,24 +69,49 @@ def simulate_commute(bundle_dir: str, n_citizens: int = 130, seed: int = 0,
         graph = MobilityGraph.from_artifact(json.load(f))
     rng = random.Random(seed)
 
-    # Work near the core (0,0); homes further out.
-    nodes = list(graph.nodes.items())
-    nodes.sort(key=lambda kv: kv[1][0] ** 2 + kv[1][1] ** 2)
-    if len(nodes) < 8:
+    if len(graph.nodes) < 8:
         raise ValueError("mobility graph too small to simulate")
-    core = [nid for nid, _ in nodes[: max(4, len(nodes) // 4)]]
-    outer = [nid for nid, _ in nodes[len(nodes) // 2:]]
+
+    # Trips: canonical citizens first (home_xy/work_xy -> nearest graph nodes),
+    # then, if more agents were asked for than the bundle carries, synthetic
+    # fill so the demo still shows a crowd. Ids never collide.
+    trips: List[tuple] = []          # (cid, home_node, work_node, has_vehicle)
+    cit_path = os.path.join(bundle_dir, "citizens.json")
+    if os.path.exists(cit_path):
+        with open(cit_path) as f:
+            citizens = json.load(f)
+        for cid, c in enumerate(citizens):
+            if len(trips) >= n_citizens:
+                break
+            hxy, wxy = c.get("home_xy"), c.get("work_xy")
+            if not hxy or not wxy:
+                continue
+            home = graph.nearest_node(tuple(hxy), Mode.FOOT)
+            work = graph.nearest_node(tuple(wxy), Mode.FOOT)
+            if home is None or work is None or home == work:
+                continue
+            # Vehicle ownership: a bundle citizen who carries car keys drives.
+            inv = c.get("inventory", {}) or {}
+            has_vehicle = bool(inv.get("car_keys") or inv.get("keys")) and \
+                rng.random() < car_fraction
+            trips.append((str(cid), home, work, has_vehicle))
+    if len(trips) < n_citizens:
+        nodes = list(graph.nodes.items())
+        nodes.sort(key=lambda kv: kv[1][0] ** 2 + kv[1][1] ** 2)
+        core = [nid for nid, _ in nodes[: max(4, len(nodes) // 4)]]
+        outer = [nid for nid, _ in nodes[len(nodes) // 2:]]
+        for i in range(n_citizens - len(trips)):
+            home = rng.choice(outer)
+            work = rng.choice(core)
+            if home == work:
+                continue
+            trips.append((f"synth:{i}", home, work, rng.random() < car_fraction))
 
     # A low reference capacity so convergence on the core approaches shows as
     # congestion (a coarse morning-rush proxy on the dispersed synth grid).
     reconciler = TrafficReconciler(graph, ref_capacity=2.0)
     agents: List[_Agent] = []
-    for i in range(n_citizens):
-        home = rng.choice(outer)
-        work = rng.choice(core)
-        if home == work:
-            continue
-        has_vehicle = rng.random() < car_fraction
+    for cid, home, work, has_vehicle in trips:
         depart = min(end_hour - 0.5,
                      max(start_hour, rng.gauss(peak_hour, peak_spread)))
         mode = Mode.CAR if has_vehicle else Mode.FOOT
@@ -92,10 +125,10 @@ def simulate_commute(bundle_dir: str, n_citizens: int = 130, seed: int = 0,
         cum = _cumulative(pts)
         veh = None
         if mode == Mode.CAR:
-            veh = VehicleInstance(f"veh{i}", "car")
+            veh = VehicleInstance(f"veh:{cid}", "car")
             veh.assign_route(route, graph)
             reconciler.add_vehicle(veh)
-        agents.append(_Agent(f"c{i}", mode, depart, pts, cum, vehicle=veh))
+        agents.append(_Agent(cid, mode, depart, pts, cum, vehicle=veh))
 
     # Step the morning.
     frames = []
@@ -124,7 +157,7 @@ def simulate_commute(bundle_dir: str, n_citizens: int = 130, seed: int = 0,
                 done = (a.vehicle.arrived if a.vehicle else a.dist >= a.length)
                 a.state = AT_WORK if done else EN_ROUTE
                 pos = a.position()
-            row = [round(pos[0], 1), round(pos[1], 1), a.state]
+            row = [round(pos[0], 1), round(pos[1], 1), a.state, a.cid]
             if a.mode == Mode.CAR:
                 cars.append(row)
             else:
@@ -137,8 +170,10 @@ def simulate_commute(bundle_dir: str, n_citizens: int = 130, seed: int = 0,
         t += dt_h
 
     playback = {
-        "version": "1",
+        "version": 2,
         "bundle": os.path.basename(bundle_dir.rstrip("/")),
+        "row": ["x", "z", "state", "citizen_id"],
+        "n_canonical_citizens": sum(1 for a in agents if not a.cid.startswith("synth:")),
         "start_hour": start_hour, "end_hour": end_hour, "dt_min": dt_min,
         "n_citizens": len(agents),
         "n_cars": sum(1 for a in agents if a.mode == Mode.CAR),
