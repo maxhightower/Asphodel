@@ -7,18 +7,25 @@ trusting any older prose in this repo._
 
 **All new Asphodel development begins from `main`.**
 
-`main` is being fast-forwarded to the canonical convergence tree
-(`claude/asphodel-canonical-convergence-i6h105`); until that lands, build from
-that convergence branch. The GitHub default branch was
-`claude/asphodel-belief-cascade-kvKKv` (June 12, 2026) — it is **stale** and
-must be switched to `main` in the repository settings; see
-`docs/convergence/ASPHODEL_BRANCH_DISPOSITION.md` for the exact landing steps.
+The canonical convergence tree landed on `main` on 2026-09-05 through PR #4
+(merge commit `d9c1629`; certified tip `1a1e3ac`, certified code `7244855` —
+`main`'s tree is identical to the certified tree). The convergence branch
+`claude/asphodel-canonical-convergence-i6h105` is now history, like every other
+`claude/*` branch.
+
+The GitHub repository's **configured default branch is still**
+`claude/asphodel-belief-cascade-kvKKv` (June 12, 2026, stale). Switching the
+default to `main` is a repository-settings action (Settings → Branches) that
+could not be performed from the development sandbox; until it is done, a fresh
+clone or an agent that trusts the default lands on the June tree. Do not build
+there. PR #3, which merged `main` into that stale branch, is closed.
 
 Every other `claude/*` branch is retired or historical evidence. The census
-(`docs/convergence/ASPHODEL_BRANCH_CENSUS.md`) shows that thirteen of them are
+(`docs/convergence/ASPHODEL_BRANCH_CENSUS.md`) shows that thirteen of them were
 already inside `main`, the regional-physics-navigation line was merged in the
 convergence, and the two remaining unmerged June branches (zombie outbreak
-archetypes; Phase 4b research harness) carry recorded decisions.
+archetypes; Phase 4b research harness) carry recorded decisions in
+`docs/convergence/ASPHODEL_BRANCH_DISPOSITION.md`.
 
 ## What the canonical tree is
 
@@ -30,12 +37,14 @@ statistic to humanoid, one vehicle identity across fidelity, one collision
 matrix, one terrain pipeline (region v2 with the city plateau), one Godot
 runtime that renders truth and submits intent.
 
-Certified on the convergence tree: the Python suite, the in-engine Godot suites
-(TestRunner, StreetSmoke, ExteriorStream, CitizenHumanoidSmoke, the isometric
-smokes, PhysicsGate/RegionGate/NavGate, ConvergenceGate), the live-bridge
-Live* scenes, and the multi-city matrix (Houston, Madisonville, Austin,
-San Antonio, Boulder, Denver region). The exact commands and results are in
-the convergence report in the pull request that lands this tree.
+Certified on this tree (`docs/convergence/ASPHODEL_CONVERGENCE_REPORT.md`):
+740/740 Python tests, the in-engine Godot suites (TestRunner, StreetSmoke,
+ExteriorStream, CitizenHumanoidSmoke, the isometric smokes,
+PhysicsGate/RegionGate/NavGate, ConvergenceGate), the live-bridge Live*
+scenes with bit-identical save/load, and the multi-city matrix (Houston,
+Madisonville, Austin, San Antonio, Boulder, Denver region). Verdict:
+`ASPHODEL_CANONICAL_CONVERGENCE: PARTIAL` — the four remaining architectural
+splits are named in that report.
 
 ## Architectural invariants (preserve unless a package needs a new causal channel)
 
