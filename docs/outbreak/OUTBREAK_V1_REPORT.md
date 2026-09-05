@@ -11,7 +11,7 @@ gates measure).
 | base (spine) | `18e32d5e7fc5cae05f21be9c46a9cd435a3912da` — `ASPHODEL_EMBODIED_MOBILITY_V1: PASS` |
 | branch | `claude/asphodel-embodied-mobility-v1-6gl4a8` (this milestone continues on the mobility branch) |
 | final SHA | `d72d63c291a45368d4ce262629baf5c704dbe67f` |
-| commits since base | 35 (48 files, +33.5 k lines, of which ~30 k are the Houston population bake, traces and artifacts) |
+| commits since base | 33 (63 files, +34.3 k lines, of which ~30 k are the Houston population bake, traces and artifacts) |
 | donor branch | `claude/outbreak-config-types-A8fTw` @ `bc34bfe` — audited (`OUTBREAK_DONOR_AUDIT.md`), never merged, never branched from |
 | certification city | Houston (`godot/bundles/houston`, 300 citizens, 297 registered) |
 | pathogen certified | `classic_zombie` (`asphodel/outbreak/pathogen.py`) |
