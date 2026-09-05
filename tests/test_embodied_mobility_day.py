@@ -76,7 +76,7 @@ def day():
     ex = m.execs[cid]
     home_xy = m.records[cid].home_xy
     w.set_focus([w._spatial[cid][2]])
-    # Drive the whole day in 60 s steps (1 s substeps inside), sampling the
+    # Drive the whole day in 15 s steps (1 s substeps inside), sampling the
     # citizen every step, saving/loading at the required interruption points.
     samples = []
     saves = {}
@@ -84,10 +84,10 @@ def day():
     veh_id = m.vehicle_of.get(cid)
     lod_events = []
     hour = w.current_hour()
-    for i in range(24 * 60):
-        # focus follows the citizen for 09:00-16:00 only when driving away is
-        # not under test; keep the player at home so the LOD bands change.
-        w.advance_seconds(60.0, focus_xy=home_xy)
+    STEP = 15.0
+    for i in range(int(24 * 3600 / STEP)):
+        # keep the player at home so the LOD bands change as the citizen leaves
+        w.advance_seconds(STEP, focus_xy=home_xy)
         hour = w.current_hour()
         loc = w.physical_location(cid)
         st = ex.state.value
@@ -98,9 +98,14 @@ def day():
                "vehicle_id": ex.vehicle_id, "step": (ex.current_step.kind.value if ex.current_step else None),
                "progress": round(ex.route_progress(), 4), "band": m.bands[cid].name.lower()}
         samples.append(row)
+        veh = m.vehicles.get(veh_id) if veh_id else None
+        step_now = ex.current_step
+        parked_now = (veh is not None and veh.parked_location is not None and not ex.inside
+                      and ex.vehicle_id is None and step_now is not None
+                      and step_now.detail.startswith("walk from parking"))
         for key, pred in (("walking", st == EmbodimentState.ON_FOOT.value and ex.speed > 0),
                           ("driving", st == EmbodimentState.DRIVING.value),
-                          ("parked", st in (EmbodimentState.PARKED.value, EmbodimentState.EXITING_VEHICLE.value)),
+                          ("parked", parked_now),
                           ("inside_work", st == EmbodimentState.DOING_ACTIVITY.value
                            and ex.building_id == cit.work_building_id)):
             if pred and key not in saves:
@@ -131,7 +136,7 @@ def day():
                 hour = w.current_hour()
         if len(m.transitions) > len(lod_events):
             lod_events = [t for t in m.transitions if t["citizen_id"] == cid]
-        if hour >= 23.0 and i > 60:
+        if hour >= 23.0 and i > 240:
             break
     seen_states = []
     for _t, st_name in ex.state_log:
