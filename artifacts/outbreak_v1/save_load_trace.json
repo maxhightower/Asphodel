@@ -1,0 +1,62 @@
+{
+ "incubation": {
+  "hour": 6.517,
+  "health": "incubating",
+  "record_identical": true,
+  "events_identical": true,
+  "disruption_identical": true,
+  "override_identical": true,
+  "position_identical": true,
+  "continuation_bit_identical": true,
+  "no_reseed": true,
+  "save_bytes": 857378
+ },
+ "symptomatic": {
+  "hour": 9.9,
+  "health": "incapacitated",
+  "record_identical": true,
+  "events_identical": true,
+  "disruption_identical": true,
+  "override_identical": true,
+  "position_identical": true,
+  "continuation_bit_identical": true,
+  "no_reseed": true,
+  "save_bytes": 1752319
+ },
+ "corpse": {
+  "hour": 10.383,
+  "health": "corpse",
+  "record_identical": true,
+  "events_identical": true,
+  "disruption_identical": true,
+  "override_identical": true,
+  "position_identical": true,
+  "continuation_bit_identical": true,
+  "no_reseed": true,
+  "save_bytes": 1767785
+ },
+ "undead": {
+  "hour": 10.6,
+  "health": "undead",
+  "record_identical": true,
+  "events_identical": true,
+  "disruption_identical": true,
+  "override_identical": true,
+  "position_identical": true,
+  "continuation_bit_identical": true,
+  "no_reseed": true,
+  "save_bytes": 2058526
+ },
+ "disruption": {
+  "hour": 14.35,
+  "health": "undead",
+  "record_identical": true,
+  "events_identical": true,
+  "disruption_identical": true,
+  "override_identical": true,
+  "position_identical": true,
+  "continuation_bit_identical": true,
+  "no_reseed": true,
+  "save_bytes": 2230513
+ }
+}
