@@ -1,0 +1,1593 @@
+{
+  "schema": "asphodel.windows_playable.build_manifest/v2",
+  "build_timestamp_utc": "2026-09-06T21:00:51Z",
+  "build_host_os": "Linux",
+  "source_sha": "f77d9033d4a0f8a4727bc20d897a4e5a4742dd04",
+  "godot_version": "4.4.stable.official.4c311cbee",
+  "protocol_version": 9,
+  "save_version": 3,
+  "python": {
+    "version": "3.11.15",
+    "implementation": "CPython",
+    "package_method": "pyinstaller-onedir-freeze"
+  },
+  "cities": [
+    "houston",
+    "madisonville_tx",
+    "austin",
+    "san_antonio"
+  ],
+  "targets": {
+    "windows": {
+      "status": "EXPORTED",
+      "dir": "dist/asphodel-windows-v2",
+      "executable": "dist/asphodel-windows-v2/Asphodel.exe",
+      "executable_sha256": "7a5e7d4bf5d37f4c3bac2980e85c178f6b4494e89e172ff2775c804ef452b0d4",
+      "executable_bytes": 97496576,
+      "playable_certified": false,
+      "blocked_reason": "Windows .exe was cross-exported on a non-Windows host; it cannot be launched or certified playable without a Windows host (no Wine here)."
+    },
+    "linux": {
+      "status": "OK",
+      "dir": "dist/asphodel-linux-v2",
+      "executable": "dist/asphodel-linux-v2/Asphodel.x86_64",
+      "executable_sha256": "105092eb85808f264d883bae028b144353bd337124ccef160a1c212306cb710b",
+      "executable_bytes": 69659512,
+      "note": "runnable proxy build (Linux); boots headless."
+    }
+  },
+  "authority": {
+    "method": "pyinstaller-onedir",
+    "status": "OK",
+    "os": "linux",
+    "dir": "dist/authority",
+    "executable": "dist/authority/authority",
+    "executable_sha256": "b11d825724fa566a76c3f6a97d3387214e9380b3bb46550729dee52daaf7ee7b",
+    "served_hello": true,
+    "blocked_reason": "This is the LINUX frozen authority (proof-of-approach). The shipped WINDOWS authority must be frozen on a Windows host with `python tools\\package_authority.py --target windows`."
+  },
+  "files": [
+    {
+      "path": "dist/asphodel-windows-v2/Asphodel.exe",
+      "sha256": "7a5e7d4bf5d37f4c3bac2980e85c178f6b4494e89e172ff2775c804ef452b0d4",
+      "bytes": 97496576
+    },
+    {
+      "path": "dist/asphodel-windows-v2/Asphodel.pck",
+      "sha256": "6e275ebea557f7b3c87958df9956a682db4f304a58866b92eb19addeadd6f1d0",
+      "bytes": 132387376
+    },
+    {
+      "path": "dist/asphodel-windows-v2/authority/README_AUTHORITY_MISSING.txt",
+      "sha256": "76d84dc4409307d789efb67901744bfe0cde2c52d19fe0d1e378671779037078",
+      "bytes": 360
+    },
+    {
+      "path": "dist/asphodel-linux-v2/Asphodel.pck",
+      "sha256": "6e275ebea557f7b3c87958df9956a682db4f304a58866b92eb19addeadd6f1d0",
+      "bytes": 132387376
+    },
+    {
+      "path": "dist/asphodel-linux-v2/Asphodel.x86_64",
+      "sha256": "105092eb85808f264d883bae028b144353bd337124ccef160a1c212306cb710b",
+      "bytes": 69659512
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/authority",
+      "sha256": "b11d825724fa566a76c3f6a97d3387214e9380b3bb46550729dee52daaf7ee7b",
+      "bytes": 12457680
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/81d243bd2c585b0f4821__mypyc.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "4bd213777702d927d795040643048e904a8901d3d1773177ee7fe61ec00af054",
+      "bytes": 406352
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/base_library.zip",
+      "sha256": "5eb569f452b429ff7d345a400157f3a5bba56a77f917b626e4c2a174156404f8",
+      "bytes": 1443218
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libbz2.so.1.0",
+      "sha256": "218c4abdabce31161f3c2778762986d1fe06633705c7eb004a740946a5ccdfff",
+      "bytes": 78944
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libcrypto.so.3",
+      "sha256": "d6fc1bc9de29c55fc905f77edba1ccc7c7a50b32bd2bb9086b0d0b00104eafc4",
+      "bytes": 5309400
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libexpat.so.1",
+      "sha256": "c42ff317838b4b4639e2ea801905f0317177c6df7e31b2f0d0240e3c3ac0cfde",
+      "bytes": 174336
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libffi.so.8",
+      "sha256": "00f593fe192f2851b8ce23b25cec2488d769beb5a8f63e8c9e563071e1075153",
+      "bytes": 47672
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libgcc_s.so.1",
+      "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+      "bytes": 183024
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libgfortran-040039e1-0352e75f.so.5.0.0",
+      "sha256": "c6090048eccc763522c12ef016f81da6b627cb3a044f55cf0479a839c41c0980",
+      "bytes": 2833617
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/liblzma.so.5",
+      "sha256": "a9793942a8a5f6f4d0f523ef9e0a5be4f0033f2c6c28520cd2b4e706d53c6e17",
+      "bytes": 202904
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libpython3.11.so.1.0",
+      "sha256": "606d6e2f6b63ac8473fb0f9a9a45c3022fd855c163977ab54f97b1c7ea629b94",
+      "bytes": 7766224
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libquadmath-96973f99-934c22de.so.0.0.0",
+      "sha256": "6ed5137f412781ad7863439fb543613f620b43c32b63292a0029246162f5bbc6",
+      "bytes": 250985
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libreadline.so.8",
+      "sha256": "0a079f958147699f7bb5bf228406a5d878dc2387fe9cdc5cce6f3e35e20380fc",
+      "bytes": 344096
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libscipy_openblas64_-32a4b2a6.so",
+      "sha256": "05c9f9eb89ee68a4b9d673184fa91c99587e736392c0c2d49180a8aa5303d080",
+      "bytes": 25409073
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libsqlite3.so.0",
+      "sha256": "eac351cf84d688d1f9235e6165bd57555b31a491cd2f65e0dca67daa69036370",
+      "bytes": 1468440
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libssl.so.3",
+      "sha256": "0c0f298a5b4b44526d20a07d126a55bf44b85eaab053b2b0118e5d806d28ea13",
+      "bytes": 696512
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libstdc++.so.6",
+      "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+      "bytes": 2592224
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libtinfo.so.6",
+      "sha256": "61f693cd7f8e55ad3ab518b20a00c01adb46ef829cf90773c97615a73f99e09b",
+      "bytes": 208328
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libuuid.so.1",
+      "sha256": "a0fe32d24d125186cf332570770ae749822b5b529d4d4f59222e1aedbc63b58d",
+      "bytes": 35032
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/libz.so.1",
+      "sha256": "9b64150b28505a33d6bc3ecf709c279f6de97a1c184dbda65d06ee4537f6d286",
+      "bytes": 113000
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/charset_normalizer/cd.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "b83d234e47c028021dbf5b822cad275b8ddcb9df27f0c1dcff8c7ea229633b0a",
+      "bytes": 15912
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/charset_normalizer/md.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "403c46587fde67f768e537df75d5fe52c0928192ecead874f1e5c16a7d26dffb",
+      "bytes": 15912
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy.libs/libgfortran-040039e1-0352e75f.so.5.0.0",
+      "sha256": "c6090048eccc763522c12ef016f81da6b627cb3a044f55cf0479a839c41c0980",
+      "bytes": 2833617
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy.libs/libquadmath-96973f99-934c22de.so.0.0.0",
+      "sha256": "6ed5137f412781ad7863439fb543613f620b43c32b63292a0029246162f5bbc6",
+      "bytes": 250985
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy.libs/libscipy_openblas64_-32a4b2a6.so",
+      "sha256": "05c9f9eb89ee68a4b9d673184fa91c99587e736392c0c2d49180a8aa5303d080",
+      "bytes": 25409073
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/markupsafe/_speedups.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "88c64ec75769f4606751eaa4aef59709e3033fd1f26e3f31f940d1a1325abeaf",
+      "bytes": 43936
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/asphodel/city_visual/catalog_v1.json",
+      "sha256": "c5772c0d8cb3062e5a272d602f645b708f53fa33c36cafb938257a3fd7ef2141",
+      "bytes": 93813
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/asphodel/city_visual/catalog_v1.yaml",
+      "sha256": "4d19e3f3e7bc32f4a5e925fc516f6d55483d78c2da36f6f791fa7ddfad4f6e50",
+      "bytes": 70105
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/markupsafe-3.0.3.dist-info/INSTALLER",
+      "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508",
+      "bytes": 4
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/markupsafe-3.0.3.dist-info/METADATA",
+      "sha256": "12b4cc61a7fa288cf7667ee3f213786d9619db57fb33ff6f934afbcb5c12ec81",
+      "bytes": 2690
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/markupsafe-3.0.3.dist-info/RECORD",
+      "sha256": "f770addd910763da592dbcadd4702e10623c8d343e558af49365c4fde9c261ff",
+      "bytes": 1116
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/markupsafe-3.0.3.dist-info/WHEEL",
+      "sha256": "06f03f8bcf30705525e5e8572e09a1c320cbe173c6ac22a7e824d403d6b11431",
+      "bytes": 190
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/markupsafe-3.0.3.dist-info/top_level.txt",
+      "sha256": "ab2d0f9637b9209bafb020637a32728430a310075c0cb2bfd9a81571ec7c67a5",
+      "bytes": 11
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/markupsafe-3.0.3.dist-info/licenses/LICENSE.txt",
+      "sha256": "489a8e1108509ed98a37bb983e11e0f7e1d31f0bd8f99a79c8448e7ff37d07ea",
+      "bytes": 1475
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/INSTALLER",
+      "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508",
+      "bytes": 4
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/METADATA",
+      "sha256": "b082c52ccbe3b880bae177c35171b52ed6c947f3ad71e3762f2723f60a411de0",
+      "bytes": 6608
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/RECORD",
+      "sha256": "fefea2ffbd6f216c95cab1ef712ef536540e645da119e394130567db48b133f4",
+      "bytes": 127589
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/REQUESTED",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/WHEEL",
+      "sha256": "d24f976e7ce522db6fa28b9356a4b98a0cc2dff8364a2301c483fed4405ccbe4",
+      "bytes": 138
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/entry_points.txt",
+      "sha256": "ec26fade0c8bdac211a6c1dd003a65eb16885b925395423e93fcaa115af4052c",
+      "bytes": 220
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/LICENSE.txt",
+      "sha256": "4860083caa0de2ac3292ca98bd074bd8f45d8b32624e37b1e70a240bff61e488",
+      "bytes": 46794
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/random/LICENSE.md",
+      "sha256": "103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f",
+      "bytes": 3511
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/random/src/mt19937/LICENSE.md",
+      "sha256": "0e111337b25494a773106695f0e799f642b8567aaacca4f116a74a8177179156",
+      "bytes": 2926
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/random/src/sfc64/LICENSE.md",
+      "sha256": "9d4098846018319cd68e228ee6220361787f73bccbf00237a85e4fc9621b998f",
+      "bytes": 1226
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/random/src/pcg64/LICENSE.md",
+      "sha256": "e7d4f4fb20358f314210a892ae17351e04993813646f697ec387385ca2a36918",
+      "bytes": 1154
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/random/src/distributions/LICENSE.md",
+      "sha256": "469778be8f33d54e1bcaab28c281cc472916d2d273f835e55bc487d30503face",
+      "bytes": 2745
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/random/src/splitmix64/LICENSE.md",
+      "sha256": "268b0ca06759d31ea3ca68dd35f20e877916e927b1c2a835e4592a3c4354b1f9",
+      "bytes": 332
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/random/src/philox/LICENSE.md",
+      "sha256": "6f5828a57223d4cc7f8ea505a2623e7b978b242752c1515e355f46ba2cec1800",
+      "bytes": 1509
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/linalg/lapack_lite/LICENSE.txt",
+      "sha256": "a14cc25e10d40a3aa705b7de2fb764a6535d8ee9b2db4e1724900585457dfd55",
+      "bytes": 2266
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/_core/src/multiarray/dragon4_LICENSE.txt",
+      "sha256": "f7b14309e5f54e5022b26448eefd419988ada2aec01d3c1162d84a0ea8f21f2c",
+      "bytes": 1414
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/_core/src/common/pythoncapi-compat/COPYING",
+      "sha256": "3f2c1ffa76383a55ae0aac01c9737cd70050dff63e1f026694fbe9d662573c98",
+      "bytes": 690
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/_core/src/highway/LICENSE",
+      "sha256": "e340270d4f64384569a91d546acb5b094d69ce47f0c015db77abb74dc6f815af",
+      "bytes": 20785
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/_core/src/npysort/x86-simd-sort/LICENSE.md",
+      "sha256": "211e7d737d6179a08f791ebb0a99897ce7cd2457410c542876d125576edfe910",
+      "bytes": 1514
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/_core/src/umath/svml/LICENSE",
+      "sha256": "c17011467b4fe6e20fbfbeda4df09e58c2bca5480a063e55735a4000a379aad9",
+      "bytes": 1543
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/_core/include/numpy/libdivide/LICENSE.txt",
+      "sha256": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec",
+      "bytes": 1018
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/ma/LICENSE",
+      "sha256": "05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6",
+      "bytes": 1593
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/fft/pocketfft/LICENSE.md",
+      "sha256": "a85ca13fdf90160b64a0698215868c13b74d835ad0a4e2ba44713b8c5058a056",
+      "bytes": 1498
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy/random/_bounded_integers.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "a3ed3619fb0bb7a8a68e605d8219aee971878710a9c7588f043e725f1d05254e",
+      "bytes": 342536
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy/random/_common.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "71d7971ef760a9e45c5c804b98bc3155d42d38837d4f287ab3bb41865d9954b1",
+      "bytes": 266808
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy/random/_generator.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "336eca5889ed937b66fddf1790095b35ec4c61e3a35375f0d29a94bb1299a3ef",
+      "bytes": 835416
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy/random/_mt19937.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "6edbd3acc543aa58610f0e3eacf71e7343010d5721b1df2a2a4fee7bea48407c",
+      "bytes": 131072
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy/random/_pcg64.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "cd16eef58424a339bb93a9eff61c7482229e23554cbf4089526e3bacd018ec98",
+      "bytes": 138584
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy/random/_philox.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "1a866751156413cd95c38e3b4bd4f981919cc4692a75dc8f965505c1ce48c4de",
+      "bytes": 114512
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy/random/_sfc64.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "91cca65548a69ed7851e0925e0ba3427a988b756027d0ce4cd4846c33f387a26",
+      "bytes": 87792
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy/random/bit_generator.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "e0d931cd4694de2ca87ed2731dffb51a0dacdeaa160b6fd627bda678f182e157",
+      "bytes": 222528
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy/random/mtrand.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "3badc42eeb19cb0837bb5fd89ed792e14be2df6bc4005cf2f9bca0490f610ad6",
+      "bytes": 647216
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy/linalg/_umath_linalg.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "ff1141bebaf0b681b329dfdab7153a78eb2b7c12e54e365ed70d385c495ec792",
+      "bytes": 231785
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy/_core/_multiarray_tests.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "5457018b1852b9d38f32187aa1877934404b776b5ce95e58d1f76d0a563f6825",
+      "bytes": 142528
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy/_core/_multiarray_umath.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "1535fbed1e9ac6b717e72ad9bd5c20b9f0536a21084fcadc40c00255a8f35d1d",
+      "bytes": 10407681
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/numpy/fft/_pocketfft_umath.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "2e78619c9326b3a2e1a61369371ebf257c3c644d209c50f4b641fe055f37167e",
+      "bytes": 539280
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/dateutil/zoneinfo/dateutil-zoneinfo.tar.gz",
+      "sha256": "d3ea52e7b6e968de0d884df1288193596fa95b803db4f92a18279a7398004475",
+      "bytes": 156400
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/_cyutility.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "b35b034d19b7c628834f81bef017890d9f06320c463a3a14fc88ac3700c56691",
+      "bytes": 194288
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/algos.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "2f4826e04244080f527b151e1356fe956cdad4ae90d826a58af535a188ecd385",
+      "bytes": 1816272
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/arrays.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "734ae71e3a76d325239a25fe0d925c20eb5f01e61475998f8aa7fd54fd26d426",
+      "bytes": 112848
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/byteswap.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "f83d5ca15d752ebbfb1d511a94bbc6348b520f33619c257a23e6d62d41ffbc0c",
+      "bytes": 49904
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/groupby.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "965f287a27026fc1b759c1316045c6ff92ac5ab425ab8ffa314bff055ad0403a",
+      "bytes": 2156024
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/hashing.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "9f9da4cedb3f30f2e29ea58a4108b25e002ec586c45cdd457acbefd648e2481b",
+      "bytes": 78704
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/hashtable.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "466e9d669c8d7a54f92fc3c063b37c4fd27cc6cca7e8fa3b8173952f6cb025d4",
+      "bytes": 2441104
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/index.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "3fa0694572757e0632a25b7efda14f72f89d00cb91c5f2ce2762a912642ed585",
+      "bytes": 720976
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/indexing.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "8a551fa631e1298a58c916cb8aeff8f3beb10aa19d6189f39e07b32e78fc6f31",
+      "bytes": 58608
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/internals.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "b3e4bbc0e0124b07209b687032a6605fde11446e594cff836dcf838792a5dda2",
+      "bytes": 267568
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/interval.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "5a05817291e3a96bfd4225de9f15e14888eefd14d68834cd9ef99a0a91e2c956",
+      "bytes": 1038192
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/join.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "a18476d797fbc14a0d917d83425fb11924de80cb637d9ce791cd423fa535e198",
+      "bytes": 1093808
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/json.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "87b90fa2aa0dadeefd726576138d4875277c366a3a9bb447f7d7776a51535fd8",
+      "bytes": 68704
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/lib.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "978734149b4d32bd4726ed5ba9c21e31334d04b2b7ca02a1d93fa4562354f77b",
+      "bytes": 616112
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/missing.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "2c7857f0ffab5650cea57adbc63a5006bc077dfa9cab475e3b7a9fc14bc49b5d",
+      "bytes": 182480
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/ops.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "6d5968f85c86e6f886b79d247eb31a98130694b1f0e5d50ff6838dfd3185dc31",
+      "bytes": 123888
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/ops_dispatch.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "297988b591015a807d74af16125b3eaf40c28c0f7c899da03cb6d017821dbb4c",
+      "bytes": 53968
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/pandas_datetime.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "1cea3f439591f1c1d1c0d9de402c4a5897b238c8aa63249bc4f45602953c9161",
+      "bytes": 39600
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/pandas_parser.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "335607fed1cc8a69efe4af09ed7816333b66160d363b3d963d6b657a978816f4",
+      "bytes": 43792
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/parsers.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "b9b230b6333306ab2733e3ed9ebce1b3d56390cd1701e145040fdbfee9bc6b7c",
+      "bytes": 430640
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/properties.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "3856ffbc36bb3dd4df8e93ed901f3b8f82983834c62eeaf75c6e2691bee385df",
+      "bytes": 79600
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/reshape.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "6abb2991222008a62cda17c70386a9c008315113cd22b190d0ac39a516938367",
+      "bytes": 157552
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/sas.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "2740f9dff018e42b0f3b545f0eb313e30ba76720ee5ae9398de6d33d4baa1737",
+      "bytes": 124208
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/sparse.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "0db303812f23d3494a9dd652415ad67f62c9ac324a65593b04b34ebf9cd0e60b",
+      "bytes": 832592
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/testing.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "f061c2f2cb989ff9cbd3630596f6737392339a762a8b8fde9dc67f5de49ef1d2",
+      "bytes": 111504
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslib.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "f5f685d0e333dfd3bec76e82fda42001aebd6b6744089f47b65897689d2e25ae",
+      "bytes": 144560
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/writers.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "f994b34138ab69e49580aed188892202267aaa5c0f01ea5193ef8b7ee9b14c5b",
+      "bytes": 95920
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/window/aggregations.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "a231f30376beb90cee5d484ffadacc57b37531acf0de1158a89c6fa4df43e942",
+      "bytes": 431752
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/window/indexers.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "33989291c7efe5b0683f8ea0dda57e1501b4384df640d735184124e8e5d94b98",
+      "bytes": 199760
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/base.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "09bd28e39e9472f5dbc4f9fe46ad5dfe3e6715eae20f8b2f9f91858bf45a112d",
+      "bytes": 58352
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/ccalendar.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "b2de623095a2788593d294ce8ba248e103eaab9e57e32deede63a56436ad77b4",
+      "bytes": 90960
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/conversion.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "33a03272ac7dbcdd51e59b7f3dc25e4f55987aaf5400ad9c55e30b639071608b",
+      "bytes": 161424
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/dtypes.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "a99136fbe1165ae9328843c8f277be56be091811be68ddd8a63ece404e11b6a0",
+      "bytes": 145424
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/fields.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "62da6225e43cc4f5a8b1582ddc292fd2bd1687cf7d7b3c24e5aced902fa3bb6d",
+      "bytes": 198224
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/nattype.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "da74a86922bd51524d123df3bd6b7a54d4d207998dd1de515a644dd6dd374764",
+      "bytes": 187952
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/np_datetime.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "c1a95c44b5038cd221e409a28440adf4b1e0443b6d526652760998727f592fbf",
+      "bytes": 132144
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/offsets.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "04d8812760e2b15fa56a4a00f29f66d5e2ef333a53f061a4f5e187f64d928ad4",
+      "bytes": 1031664
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/parsing.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "d2a63247cdaa446d7800c357e4323b903f38aa03209528479cd67e914ccc6ced",
+      "bytes": 251440
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/period.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "40ff448ca1b63365d2cecea237c5025ba5a677315df9908a1c88ec945bce9417",
+      "bytes": 352304
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/strptime.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "0be5bb11648c7f41dbc13055fba2f95515302044d35ed2b5214087e5d564f438",
+      "bytes": 206480
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/timedeltas.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "8aeaf6c2a1657317afbd566e2e0001a6cbc42df6c624b854b820c38dd5f9ad56",
+      "bytes": 484496
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/timestamps.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "734a1819ac1d26361d27d5677bab197313f2a6af4f63367805dbe037175b3179",
+      "bytes": 477392
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/timezones.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "bf88c45459131d0c5e2ec4d380a38ef061ce78e78f234d6259009c0335e87b8d",
+      "bytes": 173168
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/tzconversion.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "42f2bdf8bc87e7bba4786f3c4a07a3cce070bc5a21c26f204b51ee516c243a49",
+      "bytes": 185840
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/_libs/tslibs/vectorized.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "4f589dd439c8e44fd81333434899569e424b5a814546c82618bbb9ffe7d2de01",
+      "bytes": 107536
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/io/formats/templates/html.tpl",
+      "sha256": "280fb0fe7a5f9c733fd5ce6daed26d91ddce0fd8fc86ab684006381820b95202",
+      "bytes": 412
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/io/formats/templates/html_style.tpl",
+      "sha256": "fe00aa92d2f2506028e53ccbdc8f940a9d4d8e3f0ac9e2c25ae9c7cf89d81ec1",
+      "bytes": 694
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/io/formats/templates/html_table.tpl",
+      "sha256": "309c70245c0e6b828d962fa2c7bbd80068d1cf0e7d14b02660a1cccbd9c2df69",
+      "bytes": 1811
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/io/formats/templates/latex.tpl",
+      "sha256": "9be60cc6a295279da42ddeb5080f55d8c882fc3b70c1af9aa6f53c62d1fc4d85",
+      "bytes": 127
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/io/formats/templates/latex_longtable.tpl",
+      "sha256": "a299fe24d7ee317f3583550e5981492ca750494c2848ffd400a6cae24611a61e",
+      "bytes": 2877
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/io/formats/templates/latex_table.tpl",
+      "sha256": "60dbe7be3b70617ad61555e775065d26a285217613523f1fd5839474c9b15e64",
+      "bytes": 2221
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/io/formats/templates/string.tpl",
+      "sha256": "3a9afcedfd6d63cca9fc6ec6398f28b8596547feef7df37fa24ecd75ff7c8e81",
+      "bytes": 344
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/pandas/io/formats/templates/typst.tpl",
+      "sha256": "92fb843c53b1bccd72da2e5877d3ffe4e43c9a06bd9ce6c0b429856aa663bb41",
+      "bytes": 366
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_asyncio.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "3ff1ce91ca2a0ecebcfbdc4d44224b2f4fa9ecf72a11e1d52148f253ddb2e436",
+      "bytes": 62176
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_bz2.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "1eb7c18964dcb81d11a4a0c8a4581360a0e82ee6390114095293da338b671dd1",
+      "bytes": 32088
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_codecs_cn.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "6042a75d28a78e319bb5ace035be7852e6593deef0a957da86a072af12e9cee2",
+      "bytes": 154064
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_codecs_hk.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "abf753b20eee05e31f65affc95e0f714a2ec1d374c93485288458364d88db414",
+      "bytes": 158192
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_codecs_iso2022.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "0192ceec4fe36934b8a44178c4ee5879f723811126708a967845b0986dfcffcb",
+      "bytes": 27120
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_codecs_jp.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "4c5d84b5e4dc391645c57c0504abb12f5b9be3ea72c74b1f48a8a604212fa4c8",
+      "bytes": 268784
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_codecs_kr.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "ce2f2fc672cf16fa9da03ee1cb35ca0c19c0d013cf92bfba04ae63b22d954e21",
+      "bytes": 141776
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_codecs_tw.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "d8d901158dba1dbca6ddbbc72cd260b179313e41acaa3512a727ad1e994a7f0a",
+      "bytes": 113104
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_contextvars.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "6a8084d6e5a7d6169b724cd1216f2f0e38e0a8895a865208e94f085def4dc271",
+      "bytes": 14504
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_ctypes.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "0cbce3f3a827135dcfe4125bb643d8cf0d2ae45d529416b6ac8144a398bfad48",
+      "bytes": 131688
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_decimal.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "ef7d3205f53eeb3e480fa8a321c1c88fb1df6489ec04ac265bfb125ea0c94392",
+      "bytes": 302920
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_hashlib.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "4acf6154a2bd1add4a78527ce040a10f0b22a518d374bf507b079bb8e358ee50",
+      "bytes": 63696
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_json.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "63843b7f6fee2ceabc4eb30862637e8477cb9f67c85478f6b014b607576ab08a",
+      "bytes": 49128
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_lzma.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "44c190d5e4cbed78509bf60463998db29f9a5d91c1fa1f37a66ca3301efb05d4",
+      "bytes": 49176
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_multibytecodec.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "1d7527441a7692428fb58c67513bfdad968a3e61e0af7008e44f0cf774ff878e",
+      "bytes": 50392
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_multiprocessing.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "9b110a7f1234439f01d9ff68361f379f3e4524f2982295ca64c55832781af0b5",
+      "bytes": 24336
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_posixshmem.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "bd499fa4d2dee03fb149356d7896ae66e0f6661d3dac94f4d1bc94366fc8d8d1",
+      "bytes": 14992
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_queue.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "669195c3ae0b5528cf3a50c6abca16436465bade3e3b3760349d9b5939ba4e03",
+      "bytes": 19568
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_sqlite3.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "70fea46a201cf984febfe4d2120c657dd3b27f2d9391ea407bc686939e141045",
+      "bytes": 127752
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_ssl.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "9169902337ec694fced547e86b34dec8cf9ad85c4f67bf45a90cb44a7f932b52",
+      "bytes": 217008
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_typing.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "438c4a2d3598ee5a30340a514f771c29df988e7f539ccd8c54f4d742c027e151",
+      "bytes": 14472
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_uuid.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "d7549cca5df2cbe74aec2df233f91866667650173739c7199c76df975b9279ab",
+      "bytes": 14688
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/_zoneinfo.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "c29bd23ff90e611b4b891b8532fbea3a9871d7fc2290143be8f02ae60cebbe10",
+      "bytes": 36400
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/mmap.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "f0a8c487ce22c5ffc956fe00dcd8a207b53c4dd0918446def666048e959f8211",
+      "bytes": 32568
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/readline.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "52933538f8eaf8802b83a9db0a45e63121d5478ddde26b6b195cea167fe719ed",
+      "bytes": 36544
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/resource.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "f9788f55adfefd267c0343d42000da5e5413966dc319d847d7e667d14b520ef1",
+      "bytes": 19392
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/_internal/python3.11/lib-dynload/termios.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "7053621cfe03a2f0d99642271188cfe97bf791bd511248f3730960e4818c81cc",
+      "bytes": 35488
+    },
+    {
+      "path": "dist/authority/authority",
+      "sha256": "b11d825724fa566a76c3f6a97d3387214e9380b3bb46550729dee52daaf7ee7b",
+      "bytes": 12457680
+    },
+    {
+      "path": "dist/authority/_internal/81d243bd2c585b0f4821__mypyc.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "4bd213777702d927d795040643048e904a8901d3d1773177ee7fe61ec00af054",
+      "bytes": 406352
+    },
+    {
+      "path": "dist/authority/_internal/base_library.zip",
+      "sha256": "5eb569f452b429ff7d345a400157f3a5bba56a77f917b626e4c2a174156404f8",
+      "bytes": 1443218
+    },
+    {
+      "path": "dist/authority/_internal/libbz2.so.1.0",
+      "sha256": "218c4abdabce31161f3c2778762986d1fe06633705c7eb004a740946a5ccdfff",
+      "bytes": 78944
+    },
+    {
+      "path": "dist/authority/_internal/libcrypto.so.3",
+      "sha256": "d6fc1bc9de29c55fc905f77edba1ccc7c7a50b32bd2bb9086b0d0b00104eafc4",
+      "bytes": 5309400
+    },
+    {
+      "path": "dist/authority/_internal/libexpat.so.1",
+      "sha256": "c42ff317838b4b4639e2ea801905f0317177c6df7e31b2f0d0240e3c3ac0cfde",
+      "bytes": 174336
+    },
+    {
+      "path": "dist/authority/_internal/libffi.so.8",
+      "sha256": "00f593fe192f2851b8ce23b25cec2488d769beb5a8f63e8c9e563071e1075153",
+      "bytes": 47672
+    },
+    {
+      "path": "dist/authority/_internal/libgcc_s.so.1",
+      "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+      "bytes": 183024
+    },
+    {
+      "path": "dist/authority/_internal/libgfortran-040039e1-0352e75f.so.5.0.0",
+      "sha256": "c6090048eccc763522c12ef016f81da6b627cb3a044f55cf0479a839c41c0980",
+      "bytes": 2833617
+    },
+    {
+      "path": "dist/authority/_internal/liblzma.so.5",
+      "sha256": "a9793942a8a5f6f4d0f523ef9e0a5be4f0033f2c6c28520cd2b4e706d53c6e17",
+      "bytes": 202904
+    },
+    {
+      "path": "dist/authority/_internal/libpython3.11.so.1.0",
+      "sha256": "606d6e2f6b63ac8473fb0f9a9a45c3022fd855c163977ab54f97b1c7ea629b94",
+      "bytes": 7766224
+    },
+    {
+      "path": "dist/authority/_internal/libquadmath-96973f99-934c22de.so.0.0.0",
+      "sha256": "6ed5137f412781ad7863439fb543613f620b43c32b63292a0029246162f5bbc6",
+      "bytes": 250985
+    },
+    {
+      "path": "dist/authority/_internal/libreadline.so.8",
+      "sha256": "0a079f958147699f7bb5bf228406a5d878dc2387fe9cdc5cce6f3e35e20380fc",
+      "bytes": 344096
+    },
+    {
+      "path": "dist/authority/_internal/libscipy_openblas64_-32a4b2a6.so",
+      "sha256": "05c9f9eb89ee68a4b9d673184fa91c99587e736392c0c2d49180a8aa5303d080",
+      "bytes": 25409073
+    },
+    {
+      "path": "dist/authority/_internal/libsqlite3.so.0",
+      "sha256": "eac351cf84d688d1f9235e6165bd57555b31a491cd2f65e0dca67daa69036370",
+      "bytes": 1468440
+    },
+    {
+      "path": "dist/authority/_internal/libssl.so.3",
+      "sha256": "0c0f298a5b4b44526d20a07d126a55bf44b85eaab053b2b0118e5d806d28ea13",
+      "bytes": 696512
+    },
+    {
+      "path": "dist/authority/_internal/libstdc++.so.6",
+      "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+      "bytes": 2592224
+    },
+    {
+      "path": "dist/authority/_internal/libtinfo.so.6",
+      "sha256": "61f693cd7f8e55ad3ab518b20a00c01adb46ef829cf90773c97615a73f99e09b",
+      "bytes": 208328
+    },
+    {
+      "path": "dist/authority/_internal/libuuid.so.1",
+      "sha256": "a0fe32d24d125186cf332570770ae749822b5b529d4d4f59222e1aedbc63b58d",
+      "bytes": 35032
+    },
+    {
+      "path": "dist/authority/_internal/libz.so.1",
+      "sha256": "9b64150b28505a33d6bc3ecf709c279f6de97a1c184dbda65d06ee4537f6d286",
+      "bytes": 113000
+    },
+    {
+      "path": "dist/authority/_internal/charset_normalizer/cd.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "b83d234e47c028021dbf5b822cad275b8ddcb9df27f0c1dcff8c7ea229633b0a",
+      "bytes": 15912
+    },
+    {
+      "path": "dist/authority/_internal/charset_normalizer/md.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "403c46587fde67f768e537df75d5fe52c0928192ecead874f1e5c16a7d26dffb",
+      "bytes": 15912
+    },
+    {
+      "path": "dist/authority/_internal/numpy.libs/libgfortran-040039e1-0352e75f.so.5.0.0",
+      "sha256": "c6090048eccc763522c12ef016f81da6b627cb3a044f55cf0479a839c41c0980",
+      "bytes": 2833617
+    },
+    {
+      "path": "dist/authority/_internal/numpy.libs/libquadmath-96973f99-934c22de.so.0.0.0",
+      "sha256": "6ed5137f412781ad7863439fb543613f620b43c32b63292a0029246162f5bbc6",
+      "bytes": 250985
+    },
+    {
+      "path": "dist/authority/_internal/numpy.libs/libscipy_openblas64_-32a4b2a6.so",
+      "sha256": "05c9f9eb89ee68a4b9d673184fa91c99587e736392c0c2d49180a8aa5303d080",
+      "bytes": 25409073
+    },
+    {
+      "path": "dist/authority/_internal/markupsafe/_speedups.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "88c64ec75769f4606751eaa4aef59709e3033fd1f26e3f31f940d1a1325abeaf",
+      "bytes": 43936
+    },
+    {
+      "path": "dist/authority/_internal/asphodel/city_visual/catalog_v1.json",
+      "sha256": "c5772c0d8cb3062e5a272d602f645b708f53fa33c36cafb938257a3fd7ef2141",
+      "bytes": 93813
+    },
+    {
+      "path": "dist/authority/_internal/asphodel/city_visual/catalog_v1.yaml",
+      "sha256": "4d19e3f3e7bc32f4a5e925fc516f6d55483d78c2da36f6f791fa7ddfad4f6e50",
+      "bytes": 70105
+    },
+    {
+      "path": "dist/authority/_internal/markupsafe-3.0.3.dist-info/INSTALLER",
+      "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508",
+      "bytes": 4
+    },
+    {
+      "path": "dist/authority/_internal/markupsafe-3.0.3.dist-info/METADATA",
+      "sha256": "12b4cc61a7fa288cf7667ee3f213786d9619db57fb33ff6f934afbcb5c12ec81",
+      "bytes": 2690
+    },
+    {
+      "path": "dist/authority/_internal/markupsafe-3.0.3.dist-info/RECORD",
+      "sha256": "f770addd910763da592dbcadd4702e10623c8d343e558af49365c4fde9c261ff",
+      "bytes": 1116
+    },
+    {
+      "path": "dist/authority/_internal/markupsafe-3.0.3.dist-info/WHEEL",
+      "sha256": "06f03f8bcf30705525e5e8572e09a1c320cbe173c6ac22a7e824d403d6b11431",
+      "bytes": 190
+    },
+    {
+      "path": "dist/authority/_internal/markupsafe-3.0.3.dist-info/top_level.txt",
+      "sha256": "ab2d0f9637b9209bafb020637a32728430a310075c0cb2bfd9a81571ec7c67a5",
+      "bytes": 11
+    },
+    {
+      "path": "dist/authority/_internal/markupsafe-3.0.3.dist-info/licenses/LICENSE.txt",
+      "sha256": "489a8e1108509ed98a37bb983e11e0f7e1d31f0bd8f99a79c8448e7ff37d07ea",
+      "bytes": 1475
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/INSTALLER",
+      "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508",
+      "bytes": 4
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/METADATA",
+      "sha256": "b082c52ccbe3b880bae177c35171b52ed6c947f3ad71e3762f2723f60a411de0",
+      "bytes": 6608
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/RECORD",
+      "sha256": "fefea2ffbd6f216c95cab1ef712ef536540e645da119e394130567db48b133f4",
+      "bytes": 127589
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/REQUESTED",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/WHEEL",
+      "sha256": "d24f976e7ce522db6fa28b9356a4b98a0cc2dff8364a2301c483fed4405ccbe4",
+      "bytes": 138
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/entry_points.txt",
+      "sha256": "ec26fade0c8bdac211a6c1dd003a65eb16885b925395423e93fcaa115af4052c",
+      "bytes": 220
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/LICENSE.txt",
+      "sha256": "4860083caa0de2ac3292ca98bd074bd8f45d8b32624e37b1e70a240bff61e488",
+      "bytes": 46794
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/random/LICENSE.md",
+      "sha256": "103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f",
+      "bytes": 3511
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/random/src/mt19937/LICENSE.md",
+      "sha256": "0e111337b25494a773106695f0e799f642b8567aaacca4f116a74a8177179156",
+      "bytes": 2926
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/random/src/sfc64/LICENSE.md",
+      "sha256": "9d4098846018319cd68e228ee6220361787f73bccbf00237a85e4fc9621b998f",
+      "bytes": 1226
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/random/src/pcg64/LICENSE.md",
+      "sha256": "e7d4f4fb20358f314210a892ae17351e04993813646f697ec387385ca2a36918",
+      "bytes": 1154
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/random/src/distributions/LICENSE.md",
+      "sha256": "469778be8f33d54e1bcaab28c281cc472916d2d273f835e55bc487d30503face",
+      "bytes": 2745
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/random/src/splitmix64/LICENSE.md",
+      "sha256": "268b0ca06759d31ea3ca68dd35f20e877916e927b1c2a835e4592a3c4354b1f9",
+      "bytes": 332
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/random/src/philox/LICENSE.md",
+      "sha256": "6f5828a57223d4cc7f8ea505a2623e7b978b242752c1515e355f46ba2cec1800",
+      "bytes": 1509
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/linalg/lapack_lite/LICENSE.txt",
+      "sha256": "a14cc25e10d40a3aa705b7de2fb764a6535d8ee9b2db4e1724900585457dfd55",
+      "bytes": 2266
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/_core/src/multiarray/dragon4_LICENSE.txt",
+      "sha256": "f7b14309e5f54e5022b26448eefd419988ada2aec01d3c1162d84a0ea8f21f2c",
+      "bytes": 1414
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/_core/src/common/pythoncapi-compat/COPYING",
+      "sha256": "3f2c1ffa76383a55ae0aac01c9737cd70050dff63e1f026694fbe9d662573c98",
+      "bytes": 690
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/_core/src/highway/LICENSE",
+      "sha256": "e340270d4f64384569a91d546acb5b094d69ce47f0c015db77abb74dc6f815af",
+      "bytes": 20785
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/_core/src/npysort/x86-simd-sort/LICENSE.md",
+      "sha256": "211e7d737d6179a08f791ebb0a99897ce7cd2457410c542876d125576edfe910",
+      "bytes": 1514
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/_core/src/umath/svml/LICENSE",
+      "sha256": "c17011467b4fe6e20fbfbeda4df09e58c2bca5480a063e55735a4000a379aad9",
+      "bytes": 1543
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/_core/include/numpy/libdivide/LICENSE.txt",
+      "sha256": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec",
+      "bytes": 1018
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/ma/LICENSE",
+      "sha256": "05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6",
+      "bytes": 1593
+    },
+    {
+      "path": "dist/authority/_internal/numpy-2.4.6.dist-info/licenses/numpy/fft/pocketfft/LICENSE.md",
+      "sha256": "a85ca13fdf90160b64a0698215868c13b74d835ad0a4e2ba44713b8c5058a056",
+      "bytes": 1498
+    },
+    {
+      "path": "dist/authority/_internal/numpy/random/_bounded_integers.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "a3ed3619fb0bb7a8a68e605d8219aee971878710a9c7588f043e725f1d05254e",
+      "bytes": 342536
+    },
+    {
+      "path": "dist/authority/_internal/numpy/random/_common.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "71d7971ef760a9e45c5c804b98bc3155d42d38837d4f287ab3bb41865d9954b1",
+      "bytes": 266808
+    },
+    {
+      "path": "dist/authority/_internal/numpy/random/_generator.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "336eca5889ed937b66fddf1790095b35ec4c61e3a35375f0d29a94bb1299a3ef",
+      "bytes": 835416
+    },
+    {
+      "path": "dist/authority/_internal/numpy/random/_mt19937.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "6edbd3acc543aa58610f0e3eacf71e7343010d5721b1df2a2a4fee7bea48407c",
+      "bytes": 131072
+    },
+    {
+      "path": "dist/authority/_internal/numpy/random/_pcg64.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "cd16eef58424a339bb93a9eff61c7482229e23554cbf4089526e3bacd018ec98",
+      "bytes": 138584
+    },
+    {
+      "path": "dist/authority/_internal/numpy/random/_philox.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "1a866751156413cd95c38e3b4bd4f981919cc4692a75dc8f965505c1ce48c4de",
+      "bytes": 114512
+    },
+    {
+      "path": "dist/authority/_internal/numpy/random/_sfc64.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "91cca65548a69ed7851e0925e0ba3427a988b756027d0ce4cd4846c33f387a26",
+      "bytes": 87792
+    },
+    {
+      "path": "dist/authority/_internal/numpy/random/bit_generator.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "e0d931cd4694de2ca87ed2731dffb51a0dacdeaa160b6fd627bda678f182e157",
+      "bytes": 222528
+    },
+    {
+      "path": "dist/authority/_internal/numpy/random/mtrand.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "3badc42eeb19cb0837bb5fd89ed792e14be2df6bc4005cf2f9bca0490f610ad6",
+      "bytes": 647216
+    },
+    {
+      "path": "dist/authority/_internal/numpy/linalg/_umath_linalg.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "ff1141bebaf0b681b329dfdab7153a78eb2b7c12e54e365ed70d385c495ec792",
+      "bytes": 231785
+    },
+    {
+      "path": "dist/authority/_internal/numpy/_core/_multiarray_tests.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "5457018b1852b9d38f32187aa1877934404b776b5ce95e58d1f76d0a563f6825",
+      "bytes": 142528
+    },
+    {
+      "path": "dist/authority/_internal/numpy/_core/_multiarray_umath.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "1535fbed1e9ac6b717e72ad9bd5c20b9f0536a21084fcadc40c00255a8f35d1d",
+      "bytes": 10407681
+    },
+    {
+      "path": "dist/authority/_internal/numpy/fft/_pocketfft_umath.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "2e78619c9326b3a2e1a61369371ebf257c3c644d209c50f4b641fe055f37167e",
+      "bytes": 539280
+    },
+    {
+      "path": "dist/authority/_internal/dateutil/zoneinfo/dateutil-zoneinfo.tar.gz",
+      "sha256": "d3ea52e7b6e968de0d884df1288193596fa95b803db4f92a18279a7398004475",
+      "bytes": 156400
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/_cyutility.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "b35b034d19b7c628834f81bef017890d9f06320c463a3a14fc88ac3700c56691",
+      "bytes": 194288
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/algos.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "2f4826e04244080f527b151e1356fe956cdad4ae90d826a58af535a188ecd385",
+      "bytes": 1816272
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/arrays.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "734ae71e3a76d325239a25fe0d925c20eb5f01e61475998f8aa7fd54fd26d426",
+      "bytes": 112848
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/byteswap.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "f83d5ca15d752ebbfb1d511a94bbc6348b520f33619c257a23e6d62d41ffbc0c",
+      "bytes": 49904
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/groupby.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "965f287a27026fc1b759c1316045c6ff92ac5ab425ab8ffa314bff055ad0403a",
+      "bytes": 2156024
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/hashing.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "9f9da4cedb3f30f2e29ea58a4108b25e002ec586c45cdd457acbefd648e2481b",
+      "bytes": 78704
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/hashtable.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "466e9d669c8d7a54f92fc3c063b37c4fd27cc6cca7e8fa3b8173952f6cb025d4",
+      "bytes": 2441104
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/index.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "3fa0694572757e0632a25b7efda14f72f89d00cb91c5f2ce2762a912642ed585",
+      "bytes": 720976
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/indexing.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "8a551fa631e1298a58c916cb8aeff8f3beb10aa19d6189f39e07b32e78fc6f31",
+      "bytes": 58608
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/internals.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "b3e4bbc0e0124b07209b687032a6605fde11446e594cff836dcf838792a5dda2",
+      "bytes": 267568
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/interval.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "5a05817291e3a96bfd4225de9f15e14888eefd14d68834cd9ef99a0a91e2c956",
+      "bytes": 1038192
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/join.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "a18476d797fbc14a0d917d83425fb11924de80cb637d9ce791cd423fa535e198",
+      "bytes": 1093808
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/json.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "87b90fa2aa0dadeefd726576138d4875277c366a3a9bb447f7d7776a51535fd8",
+      "bytes": 68704
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/lib.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "978734149b4d32bd4726ed5ba9c21e31334d04b2b7ca02a1d93fa4562354f77b",
+      "bytes": 616112
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/missing.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "2c7857f0ffab5650cea57adbc63a5006bc077dfa9cab475e3b7a9fc14bc49b5d",
+      "bytes": 182480
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/ops.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "6d5968f85c86e6f886b79d247eb31a98130694b1f0e5d50ff6838dfd3185dc31",
+      "bytes": 123888
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/ops_dispatch.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "297988b591015a807d74af16125b3eaf40c28c0f7c899da03cb6d017821dbb4c",
+      "bytes": 53968
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/pandas_datetime.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "1cea3f439591f1c1d1c0d9de402c4a5897b238c8aa63249bc4f45602953c9161",
+      "bytes": 39600
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/pandas_parser.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "335607fed1cc8a69efe4af09ed7816333b66160d363b3d963d6b657a978816f4",
+      "bytes": 43792
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/parsers.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "b9b230b6333306ab2733e3ed9ebce1b3d56390cd1701e145040fdbfee9bc6b7c",
+      "bytes": 430640
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/properties.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "3856ffbc36bb3dd4df8e93ed901f3b8f82983834c62eeaf75c6e2691bee385df",
+      "bytes": 79600
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/reshape.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "6abb2991222008a62cda17c70386a9c008315113cd22b190d0ac39a516938367",
+      "bytes": 157552
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/sas.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "2740f9dff018e42b0f3b545f0eb313e30ba76720ee5ae9398de6d33d4baa1737",
+      "bytes": 124208
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/sparse.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "0db303812f23d3494a9dd652415ad67f62c9ac324a65593b04b34ebf9cd0e60b",
+      "bytes": 832592
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/testing.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "f061c2f2cb989ff9cbd3630596f6737392339a762a8b8fde9dc67f5de49ef1d2",
+      "bytes": 111504
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslib.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "f5f685d0e333dfd3bec76e82fda42001aebd6b6744089f47b65897689d2e25ae",
+      "bytes": 144560
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/writers.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "f994b34138ab69e49580aed188892202267aaa5c0f01ea5193ef8b7ee9b14c5b",
+      "bytes": 95920
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/window/aggregations.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "a231f30376beb90cee5d484ffadacc57b37531acf0de1158a89c6fa4df43e942",
+      "bytes": 431752
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/window/indexers.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "33989291c7efe5b0683f8ea0dda57e1501b4384df640d735184124e8e5d94b98",
+      "bytes": 199760
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/base.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "09bd28e39e9472f5dbc4f9fe46ad5dfe3e6715eae20f8b2f9f91858bf45a112d",
+      "bytes": 58352
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/ccalendar.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "b2de623095a2788593d294ce8ba248e103eaab9e57e32deede63a56436ad77b4",
+      "bytes": 90960
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/conversion.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "33a03272ac7dbcdd51e59b7f3dc25e4f55987aaf5400ad9c55e30b639071608b",
+      "bytes": 161424
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/dtypes.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "a99136fbe1165ae9328843c8f277be56be091811be68ddd8a63ece404e11b6a0",
+      "bytes": 145424
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/fields.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "62da6225e43cc4f5a8b1582ddc292fd2bd1687cf7d7b3c24e5aced902fa3bb6d",
+      "bytes": 198224
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/nattype.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "da74a86922bd51524d123df3bd6b7a54d4d207998dd1de515a644dd6dd374764",
+      "bytes": 187952
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/np_datetime.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "c1a95c44b5038cd221e409a28440adf4b1e0443b6d526652760998727f592fbf",
+      "bytes": 132144
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/offsets.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "04d8812760e2b15fa56a4a00f29f66d5e2ef333a53f061a4f5e187f64d928ad4",
+      "bytes": 1031664
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/parsing.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "d2a63247cdaa446d7800c357e4323b903f38aa03209528479cd67e914ccc6ced",
+      "bytes": 251440
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/period.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "40ff448ca1b63365d2cecea237c5025ba5a677315df9908a1c88ec945bce9417",
+      "bytes": 352304
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/strptime.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "0be5bb11648c7f41dbc13055fba2f95515302044d35ed2b5214087e5d564f438",
+      "bytes": 206480
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/timedeltas.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "8aeaf6c2a1657317afbd566e2e0001a6cbc42df6c624b854b820c38dd5f9ad56",
+      "bytes": 484496
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/timestamps.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "734a1819ac1d26361d27d5677bab197313f2a6af4f63367805dbe037175b3179",
+      "bytes": 477392
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/timezones.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "bf88c45459131d0c5e2ec4d380a38ef061ce78e78f234d6259009c0335e87b8d",
+      "bytes": 173168
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/tzconversion.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "42f2bdf8bc87e7bba4786f3c4a07a3cce070bc5a21c26f204b51ee516c243a49",
+      "bytes": 185840
+    },
+    {
+      "path": "dist/authority/_internal/pandas/_libs/tslibs/vectorized.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "4f589dd439c8e44fd81333434899569e424b5a814546c82618bbb9ffe7d2de01",
+      "bytes": 107536
+    },
+    {
+      "path": "dist/authority/_internal/pandas/io/formats/templates/html.tpl",
+      "sha256": "280fb0fe7a5f9c733fd5ce6daed26d91ddce0fd8fc86ab684006381820b95202",
+      "bytes": 412
+    },
+    {
+      "path": "dist/authority/_internal/pandas/io/formats/templates/html_style.tpl",
+      "sha256": "fe00aa92d2f2506028e53ccbdc8f940a9d4d8e3f0ac9e2c25ae9c7cf89d81ec1",
+      "bytes": 694
+    },
+    {
+      "path": "dist/authority/_internal/pandas/io/formats/templates/html_table.tpl",
+      "sha256": "309c70245c0e6b828d962fa2c7bbd80068d1cf0e7d14b02660a1cccbd9c2df69",
+      "bytes": 1811
+    },
+    {
+      "path": "dist/authority/_internal/pandas/io/formats/templates/latex.tpl",
+      "sha256": "9be60cc6a295279da42ddeb5080f55d8c882fc3b70c1af9aa6f53c62d1fc4d85",
+      "bytes": 127
+    },
+    {
+      "path": "dist/authority/_internal/pandas/io/formats/templates/latex_longtable.tpl",
+      "sha256": "a299fe24d7ee317f3583550e5981492ca750494c2848ffd400a6cae24611a61e",
+      "bytes": 2877
+    },
+    {
+      "path": "dist/authority/_internal/pandas/io/formats/templates/latex_table.tpl",
+      "sha256": "60dbe7be3b70617ad61555e775065d26a285217613523f1fd5839474c9b15e64",
+      "bytes": 2221
+    },
+    {
+      "path": "dist/authority/_internal/pandas/io/formats/templates/string.tpl",
+      "sha256": "3a9afcedfd6d63cca9fc6ec6398f28b8596547feef7df37fa24ecd75ff7c8e81",
+      "bytes": 344
+    },
+    {
+      "path": "dist/authority/_internal/pandas/io/formats/templates/typst.tpl",
+      "sha256": "92fb843c53b1bccd72da2e5877d3ffe4e43c9a06bd9ce6c0b429856aa663bb41",
+      "bytes": 366
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_asyncio.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "3ff1ce91ca2a0ecebcfbdc4d44224b2f4fa9ecf72a11e1d52148f253ddb2e436",
+      "bytes": 62176
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_bz2.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "1eb7c18964dcb81d11a4a0c8a4581360a0e82ee6390114095293da338b671dd1",
+      "bytes": 32088
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_codecs_cn.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "6042a75d28a78e319bb5ace035be7852e6593deef0a957da86a072af12e9cee2",
+      "bytes": 154064
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_codecs_hk.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "abf753b20eee05e31f65affc95e0f714a2ec1d374c93485288458364d88db414",
+      "bytes": 158192
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_codecs_iso2022.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "0192ceec4fe36934b8a44178c4ee5879f723811126708a967845b0986dfcffcb",
+      "bytes": 27120
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_codecs_jp.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "4c5d84b5e4dc391645c57c0504abb12f5b9be3ea72c74b1f48a8a604212fa4c8",
+      "bytes": 268784
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_codecs_kr.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "ce2f2fc672cf16fa9da03ee1cb35ca0c19c0d013cf92bfba04ae63b22d954e21",
+      "bytes": 141776
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_codecs_tw.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "d8d901158dba1dbca6ddbbc72cd260b179313e41acaa3512a727ad1e994a7f0a",
+      "bytes": 113104
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_contextvars.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "6a8084d6e5a7d6169b724cd1216f2f0e38e0a8895a865208e94f085def4dc271",
+      "bytes": 14504
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_ctypes.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "0cbce3f3a827135dcfe4125bb643d8cf0d2ae45d529416b6ac8144a398bfad48",
+      "bytes": 131688
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_decimal.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "ef7d3205f53eeb3e480fa8a321c1c88fb1df6489ec04ac265bfb125ea0c94392",
+      "bytes": 302920
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_hashlib.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "4acf6154a2bd1add4a78527ce040a10f0b22a518d374bf507b079bb8e358ee50",
+      "bytes": 63696
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_json.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "63843b7f6fee2ceabc4eb30862637e8477cb9f67c85478f6b014b607576ab08a",
+      "bytes": 49128
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_lzma.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "44c190d5e4cbed78509bf60463998db29f9a5d91c1fa1f37a66ca3301efb05d4",
+      "bytes": 49176
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_multibytecodec.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "1d7527441a7692428fb58c67513bfdad968a3e61e0af7008e44f0cf774ff878e",
+      "bytes": 50392
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_multiprocessing.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "9b110a7f1234439f01d9ff68361f379f3e4524f2982295ca64c55832781af0b5",
+      "bytes": 24336
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_posixshmem.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "bd499fa4d2dee03fb149356d7896ae66e0f6661d3dac94f4d1bc94366fc8d8d1",
+      "bytes": 14992
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_queue.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "669195c3ae0b5528cf3a50c6abca16436465bade3e3b3760349d9b5939ba4e03",
+      "bytes": 19568
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_sqlite3.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "70fea46a201cf984febfe4d2120c657dd3b27f2d9391ea407bc686939e141045",
+      "bytes": 127752
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_ssl.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "9169902337ec694fced547e86b34dec8cf9ad85c4f67bf45a90cb44a7f932b52",
+      "bytes": 217008
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_typing.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "438c4a2d3598ee5a30340a514f771c29df988e7f539ccd8c54f4d742c027e151",
+      "bytes": 14472
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_uuid.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "d7549cca5df2cbe74aec2df233f91866667650173739c7199c76df975b9279ab",
+      "bytes": 14688
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/_zoneinfo.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "c29bd23ff90e611b4b891b8532fbea3a9871d7fc2290143be8f02ae60cebbe10",
+      "bytes": 36400
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/mmap.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "f0a8c487ce22c5ffc956fe00dcd8a207b53c4dd0918446def666048e959f8211",
+      "bytes": 32568
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/readline.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "52933538f8eaf8802b83a9db0a45e63121d5478ddde26b6b195cea167fe719ed",
+      "bytes": 36544
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/resource.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "f9788f55adfefd267c0343d42000da5e5413966dc319d847d7e667d14b520ef1",
+      "bytes": 19392
+    },
+    {
+      "path": "dist/authority/_internal/python3.11/lib-dynload/termios.cpython-311-x86_64-linux-gnu.so",
+      "sha256": "7053621cfe03a2f0d99642271188cfe97bf791bd511248f3730960e4818c81cc",
+      "bytes": 35488
+    }
+  ],
+  "archive": {
+    "path": "dist/Asphodel-Windows-V2.zip",
+    "sha256": "87e325d25811c3102f90059c819e7ed56cce90f622da19ab9b3504d258b8295f",
+    "bytes": 99753904
+  },
+  "file_count": 307,
+  "total_bytes": 682894622
+}

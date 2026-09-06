@@ -1,0 +1,12 @@
+# Asphodel Windows Playable V2 — artifact checksums (sha256)
+# Generated 2026-09-06T21:00:52Z from source f77d9033d4a0f8a4727bc20d897a4e5a4742dd04
+# The .exe was cross-exported on Linux and is NOT certified playable (no Wine here).
+# The Windows zip ships an authority PLACEHOLDER; the Windows authority must be
+# frozen on a Windows host (see docs/windows/PLAYABLE_WINDOWS_README.md).
+
+87e325d25811c3102f90059c819e7ed56cce90f622da19ab9b3504d258b8295f  Asphodel-Windows-V2.zip
+0c884e693d5b7a909d98922513e2d88b1788c458c79febe1c41a119bb1783386  Asphodel-Linux-V2.zip
+7a5e7d4bf5d37f4c3bac2980e85c178f6b4494e89e172ff2775c804ef452b0d4  asphodel-windows-v2/Asphodel.exe
+6e275ebea557f7b3c87958df9956a682db4f304a58866b92eb19addeadd6f1d0  asphodel-windows-v2/Asphodel.pck
+105092eb85808f264d883bae028b144353bd337124ccef160a1c212306cb710b  asphodel-linux-v2/Asphodel.x86_64
+b11d825724fa566a76c3f6a97d3387214e9380b3bb46550729dee52daaf7ee7b  authority/authority

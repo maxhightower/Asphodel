@@ -95,6 +95,23 @@ func shutdown() -> void:
 
 
 # ---------------------------------------------------------------- internals
+func free_port() -> int:
+	return _free_port()
+
+
+func spawn_authority_process(port: int) -> int:
+	## Spawn an authority child on `port` WITHOUT connecting — used by the
+	## fail-closed handshake test to exercise a wrong-protocol HELLO against a
+	## real, dedicated authority (the live one is single-client). Returns PID/-1.
+	var cmd := _resolve_authority()
+	if not cmd.get("ok", false):
+		return -1
+	var args: Array = cmd["args"].duplicate()
+	args.append("--port"); args.append(str(port))
+	args.append("--host"); args.append("127.0.0.1")
+	return OS.create_process(cmd["exe"], args, false)
+
+
 func _fail(code: String, detail: String) -> Dictionary:
 	last_error_code = code
 	last_error_detail = detail
@@ -119,18 +136,21 @@ func _resolve_authority() -> Dictionary:
 	## dev checkout's python entrypoint.
 	var exe_dir := OS.get_executable_path().get_base_dir()
 	var is_win := OS.get_name() == "Windows"
-	var bundled := exe_dir.path_join("authority").path_join(
-		"asphodel-authority" + (".exe" if is_win else ""))
-	if FileAccess.file_exists(bundled):
-		return {"ok": true, "exe": bundled, "args": []}
+	var suffix := ".exe" if is_win else ""
+	# The frozen authority ships in <game_exe_dir>/authority/. Accept either name
+	# the packaging step may produce.
+	for base in ["asphodel-authority", "authority"]:
+		var bundled := exe_dir.path_join("authority").path_join(base + suffix)
+		if FileAccess.file_exists(bundled):
+			return {"ok": true, "exe": bundled, "args": []}
 
 	# Dev: run tools/authority_launch.py with the interpreter we can find.
 	var repo := _repo_root()
 	var launch := repo.path_join("tools").path_join("authority_launch.py")
 	if not FileAccess.file_exists(launch):
 		return {"ok": false, "code": "authority_missing",
-			"detail": "no bundled authority at %s and no dev entrypoint at %s"
-				% [bundled, launch]}
+			"detail": "no bundled authority in %s and no dev entrypoint at %s"
+				% [exe_dir.path_join("authority"), launch]}
 	var py := _find_python()
 	if py == "":
 		return {"ok": false, "code": "authority_missing",

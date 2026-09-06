@@ -1,0 +1,24 @@
+{
+  "executable": "/home/user/Asphodel/dist/authority/authority",
+  "exists": true,
+  "launched": true,
+  "listening_line": "{\"event\": \"listening\", \"host\": \"127.0.0.1\", \"port\": 37977}",
+  "port": 37977,
+  "hello_ok": true,
+  "hello_response": "{\"protocol_version\": 9, \"ok\": true, \"cmd\": \"HELLO\", \"id\": 1, \"server\": \"asphodel-bridge\", \"commands\": [\"ADVANCE\", \"ADVANCE_TIME\", \"DROP_ITEM\", \"ENTER_BUILDING\", \"GET_CITIZEN_CONTEXT\", \"GET_COGNITION\", \"GET_DIALOGUE\", \"GET_GROUPS\", \"GET_INTERIOR\", \"GET_MOBILITY\", \"GET_OUTBREAK\", \"GET_ROOMS\", \"GET_WORK\", \"GROUP_QUERY\", \"HELLO\", \"INSPECT_BUILDING\", \"INSPECT_INVENTORY\", \"INTERACT_WITH\", \"INTERVENE\", \"LEAVE_BUILDING\", \"LOAD\", \"MOBILITY_REPORT\", \"PAUSE\", \"RESUME\", \"SAVE\", \"SEARCH_CONTAINER\", \"SEED_OUTBREAK\", \"SET_FOCUS\", \"SET_OBJECT_STATE\", \"SHUTDOWN\", \"SNAPSHOT\", \"START_WORLD\", \"TAKE_ITEM\", \"TALK\", \"USE_ITEM\"], \"started\": false, \"sim_sha\": \"af93df0334062302e869204a7592b68c4fe38e64\", \"save_version\": 3}",
+  "shutdown_ok": true,
+  "error": null,
+  "recorded_utc": "2026-09-06T20:59:56Z",
+  "freeze": {
+    "target": "linux",
+    "host": "linux",
+    "method": "pyinstaller-onedir",
+    "entry": "tools/authority_entry.py",
+    "status": "OK",
+    "dist_path": "dist/authority",
+    "blocked_reason": null,
+    "executable": "dist/authority/authority",
+    "build_seconds": 22.2,
+    "executable_sha256": "b11d825724fa566a76c3f6a97d3387214e9380b3bb46550729dee52daaf7ee7b"
+  }
+}

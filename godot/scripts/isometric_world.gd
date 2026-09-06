@@ -76,6 +76,10 @@ var _pause_layer: CanvasLayer
 
 # --- npc dialogue (ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1) ------------------
 var _dialogue: DialoguePanel = null
+var _inspector: SimulationInspector = null       # F3 developer/player simulation lens (read-only)
+var _build_overlay: BuildOverlay = null          # F10 build/sim SHA + flags overlay
+var _event_feed: EventFeed = null                # bounded developer event feed
+var _follow_cam: FollowCamera = null             # presentation-only follow helper
 var _speech_bubble: Label3D = null          # the NPC's last line, over its body
 var _last_citizen_seen := -1                # ASK_PERSON fallback subject
 
@@ -810,7 +814,50 @@ func _build_hud() -> void:
 
 	_build_time_controls(layer)
 	_build_dialogue_panel()
+	_build_observer_layer()
 	_refresh_inventory_hud()
+
+
+# ------------------------------------------- observer / simulation lens (read-only)
+func _build_observer_layer() -> void:
+	## Developer/observer surfaces that make the authoritative backend legible
+	## (Convergence V2 §19-§25). Every one is READ-ONLY: they call only the
+	## bridge's GET_* / query commands and never mutate the world.
+	_build_overlay = BuildOverlay.new()
+	_build_overlay.name = "BuildOverlay"
+	add_child(_build_overlay)
+	_build_overlay.set_bridge(SimBridge)
+
+	_inspector = SimulationInspector.new()
+	_inspector.name = "SimulationInspector"
+	add_child(_inspector)
+	_inspector.set_bridge(SimBridge)
+
+	_event_feed = EventFeed.new()
+	_event_feed.name = "EventFeed"
+	add_child(_event_feed)
+	_event_feed.set_bridge(SimBridge)
+
+	_follow_cam = FollowCamera.new()
+	_follow_cam.name = "FollowCamera"
+	add_child(_follow_cam)
+	_follow_cam.set_bridge(SimBridge)
+
+	# Default the lens to the player's own citizen so F3 shows something at once.
+	var pcid := int(Session.citizen.get("citizen_id", -1)) if Session.citizen.has("citizen_id") else -1
+	if pcid >= 0:
+		_inspector.set_selected(pcid)
+		_follow_cam.follow(pcid)
+
+	# Drive the event feed's bounded poll (the inspector/overlay self-refresh).
+	var t := Timer.new()
+	t.name = "ObserverPoll"
+	t.wait_time = 1.0
+	t.autostart = true
+	add_child(t)
+	t.timeout.connect(func():
+		if _event_feed != null:
+			_event_feed.poll())
 
 
 # --------------------------------------------- npc dialogue (player <-> NPC)

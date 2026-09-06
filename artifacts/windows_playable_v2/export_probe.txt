@@ -1,0 +1,75 @@
+ASPHODEL — Godot export probe (Convergence V2)
+==============================================
+Recorded: 2026-09-06T20:46:57Z
+Host: Linux headless (no Wine). Source SHA: af93df0334062302e869204a7592b68c4fe38e64
+Godot: 4.4.stable.official.4c311cbee
+Preset file: godot/export_presets.cfg (committed)
+
+HONESTY NOTE
+------------
+This host is Linux/headless with NO Wine. A Windows .exe can be EXPORTED
+(cross-packaged) here but CANNOT be executed or certified as "playable" here.
+"Export mechanically succeeded" is NOT "Windows playable certified".
+Windows-execution gates (launch, authority auto-start, save/load) remain
+BLOCKED and must be certified on a real Windows host.
+
+STEP 1 — Export templates
+-------------------------
+Initial state: ~/.local/share/godot/export_templates/4.4.stable/ was EMPTY.
+First Linux export attempt FAILED with:
+  "No export template found ... 4.4.stable/linux_release.x86_64"
+Remediation: downloaded Godot_v4.4-stable_export_templates.tpz (1.2 GB) from
+  github.com/godotengine/godot/releases/download/4.4-stable/ and extracted the
+  linux + windows x86_64 templates (version.txt == 4.4.stable) into that dir.
+  Installed: linux_debug.x86_64, linux_release.x86_64,
+             windows_debug_x86_64.exe, windows_release_x86_64.exe
+
+STEP 2 — Linux/X11 export (proxy build; the runnable evidence here)
+-------------------------------------------------------------------
+Command:
+  godot --headless --export-release "Linux/X11" \
+        dist/asphodel-linux-v2/Asphodel.x86_64
+Note: the export_path PARENT DIR must pre-exist (Godot does not mkdir it);
+      build_windows_playable.py creates it before exporting.
+Result: SUCCESS (exit 0).
+  dist/asphodel-linux-v2/Asphodel.x86_64  (69,659,512 bytes)  sha256=105092eb85808f264d883bae028b144353bd337124ccef160a1c212306cb710b
+  dist/asphodel-linux-v2/Asphodel.pck     (132,817,248 bytes) sha256=3118f4e86c3aa8b83a1f29330989b91d354a200223360c81f5442b797e7fc1c9
+Runtime check: ./Asphodel.x86_64 --headless --quit-after 2  -> exit 0, clean
+  boot of MainMenu.tscn from the embedded PCK (no errors). The Linux proxy is
+  genuinely runnable.
+
+STEP 3 — Windows Desktop export (shipped target; NOT executable here)
+---------------------------------------------------------------------
+Command:
+  godot --headless --export-release "Windows Desktop" \
+        dist/asphodel-windows-v2/Asphodel.exe
+Result: SUCCESS with warnings (exit 0).
+  dist/asphodel-windows-v2/Asphodel.exe   (97,496,576 bytes)  sha256=7a5e7d4bf5d37f4c3bac2980e85c178f6b4494e89e172ff2775c804ef452b0d4
+  dist/asphodel-windows-v2/Asphodel.pck   (132,817,248 bytes) sha256=3118f4e86c3aa8b83a1f29330989b91d354a200223360c81f5442b797e7fc1c9
+  Windows export template: PRESENT (windows_release_x86_64.exe).
+Warning (non-fatal, expected on a non-Windows host):
+  "Resources Modification: Could not start rcedit executable" — rcedit embeds
+  the icon + file/version metadata into the .exe and is only runnable on a
+  Windows/Wine host. The .exe is otherwise complete. On a Windows build host
+  with rcedit configured this warning disappears and the icon/version are
+  stamped. This does NOT affect playability of the code/PCK.
+The .exe was NOT and CANNOT be launched here (no Wine). Windows playability is
+BLOCKED-for-certification on this host.
+
+STEP 4 — Data packing verification (both PCKs)
+----------------------------------------------
+export_filter="all_resources" + include_filter="*.json, *.gz, *.gdshader".
+The Linux and Windows PCKs are BYTE-IDENTICAL (same sha256 3118f4e86c3aa8b83a1f29330989b91d354a200223360c81f5442b797e7fc1c9),
+so the packed content is platform-independent. Confirmed packed:
+  bundles/houston/citizens.json   present
+  bundles/austin/world/*          present (45 tile refs)
+  sample_bundle/meta.json         present
+  catalog_v1.json                 present
+  gzipped world tiles (*.gz)      present (883 refs)
+
+SUMMARY
+-------
+Linux/X11 export .......... OK (runnable, booted headless)
+Windows Desktop export .... OK (mechanically exported; rcedit warning only)
+Windows .exe execution .... BLOCKED (no Wine on this Linux host)
+Export templates .......... INSTALLED (4.4.stable linux+windows x86_64)
