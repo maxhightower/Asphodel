@@ -166,6 +166,14 @@ func _repo_root() -> String:
 
 func _find_python() -> String:
 	if OS.get_name() == "Windows":
+		# On Windows the `py` launcher is the reliable resolver: it points at the
+		# real interpreter even when the real python.exe is not on PATH and the
+		# bare `python`/`python3` names resolve only to the Microsoft Store
+		# app-execution alias stubs (which just print "Python was not found" and
+		# exit 49). Prefer `py`, then fall back to any real python.exe on PATH.
+		var launcher := _which("py")
+		if launcher != "":
+			return launcher
 		for c in ["python", "python3"]:
 			var r := _which(c)
 			if r != "":
@@ -183,8 +191,15 @@ func _which(name: String) -> String:
 	var finder := "where" if OS.get_name() == "Windows" else "which"
 	var code := OS.execute(finder, [name], out, true)
 	if code == 0 and out.size() > 0:
-		var line := String(out[0]).strip_edges().split("\n")[0].strip_edges()
-		if line != "" and FileAccess.file_exists(line):
+		# `where` can list several matches, one per line. Take the first real one,
+		# skipping the Microsoft Store app-execution alias stubs under
+		# WindowsApps\ — those are not a usable interpreter (they exit 49).
+		for raw in String(out[0]).split("\n"):
+			var line := raw.strip_edges()
+			if line == "" or not FileAccess.file_exists(line):
+				continue
+			if OS.get_name() == "Windows" and line.to_lower().contains("\\windowsapps\\"):
+				continue
 			return line
 	# Last resort: the bare name (create_process may still resolve it via PATH).
 	return name if OS.get_name() != "Windows" else ""
