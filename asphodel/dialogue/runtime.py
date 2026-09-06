@@ -643,8 +643,10 @@ class DialogueRuntime:
         if w is None or problem is None:
             req.state, req.reason = A.REQ_REFUSED, A.R_NO_CAPABILITY
             self.say(conv, npc, A.REFUSE, request=req, reason=A.R_NO_CAPABILITY)
+            # no problem to evaluate: the refusal still carries the (empty) score components,
+            # so every accept/refuse decision in the tape is uniformly shaped
             self.event("REQUEST_REFUSED", request_id=req.request_id, conv_id=conv.conv_id, speaker=npc, listener=player,
-                       reason=A.R_NO_CAPABILITY)
+                       reason=A.R_NO_CAPABILITY, score=-1.0, components={})
             conv.open_requests.remove(req.request_id)
             return
         accept, reason, score, comps, tgt = self.evaluate_request(npc, player, problem)

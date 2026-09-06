@@ -248,15 +248,21 @@ def day():
     # state, where multi-hop rumours have had time to spread (they do not exist yet
     # in the minute right after the first attack).
     if scen_a and scen_a.get("A_witness") is not None:
+        # a citizen whose ONLY threat knowledge is a two-hop rumour (no first-hand fact it
+        # would answer with instead): asked, it speaks as hearsay two hops from the witness
         weak = sorted([(cid, f) for cid, st in c.memories.items() for f in st.facts.values()
                        if f.kind in THREAT and f.source == M.TOLD and f.hops >= 2
-                       and f.effective(c.now_s) >= G.RETRIEVAL_FLOOR and c._can_perceive(cid)],
+                       and f.effective(c.now_s) >= G.RETRIEVAL_FLOOR and c._can_perceive(cid)
+                       and not any(g.first_hand() for g in st.facts.values() if g.kind in THREAT)],
                       key=lambda x: (-x[1].hops, x[0]))
-        if weak:
-            cid, f = weak[0]
+        for cid, f in weak:
             asker = next((a for a in sorted(w.mobility.execs) if a != cid and c._can_perceive(a)), scen_a["A_witness"])
-            scen_a["weak_holder"] = cid
-            scen_a["weak_answer"] = _probe(dl, asker, cid, A.ASK_FACT, building_id=f.building_id)
+            ans = _probe(dl, asker, cid, A.ASK_FACT, building_id=f.building_id)
+            p = (ans or {}).get("proposition")
+            if p and p.get("epistemic") in (A.HEARSAY, A.UNCERTAIN) and (p.get("hops") or 0) >= 2:
+                scen_a["weak_holder"] = cid
+                scen_a["weak_answer"] = ans
+                break
     return {"w": w, "c": c, "wk": wk, "ob": ob, "dl": dl, "d": d, "shop": shop, "visitors": visitors,
             "seeded": seeded, "broke": broke, "first_req": first_req, "tape": tape, "saves": saves,
             "blobs": blobs, "lod": lod, "scen_a": scen_a, "scen_c": scen_c, "player_conv": player_conv}
