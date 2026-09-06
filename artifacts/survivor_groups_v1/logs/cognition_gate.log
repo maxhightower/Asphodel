@@ -1,0 +1,88 @@
+Godot Engine v4.4.stable.official.4c311cbee - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:360)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+libpulse.so.0: cannot open shared object file: No such file or directory
+libpulse.so.0: cannot open shared object file: No such file or directory
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5727:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:90)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio_server.cpp:246)
+
+PASS  protocol_at_least_v7  START_WORLD reply protocol_version=9, SimBridge speaks v9 (>= v7: GET_COGNITION / GET_CITIZEN_CONTEXT)
+PASS  world_started_with_cognition  START_WORLD by the scene at hour 5.00177777777778: cognition_enabled=true mobility=true work=true, player_citizen=<null>
+PASS  citizen_context_keys_present  GET_CITIZEN_CONTEXT(70) -> 16 keys, missing []; location={ "building_id": 6941.0, "room_id": 2.0, "zone": "break_room", "x": -2139.04, "y": -1141.65, "inside": true, "band": "route_simulated" } task={ "task_id": "sit", "object_id": "so:6941:207", "phase": "using", "role": "resident" } n_memories=0.0 relationships=1
+PASS  cognition_snapshot_shape  GET_COGNITION v1.0: 10 citizens with memory, 10 facts, 136 relationships, event_seq=1.0
+PASS  helper_at_workplace  citizen 70 is doing_activity in building 8470.0 at 07:34 (role cashier, task man_register)
+PASS  help_decided  HELP_DECIDED at 07:37: citizen 70 decided to help 79 (help_clean / problem cleaning_workload) on so:8470:28 in building 8470 — score 0.415 vs threshold 0.4, would_help_without_history=false
+PASS  helper_body_in_staged_interior  CitizenBody cit:70 inside interior 8470 at (-17.28308, 0.9, 9023.219), 1.30 m (leash 5.0 m) from interior_offset + the authoritative (-1440.202, -366.692); 2 interior bodies
+PASS  beneficiary_body_in_same_interior  the coworker being helped (citizen 79, task fetch_supplies, room 0.0) has a body 3.50 m (leash 5.0 m) from its authoritative interior pose in the SAME staged interior
+PASS  help_started_and_completed  HELP_STARTED=1 HELP_COMPLETED=1 for citizen 70 (task help_clean on so:8470:28); while the task ran the GET_WORK session carried help_for=79 (the mobility row's work block does not carry help_for at all: true)
+PASS  helper_body_moved_toward_the_object  the CitizenBody closed 1.68 m on so:8470:28 (2.34 m -> 0.66 m; authoritative object position (-1440.8, -367.7)) and walked 3.0 m inside the staged interior over 1 to_object frames
+PASS  beneficiary_owes_the_helper  GET_CITIZEN_CONTEXT(79) relationship -> 70 after HELP_COMPLETED: obligation 0.5000 (was 0.0000), affinity 0.4050 (was 0.1500), trust 0.55, familiarity 0.37, origin workplace
+PASS  no_body_while_far  player 1.5 km away for 10 game minutes with the interior left: no CitizenBody for citizen 70, 0 interior bodies, 8 demotions so far
+PASS  lod_roundtrip_preserves_cognition  citizen 70 across demotion+promotion: n_memories 1 -> 2, 1/1 salient fact ids still present, 1 relationships kept (lost [], weakened []); before ["79:fam 0.356/aff 0.252/obl 0.0"] after ["79:fam 0.4972/aff 0.252/obl 0.0"]
+PASS  body_recreated_at_authoritative_pose  the CitizenBody for citizen 70 is recreated 0.000 m from its authoritative interior pose after the round trip (11 promotions)
+PASS  threat_seeded_on_a_shop_customer  at 10:35 the authority reports customer sessions [222] inside shop 15873; SEED_OUTBREAK(classic_zombie_fast, 222) accepted=true
+PASS  undead_attacks_inside_the_shop  at 10:45 the risen citizen 222 attacked inside shop 15873: first PERCEIVED attacked_by is citizen 8.0 in room 0.0 (1 attacked_by rows)
+PASS  warned_before_perceiving  citizen 297: WARNING_RECEIVED seq 649.0 (sender 8.0, channel shout, goal_before schedule, confidence 0.578, hops 1.0) -> AVOID_DECIDED seq 655.0 (first_hand false, danger 0.52, threshold 0.421, sources [8.0]) -> its own first PERCEIVED seq -1
+PASS  warning_interrupted_a_schedule_goal  the first warning that reached citizen 297 arrived by shout while its active goal source was schedule
+PASS  room_avoidance_decided  AVOID_ROOM_DECIDED for citizen 297 in building 15873.0: rooms [0.0] (it was in room 1.0), dangers { "0": 0.578 }
+PASS  warned_citizen_acts_on_a_belief_goal  seconds after AVOID_DECIDED, citizen 297 is state doing_activity in building 15873.0 and the goal driving it comes from source "belief" (avoiding building 15873: danger 0.52 reported by [8]); avoiding { "building_id": 15873.0, "goal_id": 4.0, "since_s": 20706.4, "danger": 0.52, "first_hand": false, "sources": [8.0] }, avoid_rooms_here [0.0]
+PASS  warned_citizen_leaves_its_activity  citizen 297 (was doing_activity in building 15873.0) is now state driving in building -1.0 at 10:48; its active goal source is emergency (witnessed an attack), avoiding { "building_id": 15873.0, "goal_id": 4.0, "since_s": 20706.4, "danger": 0.52, "first_hand": false, "sources": [8.0] }; its body is gone from the staged shop interior: true
+INFO  warned_citizen_goal_after_the_walk_out  once outside, citizen 297 is running on a emergency goal ({ "building_id": 15873.0, "goal_id": 4.0, "since_s": 20706.4, "danger": 0.52, "first_hand": false, "sources": [8.0] }) — by then it had also perceived the threat itself, so this later goal is reported, not claimed as the second-hand decision
+PASS  warned_citizen_body_left_the_interior  citizen 297 had a CitizenBody in the staged interior of shop 15873 before the attack (true of 2 bodies) and has none there now (true); it was still inside the shop when the gate sampled it at the decision
+PASS  witnesses_fled_the_attacked_room  12 FLEE events inside shop 15873 (the outbreak runtime's own, read through GET_OUTBREAK)
+PASS  warning_carried_by_a_call  2 WARNING_RECEIVED rows arrived by channel "call", e.g. citizen 227.0 was called by 169.0 (goal_before schedule, hops 1.0) — somebody nowhere near the shop learned of it
+PASS  reciprocity_setup  at 13:00 citizen 70 was using its assigned station so:8470:29 (task man_register); SET_OBJECT_STATE(so:8470:29, working, false) accepted=true
+PASS  repair_station_decided  HELP_DECIDED repair_station at 13:09: citizen 79.0 decided to repair so:8470:29 for 70.0 (score 0.758, would_help_without_history=false)
+PASS  reciprocated_fired  RECIPROCATED at 13:09: citizen 79.0 discharged its obligation to 70.0 with task repair_station (1 rows)
+PASS  station_working_again  so:8470:29 state after the repair: { "working": true, "dirty": false, "served": 0.0 } (holders [])
+PASS  helper_returns_to_the_repaired_station  citizen 70 is back on so:8470:29 at 13:33 (task man_register, phase to_object)
+INFO  obligation_after_reciprocation  the obligation of citizen 79 toward 70 reads 0.2000 after RECIPROCATED (it was 0.5000 right after the morning help)
+PASS  saveload_context_identical  SAVE+LOAD around citizen 70: n_memories 4.0 -> 4.0, relationships 1 -> 1, beliefs 0 -> 0, whole GET_CITIZEN_CONTEXT identical=true
+
+==== COGNITION GATE RESULTS (houston, helper 70, workplace 8470, shop 15873) ====
+PASS  protocol_at_least_v7  START_WORLD reply protocol_version=9, SimBridge speaks v9 (>= v7: GET_COGNITION / GET_CITIZEN_CONTEXT)
+PASS  world_started_with_cognition  START_WORLD by the scene at hour 5.00177777777778: cognition_enabled=true mobility=true work=true, player_citizen=<null>
+PASS  citizen_context_keys_present  GET_CITIZEN_CONTEXT(70) -> 16 keys, missing []; location={ "building_id": 6941.0, "room_id": 2.0, "zone": "break_room", "x": -2139.04, "y": -1141.65, "inside": true, "band": "route_simulated" } task={ "task_id": "sit", "object_id": "so:6941:207", "phase": "using", "role": "resident" } n_memories=0.0 relationships=1
+PASS  cognition_snapshot_shape  GET_COGNITION v1.0: 10 citizens with memory, 10 facts, 136 relationships, event_seq=1.0
+PASS  helper_at_workplace  citizen 70 is doing_activity in building 8470.0 at 07:34 (role cashier, task man_register)
+PASS  help_decided  HELP_DECIDED at 07:37: citizen 70 decided to help 79 (help_clean / problem cleaning_workload) on so:8470:28 in building 8470 — score 0.415 vs threshold 0.4, would_help_without_history=false
+PASS  helper_body_in_staged_interior  CitizenBody cit:70 inside interior 8470 at (-17.28308, 0.9, 9023.219), 1.30 m (leash 5.0 m) from interior_offset + the authoritative (-1440.202, -366.692); 2 interior bodies
+PASS  beneficiary_body_in_same_interior  the coworker being helped (citizen 79, task fetch_supplies, room 0.0) has a body 3.50 m (leash 5.0 m) from its authoritative interior pose in the SAME staged interior
+PASS  help_started_and_completed  HELP_STARTED=1 HELP_COMPLETED=1 for citizen 70 (task help_clean on so:8470:28); while the task ran the GET_WORK session carried help_for=79 (the mobility row's work block does not carry help_for at all: true)
+PASS  helper_body_moved_toward_the_object  the CitizenBody closed 1.68 m on so:8470:28 (2.34 m -> 0.66 m; authoritative object position (-1440.8, -367.7)) and walked 3.0 m inside the staged interior over 1 to_object frames
+PASS  beneficiary_owes_the_helper  GET_CITIZEN_CONTEXT(79) relationship -> 70 after HELP_COMPLETED: obligation 0.5000 (was 0.0000), affinity 0.4050 (was 0.1500), trust 0.55, familiarity 0.37, origin workplace
+PASS  no_body_while_far  player 1.5 km away for 10 game minutes with the interior left: no CitizenBody for citizen 70, 0 interior bodies, 8 demotions so far
+PASS  lod_roundtrip_preserves_cognition  citizen 70 across demotion+promotion: n_memories 1 -> 2, 1/1 salient fact ids still present, 1 relationships kept (lost [], weakened []); before ["79:fam 0.356/aff 0.252/obl 0.0"] after ["79:fam 0.4972/aff 0.252/obl 0.0"]
+PASS  body_recreated_at_authoritative_pose  the CitizenBody for citizen 70 is recreated 0.000 m from its authoritative interior pose after the round trip (11 promotions)
+PASS  threat_seeded_on_a_shop_customer  at 10:35 the authority reports customer sessions [222] inside shop 15873; SEED_OUTBREAK(classic_zombie_fast, 222) accepted=true
+PASS  undead_attacks_inside_the_shop  at 10:45 the risen citizen 222 attacked inside shop 15873: first PERCEIVED attacked_by is citizen 8.0 in room 0.0 (1 attacked_by rows)
+PASS  warned_before_perceiving  citizen 297: WARNING_RECEIVED seq 649.0 (sender 8.0, channel shout, goal_before schedule, confidence 0.578, hops 1.0) -> AVOID_DECIDED seq 655.0 (first_hand false, danger 0.52, threshold 0.421, sources [8.0]) -> its own first PERCEIVED seq -1
+PASS  warning_interrupted_a_schedule_goal  the first warning that reached citizen 297 arrived by shout while its active goal source was schedule
+PASS  room_avoidance_decided  AVOID_ROOM_DECIDED for citizen 297 in building 15873.0: rooms [0.0] (it was in room 1.0), dangers { "0": 0.578 }
+PASS  warned_citizen_acts_on_a_belief_goal  seconds after AVOID_DECIDED, citizen 297 is state doing_activity in building 15873.0 and the goal driving it comes from source "belief" (avoiding building 15873: danger 0.52 reported by [8]); avoiding { "building_id": 15873.0, "goal_id": 4.0, "since_s": 20706.4, "danger": 0.52, "first_hand": false, "sources": [8.0] }, avoid_rooms_here [0.0]
+PASS  warned_citizen_leaves_its_activity  citizen 297 (was doing_activity in building 15873.0) is now state driving in building -1.0 at 10:48; its active goal source is emergency (witnessed an attack), avoiding { "building_id": 15873.0, "goal_id": 4.0, "since_s": 20706.4, "danger": 0.52, "first_hand": false, "sources": [8.0] }; its body is gone from the staged shop interior: true
+INFO  warned_citizen_goal_after_the_walk_out  once outside, citizen 297 is running on a emergency goal ({ "building_id": 15873.0, "goal_id": 4.0, "since_s": 20706.4, "danger": 0.52, "first_hand": false, "sources": [8.0] }) — by then it had also perceived the threat itself, so this later goal is reported, not claimed as the second-hand decision
+PASS  warned_citizen_body_left_the_interior  citizen 297 had a CitizenBody in the staged interior of shop 15873 before the attack (true of 2 bodies) and has none there now (true); it was still inside the shop when the gate sampled it at the decision
+PASS  witnesses_fled_the_attacked_room  12 FLEE events inside shop 15873 (the outbreak runtime's own, read through GET_OUTBREAK)
+PASS  warning_carried_by_a_call  2 WARNING_RECEIVED rows arrived by channel "call", e.g. citizen 227.0 was called by 169.0 (goal_before schedule, hops 1.0) — somebody nowhere near the shop learned of it
+PASS  reciprocity_setup  at 13:00 citizen 70 was using its assigned station so:8470:29 (task man_register); SET_OBJECT_STATE(so:8470:29, working, false) accepted=true
+PASS  repair_station_decided  HELP_DECIDED repair_station at 13:09: citizen 79.0 decided to repair so:8470:29 for 70.0 (score 0.758, would_help_without_history=false)
+PASS  reciprocated_fired  RECIPROCATED at 13:09: citizen 79.0 discharged its obligation to 70.0 with task repair_station (1 rows)
+PASS  station_working_again  so:8470:29 state after the repair: { "working": true, "dirty": false, "served": 0.0 } (holders [])
+PASS  helper_returns_to_the_repaired_station  citizen 70 is back on so:8470:29 at 13:33 (task man_register, phase to_object)
+INFO  obligation_after_reciprocation  the obligation of citizen 79 toward 70 reads 0.2000 after RECIPROCATED (it was 0.5000 right after the morning help)
+PASS  saveload_context_identical  SAVE+LOAD around citizen 70: n_memories 4.0 -> 4.0, relationships 1 -> 1, beliefs 0 -> 0, whole GET_CITIZEN_CONTEXT identical=true
+==== PASS (0 failure(s)) ====
+TRACE saved: /home/user/Asphodel/artifacts/npc_cognition_v1/godot_probe_trace.json (896 rows, 390 cognition events)
+GATE_EXIT=0 TRACE=artifacts/npc_cognition_v1/godot_probe_trace.json

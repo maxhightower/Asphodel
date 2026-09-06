@@ -1,0 +1,1075 @@
+{
+  "authority_counts": {
+    "ANSWERED": 17.0,
+    "ANSWER_UNKNOWN": 2.0,
+    "CONVERSATION_ENDED": 188.0,
+    "CONVERSATION_INTERRUPTED": 2.0,
+    "CONVERSATION_STARTED": 190.0,
+    "FACT_RECEIVED": 177.0,
+    "FACT_SHARED": 177.0,
+    "QUESTION_ASKED": 27.0,
+    "REQUEST_ACCEPTED": 4.0,
+    "REQUEST_COMPLETED": 4.0,
+    "REQUEST_MADE": 10.0,
+    "REQUEST_REFUSED": 6.0,
+    "SPEECH_ACT": 303.0,
+    "TALK_REFUSED": 13.0,
+    "THANKED": 11.0
+  },
+  "bundle": "houston",
+  "dialogue_kinds_drained": {
+    "ANSWERED": 17,
+    "ANSWER_UNKNOWN": 2,
+    "CONVERSATION_ENDED": 188,
+    "CONVERSATION_INTERRUPTED": 2,
+    "CONVERSATION_STARTED": 190,
+    "FACT_RECEIVED": 177,
+    "FACT_SHARED": 177,
+    "QUESTION_ASKED": 27,
+    "REQUEST_ACCEPTED": 4,
+    "REQUEST_COMPLETED": 4,
+    "REQUEST_MADE": 10,
+    "REQUEST_REFUSED": 6,
+    "SPEECH_ACT": 303,
+    "TALK_REFUSED": 13,
+    "THANKED": 11
+  },
+  "note": "The HUD text burned into every frame (\"Day 1 hh:mm\", \"Outbreak: 0%\") is the Godot scene's own GameClock overlay, which this harness freezes; it is NOT the authoritative clock. The authoritative hour of each frame is the `hour`/`clock` field of that frame's row below, read from the bridge summary at capture time. Every dialogue line shown in a panel is the string the Python DialogueRuntime rendered and returned in the TALK reply; `panel_displayed_lines` and `panel_authority_lines` of each row are the two sides of that claim.",
+  "player_citizen": 82,
+  "seeded": 8,
+  "shop": 15873,
+  "shots": [
+    {
+      "caption": "07:37 — building 8470: citizen 79 told citizen 70 it had a problem and asked for help; citizen 70 accepted (request req:1, task help_clean, object so:8470:28). The authority's own acts, in order: [\"79.0->70.0 REPORT_PROBLEM: I have a problem here.\", \"79.0->70.0 ASK_FOR_HELP: Could you help me with the cleaning?\", \"70.0->79.0 ACCEPT: All right, I\\'ll do it.\", \"79.0->70.0 THANK: Thank you.\"]. PIXELS: two worker bodies standing in the same staged interior, each driven from its authoritative interior position (2 interior bodies here). AUTHORITY ONLY: that they spoke, what they said, and that the request was accepted — speech has no visual channel out here; the rows in this manifest are the evidence.",
+      "clock": "07:37",
+      "conversation_acts": [
+        "79.0->70.0 REPORT_PROBLEM: I have a problem here.",
+        "79.0->70.0 ASK_FOR_HELP: Could you help me with the cleaning?",
+        "70.0->79.0 ACCEPT: All right, I'll do it.",
+        "79.0->70.0 THANK: Thank you."
+      ],
+      "dialogue_counts": {
+        "CONVERSATION_ENDED": 1.0,
+        "CONVERSATION_STARTED": 1.0,
+        "QUESTION_ASKED": 1.0,
+        "REQUEST_ACCEPTED": 1.0,
+        "REQUEST_MADE": 1.0,
+        "SPEECH_ACT": 4.0,
+        "THANKED": 1.0
+      },
+      "file": "05_help_request.png",
+      "hour": 7.6195,
+      "inside_building": 8470,
+      "interior_bodies": 2,
+      "interior_body_ids": [
+        "cit:70",
+        "cit:79"
+      ],
+      "panel_authority_lines": [],
+      "panel_displayed_lines": [],
+      "panel_npc": -1,
+      "panel_open": false,
+      "player_citizen": 82,
+      "player_row": {
+        "building_id": 21182.0,
+        "dialogue": {
+          "channel": null,
+          "conversation": null,
+          "open_requests": [],
+          "with": null
+        },
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "help_for": null,
+          "object_id": "so:21182:25",
+          "phase": "using",
+          "role": "resident",
+          "room_id": 0.0,
+          "task": "sit",
+          "workplace_id": null,
+          "zone": "living_room"
+        },
+        "x": -2623.26,
+        "y": 2672.088
+      },
+      "request_accepted": {
+        "building_id": 8470.0,
+        "components": {
+          "affinity": 0.052,
+          "cost": -0.15,
+          "familiarity": 0.075,
+          "fear_hostility": 0.0,
+          "helpfulness": 0.378,
+          "obligation": 0.0,
+          "trust": 0.06
+        },
+        "conv_id": "conv:2",
+        "event": "REQUEST_ACCEPTED",
+        "listener": 79.0,
+        "object_id": "so:8470:28",
+        "request_id": "req:1",
+        "score": 0.415,
+        "score_without_history": 0.273,
+        "seq": 7.0,
+        "speaker": 70.0,
+        "t": 9420.2,
+        "task_id": "help_clean"
+      },
+      "seeded": -1,
+      "shop": -1
+    },
+    {
+      "caption": "07:37 — the helper (citizen 70) executing what it accepted: its CitizenBody is 0.90 m from the authoritative position of so:8470:28 (it was 0.90 m away when the frame before was taken), and the authority's own GET_WORK session for it reads task help_clean / object so:8470:28 / help_for 79.0. PIXELS: a body standing at a fixture inside the room. AUTHORITY ONLY: that this fixture is the object of the accepted request and that this body is the citizen that accepted it.",
+      "clock": "07:37",
+      "d_min_m": 0.899929225444794,
+      "d_start_m": 0.899929225444794,
+      "dialogue_counts": {
+        "CONVERSATION_ENDED": 1.0,
+        "CONVERSATION_STARTED": 1.0,
+        "QUESTION_ASKED": 1.0,
+        "REQUEST_ACCEPTED": 1.0,
+        "REQUEST_MADE": 1.0,
+        "SPEECH_ACT": 4.0,
+        "THANKED": 1.0
+      },
+      "file": "06_helper_at_the_object.png",
+      "helper_session": {
+        "accomplished": [],
+        "building_id": 8470.0,
+        "carrying": "",
+        "citizen_id": 70.0,
+        "cleaned": 0.0,
+        "documents": 0.0,
+        "duration_s": 114.057,
+        "help_for": 79.0,
+        "helped": 0.0,
+        "interrupted": "",
+        "kind": "worker",
+        "next_s": 9485.2,
+        "object_id": "so:8470:28",
+        "phase": "using",
+        "progress_s": 7.0,
+        "restocked": 0.0,
+        "role": "cashier",
+        "room_id": 0.0,
+        "served": 0.0,
+        "served_by": -1.0,
+        "session_start_s": 9196.2,
+        "started_s": 9424.2,
+        "task_id": "help_clean",
+        "task_instance": 2.0,
+        "wait_since_s": -1.0,
+        "waypoints": [],
+        "worked_s": 212.0
+      },
+      "hour": 7.61977777777778,
+      "inside_building": 8470,
+      "interior_bodies": 2,
+      "interior_body_ids": [
+        "cit:70",
+        "cit:79"
+      ],
+      "object_row": {
+        "affordances": [
+          "restock",
+          "browse",
+          "clean"
+        ],
+        "building_id": 8470.0,
+        "capacity": 3.0,
+        "caps": [
+          "browse",
+          "shelf",
+          "stock"
+        ],
+        "exclusive": false,
+        "facing": -0.866,
+        "holders": [
+          70.0
+        ],
+        "kind": "gondola",
+        "object_id": "so:8470:28",
+        "queue": [],
+        "room_id": 0.0,
+        "source": "decor",
+        "state": {
+          "dirty": true,
+          "stock": 60.0
+        },
+        "x": -1440.76,
+        "y": -367.67
+      },
+      "panel_authority_lines": [],
+      "panel_displayed_lines": [],
+      "panel_npc": -1,
+      "panel_open": false,
+      "player_citizen": 82,
+      "player_row": {
+        "building_id": 21182.0,
+        "dialogue": {
+          "channel": null,
+          "conversation": null,
+          "open_requests": [],
+          "with": null
+        },
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "help_for": null,
+          "object_id": "so:21182:25",
+          "phase": "using",
+          "role": "resident",
+          "room_id": 0.0,
+          "task": "sit",
+          "workplace_id": null,
+          "zone": "living_room"
+        },
+        "x": -2623.26,
+        "y": 2672.088
+      },
+      "seeded": -1,
+      "shop": -1
+    },
+    {
+      "caption": "07:44 — building 7077: citizen 119 asked citizen 187 for help and was REFUSED. The authority's structured reason is \"low_trust\" (help score 0.245 against threshold 0.4, components { \"helpfulness\": 0.208, \"familiarity\": 0.075, \"affinity\": 0.052, \"obligation\": 0.0, \"trust\": 0.06, \"fear_hostility\": 0.0, \"cost\": -0.15 }) and its rendered line is \"No — I don't know you well enough.\". The whole exchange: [\"119.0->187.0 REPORT_PROBLEM: I have a problem here.\", \"119.0->187.0 ASK_FOR_HELP: Could you help me with the cleaning?\", \"187.0->119.0 REFUSE: No — I don\\'t know you well enough.\", \"119.0->187.0 ACKNOWLEDGE: I see.\"]. PIXELS: worker bodies in the staged interior where the authority says the refusal happened (2 interior bodies). AUTHORITY ONLY: the refusal, its reason and its score — nothing about a refusal is visible.",
+      "clock": "07:44",
+      "conversation_acts": [
+        "119.0->187.0 REPORT_PROBLEM: I have a problem here.",
+        "119.0->187.0 ASK_FOR_HELP: Could you help me with the cleaning?",
+        "187.0->119.0 REFUSE: No — I don't know you well enough.",
+        "119.0->187.0 ACKNOWLEDGE: I see."
+      ],
+      "dialogue_counts": {
+        "CONVERSATION_ENDED": 2.0,
+        "CONVERSATION_STARTED": 2.0,
+        "QUESTION_ASKED": 2.0,
+        "REQUEST_ACCEPTED": 1.0,
+        "REQUEST_COMPLETED": 1.0,
+        "REQUEST_MADE": 2.0,
+        "REQUEST_REFUSED": 1.0,
+        "SPEECH_ACT": 9.0,
+        "THANKED": 2.0
+      },
+      "file": "07_request_refused.png",
+      "hour": 7.73394444444444,
+      "inside_building": 7077,
+      "interior_bodies": 2,
+      "interior_body_ids": [
+        "cit:119",
+        "cit:187"
+      ],
+      "panel_authority_lines": [],
+      "panel_displayed_lines": [],
+      "panel_npc": -1,
+      "panel_open": false,
+      "player_citizen": 82,
+      "player_row": {
+        "building_id": 21182.0,
+        "dialogue": {
+          "channel": null,
+          "conversation": null,
+          "open_requests": [],
+          "with": null
+        },
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "help_for": null,
+          "object_id": "so:21182:25",
+          "phase": "using",
+          "role": "resident",
+          "room_id": 0.0,
+          "task": "sit",
+          "workplace_id": null,
+          "zone": "living_room"
+        },
+        "x": -2623.26,
+        "y": 2672.088
+      },
+      "request_refused": {
+        "building_id": 7077.0,
+        "components": {
+          "affinity": 0.052,
+          "cost": -0.15,
+          "familiarity": 0.075,
+          "fear_hostility": 0.0,
+          "helpfulness": 0.208,
+          "obligation": 0.0,
+          "trust": 0.06
+        },
+        "conv_id": "conv:4",
+        "event": "REQUEST_REFUSED",
+        "listener": 119.0,
+        "reason": "low_trust",
+        "request_id": "req:3",
+        "score": 0.245,
+        "score_without_history": 0.103,
+        "seq": 20.0,
+        "speaker": 187.0,
+        "t": 9840.2,
+        "threshold": 0.4
+      },
+      "seeded": -1,
+      "shop": -1
+    },
+    {
+      "caption": "10:36 — the player's own citizen 82 is a customer inside building 15873 (task browse, room 2.0) and the authority reports citizen(s) [8, 277] co-present with it (same room). The player avatar stands next to citizen 8's CitizenBody; 5 bodies are drawn in this staged interior, each at its authoritative interior position. PIXELS: the shop floor with the player and other bodies in it. AUTHORITY ONLY: which body is which citizen, and that these two are close enough for the authority to allow a conversation.",
+      "clock": "10:36",
+      "customers_in_shop": [
+        8,
+        82,
+        222,
+        277
+      ],
+      "dialogue_counts": {
+        "CONVERSATION_ENDED": 10.0,
+        "CONVERSATION_STARTED": 10.0,
+        "QUESTION_ASKED": 10.0,
+        "REQUEST_ACCEPTED": 4.0,
+        "REQUEST_COMPLETED": 4.0,
+        "REQUEST_MADE": 10.0,
+        "REQUEST_REFUSED": 6.0,
+        "SPEECH_ACT": 44.0,
+        "THANKED": 8.0
+      },
+      "file": "00_approach.png",
+      "hour": 10.6050555555556,
+      "inside_building": 15873,
+      "interior_bodies": 5,
+      "interior_body_ids": [
+        "cit:222",
+        "cit:277",
+        "cit:297",
+        "cit:8",
+        "cit:82"
+      ],
+      "panel_authority_lines": [],
+      "panel_displayed_lines": [],
+      "panel_npc": -1,
+      "panel_open": false,
+      "people_nearby": [
+        8,
+        277
+      ],
+      "player_citizen": 82,
+      "player_row": {
+        "building_id": 15873.0,
+        "dialogue": {
+          "channel": null,
+          "conversation": null,
+          "open_requests": [],
+          "with": null
+        },
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "help_for": null,
+          "object_id": "so:15873:112",
+          "phase": "to_object",
+          "role": "customer",
+          "room_id": 2.0,
+          "task": "browse",
+          "workplace_id": null,
+          "zone": "stock_room"
+        },
+        "x": -2197.775,
+        "y": 1212.645
+      },
+      "seeded": -1,
+      "shop": 15873
+    },
+    {
+      "caption": "10:36 — the dialogue panel, opened on citizen 8 exactly as the T key opens it on a targeted citizen. Everything in it comes from the authority's TALK reply: the lines [], the channel, the warmth 0.015 and the relationship { \"owner\": 8.0, \"other\": 82.0, \"familiarity\": 0.03, \"trust\": 0.3, \"affinity\": 0.0, \"fear\": 0.0, \"hostility\": 0.0, \"obligation\": 0.0, \"interactions\": 1.0, \"last_t\": 20101.2, \"origin\": \"\" }. PIXELS: the panel and its six bounded options, and the small label over the speaker's body carrying the same authority string. AUTHORITY ONLY: that these words are what that citizen said — Godot composed none of them.",
+      "clock": "10:36",
+      "dialogue_counts": {
+        "CONVERSATION_ENDED": 10.0,
+        "CONVERSATION_STARTED": 10.0,
+        "QUESTION_ASKED": 10.0,
+        "REQUEST_ACCEPTED": 4.0,
+        "REQUEST_COMPLETED": 4.0,
+        "REQUEST_MADE": 10.0,
+        "REQUEST_REFUSED": 6.0,
+        "SPEECH_ACT": 44.0,
+        "THANKED": 8.0
+      },
+      "file": "01_panel_open.png",
+      "hour": 10.6050555555556,
+      "inside_building": 15873,
+      "interior_bodies": 5,
+      "interior_body_ids": [
+        "cit:222",
+        "cit:277",
+        "cit:297",
+        "cit:8",
+        "cit:82"
+      ],
+      "panel_authority_lines": [],
+      "panel_displayed_lines": [],
+      "panel_npc": 8,
+      "panel_open": true,
+      "player_citizen": 82,
+      "player_row": {
+        "building_id": 15873.0,
+        "dialogue": {
+          "channel": null,
+          "conversation": null,
+          "open_requests": [],
+          "with": null
+        },
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "help_for": null,
+          "object_id": "so:15873:112",
+          "phase": "to_object",
+          "role": "customer",
+          "room_id": 2.0,
+          "task": "browse",
+          "workplace_id": null,
+          "zone": "stock_room"
+        },
+        "x": -2197.775,
+        "y": 1212.645
+      },
+      "seeded": -1,
+      "shop": 15873,
+      "talk_reply": {
+        "acts": [],
+        "cmd": "TALK",
+        "cognition_enabled": true,
+        "conv_id": "conv:21",
+        "day": 0.0,
+        "dialogue_enabled": true,
+        "game_seconds": 20178.2,
+        "hour": 10.6050555555556,
+        "id": 4693.0,
+        "lines": [],
+        "mobility_enabled": true,
+        "n_promoted": 0.0,
+        "npc": 8.0,
+        "ok": true,
+        "options": [
+          "ASK_FACT",
+          "ASK_LOCATION",
+          "ASK_PERSON",
+          "ASK_SAFETY",
+          "ASK_FOR_HELP",
+          "END_CONVERSATION"
+        ],
+        "outbreak_enabled": false,
+        "paused": false,
+        "player_citizen": 82.0,
+        "promoted": [],
+        "protocol_version": 8.0,
+        "relationship": {
+          "affinity": 0.0,
+          "familiarity": 0.03,
+          "fear": 0.0,
+          "hostility": 0.0,
+          "interactions": 1.0,
+          "last_t": 20101.2,
+          "obligation": 0.0,
+          "origin": "",
+          "other": 82.0,
+          "owner": 8.0,
+          "trust": 0.3
+        },
+        "state": "active",
+        "tick": 0.0,
+        "total_pop": 2300000.0,
+        "totals": {
+          "D": 0.0,
+          "E": 50.0,
+          "Ia": 0.0,
+          "Is": 0.0,
+          "R": 0.0,
+          "S": 2299950.0
+        },
+        "transcript": [
+          "[82] Hello.",
+          "[8] Hello."
+        ],
+        "warmth": 0.015,
+        "work_enabled": true
+      }
+    },
+    {
+      "answer_proposition": {
+        "building_id": 15873.0,
+        "confidence": 1.0,
+        "detail": "",
+        "epistemic": "EXPERIENCED",
+        "event_ref": "19:15",
+        "hops": 0.0,
+        "kind": "ATTACK_HAPPENED",
+        "object_id": null,
+        "origin_id": "19:15",
+        "origin_witness": 19.0,
+        "room_id": 0.0,
+        "source_citizen": null,
+        "subject": 8.0,
+        "t": 20844.2,
+        "target": 19.0
+      },
+      "attack_event": {
+        "actor": 8.0,
+        "building_id": 15873.0,
+        "citizen_id": 19.0,
+        "event": "PERCEIVED",
+        "room_id": 0.0,
+        "seq": 580.0,
+        "source": "participant",
+        "t": 20844.2,
+        "target": 19.0,
+        "what": "attacked_by"
+      },
+      "caption": "10:47 — the player asked citizen 19 \"What happened?\" (option 1, ASK_FACT scoped to building 15873) minutes after the attack, and the panel shows the authority's answer verbatim: \"It happened to me: citizen 8 attacked me in room 0 of building 15873, just now.\" carrying epistemic status EXPERIENCED, proposition ATTACK_HAPPENED about citizen 8.0 in room 0.0. The attack itself: { \"seq\": 580.0, \"t\": 20844.2, \"event\": \"PERCEIVED\", \"citizen_id\": 19.0, \"what\": \"attacked_by\", \"actor\": 8.0, \"target\": 19.0, \"building_id\": 15873.0, \"room_id\": 0.0, \"source\": \"participant\" }. The renderer has a body for 12 of the citizens around the player right now ([19, 25, 40, 81, 132, 143, 167, 169, 221, 222, 277, 287]), and the label over the speaker carries the same authority string as the panel — but at this camera angle a roof, a wall or a fixture can hide a body, so the pixels prove a panel and a street, not which body is the speaker. AUTHORITY ONLY: that this citizen actually saw it — the epistemic status and the supporting memory fact (19:15) live in its own store.",
+      "clock": "10:47",
+      "dialogue_counts": {
+        "ANSWERED": 4.0,
+        "ANSWER_UNKNOWN": 1.0,
+        "CONVERSATION_ENDED": 114.0,
+        "CONVERSATION_INTERRUPTED": 1.0,
+        "CONVERSATION_STARTED": 115.0,
+        "FACT_RECEIVED": 104.0,
+        "FACT_SHARED": 104.0,
+        "QUESTION_ASKED": 14.0,
+        "REQUEST_ACCEPTED": 4.0,
+        "REQUEST_COMPLETED": 4.0,
+        "REQUEST_MADE": 10.0,
+        "REQUEST_REFUSED": 6.0,
+        "SPEECH_ACT": 167.0,
+        "THANKED": 10.0
+      },
+      "file": "02_grounded_answer.png",
+      "hour": 10.7942222222222,
+      "inside_building": -1,
+      "interior_bodies": 0,
+      "interior_body_ids": [],
+      "panel_authority_lines": [
+        "What happened at building 15873?",
+        "It happened to me: citizen 8 attacked me in room 0 of building 15873, just now."
+      ],
+      "panel_displayed_lines": [
+        "What happened at building 15873?",
+        "It happened to me: citizen 8 attacked me in room 0 of building 15873, just now."
+      ],
+      "panel_npc": 19,
+      "panel_open": true,
+      "player_citizen": 82,
+      "player_row": {
+        "building_id": -1.0,
+        "dialogue": {
+          "channel": null,
+          "conversation": null,
+          "open_requests": [],
+          "with": null
+        },
+        "state": "on_foot",
+        "work": {
+          "carrying": "",
+          "help_for": null,
+          "object_id": null,
+          "phase": null,
+          "role": null,
+          "room_id": null,
+          "task": null,
+          "workplace_id": null,
+          "zone": null
+        },
+        "x": -2248.092,
+        "y": 1225.64
+      },
+      "seeded": 8,
+      "shop": 15873,
+      "talk_reply": {
+        "acts": [
+          {
+            "act": "ASK_FACT",
+            "answer_to": null,
+            "line": "What happened at building 15873?",
+            "listener": 19.0,
+            "proposition": {
+              "building_id": 15873.0,
+              "confidence": 0.0,
+              "detail": "",
+              "epistemic": "UNKNOWN",
+              "event_ref": null,
+              "hops": 0.0,
+              "kind": "UNKNOWN",
+              "object_id": null,
+              "origin_id": "",
+              "origin_witness": null,
+              "room_id": null,
+              "source_citizen": null,
+              "subject": null,
+              "t": 0.0,
+              "target": null
+            },
+            "reason": "",
+            "request_id": null,
+            "speaker": 82.0,
+            "t": 20853.2
+          },
+          {
+            "act": "ANSWER",
+            "answer_to": null,
+            "line": "It happened to me: citizen 8 attacked me in room 0 of building 15873, just now.",
+            "listener": 82.0,
+            "proposition": {
+              "building_id": 15873.0,
+              "confidence": 1.0,
+              "detail": "",
+              "epistemic": "EXPERIENCED",
+              "event_ref": "19:15",
+              "hops": 0.0,
+              "kind": "ATTACK_HAPPENED",
+              "object_id": null,
+              "origin_id": "19:15",
+              "origin_witness": 19.0,
+              "room_id": 0.0,
+              "source_citizen": null,
+              "subject": 8.0,
+              "t": 20844.2,
+              "target": 19.0
+            },
+            "reason": "",
+            "request_id": null,
+            "speaker": 19.0,
+            "t": 20853.2
+          }
+        ],
+        "cmd": "TALK",
+        "cognition_enabled": true,
+        "conv_id": "conv:109",
+        "day": 0.0,
+        "dialogue_enabled": true,
+        "game_seconds": 20853.2,
+        "hour": 10.7925555555556,
+        "id": 5252.0,
+        "lines": [
+          "What happened at building 15873?",
+          "It happened to me: citizen 8 attacked me in room 0 of building 15873, just now."
+        ],
+        "mobility_enabled": true,
+        "n_promoted": 0.0,
+        "npc": 19.0,
+        "ok": true,
+        "options": [
+          "ASK_FACT",
+          "ASK_LOCATION",
+          "ASK_PERSON",
+          "ASK_SAFETY",
+          "ASK_FOR_HELP",
+          "END_CONVERSATION"
+        ],
+        "outbreak_enabled": true,
+        "paused": false,
+        "player_citizen": 82.0,
+        "promoted": [],
+        "protocol_version": 8.0,
+        "relationship": {
+          "affinity": 0.3353,
+          "familiarity": 0.3089,
+          "fear": 0.0,
+          "hostility": 0.0,
+          "interactions": 4.0,
+          "last_t": 20844.2,
+          "obligation": 0.0,
+          "origin": "",
+          "other": 82.0,
+          "owner": 19.0,
+          "trust": 0.501
+        },
+        "state": "active",
+        "tick": 0.0,
+        "total_pop": 2300000.0,
+        "totals": {
+          "D": 0.0,
+          "E": 50.0,
+          "Ia": 0.0,
+          "Is": 0.0,
+          "R": 0.0,
+          "S": 2299950.0
+        },
+        "transcript": [
+          "[82] Hello.",
+          "[19] Hello.",
+          "[82] What happened at building 15873?",
+          "[19] It happened to me: citizen 8 attacked me in room 0 of building 15873, just now."
+        ],
+        "warmth": 0.322,
+        "work_enabled": true
+      }
+    },
+    {
+      "answer_proposition": {
+        "building_id": 15873.0,
+        "confidence": 0.0,
+        "detail": "",
+        "epistemic": "UNKNOWN",
+        "event_ref": null,
+        "hops": 0.0,
+        "kind": "UNKNOWN",
+        "object_id": null,
+        "origin_id": "",
+        "origin_witness": null,
+        "room_id": null,
+        "source_citizen": null,
+        "subject": null,
+        "t": 0.0,
+        "target": null
+      },
+      "caption": "11:49 — the same question, ASK_FACT about building 15873, put to citizen 161, which the authority's own store gives nothing to answer with: \"I don't know.\" (kind UNKNOWN, epistemic UNKNOWN). PIXELS: the panel text. AUTHORITY ONLY: that this citizen has no memory of the event — an ignorant citizen and a knowing one look exactly alike.",
+      "clock": "11:49",
+      "dialogue_counts": {
+        "ANSWERED": 17.0,
+        "ANSWER_UNKNOWN": 2.0,
+        "CONVERSATION_ENDED": 188.0,
+        "CONVERSATION_INTERRUPTED": 2.0,
+        "CONVERSATION_STARTED": 190.0,
+        "FACT_RECEIVED": 177.0,
+        "FACT_SHARED": 177.0,
+        "QUESTION_ASKED": 27.0,
+        "REQUEST_ACCEPTED": 4.0,
+        "REQUEST_COMPLETED": 4.0,
+        "REQUEST_MADE": 10.0,
+        "REQUEST_REFUSED": 6.0,
+        "SPEECH_ACT": 303.0,
+        "TALK_REFUSED": 13.0,
+        "THANKED": 11.0
+      },
+      "file": "03_i_dont_know.png",
+      "hour": 11.8245,
+      "inside_building": 15736,
+      "interior_bodies": 0,
+      "interior_body_ids": [],
+      "panel_authority_lines": [
+        "What happened at building 15873?",
+        "I don't know."
+      ],
+      "panel_displayed_lines": [
+        "What happened at building 15873?",
+        "I don't know."
+      ],
+      "panel_npc": 161,
+      "panel_open": true,
+      "player_citizen": 82,
+      "player_row": {
+        "building_id": -1.0,
+        "dialogue": {
+          "channel": null,
+          "conversation": null,
+          "open_requests": [],
+          "with": null
+        },
+        "state": "on_foot",
+        "work": {
+          "carrying": "",
+          "help_for": null,
+          "object_id": null,
+          "phase": null,
+          "role": null,
+          "room_id": null,
+          "task": null,
+          "workplace_id": null,
+          "zone": null
+        },
+        "x": -2397.818,
+        "y": 1162.278
+      },
+      "seeded": 8,
+      "shop": 15873,
+      "talk_reply": {
+        "acts": [
+          {
+            "act": "ASK_FACT",
+            "answer_to": null,
+            "line": "What happened at building 15873?",
+            "listener": 161.0,
+            "proposition": {
+              "building_id": 15873.0,
+              "confidence": 0.0,
+              "detail": "",
+              "epistemic": "UNKNOWN",
+              "event_ref": null,
+              "hops": 0.0,
+              "kind": "UNKNOWN",
+              "object_id": null,
+              "origin_id": "",
+              "origin_witness": null,
+              "room_id": null,
+              "source_citizen": null,
+              "subject": null,
+              "t": 0.0,
+              "target": null
+            },
+            "reason": "",
+            "request_id": null,
+            "speaker": 82.0,
+            "t": 24562.2
+          },
+          {
+            "act": "ANSWER",
+            "answer_to": null,
+            "line": "I don't know.",
+            "listener": 82.0,
+            "proposition": {
+              "building_id": 15873.0,
+              "confidence": 0.0,
+              "detail": "",
+              "epistemic": "UNKNOWN",
+              "event_ref": null,
+              "hops": 0.0,
+              "kind": "UNKNOWN",
+              "object_id": null,
+              "origin_id": "",
+              "origin_witness": null,
+              "room_id": null,
+              "source_citizen": null,
+              "subject": null,
+              "t": 0.0,
+              "target": null
+            },
+            "reason": "",
+            "request_id": null,
+            "speaker": 161.0,
+            "t": 24562.2
+          }
+        ],
+        "cmd": "TALK",
+        "cognition_enabled": true,
+        "conv_id": "conv:200",
+        "day": 0.25,
+        "dialogue_enabled": true,
+        "game_seconds": 24562.2,
+        "hour": 11.8228333333333,
+        "id": 6317.0,
+        "lines": [
+          "What happened at building 15873?",
+          "I don't know."
+        ],
+        "mobility_enabled": true,
+        "n_promoted": 1.0,
+        "npc": 161.0,
+        "ok": true,
+        "options": [
+          "ASK_FACT",
+          "ASK_LOCATION",
+          "ASK_PERSON",
+          "ASK_SAFETY",
+          "ASK_FOR_HELP",
+          "END_CONVERSATION"
+        ],
+        "outbreak_enabled": true,
+        "paused": false,
+        "player_citizen": 82.0,
+        "promoted": [
+          141.0
+        ],
+        "protocol_version": 8.0,
+        "relationship": {
+          "affinity": 0.0,
+          "familiarity": 0.0,
+          "fear": 0.9,
+          "hostility": 0.8,
+          "interactions": 1.0,
+          "last_t": 24554.2,
+          "obligation": 0.0,
+          "origin": "",
+          "other": 82.0,
+          "owner": 161.0,
+          "trust": 0.03
+        },
+        "state": "active",
+        "tick": 1.0,
+        "total_pop": 2300000.0,
+        "totals": {
+          "D": 0.0,
+          "E": 47.5,
+          "Ia": 2.5,
+          "Is": 0.0,
+          "R": 0.0,
+          "S": 2299950.0
+        },
+        "transcript": [
+          "[82] Hello.",
+          "[161] Hello.",
+          "[82] What happened at building 15873?",
+          "[161] I don't know."
+        ],
+        "warmth": 0.0,
+        "work_enabled": true
+      }
+    },
+    {
+      "caption": "11:49 — the warning wave the authority ran between NPCs after the attack in shop 15873: 150 conversations about it so far (85 of them by shout, 2 by call, 63 face to face). The first of them, verbatim: [\"shout 19.0->25.0: [\\\"19.0->25.0 WARN: It happened to me: citizen 8 attacked me in room 0 of building 15873, just now.\\\"]\", \"shout 19.0->40.0: [\\\"19.0->40.0 WARN: It happened to me: citizen 8 attacked me in room 0 of building 15873, just now.\\\"]\"]. PIXELS: the block around the player's own citizen; the renderer has bodies for 1 of the citizens the authority reports near it ([161]), and a shout or a telephone call looks exactly like nothing at all. AUTHORITY ONLY: everything about the exchange — who spoke to whom, over which channel, and in which words; the rows are in this manifest.",
+      "clock": "11:49",
+      "dialogue_counts": {
+        "ANSWERED": 17.0,
+        "ANSWER_UNKNOWN": 2.0,
+        "CONVERSATION_ENDED": 188.0,
+        "CONVERSATION_INTERRUPTED": 2.0,
+        "CONVERSATION_STARTED": 190.0,
+        "FACT_RECEIVED": 177.0,
+        "FACT_SHARED": 177.0,
+        "QUESTION_ASKED": 27.0,
+        "REQUEST_ACCEPTED": 4.0,
+        "REQUEST_COMPLETED": 4.0,
+        "REQUEST_MADE": 10.0,
+        "REQUEST_REFUSED": 6.0,
+        "SPEECH_ACT": 303.0,
+        "TALK_REFUSED": 13.0,
+        "THANKED": 11.0
+      },
+      "dialogue_kinds": {
+        "ANSWERED": 17,
+        "ANSWER_UNKNOWN": 2,
+        "CONVERSATION_ENDED": 188,
+        "CONVERSATION_INTERRUPTED": 2,
+        "CONVERSATION_STARTED": 190,
+        "FACT_RECEIVED": 177,
+        "FACT_SHARED": 177,
+        "QUESTION_ASKED": 27,
+        "REQUEST_ACCEPTED": 4,
+        "REQUEST_COMPLETED": 4,
+        "REQUEST_MADE": 10,
+        "REQUEST_REFUSED": 6,
+        "SPEECH_ACT": 303,
+        "TALK_REFUSED": 13,
+        "THANKED": 11
+      },
+      "file": "04_npc_warning_exchange.png",
+      "hour": 11.8267222222222,
+      "inside_building": -1,
+      "interior_bodies": 0,
+      "interior_body_ids": [],
+      "panel_authority_lines": [
+        "What happened at building 15873?",
+        "I don't know."
+      ],
+      "panel_displayed_lines": [
+        "What happened at building 15873?",
+        "I don't know."
+      ],
+      "panel_npc": -1,
+      "panel_open": false,
+      "player_citizen": 82,
+      "player_row": {
+        "building_id": -1.0,
+        "dialogue": {
+          "channel": null,
+          "conversation": null,
+          "open_requests": [],
+          "with": null
+        },
+        "state": "on_foot",
+        "work": {
+          "carrying": "",
+          "help_for": null,
+          "object_id": null,
+          "phase": null,
+          "role": null,
+          "room_id": null,
+          "task": null,
+          "workplace_id": null,
+          "zone": null
+        },
+        "x": -2402.412,
+        "y": 1167.823
+      },
+      "seeded": 8,
+      "shop": 15873,
+      "warning_conversations": [
+        "shout 19.0->25.0: [\"19.0->25.0 WARN: It happened to me: citizen 8 attacked me in room 0 of building 15873, just now.\"]",
+        "shout 19.0->40.0: [\"19.0->40.0 WARN: It happened to me: citizen 8 attacked me in room 0 of building 15873, just now.\"]",
+        "shout 19.0->132.0: [\"19.0->132.0 WARN: It happened to me: citizen 8 attacked me in room 0 of building 15873, just now.\"]",
+        "shout 19.0->143.0: [\"19.0->143.0 WARN: It happened to me: citizen 8 attacked me in room 0 of building 15873, just now.\"]",
+        "shout 19.0->167.0: [\"19.0->167.0 WARN: It happened to me: citizen 8 attacked me in room 0 of building 15873, just now.\"]",
+        "shout 19.0->169.0: [\"19.0->169.0 WARN: It happened to me: citizen 8 attacked me in room 0 of building 15873, just now.\"]"
+      ]
+    },
+    {
+      "caption": "11:49 — a conversation the threat did not let finish. The authority's row: { \"seq\": 658.0, \"t\": 20854.2, \"event\": \"CONVERSATION_INTERRUPTED\", \"conv_id\": \"conv:109\", \"participants\": [82.0, 19.0], \"channel\": \"player\", \"reason\": \"threat\", \"acts\": 4.0, \"dropped\": 0.0 }; and 163 warning(s) in this run were delivered as a SINGLE act with no exchange to sit through, which is what an alarmed citizen does instead of talking (e.g. { \"seq\": 122.0, \"t\": 20843.2, \"event\": \"CONVERSATION_ENDED\", \"conv_id\": \"conv:22\", \"participants\": [19.0, 25.0], \"channel\": \"shout\", \"reason\": \"shout\", \"acts\": 1.0, \"dropped\": 0.0 }). The frame is centred on citizen 82 (state on_foot, building -1.0) — one of the participants, and the renderer has a body for it right now: true. PIXELS: the block that citizen is crossing. AUTHORITY ONLY: that a conversation was cut short, and why — an interrupted conversation has no visual channel at all.",
+      "clock": "11:49",
+      "dialogue_counts": {
+        "ANSWERED": 17.0,
+        "ANSWER_UNKNOWN": 2.0,
+        "CONVERSATION_ENDED": 188.0,
+        "CONVERSATION_INTERRUPTED": 2.0,
+        "CONVERSATION_STARTED": 190.0,
+        "FACT_RECEIVED": 177.0,
+        "FACT_SHARED": 177.0,
+        "QUESTION_ASKED": 27.0,
+        "REQUEST_ACCEPTED": 4.0,
+        "REQUEST_COMPLETED": 4.0,
+        "REQUEST_MADE": 10.0,
+        "REQUEST_REFUSED": 6.0,
+        "SPEECH_ACT": 303.0,
+        "TALK_REFUSED": 13.0,
+        "THANKED": 11.0
+      },
+      "file": "08_interrupted.png",
+      "hour": 11.8289444444444,
+      "inside_building": -1,
+      "interior_bodies": 0,
+      "interior_body_ids": [],
+      "interrupted": {
+        "acts": 4.0,
+        "channel": "player",
+        "conv_id": "conv:109",
+        "dropped": 0.0,
+        "event": "CONVERSATION_INTERRUPTED",
+        "participants": [
+          82.0,
+          19.0
+        ],
+        "reason": "threat",
+        "seq": 658.0,
+        "t": 20854.2
+      },
+      "interrupted_count": 2,
+      "panel_authority_lines": [
+        "What happened at building 15873?",
+        "I don't know."
+      ],
+      "panel_displayed_lines": [
+        "What happened at building 15873?",
+        "I don't know."
+      ],
+      "panel_npc": -1,
+      "panel_open": false,
+      "player_citizen": 82,
+      "player_row": {
+        "building_id": -1.0,
+        "dialogue": {
+          "channel": null,
+          "conversation": null,
+          "open_requests": [],
+          "with": null
+        },
+        "state": "on_foot",
+        "work": {
+          "carrying": "",
+          "help_for": null,
+          "object_id": null,
+          "phase": null,
+          "role": null,
+          "room_id": null,
+          "task": null,
+          "workplace_id": null,
+          "zone": null
+        },
+        "x": -2407.005,
+        "y": 1173.367
+      },
+      "seeded": 8,
+      "shop": 15873,
+      "single_act_warnings": 163
+    }
+  ],
+  "start_hour": 5.0,
+  "uninformed": 161,
+  "witness": 19
+}

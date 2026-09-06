@@ -1,0 +1,2216 @@
+{
+  "authority_counts": {
+    "AVOID_DECIDED": 2.0,
+    "AVOID_ROOM_DECIDED": 11.0,
+    "ENCOUNTER": 7973.0,
+    "HELP_COMPLETED": 12.0,
+    "HELP_DECIDED": 12.0,
+    "HELP_STARTED": 12.0,
+    "MEMORY_CREATED": 858.0,
+    "MEMORY_REINFORCED": 15275.0,
+    "PERCEIVED": 47.0,
+    "PRIORS": 1.0,
+    "RECIPROCATED": 1.0,
+    "RELATIONSHIP_CHANGED": 16422.0,
+    "SOCIAL_ACTION": 170.0,
+    "TRUST_CHANGED": 377.0,
+    "WARNING_RECEIVED": 144.0,
+    "WARNING_SHARED": 144.0
+  },
+  "beneficiary": 79,
+  "bundle": "houston",
+  "event_kinds_drained": {
+    "AVOID_DECIDED": 2,
+    "AVOID_ROOM_DECIDED": 11,
+    "HELP_COMPLETED": 12,
+    "HELP_DECIDED": 12,
+    "HELP_STARTED": 12,
+    "MEMORY_CREATED": 176,
+    "MEMORY_REINFORCED": 125,
+    "PERCEIVED": 30,
+    "PRIORS": 1,
+    "RECIPROCATED": 1,
+    "RELATIONSHIP_CHANGED": 2610,
+    "SOCIAL_ACTION": 170,
+    "TRUST_CHANGED": 377,
+    "WARNING_RECEIVED": 144,
+    "WARNING_SHARED": 144
+  },
+  "helper": 70,
+  "note": "The HUD text burned into every frame (\"Day 1 hh:mm\", \"Outbreak: 0%\") is the Godot scene's own GameClock//overlay, which this harness freezes; it is NOT the authoritative clock. The authoritative hour of each frame is the `hour`/`clock` field of that frame's row below, read from the bridge summary at capture time.",
+  "seeded": 222,
+  "shop": 15873,
+  "shots": [
+    {
+      "beneficiary": -1,
+      "beneficiary_row": {
+        "building_id": null,
+        "state": null,
+        "work": {
+
+        },
+        "x": null,
+        "y": null
+      },
+      "caption": "07:36 — cashier 70 (task man_register, room 0.0) and the other workers the authority reports inside workplace 8470: [\"79:cleaner/fetch_supplies/room 0.0\"]. The player is in the same staged interior; 2 bodies are drawn here and each one is driven from an authoritative interior position. PIXELS: the sales floor with worker bodies standing in it — 2 are drawn, and a fixture at this camera angle can hide one of them, so the pixels prove bodies in a room, not which ones. AUTHORITY ONLY: who they are, their roles and what they are doing (manifest rows).",
+      "clock": "07:36",
+      "cognition_counts": {
+        "ENCOUNTER": 310.0,
+        "MEMORY_CREATED": 18.0,
+        "MEMORY_REINFORCED": 602.0,
+        "PRIORS": 1.0,
+        "RELATIONSHIP_CHANGED": 620.0
+      },
+      "coworker_rows": [
+        "79:cleaner/fetch_supplies/room 0.0"
+      ],
+      "coworkers_in_building": [
+        79
+      ],
+      "file": "00_coworkers.png",
+      "helper": 70,
+      "helper_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "object_id": "so:8470:29",
+          "phase": "using",
+          "role": "cashier",
+          "room_id": 0.0,
+          "task": "man_register",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1440.223,
+        "y": -365.392
+      },
+      "hour": 7.60985618,
+      "inside_building": 8470,
+      "interior_bodies": 2,
+      "interior_body_ids": [
+        "cit:70",
+        "cit:79"
+      ],
+      "markers": [
+        "so:8470:29"
+      ],
+      "shop": 15873,
+      "workplace": 8470
+    },
+    {
+      "beneficiary": -1,
+      "beneficiary_row": {
+        "building_id": null,
+        "state": null,
+        "work": {
+
+        },
+        "x": null,
+        "y": null
+      },
+      "caption": "07:36 — the problem the authority can see in workplace 8470: 14 of its smart objects carry state dirty=true (first eight: [\"so:8470:16\", \"so:8470:17\", \"so:8470:19\", \"so:8470:21\", \"so:8470:26\", \"so:8470:28\", \"so:8470:31\", \"so:8470:39\"]), and the cleaners on shift are [79]. That backlog is what the WorkRuntime publishes as a cleaning_workload problem and what the helper's score is computed from. PIXELS: the sales floor and its fixtures — a dirty fixture is drawn exactly like a clean one, so the pixels prove nothing about the backlog. AUTHORITY ONLY: the dirty-object list and the workload (GET_ROOMS state in the manifest).",
+      "cleaners_on_shift": [
+        79
+      ],
+      "clock": "07:36",
+      "cognition_counts": {
+        "ENCOUNTER": 310.0,
+        "MEMORY_CREATED": 18.0,
+        "MEMORY_REINFORCED": 602.0,
+        "PRIORS": 1.0,
+        "RELATIONSHIP_CHANGED": 620.0
+      },
+      "dirty_objects": [
+        "so:8470:16",
+        "so:8470:17",
+        "so:8470:19",
+        "so:8470:21",
+        "so:8470:26",
+        "so:8470:28",
+        "so:8470:31",
+        "so:8470:39",
+        "so:8470:4",
+        "so:8470:41",
+        "so:8470:45",
+        "so:8470:46",
+        "so:8470:7",
+        "so:8470:8"
+      ],
+      "file": "01_problem.png",
+      "helper": 70,
+      "helper_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "object_id": "so:8470:29",
+          "phase": "using",
+          "role": "cashier",
+          "room_id": 0.0,
+          "task": "man_register",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1440.223,
+        "y": -365.392
+      },
+      "hour": 7.60985618,
+      "inside_building": 8470,
+      "interior_bodies": 2,
+      "interior_body_ids": [
+        "cit:70",
+        "cit:79"
+      ],
+      "markers": [
+        "so:8470:29"
+      ],
+      "shop": 15873,
+      "workplace": 8470
+    },
+    {
+      "beneficiary": 79,
+      "beneficiary_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "object_id": "so:8470:1",
+          "phase": "to_object",
+          "role": "cleaner",
+          "room_id": 0.0,
+          "task": "fetch_supplies",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1426.453,
+        "y": -341.072
+      },
+      "caption": "07:37 — HELP_DECIDED: citizen 70 chose, on its own, to help 79 with help_clean on so:8470:28 (problem cleaning_workload, score 0.415 vs threshold 0.4, would_help_without_history=false). The frame is the moment the helper is on its way to that object (phase to_object). PIXELS: the helper's body partway across the room — one still cannot show motion. AUTHORITY ONLY: that it is moving, where to, and that this walk is a help task for another citizen (the phase/task/beneficiary rows in the manifest).",
+      "clock": "07:37",
+      "cognition_counts": {
+        "ENCOUNTER": 310.0,
+        "HELP_DECIDED": 1.0,
+        "HELP_STARTED": 1.0,
+        "MEMORY_CREATED": 18.0,
+        "MEMORY_REINFORCED": 602.0,
+        "PRIORS": 1.0,
+        "RELATIONSHIP_CHANGED": 620.0,
+        "SOCIAL_ACTION": 1.0
+      },
+      "file": "02_helper_moves_to_assist.png",
+      "help_decided": {
+        "beneficiary": 79.0,
+        "building_id": 8470.0,
+        "citizen_id": 70.0,
+        "components": {
+          "affinity": 0.052,
+          "cost": -0.15,
+          "familiarity": 0.075,
+          "fear_hostility": 0.0,
+          "helpfulness": 0.378,
+          "obligation": 0.0,
+          "trust": 0.06
+        },
+        "event": "HELP_DECIDED",
+        "object_id": "so:8470:28",
+        "problem": "cleaning_workload",
+        "problem_object": null,
+        "score": 0.415,
+        "score_without_history": 0.273,
+        "seq": 12.0,
+        "t": 9421.5,
+        "task_id": "help_clean",
+        "threshold": 0.4,
+        "utterance": "OFFER_HELP",
+        "would_help_without_history": false
+      },
+      "helper": 70,
+      "helper_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "object_id": "so:8470:28",
+          "phase": "to_object",
+          "role": "cashier",
+          "room_id": 0.0,
+          "task": "help_clean",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1440.202,
+        "y": -366.692
+      },
+      "hour": 7.61735618,
+      "inside_building": 8470,
+      "interior_bodies": 2,
+      "interior_body_ids": [
+        "cit:70",
+        "cit:79"
+      ],
+      "markers": [
+        "so:8470:1",
+        "so:8470:28"
+      ],
+      "shop": 15873,
+      "workplace": 8470
+    },
+    {
+      "beneficiary": 79,
+      "beneficiary_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "object_id": "so:8470:1",
+          "phase": "to_object",
+          "role": "cleaner",
+          "room_id": 0.0,
+          "task": "fetch_supplies",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1425.718,
+        "y": -338.578
+      },
+      "caption": "07:37 — the help task running: citizen 70 is at so:8470:28 (phase using) with the gold `using` highlight, and the coworker it is helping, citizen 79, is embodied in the same room (task fetch_supplies, room 0.0). Both bodies present in the frame: true; 2 interior bodies, holder rings [\"so:8470:1\", \"so:8470:28\"]. PIXELS: the room with worker bodies at its fixtures, one of them carrying the gold `using` tint and a holder ring at its object — a fixture can occlude a body at this angle. AUTHORITY ONLY: which body is which, and that one of them is doing the other's work.",
+      "clock": "07:37",
+      "cognition_counts": {
+        "ENCOUNTER": 310.0,
+        "HELP_DECIDED": 1.0,
+        "HELP_STARTED": 1.0,
+        "MEMORY_CREATED": 18.0,
+        "MEMORY_REINFORCED": 602.0,
+        "PRIORS": 1.0,
+        "RELATIONSHIP_CHANGED": 620.0,
+        "SOCIAL_ACTION": 1.0
+      },
+      "file": "03_both_embodied_during_help.png",
+      "help_completed": [],
+      "help_started": [
+        {
+          "beneficiary": 79.0,
+          "building_id": 8470.0,
+          "citizen_id": 70.0,
+          "event": "HELP_STARTED",
+          "object_id": "so:8470:28",
+          "room_id": 0.0,
+          "seq": 14.0,
+          "t": 9422.5,
+          "task_id": "help_clean"
+        }
+      ],
+      "helper": 70,
+      "helper_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "object_id": "so:8470:28",
+          "phase": "using",
+          "role": "cashier",
+          "room_id": 0.0,
+          "task": "help_clean",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1440.177,
+        "y": -368.355
+      },
+      "hour": 7.61791173555556,
+      "inside_building": 8470,
+      "interior_bodies": 2,
+      "interior_body_ids": [
+        "cit:70",
+        "cit:79"
+      ],
+      "markers": [
+        "so:8470:1",
+        "so:8470:28"
+      ],
+      "shop": 15873,
+      "workplace": 8470
+    },
+    {
+      "beneficiary": 79,
+      "beneficiary_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "object_id": "so:8470:1",
+          "phase": "using",
+          "role": "cleaner",
+          "room_id": 0.0,
+          "task": "fetch_supplies",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1422.94,
+        "y": -329.15
+      },
+      "caption": "07:47 — back after 10 game minutes with the player 1.5 km away and no body anywhere: the CitizenBody for citizen 70 is recreated 0.00 m from its authoritative interior pose, on so:8470:29. Nothing of its mind was lost with its body: 0 of the 0 salient memories it held before the trip are still there (n_memories 0.0 -> 2.0 — the authority kept simulating while nobody watched, so it may have gained more), and its 1 relationships are unchanged partners. PIXELS: a body standing in the room again — a picture cannot show a memory. AUTHORITY ONLY: the two GET_CITIZEN_CONTEXT rows in the manifest, before and after.",
+      "clock": "07:47",
+      "cognition_counts": {
+        "ENCOUNTER": 347.0,
+        "HELP_COMPLETED": 2.0,
+        "HELP_DECIDED": 2.0,
+        "HELP_STARTED": 2.0,
+        "MEMORY_CREATED": 46.0,
+        "MEMORY_REINFORCED": 652.0,
+        "PRIORS": 1.0,
+        "RELATIONSHIP_CHANGED": 698.0,
+        "SOCIAL_ACTION": 4.0,
+        "TRUST_CHANGED": 2.0
+      },
+      "context_after_lod": {
+        "avoid_rooms_here": [],
+        "avoiding": null,
+        "beliefs": [],
+        "citizen_id": 70.0,
+        "goal": {
+          "activity": null,
+          "deadline": 8.0,
+          "id": 2.0,
+          "kind": "arrive_at",
+          "priority": 0.7,
+          "reason": "scheduled commute toward ent:8470",
+          "source": "schedule",
+          "target": "ent:8470"
+        },
+        "health": "susceptible",
+        "location": {
+          "band": "route_simulated",
+          "building_id": 8470.0,
+          "inside": true,
+          "room_id": 0.0,
+          "x": -1440.22,
+          "y": -365.39,
+          "zone": "sales_floor"
+        },
+        "memories": [
+          {
+            "actor": 70.0,
+            "building_id": 8470.0,
+            "confidence": 1.0,
+            "count": 2.0,
+            "detail": "help_clean",
+            "effective": 1.0,
+            "fact_id": "70:1",
+            "hops": 0.0,
+            "kind": "HELPED",
+            "last_t": 9993.482248,
+            "object_id": "so:8470:26",
+            "origin_id": "70:1",
+            "origin_witness": 70.0,
+            "owner": 70.0,
+            "room_id": 0.0,
+            "salience": 0.7,
+            "source": "participant",
+            "source_citizen": null,
+            "t": 9993.482248,
+            "target": 79.0,
+            "valence": 0.4
+          },
+          {
+            "actor": 79.0,
+            "building_id": 8470.0,
+            "confidence": 1.0,
+            "count": 4.0,
+            "detail": "",
+            "effective": 0.993,
+            "fact_id": "70:2",
+            "hops": 0.0,
+            "kind": "WORKED_BESIDE",
+            "last_t": 9901.482248,
+            "object_id": null,
+            "origin_id": "70:2",
+            "origin_witness": 70.0,
+            "owner": 70.0,
+            "room_id": 0.0,
+            "salience": 0.15,
+            "source": "direct",
+            "source_citizen": null,
+            "t": 9901.482248,
+            "target": null,
+            "valence": 0.05
+          }
+        ],
+        "n_memories": 2.0,
+        "needs": {
+          "energy": 1.0,
+          "hunger": 0.0,
+          "safety": 1.0,
+          "social": 0.6
+        },
+        "people_nearby": [
+          {
+            "citizen_id": 79.0,
+            "danger": 0.0,
+            "relationship": {
+              "affinity": 0.3418,
+              "familiarity": 0.5374,
+              "fear": 0.0,
+              "hostility": 0.0,
+              "interactions": 6.0,
+              "last_t": 9993.482248,
+              "obligation": 0.0,
+              "origin": "workplace",
+              "other": 79.0,
+              "owner": 70.0,
+              "trust": 0.4
+            }
+          }
+        ],
+        "perceived_danger": 0.0,
+        "personality": {
+          "helpfulness": 0.756,
+          "loyalty": 0.559,
+          "risk_tolerance": 0.338,
+          "sociability": 0.132,
+          "suspicion": 0.267
+        },
+        "recent_social": [
+          {
+            "citizen_id": 70.0,
+            "confidence": 1.0,
+            "count": 2.0,
+            "event": "MEMORY_REINFORCED",
+            "fact_id": "70:1",
+            "fact_kind": "HELPED",
+            "seq": 39.0,
+            "t": 9993.5
+          },
+          {
+            "changes": [
+              {
+                "dim": "familiarity",
+                "new": 0.5573,
+                "old": 0.5081
+              },
+              {
+                "dim": "trust",
+                "new": 0.6625,
+                "old": 0.55
+              },
+              {
+                "dim": "affinity",
+                "new": 0.5835,
+                "old": 0.405
+              },
+              {
+                "dim": "obligation",
+                "new": 0.75,
+                "old": 0.5
+              }
+            ],
+            "citizen_id": 79.0,
+            "event": "RELATIONSHIP_CHANGED",
+            "other": 70.0,
+            "rule": "helped_by",
+            "seq": 40.0,
+            "t": 9993.5,
+            "task_id": "help_clean"
+          },
+          {
+            "citizen_id": 79.0,
+            "event": "TRUST_CHANGED",
+            "new": 0.663,
+            "old": 0.55,
+            "other": 70.0,
+            "rule": "helped_by",
+            "seq": 41.0,
+            "t": 9993.5
+          },
+          {
+            "changes": [
+              {
+                "dim": "familiarity",
+                "new": 0.5374,
+                "old": 0.4972
+              },
+              {
+                "dim": "affinity",
+                "new": 0.3418,
+                "old": 0.252
+              }
+            ],
+            "citizen_id": 70.0,
+            "event": "RELATIONSHIP_CHANGED",
+            "other": 79.0,
+            "rule": "helped",
+            "seq": 42.0,
+            "t": 9993.5,
+            "task_id": "help_clean"
+          },
+          {
+            "beneficiary": 79.0,
+            "building_id": 8470.0,
+            "citizen_id": 70.0,
+            "decision_seq": 24.0,
+            "effect": "clean",
+            "event": "HELP_COMPLETED",
+            "object_id": "so:8470:26",
+            "room_id": 0.0,
+            "seq": 43.0,
+            "t": 9993.5,
+            "task_id": "help_clean"
+          },
+          {
+            "action": "THANK",
+            "building_id": 8470.0,
+            "citizen_id": 79.0,
+            "event": "SOCIAL_ACTION",
+            "room_id": 0.0,
+            "seq": 44.0,
+            "t": 9993.5,
+            "target": 70.0,
+            "utterance": "THANK"
+          }
+        ],
+        "relationships": [
+          {
+            "affinity": 0.3418,
+            "familiarity": 0.5374,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 6.0,
+            "last_t": 9993.482248,
+            "obligation": 0.0,
+            "origin": "workplace",
+            "other": 79.0,
+            "owner": 70.0,
+            "trust": 0.4
+          }
+        ],
+        "task": {
+          "object_id": "so:8470:29",
+          "phase": "using",
+          "role": "cashier",
+          "task_id": "man_register"
+        }
+      },
+      "context_before_lod": {
+        "avoid_rooms_here": [],
+        "avoiding": null,
+        "beliefs": [],
+        "citizen_id": 70.0,
+        "goal": {
+          "activity": null,
+          "deadline": 8.0,
+          "id": 2.0,
+          "kind": "arrive_at",
+          "priority": 0.7,
+          "reason": "scheduled commute toward ent:8470",
+          "source": "schedule",
+          "target": "ent:8470"
+        },
+        "health": "susceptible",
+        "location": {
+          "band": null,
+          "building_id": 8470.0,
+          "inside": true,
+          "room_id": 0.0,
+          "x": -1440.18,
+          "y": -368.36,
+          "zone": "sales_floor"
+        },
+        "memories": [],
+        "n_memories": 0.0,
+        "needs": {
+          "energy": 1.0,
+          "hunger": 0.0,
+          "safety": 1.0,
+          "social": 0.6
+        },
+        "people_nearby": [
+          {
+            "citizen_id": 79.0,
+            "danger": 0.0,
+            "relationship": {
+              "affinity": 0.15,
+              "familiarity": 0.3,
+              "fear": 0.0,
+              "hostility": 0.0,
+              "interactions": 0.0,
+              "last_t": 0.0,
+              "obligation": 0.0,
+              "origin": "workplace",
+              "other": 79.0,
+              "owner": 70.0,
+              "trust": 0.4
+            }
+          }
+        ],
+        "perceived_danger": 0.0,
+        "personality": {
+          "helpfulness": 0.756,
+          "loyalty": 0.559,
+          "risk_tolerance": 0.338,
+          "sociability": 0.132,
+          "suspicion": 0.267
+        },
+        "recent_social": [
+          {
+            "beneficiary": 79.0,
+            "building_id": 8470.0,
+            "citizen_id": 70.0,
+            "components": {
+              "affinity": 0.052,
+              "cost": -0.15,
+              "familiarity": 0.075,
+              "fear_hostility": 0.0,
+              "helpfulness": 0.378,
+              "obligation": 0.0,
+              "trust": 0.06
+            },
+            "event": "HELP_DECIDED",
+            "object_id": "so:8470:28",
+            "problem": "cleaning_workload",
+            "problem_object": null,
+            "score": 0.415,
+            "score_without_history": 0.273,
+            "seq": 12.0,
+            "t": 9421.5,
+            "task_id": "help_clean",
+            "threshold": 0.4,
+            "utterance": "OFFER_HELP",
+            "would_help_without_history": false
+          },
+          {
+            "action": "HELP",
+            "building_id": 8470.0,
+            "citizen_id": 70.0,
+            "event": "SOCIAL_ACTION",
+            "object_id": "so:8470:28",
+            "seq": 13.0,
+            "t": 9421.5,
+            "target": 79.0,
+            "task_id": "help_clean",
+            "utterance": "OFFER_HELP"
+          },
+          {
+            "beneficiary": 79.0,
+            "building_id": 8470.0,
+            "citizen_id": 70.0,
+            "event": "HELP_STARTED",
+            "object_id": "so:8470:28",
+            "room_id": 0.0,
+            "seq": 14.0,
+            "t": 9422.5,
+            "task_id": "help_clean"
+          }
+        ],
+        "relationships": [
+          {
+            "affinity": 0.15,
+            "familiarity": 0.3,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 0.0,
+            "last_t": 0.0,
+            "obligation": 0.0,
+            "origin": "workplace",
+            "other": 79.0,
+            "owner": 70.0,
+            "trust": 0.4
+          }
+        ],
+        "task": {
+          "object_id": "so:8470:28",
+          "phase": "using",
+          "role": "cashier",
+          "task_id": "help_clean"
+        }
+      },
+      "file": "08_lod_return.png",
+      "helper": 70,
+      "helper_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "object_id": "so:8470:29",
+          "phase": "using",
+          "role": "cashier",
+          "room_id": 0.0,
+          "task": "man_register",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1440.223,
+        "y": -365.392
+      },
+      "hour": 7.78485618,
+      "inside_building": 8470,
+      "interior_bodies": 2,
+      "interior_body_ids": [
+        "cit:70",
+        "cit:79"
+      ],
+      "markers": [
+        "so:8470:1",
+        "so:8470:29"
+      ],
+      "pose_error_m": 0.0,
+      "salient_fact_ids_after": [
+        "70:1",
+        "70:2"
+      ],
+      "salient_fact_ids_before": [],
+      "shop": 15873,
+      "workplace": 8470
+    },
+    {
+      "attacked_by_events": [
+        {
+          "actor": 222.0,
+          "building_id": 15873.0,
+          "citizen_id": 8.0,
+          "event": "PERCEIVED",
+          "room_id": 0.0,
+          "seq": 635.0,
+          "source": "participant",
+          "t": 20711.5,
+          "target": 8.0,
+          "what": "attacked_by"
+        }
+      ],
+      "beneficiary": 79,
+      "beneficiary_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "supplies",
+          "object_id": "so:8470:46",
+          "phase": "using",
+          "role": "cleaner",
+          "room_id": 0.0,
+          "task": "inspect",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1431.629,
+        "y": -447.78
+      },
+      "caption": "10:45 — customer 222 (the lowest-id customer session the authority reported inside the shop, of [222]) was seeded with classic_zombie_fast, died, rose and attacked inside shop 15873: the first PERCEIVED attacked_by is citizen 8.0 in room 0.0, and 12 citizens are still embodied in this staged interior. The attacker's own row is state \"on_foot\" / health \"undead\"; a body for it exists: false, drawn inside this staged interior: false (the renderer only puts a body in a staged interior for states doing_activity / inside_building, so an attacker that has left that state is drawn on the exterior street, not here). PIXELS: the shop floor and the workers still in it. AUTHORITY ONLY: the attack, its victim and the witnesses (manifest events).",
+      "clock": "10:45",
+      "cognition_counts": {
+        "AVOID_DECIDED": 2.0,
+        "AVOID_ROOM_DECIDED": 11.0,
+        "ENCOUNTER": 2436.0,
+        "HELP_COMPLETED": 11.0,
+        "HELP_DECIDED": 11.0,
+        "HELP_STARTED": 11.0,
+        "MEMORY_CREATED": 550.0,
+        "MEMORY_REINFORCED": 4554.0,
+        "PERCEIVED": 16.0,
+        "PRIORS": 1.0,
+        "RELATIONSHIP_CHANGED": 5224.0,
+        "SOCIAL_ACTION": 84.0,
+        "TRUST_CHANGED": 258.0,
+        "WARNING_RECEIVED": 60.0,
+        "WARNING_SHARED": 60.0
+      },
+      "file": "05_threat_witnessed.png",
+      "helper": 70,
+      "helper_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "object_id": "so:8470:29",
+          "phase": "using",
+          "role": "cashier",
+          "room_id": 0.0,
+          "task": "man_register",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1440.223,
+        "y": -365.392
+      },
+      "hour": 10.7531895133333,
+      "inside_building": 15873,
+      "interior_bodies": 12,
+      "interior_body_ids": [
+        "cit:132",
+        "cit:143",
+        "cit:167",
+        "cit:169",
+        "cit:19",
+        "cit:221",
+        "cit:25",
+        "cit:277",
+        "cit:287",
+        "cit:297",
+        "cit:8",
+        "cit:82"
+      ],
+      "markers": [
+        "so:15873:104",
+        "so:15873:181"
+      ],
+      "shop": 15873,
+      "undead_row": {
+        "activity": "traveling",
+        "band": "route_simulated",
+        "blocked": false,
+        "building_id": -1.0,
+        "citizen_id": 222.0,
+        "cognition": {
+          "avoiding": null,
+          "helping": null,
+          "n_memories": 9.0,
+          "n_relationships": 9.0,
+          "top_belief": null
+        },
+        "destination": null,
+        "failure": "",
+        "goal": "retrieve",
+        "goal_target": "ent:15873",
+        "heading": 0.0,
+        "health": "undead",
+        "in_vehicle_speed": null,
+        "n_steps": 2.0,
+        "override": "undead",
+        "progress": 0.0,
+        "speed": 0.0,
+        "state": "on_foot",
+        "step": "enter_building",
+        "step_index": 1.0,
+        "trip_failed": false,
+        "vehicle_id": null,
+        "work": {
+          "carrying": "",
+          "object_id": null,
+          "phase": null,
+          "role": null,
+          "room_id": null,
+          "task": null,
+          "workplace_id": null,
+          "zone": null
+        },
+        "x": -2236.79,
+        "y": 1213.21
+      },
+      "workplace": 8470
+    },
+    {
+      "beneficiary": 79,
+      "beneficiary_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "supplies",
+          "object_id": "so:8470:46",
+          "phase": "using",
+          "role": "cleaner",
+          "room_id": 0.0,
+          "task": "inspect",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1431.629,
+        "y": -447.78
+      },
+      "caption": "10:51 — citizen 221 was doing_activity in room 2.0 of shop 15873 when a shout reached it (WARNING_RECEIVED from 8.0, goal_before schedule, hops 1.0) and it decided to avoid the whole building on that word alone (AVOID_DECIDED first_hand=false); seconds after that decision its active goal came from source \"belief\" (avoiding building 15873: danger 0.47 reported by [8]). It then walked out: it is now state on_foot, building -1.0, on a emergency goal (by now it had also seen the attack itself, so the later goal is not the second-hand one). Its exterior body is drawn: true. PIXELS: the street outside the shop it walked out of — a route change looks like an ordinary walk. AUTHORITY ONLY: that it left because of something it was told, not something it saw (the two contexts and the warning row in the manifest).",
+      "clock": "10:51",
+      "cognition_counts": {
+        "AVOID_DECIDED": 2.0,
+        "AVOID_ROOM_DECIDED": 11.0,
+        "ENCOUNTER": 2773.0,
+        "HELP_COMPLETED": 11.0,
+        "HELP_DECIDED": 11.0,
+        "HELP_STARTED": 11.0,
+        "MEMORY_CREATED": 641.0,
+        "MEMORY_REINFORCED": 5071.0,
+        "PERCEIVED": 35.0,
+        "PRIORS": 1.0,
+        "RELATIONSHIP_CHANGED": 6000.0,
+        "SOCIAL_ACTION": 167.0,
+        "TRUST_CHANGED": 370.0,
+        "WARNING_RECEIVED": 143.0,
+        "WARNING_SHARED": 143.0
+      },
+      "file": "06_warned_citizen_reroutes.png",
+      "helper": 70,
+      "helper_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "object_id": "so:8470:29",
+          "phase": "using",
+          "role": "cashier",
+          "room_id": 0.0,
+          "task": "man_register",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1440.223,
+        "y": -365.392
+      },
+      "hour": 10.8551339577778,
+      "inside_building": -1,
+      "interior_bodies": 0,
+      "interior_body_ids": [],
+      "markers": [],
+      "shop": 15873,
+      "warned_context_after": {
+        "avoid_rooms_here": [],
+        "avoiding": {
+          "building_id": 15873.0,
+          "danger": 0.47,
+          "first_hand": false,
+          "goal_id": 3.0,
+          "since_s": 20711.482248,
+          "sources": [
+            8.0
+          ]
+        },
+        "beliefs": [
+          {
+            "building_id": null,
+            "evidence": [
+              "221:1",
+              "221:11",
+              "221:13",
+              "221:3"
+            ],
+            "first_hand": true,
+            "key": "danger:person:222",
+            "last_t": 20762.482248,
+            "room_id": null,
+            "source_citizens": [
+              8.0,
+              19.0
+            ],
+            "subject": 222.0,
+            "value": 1.0
+          },
+          {
+            "building_id": 15873.0,
+            "evidence": [
+              "221:11"
+            ],
+            "first_hand": true,
+            "key": "danger:room:15873:1",
+            "last_t": 20716.482248,
+            "room_id": 1.0,
+            "source_citizens": [],
+            "subject": null,
+            "value": 0.999
+          },
+          {
+            "building_id": 15873.0,
+            "evidence": [],
+            "first_hand": false,
+            "key": "danger:building:15873",
+            "last_t": 20762.482248,
+            "room_id": null,
+            "source_citizens": [],
+            "subject": null,
+            "value": 0.969
+          },
+          {
+            "building_id": 15873.0,
+            "evidence": [
+              "221:1",
+              "221:3"
+            ],
+            "first_hand": false,
+            "key": "danger:room:15873:0",
+            "last_t": 20762.482248,
+            "room_id": 0.0,
+            "source_citizens": [
+              8.0,
+              19.0
+            ],
+            "subject": null,
+            "value": 0.771
+          }
+        ],
+        "citizen_id": 221.0,
+        "goal": {
+          "activity": null,
+          "deadline": null,
+          "id": 4.0,
+          "kind": "flee",
+          "priority": 0.92,
+          "reason": "witnessed an attack",
+          "source": "emergency",
+          "target": "ent:16553"
+        },
+        "health": "susceptible",
+        "location": {
+          "band": "route_simulated",
+          "building_id": null,
+          "inside": false,
+          "room_id": null,
+          "x": -2066.21,
+          "y": 1015.8,
+          "zone": null
+        },
+        "memories": [
+          {
+            "actor": 222.0,
+            "building_id": 15873.0,
+            "confidence": 1.0,
+            "count": 1.0,
+            "detail": "",
+            "effective": 0.999,
+            "fact_id": "221:11",
+            "hops": 0.0,
+            "kind": "ATTACK_SEEN",
+            "last_t": 20716.482248,
+            "object_id": null,
+            "origin_id": "221:11",
+            "origin_witness": 221.0,
+            "owner": 221.0,
+            "room_id": 1.0,
+            "salience": 1.0,
+            "source": "direct",
+            "source_citizen": null,
+            "t": 20716.482248,
+            "target": 8.0,
+            "valence": -0.9
+          },
+          {
+            "actor": 222.0,
+            "building_id": null,
+            "confidence": 1.0,
+            "count": 2.0,
+            "detail": "",
+            "effective": 0.999,
+            "fact_id": "221:13",
+            "hops": 0.0,
+            "kind": "THREAT_PERSON",
+            "last_t": 20721.482248,
+            "object_id": null,
+            "origin_id": "221:13",
+            "origin_witness": 221.0,
+            "owner": 221.0,
+            "room_id": null,
+            "salience": 0.95,
+            "source": "direct",
+            "source_citizen": null,
+            "t": 20721.482248,
+            "target": null,
+            "valence": -0.9
+          },
+          {
+            "actor": 297.0,
+            "building_id": -1.0,
+            "confidence": 1.0,
+            "count": 2.0,
+            "detail": "",
+            "effective": 0.999,
+            "fact_id": "221:12",
+            "hops": 0.0,
+            "kind": "FLED_WITH",
+            "last_t": 20716.482248,
+            "object_id": null,
+            "origin_id": "221:12",
+            "origin_witness": 221.0,
+            "owner": 221.0,
+            "room_id": null,
+            "salience": 0.75,
+            "source": "participant",
+            "source_citizen": null,
+            "t": 20716.482248,
+            "target": null,
+            "valence": 0.3
+          },
+          {
+            "actor": 222.0,
+            "building_id": 15873.0,
+            "confidence": 0.522012,
+            "count": 2.0,
+            "detail": "",
+            "effective": 0.522,
+            "fact_id": "221:1",
+            "hops": 1.0,
+            "kind": "ATTACKED_BY",
+            "last_t": 20762.482248,
+            "object_id": null,
+            "origin_id": "8:12",
+            "origin_witness": 8.0,
+            "owner": 221.0,
+            "room_id": 0.0,
+            "salience": 1.0,
+            "source": "told",
+            "source_citizen": 8.0,
+            "t": 20711.482248,
+            "target": 8.0,
+            "valence": -1.0
+          },
+          {
+            "actor": 222.0,
+            "building_id": 15873.0,
+            "confidence": 0.522012,
+            "count": 7.0,
+            "detail": "",
+            "effective": 0.522,
+            "fact_id": "221:3",
+            "hops": 1.0,
+            "kind": "ATTACK_SEEN",
+            "last_t": 20711.482248,
+            "object_id": null,
+            "origin_id": "19:14",
+            "origin_witness": 19.0,
+            "owner": 221.0,
+            "room_id": 0.0,
+            "salience": 1.0,
+            "source": "told",
+            "source_citizen": 19.0,
+            "t": 20711.482248,
+            "target": 8.0,
+            "valence": -0.9
+          },
+          {
+            "actor": 25.0,
+            "building_id": null,
+            "confidence": 1.0,
+            "count": 1.0,
+            "detail": "ATTACKED_BY",
+            "effective": 0.997,
+            "fact_id": "221:15",
+            "hops": 0.0,
+            "kind": "WARNED_BY",
+            "last_t": 20762.482248,
+            "object_id": null,
+            "origin_id": "221:15",
+            "origin_witness": 221.0,
+            "owner": 221.0,
+            "room_id": null,
+            "salience": 0.5,
+            "source": "participant",
+            "source_citizen": null,
+            "t": 20762.482248,
+            "target": null,
+            "valence": 0.3
+          },
+          {
+            "actor": 82.0,
+            "building_id": null,
+            "confidence": 1.0,
+            "count": 1.0,
+            "detail": "THREAT_PERSON",
+            "effective": 0.997,
+            "fact_id": "221:14",
+            "hops": 0.0,
+            "kind": "WARNED_BY",
+            "last_t": 20721.482248,
+            "object_id": null,
+            "origin_id": "221:14",
+            "origin_witness": 221.0,
+            "owner": 221.0,
+            "room_id": null,
+            "salience": 0.5,
+            "source": "participant",
+            "source_citizen": null,
+            "t": 20721.482248,
+            "target": null,
+            "valence": 0.3
+          },
+          {
+            "actor": 287.0,
+            "building_id": 15873.0,
+            "confidence": 1.0,
+            "count": 1.0,
+            "detail": "ATTACK_SEEN",
+            "effective": 0.997,
+            "fact_id": "221:10",
+            "hops": 0.0,
+            "kind": "WARNED_BY",
+            "last_t": 20711.482248,
+            "object_id": null,
+            "origin_id": "221:10",
+            "origin_witness": 221.0,
+            "owner": 221.0,
+            "room_id": null,
+            "salience": 0.5,
+            "source": "participant",
+            "source_citizen": null,
+            "t": 20711.482248,
+            "target": null,
+            "valence": 0.3
+          }
+        ],
+        "n_memories": 15.0,
+        "needs": {
+          "energy": 1.0,
+          "hunger": 0.0,
+          "safety": 1.0,
+          "social": 0.6
+        },
+        "people_nearby": [],
+        "perceived_danger": 0.0,
+        "personality": {
+          "helpfulness": 0.439,
+          "loyalty": 0.238,
+          "risk_tolerance": 0.232,
+          "sociability": 0.395,
+          "suspicion": 0.378
+        },
+        "recent_social": [
+          {
+            "changes": [
+              {
+                "dim": "familiarity",
+                "new": 0.08,
+                "old": 0.0
+              },
+              {
+                "dim": "trust",
+                "new": 0.384,
+                "old": 0.3
+              },
+              {
+                "dim": "affinity",
+                "new": 0.08,
+                "old": 0.0
+              }
+            ],
+            "citizen_id": 143.0,
+            "event": "RELATIONSHIP_CHANGED",
+            "other": 221.0,
+            "rule": "warned_by",
+            "seq": 1962.0,
+            "t": 20762.5
+          },
+          {
+            "citizen_id": 143.0,
+            "event": "TRUST_CHANGED",
+            "new": 0.384,
+            "old": 0.3,
+            "other": 221.0,
+            "rule": "warned_by",
+            "seq": 1963.0,
+            "t": 20762.5
+          },
+          {
+            "about_building": 15873.0,
+            "about_room": 0.0,
+            "actor": 222.0,
+            "building_id": null,
+            "channel": "encounter",
+            "citizen_id": 221.0,
+            "event": "WARNING_SHARED",
+            "fact_id": "221:1",
+            "fact_kind": "ATTACKED_BY",
+            "hops": 2.0,
+            "origin_id": "8:12",
+            "origin_witness": 8.0,
+            "recipient": 167.0,
+            "room_id": null,
+            "sender_confidence": 0.522,
+            "seq": 1965.0,
+            "t": 20762.5,
+            "target": 8.0,
+            "utterance": "WARN_THREAT"
+          },
+          {
+            "action": "WARN",
+            "building_id": null,
+            "channel": "encounter",
+            "citizen_id": 221.0,
+            "event": "SOCIAL_ACTION",
+            "fact_id": "221:1",
+            "room_id": null,
+            "seq": 1967.0,
+            "t": 20762.5,
+            "target": 167.0,
+            "utterance": "WARN_THREAT"
+          },
+          {
+            "changes": [
+              {
+                "dim": "familiarity",
+                "new": 0.08,
+                "old": 0.0
+              },
+              {
+                "dim": "trust",
+                "new": 0.384,
+                "old": 0.3
+              },
+              {
+                "dim": "affinity",
+                "new": 0.08,
+                "old": 0.0
+              }
+            ],
+            "citizen_id": 167.0,
+            "event": "RELATIONSHIP_CHANGED",
+            "other": 221.0,
+            "rule": "warned_by",
+            "seq": 1968.0,
+            "t": 20762.5
+          },
+          {
+            "citizen_id": 167.0,
+            "event": "TRUST_CHANGED",
+            "new": 0.384,
+            "old": 0.3,
+            "other": 221.0,
+            "rule": "warned_by",
+            "seq": 1969.0,
+            "t": 20762.5
+          }
+        ],
+        "relationships": [
+          {
+            "affinity": 0.2775,
+            "familiarity": 0.2256,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 2.0,
+            "last_t": 20716.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 297.0,
+            "owner": 221.0,
+            "trust": 0.433
+          },
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 1.0,
+            "last_t": 20711.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 8.0,
+            "owner": 221.0,
+            "trust": 0.384
+          },
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 2.0,
+            "last_t": 20716.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 19.0,
+            "owner": 221.0,
+            "trust": 0.5072
+          },
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 1.0,
+            "last_t": 20762.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 25.0,
+            "owner": 221.0,
+            "trust": 0.384
+          },
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 1.0,
+            "last_t": 20721.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 82.0,
+            "owner": 221.0,
+            "trust": 0.384
+          },
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 1.0,
+            "last_t": 20711.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 132.0,
+            "owner": 221.0,
+            "trust": 0.384
+          },
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 1.0,
+            "last_t": 20711.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 143.0,
+            "owner": 221.0,
+            "trust": 0.384
+          },
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 1.0,
+            "last_t": 20711.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 167.0,
+            "owner": 221.0,
+            "trust": 0.384
+          }
+        ],
+        "task": {
+          "object_id": null,
+          "phase": null,
+          "role": null,
+          "task_id": null
+        }
+      },
+      "warned_context_at_decision": {
+        "avoid_rooms_here": [
+          0.0
+        ],
+        "avoiding": {
+          "building_id": 15873.0,
+          "danger": 0.47,
+          "first_hand": false,
+          "goal_id": 3.0,
+          "since_s": 20711.482248,
+          "sources": [
+            8.0
+          ]
+        },
+        "beliefs": [
+          {
+            "building_id": null,
+            "evidence": [
+              "221:1",
+              "221:3"
+            ],
+            "first_hand": false,
+            "key": "danger:person:222",
+            "last_t": 20711.482248,
+            "room_id": null,
+            "source_citizens": [
+              8.0,
+              19.0
+            ],
+            "subject": 222.0,
+            "value": 0.772
+          },
+          {
+            "building_id": 15873.0,
+            "evidence": [
+              "221:1",
+              "221:3"
+            ],
+            "first_hand": false,
+            "key": "danger:room:15873:0",
+            "last_t": 20711.482248,
+            "room_id": 0.0,
+            "source_citizens": [
+              8.0,
+              19.0
+            ],
+            "subject": null,
+            "value": 0.772
+          },
+          {
+            "building_id": 15873.0,
+            "evidence": [],
+            "first_hand": false,
+            "key": "danger:building:15873",
+            "last_t": 20711.482248,
+            "room_id": null,
+            "source_citizens": [],
+            "subject": null,
+            "value": 0.694
+          }
+        ],
+        "citizen_id": 221.0,
+        "goal": {
+          "activity": "rest",
+          "deadline": null,
+          "id": 3.0,
+          "kind": "do_activity",
+          "priority": 0.716,
+          "reason": "avoiding building 15873: danger 0.47 reported by [8]",
+          "source": "belief",
+          "target": "ent:16553"
+        },
+        "health": "susceptible",
+        "location": {
+          "band": "route_simulated",
+          "building_id": 15873.0,
+          "inside": true,
+          "room_id": 2.0,
+          "x": -2202.7,
+          "y": 1229.21,
+          "zone": "stock_room"
+        },
+        "memories": [
+          {
+            "actor": 222.0,
+            "building_id": 15873.0,
+            "confidence": 0.522012,
+            "count": 1.0,
+            "detail": "",
+            "effective": 0.522,
+            "fact_id": "221:1",
+            "hops": 1.0,
+            "kind": "ATTACKED_BY",
+            "last_t": 20711.482248,
+            "object_id": null,
+            "origin_id": "8:12",
+            "origin_witness": 8.0,
+            "owner": 221.0,
+            "room_id": 0.0,
+            "salience": 1.0,
+            "source": "told",
+            "source_citizen": 8.0,
+            "t": 20711.482248,
+            "target": 8.0,
+            "valence": -1.0
+          },
+          {
+            "actor": 222.0,
+            "building_id": 15873.0,
+            "confidence": 0.522012,
+            "count": 7.0,
+            "detail": "",
+            "effective": 0.522,
+            "fact_id": "221:3",
+            "hops": 1.0,
+            "kind": "ATTACK_SEEN",
+            "last_t": 20711.482248,
+            "object_id": null,
+            "origin_id": "19:14",
+            "origin_witness": 19.0,
+            "owner": 221.0,
+            "room_id": 0.0,
+            "salience": 1.0,
+            "source": "told",
+            "source_citizen": 19.0,
+            "t": 20711.482248,
+            "target": 8.0,
+            "valence": -0.9
+          },
+          {
+            "actor": 287.0,
+            "building_id": 15873.0,
+            "confidence": 1.0,
+            "count": 1.0,
+            "detail": "ATTACK_SEEN",
+            "effective": 1.0,
+            "fact_id": "221:10",
+            "hops": 0.0,
+            "kind": "WARNED_BY",
+            "last_t": 20711.482248,
+            "object_id": null,
+            "origin_id": "221:10",
+            "origin_witness": 221.0,
+            "owner": 221.0,
+            "room_id": null,
+            "salience": 0.5,
+            "source": "participant",
+            "source_citizen": null,
+            "t": 20711.482248,
+            "target": null,
+            "valence": 0.3
+          },
+          {
+            "actor": 8.0,
+            "building_id": 15873.0,
+            "confidence": 1.0,
+            "count": 1.0,
+            "detail": "ATTACKED_BY",
+            "effective": 1.0,
+            "fact_id": "221:2",
+            "hops": 0.0,
+            "kind": "WARNED_BY",
+            "last_t": 20711.482248,
+            "object_id": null,
+            "origin_id": "221:2",
+            "origin_witness": 221.0,
+            "owner": 221.0,
+            "room_id": null,
+            "salience": 0.5,
+            "source": "participant",
+            "source_citizen": null,
+            "t": 20711.482248,
+            "target": null,
+            "valence": 0.3
+          },
+          {
+            "actor": 19.0,
+            "building_id": 15873.0,
+            "confidence": 1.0,
+            "count": 1.0,
+            "detail": "ATTACK_SEEN",
+            "effective": 1.0,
+            "fact_id": "221:4",
+            "hops": 0.0,
+            "kind": "WARNED_BY",
+            "last_t": 20711.482248,
+            "object_id": null,
+            "origin_id": "221:4",
+            "origin_witness": 221.0,
+            "owner": 221.0,
+            "room_id": null,
+            "salience": 0.5,
+            "source": "participant",
+            "source_citizen": null,
+            "t": 20711.482248,
+            "target": null,
+            "valence": 0.3
+          },
+          {
+            "actor": 132.0,
+            "building_id": 15873.0,
+            "confidence": 1.0,
+            "count": 1.0,
+            "detail": "ATTACK_SEEN",
+            "effective": 1.0,
+            "fact_id": "221:5",
+            "hops": 0.0,
+            "kind": "WARNED_BY",
+            "last_t": 20711.482248,
+            "object_id": null,
+            "origin_id": "221:5",
+            "origin_witness": 221.0,
+            "owner": 221.0,
+            "room_id": null,
+            "salience": 0.5,
+            "source": "participant",
+            "source_citizen": null,
+            "t": 20711.482248,
+            "target": null,
+            "valence": 0.3
+          },
+          {
+            "actor": 143.0,
+            "building_id": 15873.0,
+            "confidence": 1.0,
+            "count": 1.0,
+            "detail": "ATTACK_SEEN",
+            "effective": 1.0,
+            "fact_id": "221:6",
+            "hops": 0.0,
+            "kind": "WARNED_BY",
+            "last_t": 20711.482248,
+            "object_id": null,
+            "origin_id": "221:6",
+            "origin_witness": 221.0,
+            "owner": 221.0,
+            "room_id": null,
+            "salience": 0.5,
+            "source": "participant",
+            "source_citizen": null,
+            "t": 20711.482248,
+            "target": null,
+            "valence": 0.3
+          },
+          {
+            "actor": 167.0,
+            "building_id": 15873.0,
+            "confidence": 1.0,
+            "count": 1.0,
+            "detail": "ATTACK_SEEN",
+            "effective": 1.0,
+            "fact_id": "221:7",
+            "hops": 0.0,
+            "kind": "WARNED_BY",
+            "last_t": 20711.482248,
+            "object_id": null,
+            "origin_id": "221:7",
+            "origin_witness": 221.0,
+            "owner": 221.0,
+            "room_id": null,
+            "salience": 0.5,
+            "source": "participant",
+            "source_citizen": null,
+            "t": 20711.482248,
+            "target": null,
+            "valence": 0.3
+          }
+        ],
+        "n_memories": 10.0,
+        "needs": {
+          "energy": 1.0,
+          "hunger": 0.0,
+          "safety": 1.0,
+          "social": 0.6
+        },
+        "people_nearby": [],
+        "perceived_danger": 0.694,
+        "personality": {
+          "helpfulness": 0.439,
+          "loyalty": 0.238,
+          "risk_tolerance": 0.232,
+          "sociability": 0.395,
+          "suspicion": 0.378
+        },
+        "recent_social": [
+          {
+            "about_building": 15873.0,
+            "about_room": 0.0,
+            "actor": 222.0,
+            "building_id": 15873.0,
+            "channel": "shout",
+            "citizen_id": 287.0,
+            "event": "WARNING_SHARED",
+            "fact_id": "287:14",
+            "fact_kind": "ATTACK_SEEN",
+            "hops": 1.0,
+            "origin_id": "287:14",
+            "origin_witness": 287.0,
+            "recipient": 221.0,
+            "room_id": null,
+            "sender_confidence": 1.0,
+            "seq": 1522.0,
+            "t": 20711.5,
+            "target": 8.0,
+            "utterance": "WARN_THREAT"
+          },
+          {
+            "about_building": 15873.0,
+            "about_room": 0.0,
+            "actor": 222.0,
+            "channel": "shout",
+            "citizen_id": 221.0,
+            "confidence": 0.522,
+            "created": false,
+            "danger_after": 0.694,
+            "event": "WARNING_RECEIVED",
+            "fact_id": "221:3",
+            "fact_kind": "ATTACK_SEEN",
+            "goal_before": "belief",
+            "goal_building": 16553.0,
+            "hops": 1.0,
+            "origin_id": "287:14",
+            "origin_witness": 287.0,
+            "sender": 287.0,
+            "seq": 1523.0,
+            "t": 20711.5,
+            "target": 8.0,
+            "threshold": 0.42,
+            "trust_in_sender": 0.3,
+            "utterance": "ACKNOWLEDGE"
+          },
+          {
+            "action": "WARN",
+            "building_id": 15873.0,
+            "channel": "shout",
+            "citizen_id": 287.0,
+            "event": "SOCIAL_ACTION",
+            "fact_id": "287:14",
+            "room_id": null,
+            "seq": 1524.0,
+            "t": 20711.5,
+            "target": 221.0,
+            "utterance": "WARN_THREAT"
+          },
+          {
+            "changes": [
+              {
+                "dim": "familiarity",
+                "new": 0.08,
+                "old": 0.0
+              },
+              {
+                "dim": "trust",
+                "new": 0.384,
+                "old": 0.3
+              },
+              {
+                "dim": "affinity",
+                "new": 0.08,
+                "old": 0.0
+              }
+            ],
+            "citizen_id": 221.0,
+            "event": "RELATIONSHIP_CHANGED",
+            "other": 287.0,
+            "rule": "warned_by",
+            "seq": 1525.0,
+            "t": 20711.5
+          },
+          {
+            "citizen_id": 221.0,
+            "event": "TRUST_CHANGED",
+            "new": 0.384,
+            "old": 0.3,
+            "other": 287.0,
+            "rule": "warned_by",
+            "seq": 1526.0,
+            "t": 20711.5
+          },
+          {
+            "changes": [
+              {
+                "dim": "fear",
+                "new": 0.8009,
+                "old": 0.7564
+              }
+            ],
+            "citizen_id": 221.0,
+            "event": "RELATIONSHIP_CHANGED",
+            "other": 222.0,
+            "rule": "told_threat",
+            "seq": 1527.0,
+            "t": 20711.5
+          }
+        ],
+        "relationships": [
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 1.0,
+            "last_t": 20711.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 8.0,
+            "owner": 221.0,
+            "trust": 0.384
+          },
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 1.0,
+            "last_t": 20711.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 19.0,
+            "owner": 221.0,
+            "trust": 0.384
+          },
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 1.0,
+            "last_t": 20711.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 132.0,
+            "owner": 221.0,
+            "trust": 0.384
+          },
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 1.0,
+            "last_t": 20711.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 143.0,
+            "owner": 221.0,
+            "trust": 0.384
+          },
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 1.0,
+            "last_t": 20711.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 167.0,
+            "owner": 221.0,
+            "trust": 0.384
+          },
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 1.0,
+            "last_t": 20711.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 169.0,
+            "owner": 221.0,
+            "trust": 0.384
+          },
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 1.0,
+            "last_t": 20711.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 277.0,
+            "owner": 221.0,
+            "trust": 0.384
+          },
+          {
+            "affinity": 0.08,
+            "familiarity": 0.08,
+            "fear": 0.0,
+            "hostility": 0.0,
+            "interactions": 1.0,
+            "last_t": 20711.482248,
+            "obligation": 0.0,
+            "origin": "",
+            "other": 287.0,
+            "owner": 221.0,
+            "trust": 0.384
+          }
+        ],
+        "task": {
+          "object_id": "so:15873:181",
+          "phase": "using",
+          "role": "customer",
+          "task_id": "browse"
+        }
+      },
+      "warning_received": {
+        "about_building": 15873.0,
+        "about_room": 0.0,
+        "actor": 222.0,
+        "channel": "shout",
+        "citizen_id": 221.0,
+        "confidence": 0.522,
+        "created": true,
+        "danger_after": 0.47,
+        "event": "WARNING_RECEIVED",
+        "fact_id": "221:1",
+        "fact_kind": "ATTACKED_BY",
+        "goal_before": "schedule",
+        "goal_building": 15873.0,
+        "hops": 1.0,
+        "origin_id": "8:12",
+        "origin_witness": 8.0,
+        "sender": 8.0,
+        "seq": 674.0,
+        "t": 20711.5,
+        "target": 8.0,
+        "threshold": 0.42,
+        "trust_in_sender": 0.3,
+        "utterance": "ACKNOWLEDGE"
+      },
+      "workplace": 8470
+    },
+    {
+      "beneficiary": 79,
+      "beneficiary_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "supplies",
+          "object_id": "so:8470:46",
+          "phase": "using",
+          "role": "cleaner",
+          "room_id": 0.0,
+          "task": "inspect",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1431.629,
+        "y": -447.78
+      },
+      "caption": "NOT REACHED within the captured window - the frame shows the world as it was: 10:54 — citizen 8 fled the attacked room of shop 15873 and is outdoors (state on_foot) with 0 other citizens on foot within 25 m; the authority records it as the sender of 11 warnings received by [25, 82, 132, 143, 167, 221]. Exterior CitizenBody drawn: true. PIXELS: the block the fleeing citizen is crossing, seen from the isometric camera; a CitizenBody for it exists, but roofs and fixtures between it and the camera can hide it, so the frame alone does not prove which citizen is there. AUTHORITY ONLY: that this citizen is the one carrying the alarm — warnings have no visual channel in the renderer.",
+      "clock": "10:54",
+      "cognition_counts": {
+        "AVOID_DECIDED": 2.0,
+        "AVOID_ROOM_DECIDED": 11.0,
+        "ENCOUNTER": 2773.0,
+        "HELP_COMPLETED": 11.0,
+        "HELP_DECIDED": 11.0,
+        "HELP_STARTED": 11.0,
+        "MEMORY_CREATED": 645.0,
+        "MEMORY_REINFORCED": 5071.0,
+        "PERCEIVED": 37.0,
+        "PRIORS": 1.0,
+        "RELATIONSHIP_CHANGED": 6004.0,
+        "SOCIAL_ACTION": 167.0,
+        "TRUST_CHANGED": 370.0,
+        "WARNING_RECEIVED": 143.0,
+        "WARNING_SHARED": 143.0
+      },
+      "file": "07_carrying_the_alarm.png",
+      "flee_citizens": [
+        8,
+        19,
+        25,
+        82,
+        132,
+        143,
+        167,
+        169,
+        277,
+        287,
+        40
+      ],
+      "helper": 70,
+      "helper_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "object_id": "so:8470:29",
+          "phase": "using",
+          "role": "cashier",
+          "room_id": 0.0,
+          "task": "man_register",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1440.223,
+        "y": -365.392
+      },
+      "hour": 10.91235618,
+      "inside_building": -1,
+      "interior_bodies": 0,
+      "interior_body_ids": [],
+      "markers": [],
+      "shop": 15873,
+      "warned_by_this_citizen": [
+        25,
+        82,
+        132,
+        143,
+        167,
+        221,
+        277,
+        287,
+        19,
+        169,
+        40
+      ],
+      "workplace": 8470
+    },
+    {
+      "beneficiary": 79,
+      "beneficiary_relationship": {
+        "affinity": 0.7085,
+        "familiarity": 0.9998,
+        "fear": 0.0,
+        "hostility": 0.0,
+        "interactions": 133.0,
+        "last_t": 28802.482248,
+        "obligation": 0.875,
+        "origin": "workplace",
+        "other": 70.0,
+        "owner": 79.0,
+        "trust": 0.7469
+      },
+      "beneficiary_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "supplies",
+          "object_id": "so:8470:29",
+          "phase": "to_object",
+          "role": "cleaner",
+          "room_id": 0.0,
+          "task": "repair_station",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1432.034,
+        "y": -443.901
+      },
+      "caption": "13:01 — the helper's own station so:8470:29 was broken with SET_OBJECT_STATE(working=false); citizen 79 — the coworker it helped this morning, which now owes it obligation 0.875 — decided repair_station on it (score 1.137, would_help_without_history=false) and is at/heading to that object (phase to_object). PIXELS: a worker body in the room where that station stands — which citizen it is, and that it is on its way to repair it, is not something the pixels show. AUTHORITY ONLY: that this is a repayment — the HELP_DECIDED repair_station row and the relationship row in the manifest.",
+      "clock": "13:01",
+      "cognition_counts": {
+        "AVOID_DECIDED": 2.0,
+        "AVOID_ROOM_DECIDED": 11.0,
+        "ENCOUNTER": 7921.0,
+        "HELP_COMPLETED": 11.0,
+        "HELP_DECIDED": 12.0,
+        "HELP_STARTED": 12.0,
+        "MEMORY_CREATED": 856.0,
+        "MEMORY_REINFORCED": 15171.0,
+        "PERCEIVED": 47.0,
+        "PRIORS": 1.0,
+        "RELATIONSHIP_CHANGED": 16315.0,
+        "SOCIAL_ACTION": 169.0,
+        "TRUST_CHANGED": 376.0,
+        "WARNING_RECEIVED": 144.0,
+        "WARNING_SHARED": 144.0
+      },
+      "file": "04_reciprocal_repair.png",
+      "helper": 70,
+      "helper_row": {
+        "building_id": 8470.0,
+        "state": "doing_activity",
+        "work": {
+          "carrying": "",
+          "object_id": "so:8470:24",
+          "phase": "using",
+          "role": "cashier",
+          "room_id": 0.0,
+          "task": "man_register",
+          "workplace_id": 8470.0,
+          "zone": "sales_floor"
+        },
+        "x": -1439.956,
+        "y": -380.074
+      },
+      "hour": 13.0181895133333,
+      "inside_building": 8470,
+      "interior_bodies": 2,
+      "interior_body_ids": [
+        "cit:70",
+        "cit:79"
+      ],
+      "markers": [
+        "so:8470:46",
+        "so:8470:24"
+      ],
+      "reciprocated": [],
+      "repair_decided": [
+        {
+          "beneficiary": 70.0,
+          "building_id": 8470.0,
+          "citizen_id": 79.0,
+          "components": {
+            "affinity": 0.248,
+            "cost": -0.25,
+            "familiarity": 0.25,
+            "fear_hostility": 0.0,
+            "helpfulness": 0.208,
+            "obligation": 0.569,
+            "trust": 0.112
+          },
+          "event": "HELP_DECIDED",
+          "object_id": "so:8470:29",
+          "problem": "station_failed",
+          "problem_object": "so:8470:29",
+          "score": 1.137,
+          "score_without_history": 0.003,
+          "seq": 3816.0,
+          "t": 28862.5,
+          "task_id": "repair_station",
+          "threshold": 0.4,
+          "utterance": "OFFER_HELP",
+          "would_help_without_history": false
+        }
+      ],
+      "shop": 15873,
+      "workplace": 8470
+    }
+  ],
+  "start_hour": 5.0,
+  "warned": 221,
+  "workplace": 8470
+}

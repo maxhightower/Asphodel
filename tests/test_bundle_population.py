@@ -133,9 +133,11 @@ def test_start_world_populates_real_citizens():
     r = s.handle({"cmd": Command.START_WORLD, "bundle": "houston", "seed": 1,
                   "player_citizen_id": 5})
     assert r["ok"]
-    assert r["n_citizens"] == 60
+    n_bundle = len(json.load(open(os.path.join(_bundle("houston"), "citizens.json"))))
+    assert n_bundle >= 60
+    assert r["n_citizens"] == n_bundle
     assert r["player_home_zone"] is not None
-    assert len(s.world.citizens) == 60
+    assert len(s.world.citizens) == n_bundle
     # the player's home zone is focused, so it promotes with the resident embodied
     s.handle({"cmd": Command.ADVANCE, "ticks": 2})
     assert r["player_home_zone"] in s.world.promoted

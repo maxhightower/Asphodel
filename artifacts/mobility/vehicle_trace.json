@@ -1,0 +1,39 @@
+{
+ "vehicle_id": "veh:4",
+ "owner": "4",
+ "drives": [
+  {
+   "t": 9028.0,
+   "event": "drive_start",
+   "vehicle_id": "veh:4",
+   "length_m": 3713.4,
+   "segments": 76
+  },
+  {
+   "t": 9346.0,
+   "event": "drive_done",
+   "driven_m": 3713.4,
+   "blocked": {}
+  },
+  {
+   "t": 39667.0,
+   "event": "drive_start",
+   "vehicle_id": "veh:4",
+   "length_m": 3731.6,
+   "segments": 80
+  },
+  {
+   "t": 39988.0,
+   "event": "drive_done",
+   "driven_m": 3731.6,
+   "blocked": {}
+  }
+ ],
+ "distance_driven_m": 7445.0,
+ "blocked_events": 0,
+ "parked_location": [
+  1215.09,
+  681.99
+ ],
+ "fidelity": "route_simulated"
+}

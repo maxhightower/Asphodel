@@ -1,0 +1,19 @@
+{
+ "version": 1,
+ "head_at_run": "f5d7f087d275a684145fcb76358e813c28e6ecf2",
+ "python_command": "PYTHONPATH=. python3 -m pytest -q -p no:cacheprovider --ignore=tests/test_embodied_mobility_day.py --ignore=tests/test_embodied_executor_day.py --ignore=tests/test_outbreak_v1_day.py",
+ "python_collected": 906,
+ "python_passed": 905,
+ "python_failed": 0,
+ "python_failures_explained": [
+  {
+   "test": "tests/test_world_from_compiled.py::test_compile_writes_only_presentation_files",
+   "cause": "needs raw Overture parquet inputs absent from this environment; fails identically on origin/main",
+   "resolution": "pre-existing, not counted"
+  }
+ ],
+ "python_summary": "906 collected: 905 passed; 1 pre-existing environment failure (raw Overture parquet, identical on origin/main); 0 new failures (21.5 min, final run after the kerb offset)",
+ "mobility_day_suites": "tests/test_embodied_mobility_day.py (18 passed) + tests/test_embodied_executor_day.py (7 passed), re-run after the kerb offset",
+ "godot_failed": 0,
+ "godot_summary": "godot/tests/run_gates.sh (PhysicsGate, RegionGate, NavGate, ConvergenceGate, ExteriorStream): 89 PASS / 0 FAIL after the embodiment changes; MobilityGate 24/24 PASS (artifacts/mobility/godot_probe_trace.json, body drove 3697 m, 178 impacts); OutbreakGate 19/19 PASS with 2 body re-materializations (artifacts/outbreak_v1/godot_probe_trace.json)"
+}

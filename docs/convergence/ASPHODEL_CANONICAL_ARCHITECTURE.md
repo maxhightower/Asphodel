@@ -181,14 +181,16 @@ across promotion/demotion; `save.py` persists ids, zones, schedules, home/work
 coordinates and building ids, and Gate D proves the same person is in the same
 place after save → load.
 
-Where the split still is (recorded, not hidden): `CitizenRuntime`
-(goals/itineraries) is the designated planner, but `World` does not yet drive
-its promoted citizens through it — commuters are placed along the road network
-by `embodiment` from schedule progress, not by an itinerary. Wiring
-`World.step` → `CitizenRuntime.sync_schedule` → itinerary → embodiment position
-is the first item of the next simulation milestone. `living_city.py`
-demonstrates the planner + traffic layer on the canonical citizens
-(`playback.json` rows carry citizen ids).
+**Closed by ASPHODEL_EMBODIED_MOBILITY_V1** (`docs/mobility/EMBODIED_MOBILITY_ARCHITECTURE.md`):
+`World` now executes the planner's itinerary. `World.enable_mobility` attaches
+`asphodel/embodied/MobilityRuntime`, which owns one `CitizenRuntime` (planner)
+and one `TripExecutor` (execution state machine: leave building → walk → enter
+vehicle → drive → park → exit → enter building → activity) per registered
+citizen and advances them on the sub-tick movement clock
+(`World.advance_seconds`). `World.physical_location` / `_zone_embodiment`
+read the executor for registered citizens; `embodiment.resolve_physical_location`
+remains only the FAR (schedule-state) authority for unregistered citizens.
+`living_city.py` / `playback.json` are a headless demonstration, not an authority.
 
 ## 6. Vehicle lifecycle
 
@@ -202,13 +204,23 @@ makes physics the authority for its progress. A wreck becomes a
 `MobilityObstruction`. In `living_city.py` a driving citizen's car is
 `veh:<citizen_id>` — one identity.
 
+**Embodied (ASPHODEL_EMBODIED_MOBILITY_V1):** a citizen with keys owns the
+persistent `VehicleInstance "veh:<citizen_id>"`, spawned parked at a validated
+parking anchor (`asphodel/embodied/parking.py`), entered/driven/parked by the
+`TripExecutor` with `asphodel/embodied/vehicle_control.py` as the V1 driving
+controller (speed limits, curvature, following, junction yield, closed roads),
+saved/loaded and realised in the playable scene by
+`godot/scripts/embodied_mobility.gd` → `vehicle_body.gd` (follow mode, physics
+reports back over `MOBILITY_REPORT`).
+
 Legacy: `asphodel/vehicles.py` (aggregate trip assignment used by the citizen
 spawn's travel events) consumes the citizen-bake `StreetMap` and is not a
-second vehicle entity model; `godot/scripts/traffic.gd` is decorative ambient
-motion on the first-person path (no identity, no collision) and is marked for
-replacement by playback/`VehicleBody` driving in the Godot session. Parked
+second vehicle entity model; `godot/scripts/traffic.gd` is
+EXPLICIT_NONCANONICAL_PRESENTATION — decorative ambient motion on the
+first-person path only (no identity, no collision, never reported). Parked
 vehicles in chunks are placements of the shared vehicle vocabulary
-(`grammar_tables.VEHICLE_KINDS` == catalog == `prop_meshes.gd`).
+(`grammar_tables.VEHICLE_KINDS` == catalog == `prop_meshes.gd`); parking
+selection treats them as occupied space.
 
 ## 7. LOD / materialization
 
@@ -217,7 +229,12 @@ vehicles in chunks are placements of the shared vehicle vocabulary
 | Far / abstract | a count in the macro ledger; roster record if named | a statistic | render-only chunks |
 | Regional / route-simulated | promoted agent with schedule activity and `PhysicalLocation`; itinerary progress (`living_city`) | `advance_far` along its route, congestion-aware | render-only |
 | Near | MultiMesh humanoid instance; near pool `CitizenAvatar`; interior occupant | materialized position | chunk mesh + collider |
-| Embodied / physical | `CitizenBody` with local avoidance, stuck → replan | `VehicleBody` | collider |
+| Embodied / physical | `CitizenBody` in follow mode (embodied_mobility.gd), stuck → report → replan | `VehicleBody` in follow mode | collider |
+
+The citizen/vehicle bands are decided by `asphodel/embodied/runtime.py`
+(distance to the player focus, `lod/entity.LODController`): every registered
+citizen is ROUTE_SIMULATED, the ones within 150 m are PHYSICAL (a body), and
+ABSTRACT (frozen + catch-up) is an overflow band above 256 active citizens.
 
 `asphodel/lod/entity.py` bands by distance with hysteresis and preserves
 id + payload across transitions; `lod/materialize.py` refuses to spawn a body
@@ -261,7 +278,8 @@ overlay seam (`debug_overlay.gd`, unwired).
 | inventory, containers, dropped items | `Survival` deltas | save |
 | interiors | regenerated from (seed, building_id, gen_version); deltas only | save |
 | buildings, roads, terrain, anchors | bundle (immutable, versioned) | `godot/bundles/<city>/` |
-| vehicles, doors, damage, outbreak-specific state | `VehicleInstance`/`MobilityObstruction` (not yet in the save schema) | — |
+| itineraries, executor state, vehicles, parking occupancy, congestion, obstructions | `MobilityRuntime` (`save` v3 `mobility` block) | save |
+| doors, damage, outbreak-specific state | (not yet in the save schema) | — |
 
 `save.py` `SAVE_VERSION` gates loads; an incompatible version fails safely.
 The Godot client has no save of its own.
@@ -281,7 +299,7 @@ The Godot client has no save of its own.
 | `physics.json`, `collision_layers.gd` | `"1"` | `physics.layers` | matrix parity in Gate H |
 | `playback.json` | 2 | `living_city.simulate_commute` | `living_city.gd` |
 | interior descriptor | 1 | `interiors.build_interior` | `interior_builder.gd` |
-| bridge protocol | 3 | `bridge/protocol.py` | `sim_bridge.gd` HELLO |
+| bridge protocol | 4 | `bridge/protocol.py` | `sim_bridge.gd` HELLO |
 | save | `SAVE_VERSION` | `save.py` | `save._validate` |
 
 Convention going forward: new or bumped schemas use an integer `version`;
@@ -341,6 +359,7 @@ shelter/flee actions that move citizens physically.
 | play | `godot --path godot` (main scene `MainMenu.tscn`) |
 | Python suite | `python -m pytest -q` |
 | Godot certification (no bridge) | `godot --headless --path godot --import` once, then `godot/tests/run_gates.sh` and `res://tests/{TestRunner,StreetSmoke,ExteriorStream,ConvergenceGate}.tscn` |
+| embodied mobility (live bridge) | `tools/run_mobility_gate.sh` (headless physics gate) and `tools/run_mobility_shots.sh` (rendered evidence) |
 | Godot live certification | `tools/final_cert.sh` (starts the server, runs the Live* scenes) |
 | multi-city matrix | `python tools/city_matrix.py` |
 | macro research | `python run.py`, `python -m asphodel.bench`, `python -m asphodel.phase4a` (tooling, not runtime) |

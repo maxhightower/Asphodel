@@ -58,6 +58,20 @@ class CitizenRuntime:
         self.current_activity = "idle"
         self.last_replan_reason = ""
         self.current_failure = ""
+        # --- embodied situation (ASPHODEL_EMBODIED_MOBILITY_V1) ---------------
+        # The execution layer reports the citizen's physical situation back so
+        # every (re)plan starts from where the citizen really is: inside a
+        # building or not, in the car or not. The runtime still never moves.
+        self.inside_building = True
+        self.in_vehicle = False
+        self.vehicle_id: Optional[str] = None
+        # node -> {"building_id": int, "xy": (x, y)} for the nodes this citizen
+        # plans between (entrances, parking anchors); filled by the embodied runtime.
+        self.node_meta: Dict[str, dict] = {}
+        # dest_node -> (parking_node, parking_xy) chooser for car trips; None
+        # means "park at the destination node" (the legacy planner default).
+        self.parking_resolver = None
+        self.plan_serial = 0          # bumps whenever self.itinerary is replaced
 
     # -- schedule -> goal ----------------------------------------------------
     def current_slot(self, now_hour: float) -> Optional[ScheduleSlot]:
@@ -112,26 +126,83 @@ class CitizenRuntime:
         if changed or self.itinerary is None:
             self._plan_for_active(graph)
 
+    # -- embodied situation hooks ------------------------------------------
+    def note_situation(self, node: Optional[str] = None,
+                       inside_building: Optional[bool] = None,
+                       in_vehicle: Optional[bool] = None,
+                       vehicle_node: Optional[str] = None) -> None:
+        """The execution layer reports where the citizen physically is."""
+        if node is not None:
+            self.current_node = node
+        if inside_building is not None:
+            self.inside_building = bool(inside_building)
+        if in_vehicle is not None:
+            self.in_vehicle = bool(in_vehicle)
+        if vehicle_node is not None:
+            self.vehicle_node = vehicle_node
+
+    def _meta(self, node: Optional[str], key: str):
+        if node is None:
+            return None
+        return (self.node_meta.get(node) or {}).get(key)
+
+    def _build(self, graph: MobilityGraph, dest: str, mode: Mode,
+               activity: Optional[str]) -> Itinerary:
+        park_node, park_xy = None, None
+        if mode in (Mode.CAR, Mode.HEAVY) and self.parking_resolver is not None:
+            chosen = self.parking_resolver(dest)
+            if chosen is not None:
+                park_node, park_xy = chosen
+        veh_node = self.vehicle_node
+        return build_itinerary(
+            graph, self.current_node, dest, mode,
+            vehicle_node=veh_node, parking_node=park_node, activity=activity,
+            start_inside_building=self.inside_building,
+            start_in_vehicle=self.in_vehicle and mode in (Mode.CAR, Mode.HEAVY),
+            vehicle_id=self.vehicle_id,
+            origin_building_id=self._meta(self.current_node, "building_id"),
+            dest_building_id=self._meta(dest, "building_id"),
+            origin_xy=self._meta(self.current_node, "xy"),
+            dest_xy=self._meta(dest, "xy"),
+            vehicle_xy=self._meta(veh_node, "xy"),
+            parking_xy=park_xy)
+
+    def _set_itinerary(self, it: Optional[Itinerary]) -> None:
+        self.itinerary = it
+        self.plan_serial += 1
+
     def _plan_for_active(self, graph: MobilityGraph) -> None:
         g = self.active_goal
         if g is None:
             return
-        if g.kind in (GoalKind.ARRIVE_AT, GoalKind.RETRIEVE, GoalKind.FLEE):
+        travel = g.kind in (GoalKind.ARRIVE_AT, GoalKind.RETRIEVE, GoalKind.FLEE)
+        # A DO_ACTIVITY / IDLE goal somewhere else first requires getting there:
+        # the activity begins because the citizen ARRIVED, never because the
+        # clock said so (ASPHODEL_EMBODIED_MOBILITY_V1 §15).
+        activity = None
+        if not travel and g.target and g.target != self.current_node \
+                and g.target in graph.nodes:
+            travel = True
+            activity = g.activity or g.kind.value
+        if travel:
             dest = g.target
             dist = self._straight_dist(graph, self.current_node, dest)
-            mode = choose_mode(dist, self.has_vehicle)
-            it = build_itinerary(graph, self.current_node, dest, mode,
-                                 vehicle_node=self.vehicle_node)
+            if self.in_vehicle:
+                mode = Mode.CAR
+            else:
+                mode = choose_mode(dist, self.has_vehicle)
+            it = self._build(graph, dest, mode, activity)
             if not it.ok and mode != Mode.FOOT:
-                it = build_itinerary(graph, self.current_node, dest, Mode.FOOT)
-            self.itinerary = it
+                self.in_vehicle = False
+                it = self._build(graph, dest, Mode.FOOT, activity)
+            self._set_itinerary(it)
             self.destination = dest
             self.current_mode = it.mode
             self.current_failure = "" if it.ok else it.failure
             self.current_activity = ("traveling" if it.ok
                                      else "blocked (no route)")
-        else:  # DO_ACTIVITY / IDLE: stay in place
-            self.itinerary = None
+        else:  # DO_ACTIVITY / IDLE in place
+            self._set_itinerary(None)
             self.destination = None
             self.current_mode = None
             self.current_activity = g.activity or g.kind.value
@@ -144,8 +215,8 @@ class CitizenRuntime:
             return
         new_it, why = replan_travel(
             graph, self.itinerary, self.current_node, self.destination,
-            vehicle_node=self.vehicle_node)
-        self.itinerary = new_it
+            vehicle_node=self.vehicle_node, runtime=self)
+        self._set_itinerary(new_it)
         self.last_replan_reason = f"{reason}: {why}"
         self.current_mode = new_it.mode
         self.current_failure = "" if new_it.ok else new_it.failure

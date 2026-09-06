@@ -1,0 +1,45 @@
+Godot Engine v4.4.stable.official.4c311cbee - https://godotengine.org
+
+INFO  exterior  compiled world streamed: true
+PASS  world_started_with_outbreak  mobility=true outbreak=true
+PASS  index_case_seeded  citizen 42 symptom_t=17633.3833420169 death_t=19331.9776261441 reanimate_t=20143.2572034944
+PASS  incubating_at_work_before_onset  health=incubating in building 2318.0 (ordinary life continues while incubating)
+PASS  symptomatic_deviates_from_schedule  onset seen=true, left the workplace under the executor=true (body frames 1680, within leash 1558)
+PASS  collapsed_at_authoritative_place  INCAPACITATED at (-691.437,-1802.842) building=-1.0 vehicle=veh:42
+PASS  corpse_held_at_death_location  position frozen from collapse through death to reanimation
+PASS  abandoned_car_is_persistent_wreck_body  VehicleBody veh:42 present with fidelity persistent_wreck
+PASS  reanimated_same_identity_same_place  citizen 42 undead at (-691.437,-1802.842)
+PASS  saveload_undead_identical  health undead -> undead, pos/state identical=true
+PASS  undead_health_after_promotion  promotion did not change health
+PASS  undead_body_exists  CitizenBody for cit:42 with the undead look, 263 frames
+PASS  undead_walks_under_physics  body moved 25.1 m; within leash 263/263 frames
+PASS  undead_demoted_when_player_left  no body with the focus 1.5 km away
+PASS  undead_progressed_while_far  authoritative undead moved 18.0 m with no body
+PASS  undead_promoted_same_identity  body recreated at the authoritative pose (jump 0.00 m)
+PASS  undead_attacked_living_citizen  ATTACK on citizen 294.0 in building 6366.0 exposed=true
+PASS  victim_reacts_flee  FLEE goal target ent:6189
+PASS  fleeing_citizen_embodied_on_foot  citizen 294 left building 6366.0 on foot as a CitizenBody
+
+==== OUTBREAK GATE RESULTS (houston, citizen 42) ====
+INFO  exterior  compiled world streamed: true
+PASS  world_started_with_outbreak  mobility=true outbreak=true
+PASS  index_case_seeded  citizen 42 symptom_t=17633.3833420169 death_t=19331.9776261441 reanimate_t=20143.2572034944
+PASS  incubating_at_work_before_onset  health=incubating in building 2318.0 (ordinary life continues while incubating)
+PASS  symptomatic_deviates_from_schedule  onset seen=true, left the workplace under the executor=true (body frames 1680, within leash 1558)
+PASS  collapsed_at_authoritative_place  INCAPACITATED at (-691.437,-1802.842) building=-1.0 vehicle=veh:42
+PASS  corpse_held_at_death_location  position frozen from collapse through death to reanimation
+PASS  abandoned_car_is_persistent_wreck_body  VehicleBody veh:42 present with fidelity persistent_wreck
+PASS  reanimated_same_identity_same_place  citizen 42 undead at (-691.437,-1802.842)
+PASS  saveload_undead_identical  health undead -> undead, pos/state identical=true
+PASS  undead_health_after_promotion  promotion did not change health
+PASS  undead_body_exists  CitizenBody for cit:42 with the undead look, 263 frames
+PASS  undead_walks_under_physics  body moved 25.1 m; within leash 263/263 frames
+PASS  undead_demoted_when_player_left  no body with the focus 1.5 km away
+PASS  undead_progressed_while_far  authoritative undead moved 18.0 m with no body
+PASS  undead_promoted_same_identity  body recreated at the authoritative pose (jump 0.00 m)
+PASS  undead_attacked_living_citizen  ATTACK on citizen 294.0 in building 6366.0 exposed=true
+PASS  victim_reacts_flee  FLEE goal target ent:6189
+PASS  fleeing_citizen_embodied_on_foot  citizen 294 left building 6366.0 on foot as a CitizenBody
+==== PASS (0 failure(s)) ====
+TRACE saved: /home/user/Asphodel/artifacts/outbreak_v1/godot_probe_trace.json (5854 rows, 23 events)
+GATE_EXIT=0 TRACE=artifacts/outbreak_v1/godot_probe_trace.json

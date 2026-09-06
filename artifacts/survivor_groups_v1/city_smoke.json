@@ -1,0 +1,217 @@
+{
+  "milestone": "ASPHODEL_SURVIVOR_GROUPS_COMMUNITIES_V1",
+  "protocol_version": 9,
+  "seed": 0,
+  "start_hour": 8.0,
+  "warm_minutes": 120,
+  "cities": [
+    "houston",
+    "madisonville_tx",
+    "austin",
+    "san_antonio",
+    "boulder"
+  ],
+  "overall": "PASS",
+  "checks": [
+    "deterministic replay (same seed -> identical group state)",
+    "possibility of formation where a co-present cluster permits",
+    "valid shelter selection (a member-known building)",
+    "membership persistence through save/load",
+    "no city-name logic (identical driver for every city)"
+  ],
+  "results": {
+    "houston": {
+      "city": "houston",
+      "status": "PASS",
+      "reason": "a group formed from real cooperation, sheltered in a member-known building, kept its membership through save/load, and rebuilt identically on replay",
+      "n_citizens": 297,
+      "trio": [
+        42,
+        87,
+        117
+      ],
+      "workbid": 2318,
+      "formed": true,
+      "group_id": "group:1",
+      "members": [
+        42,
+        87,
+        117
+      ],
+      "coordinator": 117,
+      "shelter_building": 6353,
+      "shelter_is_member_known": true,
+      "regrouped": [
+        42,
+        87,
+        117
+      ],
+      "roles_after": {
+        "coordinator": 117,
+        "guard": 87
+      },
+      "saveload": {
+        "identical": true,
+        "n_groups_before": 1,
+        "n_groups_after": 1
+      },
+      "determinism": {
+        "deterministic": true,
+        "digest_run1": "9e8c7c34b1faa873",
+        "digest_run2": "9e8c7c34b1faa873",
+        "members_run2": [
+          42,
+          87,
+          117
+        ]
+      },
+      "run_s": 74.47
+    },
+    "madisonville_tx": {
+      "city": "madisonville_tx",
+      "status": "PASS",
+      "reason": "a group formed from real cooperation, sheltered in a member-known building, kept its membership through save/load, and rebuilt identically on replay",
+      "n_citizens": 53,
+      "trio": [
+        11,
+        26,
+        45
+      ],
+      "workbid": 580,
+      "formed": true,
+      "group_id": "group:1",
+      "members": [
+        11,
+        26,
+        45
+      ],
+      "coordinator": 26,
+      "shelter_building": 621,
+      "shelter_is_member_known": true,
+      "regrouped": [
+        11,
+        26,
+        45
+      ],
+      "roles_after": {
+        "coordinator": 26,
+        "guard": 11
+      },
+      "saveload": {
+        "identical": true,
+        "n_groups_before": 1,
+        "n_groups_after": 1
+      },
+      "determinism": {
+        "deterministic": true,
+        "digest_run1": "a5db178662db492a",
+        "digest_run2": "a5db178662db492a",
+        "members_run2": [
+          11,
+          26,
+          45
+        ]
+      },
+      "run_s": 8.18
+    },
+    "austin": {
+      "city": "austin",
+      "status": "PASS",
+      "reason": "a group formed from real cooperation, sheltered in a member-known building, kept its membership through save/load, and rebuilt identically on replay",
+      "n_citizens": 60,
+      "trio": [
+        6,
+        16,
+        20
+      ],
+      "workbid": 3264,
+      "formed": true,
+      "group_id": "group:1",
+      "members": [
+        6,
+        16,
+        20
+      ],
+      "coordinator": 6,
+      "shelter_building": 2552,
+      "shelter_is_member_known": true,
+      "regrouped": [
+        6,
+        16,
+        20
+      ],
+      "roles_after": {
+        "coordinator": 6,
+        "guard": 16
+      },
+      "saveload": {
+        "identical": true,
+        "n_groups_before": 1,
+        "n_groups_after": 1
+      },
+      "determinism": {
+        "deterministic": true,
+        "digest_run1": "bab19ef09a70ce97",
+        "digest_run2": "bab19ef09a70ce97",
+        "members_run2": [
+          6,
+          16,
+          20
+        ]
+      },
+      "run_s": 37.25
+    },
+    "san_antonio": {
+      "city": "san_antonio",
+      "status": "PASS",
+      "reason": "a group formed from real cooperation, sheltered in a member-known building, kept its membership through save/load, and rebuilt identically on replay",
+      "n_citizens": 60,
+      "trio": [
+        8,
+        36,
+        46
+      ],
+      "workbid": 34681,
+      "formed": true,
+      "group_id": "group:1",
+      "members": [
+        8,
+        36,
+        46
+      ],
+      "coordinator": 8,
+      "shelter_building": 29514,
+      "shelter_is_member_known": true,
+      "regrouped": [
+        8,
+        36,
+        46
+      ],
+      "roles_after": {
+        "coordinator": 8,
+        "guard": 46
+      },
+      "saveload": {
+        "identical": true,
+        "n_groups_before": 1,
+        "n_groups_after": 1
+      },
+      "determinism": {
+        "deterministic": true,
+        "digest_run1": "a2b261286fcaebae",
+        "digest_run2": "a2b261286fcaebae",
+        "members_run2": [
+          8,
+          36,
+          46
+        ]
+      },
+      "run_s": 31.33
+    },
+    "boulder": {
+      "city": "boulder",
+      "status": "INFO",
+      "reason": "no compiled world (spawn anchors absent)"
+    }
+  }
+}

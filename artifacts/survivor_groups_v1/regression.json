@@ -1,0 +1,95 @@
+{
+ "dialogue_gate": {
+  "status": "PASS",
+  "pass": 22,
+  "fail": 0,
+  "info": 5,
+  "exit": 0,
+  "gate": "G47",
+  "log": "logs/dialogue_gate.log",
+  "wall_s": 406.5
+ },
+ "note": "Regression for ASPHODEL_SURVIVOR_GROUPS_COMMUNITIES_V1. pass/fail/info per gate are counted in that gate's final RESULTS block (each check is printed once while it runs and once in that block). run_gates is godot/tests/run_gates.sh (PhysicsGate, RegionGate, NavGate, ConvergenceGate) under xvfb; the live-bridge gates and the new GroupGate run through their tools/run_*_gate.sh scripts. The protocol handshake in the group gate expects v9 (this milestone bumped the protocol to 9 for GET_GROUPS / GROUP_QUERY).",
+ "groups_gate": {
+  "status": "PASS",
+  "pass": 12,
+  "fail": 0,
+  "info": 1,
+  "exit": 0,
+  "gate": "G46",
+  "log": "logs/groups_gate.log",
+  "wall_s": 59.9
+ },
+ "cognition_gate": {
+  "status": "PASS",
+  "pass": 30,
+  "fail": 0,
+  "info": 2,
+  "exit": 0,
+  "gate": "G48",
+  "log": "logs/cognition_gate.log",
+  "wall_s": 207.0
+ },
+ "work_gate": {
+  "status": "PASS",
+  "pass": 22,
+  "fail": 0,
+  "info": 0,
+  "exit": 0,
+  "gate": "G49",
+  "log": "logs/work_gate.log",
+  "wall_s": 244.4
+ },
+ "outbreak_gate": {
+  "status": "PASS",
+  "pass": 18,
+  "fail": 0,
+  "info": 1,
+  "exit": 0,
+  "gate": "G50",
+  "log": "logs/outbreak_gate.log",
+  "wall_s": 816.3
+ },
+ "mobility_gate": {
+  "status": "PASS",
+  "pass": 24,
+  "fail": 0,
+  "info": 1,
+  "exit": 0,
+  "gate": "G51",
+  "log": "logs/mobility_gate.log",
+  "wall_s": 1362.5
+ },
+ "run_gates": {
+  "status": "PASS",
+  "pass": 85,
+  "fail": 0,
+  "info": 1,
+  "exited_nonzero": 0,
+  "scenes": [
+   "tests/PhysicsGate.tscn",
+   "tests/RegionGate.tscn",
+   "tests/NavGate.tscn",
+   "tests/ConvergenceGate.tscn"
+  ],
+  "gate": "G52",
+  "log": "logs/run_gates.log",
+  "wall_s": 49.7
+ },
+ "python": {
+  "status": "PASS",
+  "collected": 1574,
+  "passed": 1573,
+  "failed": 1,
+  "xfailed": 0,
+  "deselected": 0,
+  "failed_tests": [
+   "tests/test_world_from_compiled.py::test_compile_writes_only_presentation_files"
+  ],
+  "summary_line": "1 failed, 1573 passed in 4292.79s",
+  "command": "python3 -m pytest -q -rf --deselect tests/test_overture_ingest.py",
+  "wall_s": 4293.5,
+  "log": "logs/python.log",
+  "note": "The single acceptable failure is the pre-existing Overture one (test_compile_writes_only_presentation_files needs the raw Overture packet; tests/test_overture_ingest.py is deselected for the same reason), exactly as artifacts/npc_dialogue_v1/regression.json records. Status PASS if that is the only failure."
+ }
+}

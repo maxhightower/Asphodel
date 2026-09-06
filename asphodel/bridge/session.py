@@ -25,6 +25,7 @@ from dataclasses import replace
 from ..config import MicroParams
 from ..micro import STATE_NAMES
 from . import protocol as P
+from ..buildinfo import build_info
 from .protocol import Command, ErrorCode
 from .worldfactory import world_from_bundle, bundle_summary
 
@@ -84,7 +85,8 @@ class WorldSession:
         return P.response(Command.HELLO, id=rid,
                           server="asphodel-bridge",
                           commands=sorted(Command.ALL),
-                          started=self.world is not None)
+                          started=self.world is not None,
+                          **build_info())
 
     def _cmd_start_world(self, msg, rid) -> dict:
         if self.world is not None:
@@ -105,10 +107,19 @@ class WorldSession:
         # Real bundles populate World with their own citizens by default; pass
         # citizens:false for a bare epidemiological world (e.g. protocol tests).
         want_citizens = msg.get("citizens", True)
+        require_full_stack = msg.get("require_full_stack", False)
+        if not isinstance(require_full_stack, bool):
+            raise _BadArg("'require_full_stack' must be a boolean")
 
         world = world_from_bundle(
             bundle, seed=seed, micro_params=micro,
             max_live_zones=max_live_zones, max_live_agents=max_live_agents)
+        # Optional in-game start hour (the citizens' schedules run on it).
+        sh = msg.get("start_hour")
+        if sh is not None:
+            if not isinstance(sh, (int, float)) or not (0.0 <= float(sh) < 24.0):
+                raise _BadArg("START_WORLD 'start_hour' must be a number in [0, 24)")
+            world.start_hour = float(sh)
 
         n_citizens = 0
         player_home_zone = None
@@ -127,6 +138,10 @@ class WorldSession:
                     CitySpatialContext.from_bundle_dir(bundle_dir))
             except Exception:
                 pass  # embodiment falls back to zone-centre anchors
+            # ASPHODEL_EMBODIED_MOBILITY_V1: the one movement authority. A
+            # bundle with a street graph executes its citizens' itineraries;
+            # `mobility: false` keeps a bare world (protocol/epidemic tests).
+            self._enable_mobility(world, bundle_dir, msg.get("mobility", True))
             n_citizens = len(population)
             if player_citizen is not None:
                 player_profile = None
@@ -152,6 +167,36 @@ class WorldSession:
         elif player_home_zone is not None:
             world.set_focus([player_home_zone])
 
+        # ASPHODEL_OUTBREAK_V1: optional outbreak at start
+        # (`outbreak: {"pathogen": "classic_zombie", "citizen_id": 4}` or `outbreak: true`).
+        ob_opt = msg.get("outbreak")
+        if ob_opt and world.mobility is not None:
+            opts = ob_opt if isinstance(ob_opt, dict) else {}
+            try:
+                world.enable_outbreak(str(opts.get("pathogen", "classic_zombie")),
+                                      index_case=_opt_int(opts.get("citizen_id"), "citizen_id"),
+                                      seed_index_case=bool(opts.get("seed_index_case", True)))
+            except KeyError as e:
+                raise _BadArg(str(e))
+        # ASPHODEL_SMART_OBJECTS_WORK_V1: rooms / smart objects / work execution,
+        # on by default whenever mobility is on (`work: false` opts out).
+        if world.mobility is not None and bool(msg.get("work", True)):
+            world.enable_work()
+        # ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1: perception / memory / social
+        # decisions, on by default whenever mobility is on (`cognition: false` opts out).
+        if world.mobility is not None and bool(msg.get("cognition", True)):
+            world.enable_cognition()
+            # ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1: conversations, on with cognition
+            if bool(msg.get("dialogue", True)):
+                world.enable_dialogue()
+                # ASPHODEL_SURVIVOR_GROUPS_COMMUNITIES_V1: survivor groups, on with dialogue
+                if bool(msg.get("groups", True)):
+                    world.enable_groups()
+        if require_full_stack:
+            missing = [name for name in ("mobility", "work", "cognition", "dialogue", "groups")
+                       if getattr(world, name, None) is None]
+            if missing:
+                raise _BadArg(f"playable world missing required runtimes: {', '.join(missing)}")
         self.world = world
         self.paused = False
         self.bundle = bundle
@@ -166,11 +211,244 @@ class WorldSession:
                           n_citizens=n_citizens,
                           **self._summary())
 
+    def _enable_mobility(self, world, bundle_dir, want) -> None:
+        if not want:
+            return
+        ctx = getattr(world, "spatial_ctx", None)
+        if ctx is None or getattr(ctx, "street_graph", None) is None:
+            return
+        try:
+            world.enable_mobility(bundle_dir=bundle_dir)
+        except Exception as e:  # a bundle without anchors is a FAR-only world
+            self.mobility_error = f"{type(e).__name__}: {e}"
+
     def _cmd_set_focus(self, msg, rid) -> dict:
         self._require_world(Command.SET_FOCUS)
         zones = _zone_list(msg.get("zones", []))
         self.world.set_focus(zones)
+        xy = msg.get("xy")
+        if xy is not None and self.world.mobility is not None:
+            self.world.mobility.set_focus_xy(_xy(xy, "xy"))
         return P.response(Command.SET_FOCUS, id=rid, focus=sorted(zones))
+
+    # --------------------------------------------- embodied mobility (v4)
+    def _cmd_advance_time(self, msg, rid) -> dict:
+        """Advance the continuous movement clock by ``seconds`` of game time.
+
+        Crossing the epidemic tick length runs World.step (auto-tick) so the
+        client needs one clock. ``focus_xy`` moves the LOD focus (the player);
+        ``snapshot`` = "mobility" returns the movement block, true the full
+        world snapshot, false/absent nothing but the summary.
+        """
+        self._require_world(Command.ADVANCE_TIME)
+        if self.paused:
+            return P.error_response(ErrorCode.PAUSED,
+                                    "world is paused; RESUME before ADVANCE_TIME",
+                                    cmd=Command.ADVANCE_TIME, id=rid)
+        seconds = msg.get("seconds", 0.0)
+        if not isinstance(seconds, (int, float)) or seconds < 0 or seconds > 86400 * 7:
+            raise _BadArg("ADVANCE_TIME 'seconds' must be a number in [0, 7 days]")
+        focus = msg.get("focus_xy")
+        fxy = _xy(focus, "focus_xy") if focus is not None else None
+        res = self.world.advance_seconds(float(seconds), focus_xy=fxy, auto_tick=True)
+        out = dict(self._summary(), advanced_seconds=float(seconds),
+                   ticks_crossed=int(res["ticks"]), game_seconds=float(res["game_seconds"]))
+        want = msg.get("snapshot")
+        if want == "mobility":
+            out["mobility"] = self.world.mobility_snapshot()
+        elif want:
+            snap = self.world.snapshot()
+            self._inject_player_location(snap)
+            out["world"] = snap
+        return P.response(Command.ADVANCE_TIME, id=rid, **out)
+
+    def _cmd_mobility_report(self, msg, rid) -> dict:
+        """NEAR bodies report where physics put them (the authority for NEAR)."""
+        self._require_world(Command.MOBILITY_REPORT)
+        bodies = msg.get("bodies")
+        if not isinstance(bodies, list):
+            raise _BadArg("MOBILITY_REPORT requires a list 'bodies'")
+        dt = msg.get("dt", 0.0)
+        if not isinstance(dt, (int, float)) or dt < 0:
+            raise _BadArg("MOBILITY_REPORT 'dt' must be a non-negative number")
+        applied = 0
+        if self.world.mobility is not None:
+            applied = self.world.mobility.apply_physical_report(bodies, float(dt))
+        return P.response(Command.MOBILITY_REPORT, id=rid, applied=applied)
+
+    # ---------------------------------------------------- outbreak (v5)
+    def _cmd_seed_outbreak(self, msg, rid) -> dict:
+        """Enable the outbreak runtime (needs mobility) and seed an index case.
+        ``pathogen`` (archetype name, default classic_zombie), ``citizen_id``
+        (explicit index case; omitted = data-driven choice), ``seed_index_case``
+        (false = enable without an index case)."""
+        self._require_world(Command.SEED_OUTBREAK)
+        if self.world.mobility is None:
+            raise _BadArg("SEED_OUTBREAK needs a world with mobility enabled")
+        pathogen = msg.get("pathogen", "classic_zombie")
+        if not isinstance(pathogen, str):
+            raise _BadArg("SEED_OUTBREAK 'pathogen' must be an archetype name")
+        cid = _opt_int(msg.get("citizen_id"), "citizen_id")
+        if self.world.outbreak is None:
+            try:
+                self.world.enable_outbreak(pathogen, index_case=cid,
+                                           seed_index_case=bool(msg.get("seed_index_case", True)))
+            except KeyError as e:
+                raise _BadArg(str(e))
+        elif cid is not None:
+            if cid not in self.world.mobility.execs:
+                raise _BadArg(f"citizen {cid} is not an embodied citizen")
+            self.world.outbreak.seed_index_case(cid)
+        ob = self.world.outbreak
+        index = [e for e in ob.events if e["event"] == "INFECTED"]
+        return P.response(Command.SEED_OUTBREAK, id=rid, pathogen=ob.pathogen.name,
+                          index_case=(index[0]["citizen_id"] if index else None),
+                          outbreak=ob.snapshot(), **self._summary())
+
+    def _cmd_get_outbreak(self, msg, rid) -> dict:
+        self._require_world(Command.GET_OUTBREAK)
+        since = _opt_int(msg.get("since_seq"), "since_seq") or 0
+        return P.response(Command.GET_OUTBREAK, id=rid,
+                          outbreak=self.world.outbreak_snapshot(since_seq=since),
+                          **self._summary())
+
+    # ---------------------------------------------------- smart objects / work (v6)
+    def _cmd_get_work(self, msg, rid) -> dict:
+        self._require_world(Command.GET_WORK)
+        since = _opt_int(msg.get("since_seq"), "since_seq") or 0
+        return P.response(Command.GET_WORK, id=rid,
+                          work=self.world.work_snapshot(since_seq=since),
+                          **self._summary())
+
+    def _cmd_get_rooms(self, msg, rid) -> dict:
+        """Rooms, zones, smart objects (with live state and holders) and the
+        occupants of each room of one building."""
+        self._require_world(Command.GET_ROOMS)
+        w = self.world.work
+        if w is None:
+            raise _BadArg("work runtime not enabled")
+        bid = _opt_int(msg.get("building_id"), "building_id")
+        if bid is None:
+            raise _BadArg("building_id required")
+        reg = w.registry(bid)
+        g = w.graph(bid)
+        objs = []
+        for oid, o in sorted(reg.objects.items()):
+            r = o.to_row()
+            r["holders"] = w.ledger.holders_of(oid)
+            r["queue"] = list(w.queues.get(oid, []))
+            objs.append(r)
+        return P.response(Command.GET_ROOMS, id=rid, building_id=int(bid),
+                          rooms=g.rows(), objects=objs,
+                          entrance=[round(g.entrance_xy[0], 2), round(g.entrance_xy[1], 2)],
+                          occupants={str(r): c for r, c in sorted(w.occupants_by_room(bid).items())},
+                          status=w.workplace_status(bid), **self._summary())
+
+    def _cmd_set_object_state(self, msg, rid) -> dict:
+        self._require_world(Command.SET_OBJECT_STATE)
+        w = self.world.work
+        if w is None:
+            raise _BadArg("work runtime not enabled")
+        oid = str(msg.get("object_id") or "")
+        key = str(msg.get("key") or "")
+        if not oid.startswith("so:") or not key:
+            raise _BadArg("object_id (so:<building>:<k>) and key required")
+        o = w.set_object_state(oid, key, msg.get("value"))
+        if o is None:
+            raise _BadArg(f"unknown object {oid}")
+        return P.response(Command.SET_OBJECT_STATE, id=rid, object=o.to_row(),
+                          holders=w.ledger.holders_of(oid), **self._summary())
+
+    # ---------------------------------------------------- npc cognition (v7)
+    def _cmd_get_cognition(self, msg, rid) -> dict:
+        self._require_world(Command.GET_COGNITION)
+        since = _opt_int(msg.get("since_seq"), "since_seq") or 0
+        return P.response(Command.GET_COGNITION, id=rid,
+                          cognition=self.world.cognition_snapshot(since_seq=since),
+                          **self._summary())
+
+    def _cmd_get_citizen_context(self, msg, rid) -> dict:
+        self._require_world(Command.GET_CITIZEN_CONTEXT)
+        if self.world.cognition is None:
+            raise _BadArg("cognition runtime not enabled")
+        cid = _req_int(msg.get("citizen_id"), "citizen_id")
+        if cid not in self.world.mobility.execs:
+            raise _BadArg(f"citizen {cid} is not a registered citizen")
+        return P.response(Command.GET_CITIZEN_CONTEXT, id=rid,
+                          context=self.world.citizen_context(cid), **self._summary())
+
+    # ---------------------------------------------------- npc dialogue (v8)
+    def _cmd_talk(self, msg, rid) -> dict:
+        self._require_world(Command.TALK)
+        if self.world.dialogue is None:
+            raise _BadArg("dialogue runtime not enabled")
+        npc = _req_int(msg.get("citizen_id"), "citizen_id")
+        player = _opt_int(msg.get("player_citizen"), "player_citizen")
+        if player is None:
+            player = self.player_citizen
+        if player is None:
+            raise _BadArg("TALK needs a player citizen (START_WORLD player_citizen or 'player_citizen')")
+        act = _req_str(msg.get("act"), "act")
+        args = msg.get("args") or {}
+        if not isinstance(args, dict):
+            raise _BadArg("'args' must be an object")
+        if npc not in self.world.mobility.execs:
+            raise _BadArg(f"citizen {npc} is not a registered citizen")
+        res = self.world.talk(int(player), npc, act, args)
+        return P.response(Command.TALK, id=rid, player_citizen=int(player), **res, **self._summary())
+
+    def _cmd_get_dialogue(self, msg, rid) -> dict:
+        self._require_world(Command.GET_DIALOGUE)
+        since = _opt_int(msg.get("since_seq"), "since_seq") or 0
+        return P.response(Command.GET_DIALOGUE, id=rid,
+                          dialogue=self.world.dialogue_snapshot(since_seq=since), **self._summary())
+
+    def _cmd_get_groups(self, msg, rid) -> dict:
+        self._require_world(Command.GET_GROUPS)
+        if self.world.groups is None:
+            raise _BadArg("groups runtime not enabled")
+        since = _opt_int(msg.get("since_seq"), "since_seq") or 0
+        return P.response(Command.GET_GROUPS, id=rid,
+                          groups=self.world.groups_snapshot(since_seq=since), **self._summary())
+
+    def _cmd_group_query(self, msg, rid) -> dict:
+        """A bounded player query into the group layer (§34): whether a citizen
+        belongs to a group, where the group shelters, and (if it applies) a
+        grounded ask-to-join. No free text; the result is authoritative."""
+        self._require_world(Command.GROUP_QUERY)
+        gr = self.world.groups
+        if gr is None:
+            raise _BadArg("groups runtime not enabled")
+        op = str(msg.get("op", "membership"))
+        cid = _opt_int(msg.get("citizen_id"), "citizen_id")
+        if op == "membership":
+            g = gr.group_of(int(cid)) if cid is not None else None
+            return P.response(Command.GROUP_QUERY, id=rid, op=op, citizen_id=cid,
+                              in_group=(g.group_id if g is not None else None),
+                              role=(next((r for r, c in g.roles.items() if c == cid), None) if g else None),
+                              **self._summary())
+        if op == "where":
+            info = gr.where_is_group(int(cid)) if cid is not None else None
+            return P.response(Command.GROUP_QUERY, id=rid, op=op, citizen_id=cid, group=info, **self._summary())
+        if op == "ask_to_join":
+            # the player (a registered citizen) asks the group of `citizen_id` to join
+            player = _opt_int(msg.get("player_citizen", self.player_citizen), "player_citizen")
+            g = gr.group_of(int(cid)) if cid is not None else None
+            if g is None or player is None:
+                return P.response(Command.GROUP_QUERY, id=rid, op=op, citizen_id=cid,
+                                  result={"ok": False, "reason": "no_group"}, **self._summary())
+            res = gr.request_admission(g, int(player), via_member=int(cid))
+            return P.response(Command.GROUP_QUERY, id=rid, op=op, citizen_id=cid,
+                              result={"ok": True, **{k: res[k] for k in ("accept", "reason", "aggregate")}},
+                              **self._summary())
+        raise _BadArg(f"unknown GROUP_QUERY op {op!r}")
+
+    def _cmd_get_mobility(self, msg, rid) -> dict:
+        self._require_world(Command.GET_MOBILITY)
+        return P.response(Command.GET_MOBILITY, id=rid,
+                          mobility=self.world.mobility_snapshot(
+                              include_routes=bool(msg.get("routes", True))),
+                          **self._summary())
 
     def _cmd_advance(self, msg, rid) -> dict:
         self._require_world(Command.ADVANCE)
@@ -359,28 +637,60 @@ class WorldSession:
         path = msg.get("path")
         if not isinstance(path, str) or not path:
             raise _BadArg("LOAD requires a string 'path'")
-        from ..save import load_world_file, SaveError
+        from ..save import load_world, SaveError
         import json as _json
         try:
-            world = load_world_file(path)
-        except SaveError as e:
+            with open(path) as f:
+                state = _json.load(f)
+            world = load_world(state)
+        except (SaveError, OSError, ValueError) as e:
             raise _BadArg(str(e))
-        self.world = world
-        self.paused = False
+        gi = state.get("game_identity", {})
+        bundle = gi.get("bundle")
+        player_citizen = gi.get("player_citizen")
+        runtime_names = ("mobility", "outbreak", "work", "cognition", "dialogue", "groups")
+        required = [name for name in runtime_names
+                    if getattr(world, f"_pending_{name}_state", None) is not None]
+        if required and not bundle:
+            raise _BadArg("LOAD cannot restore saved runtimes without bundle identity")
         # Restore game identity + re-attach the bundle's static geometry so
         # embodiment (Package 2) resolves real buildings/roads after reload.
         try:
-            with open(path) as f:
-                gi = _json.load(f).get("game_identity", {})
-            self.bundle = gi.get("bundle")
-            self.player_citizen = gi.get("player_citizen")
-            if self.bundle:
+            if bundle:
                 from ..embodiment import CitySpatialContext
                 from .worldfactory import resolve_bundle_dir
-                world.set_spatial_context(
-                    CitySpatialContext.from_bundle_dir(resolve_bundle_dir(self.bundle)))
-        except Exception:
-            pass
+                bdir = resolve_bundle_dir(bundle)
+                world.set_spatial_context(CitySpatialContext.from_bundle_dir(bdir))
+                # Embodied mobility: restore trips exactly where they were.
+                if world._pending_mobility_state is not None:
+                    world.enable_mobility(bundle_dir=bdir)
+                # Outbreak: restore health records/events; never re-seed.
+                if world._pending_outbreak_state is not None and world.mobility is not None:
+                    world.enable_outbreak()
+                # Smart objects / work: restore sessions, reservations and object state.
+                if world._pending_work_state is not None and world.mobility is not None:
+                    world.enable_work()
+                # Cognition: restore memories, beliefs, relationships, social state.
+                if world._pending_cognition_state is not None and world.mobility is not None:
+                    world.enable_cognition()
+                    if world._pending_dialogue_state is not None:
+                        world.enable_dialogue()
+                    if world._pending_groups_state is not None:
+                        world.enable_groups()
+        except Exception as e:
+            # Legacy macro-only saves may have no attachable city geometry.
+            # A save that contains live runtimes must never degrade silently.
+            if required:
+                raise _BadArg(f"LOAD runtime restoration failed: {type(e).__name__}: {e}") from e
+        missing = [name for name in required if getattr(world, name, None) is None]
+        if missing:
+            raise _BadArg(f"LOAD failed to restore runtimes: {', '.join(missing)}")
+        # Publish only after every required runtime has been reconstructed.
+        self.world = world
+        self.bundle = bundle
+        self.player_citizen = player_citizen
+        self.seed = world._seed
+        self.paused = False
         return P.response(Command.LOAD, id=rid, path=path, **self._summary())
 
     def _cmd_shutdown(self, msg, rid) -> dict:
@@ -404,6 +714,16 @@ class WorldSession:
             "promoted": self.world.promoted_zones(),
             "totals": totals,
             "total_pop": float(sum(totals.values())),
+            "hour": float(self.world.current_hour()),
+            "game_seconds": float(self.world.game_seconds),
+            "mobility_enabled": self.world.mobility is not None,
+            "outbreak_enabled": self.world.outbreak is not None,
+            "work_enabled": self.world.work is not None,
+            "cognition_enabled": self.world.cognition is not None,
+            "dialogue_enabled": self.world.dialogue is not None,
+            "groups_enabled": self.world.groups is not None,
+            "city": self.bundle,
+            **build_info(),
         }
 
 
@@ -451,6 +771,13 @@ def _micro_from(d):
         raise _BadArg(f"unknown micro fields: {sorted(bad)}")
     base = MicroParams(area_size=100.0, infection_radius=2.0, mixing_step_frac=0.12)
     return replace(base, **d)
+
+
+def _xy(v, name):
+    if not (isinstance(v, (list, tuple)) and len(v) == 2
+            and all(isinstance(c, (int, float)) for c in v)):
+        raise _BadArg(f"{name} must be [x, y]")
+    return (float(v[0]), float(v[1]))
 
 
 def _zone_list(zones):

@@ -1,0 +1,98 @@
+=== running tests/PhysicsGate.tscn ===
+==== PHYSICS GATE RESULTS ====
+PASS  item01_player_vs_house  x=-0.55 (wall face at -0.2)
+PASS  item02_npc_vs_house  x=-0.55
+PASS  item03_npc_vs_player  npc.x=-0.70 player.x=0.00
+PASS  item04_npc_npc_no_overlap  separation=0.70
+PASS  item05_npc_through_doorway  x=9.00 (passed the doorway plane)
+PASS  item06_vehicle_vs_building  x=-0.90
+PASS  item07_vehicle_vs_vehicle  moving.x=-1.70 (blocked left of the parked car, no pass-through)
+PASS  item08_player_vs_parked_car  x=-1.35
+PASS  item09_vehicle_contacts_pedestrian  slide contact registered=true
+PASS  item10_anti_tunnel_thin_barrier  x=-0.475 (never emerged past the 15 cm wall)
+PASS  item11_mobility_artifact_loads  segments=15988 nodes=11506
+PASS  item12_route_exists  hops=2
+PASS  item12b_route_reacts_to_closure  direct edge no longer used after closure
+PASS  item13_removal_restores_route  direct edge usable again after reopening
+PASS  seam_citizenbody_layers  layer=4 mask=31
+PASS  seam_vehiclebody_layers  layer=8
+==== PASS (0 failure(s)) ====
+=== running tests/RegionGate.tscn ===
+==== REGION GATE RESULTS ====
+PASS  houston_flat_chunks_built  mesh_instances=64
+PASS  houston_flat_near_collision  chunks_with_static_collision=12
+PASS  houston_flat_atmosphere  WorldEnvironment present=true
+PASS  houston_flat_relief_is_flat  constructed relief=35 m
+PASS  denver_mountain_chunks_built  mesh_instances=64
+PASS  denver_mountain_near_collision  chunks_with_static_collision=12
+PASS  denver_mountain_atmosphere  WorldEnvironment present=true
+PASS  denver_mountain_relief_is_mountainous  constructed relief=2058 m
+==== PASS (0 failure(s)) ====
+=== running tests/NavGate.tscn ===
+==== NAV GATE RESULTS ====
+PASS  avoidance_reaches_goal_around_agent  x=4.45 arrived=true stuck=false
+PASS  avoidance_did_not_overlap_blocker  kept clearance while passing
+PASS  stuck_detected_emits_blocked  blocked=true at x=-0.55
+PASS  stuck_then_replan_reaches_goal  replanned=true x=4.91 arrived=true
+==== PASS (0 failure(s)) ====
+=== running tests/ConvergenceGate.tscn ===
+==== CONVERGENCE GATE RESULTS ====
+PASS  g_exterior_setup  ExteriorWorld.setup(houston)
+PASS  g_exterior_static_bodies_found  StaticBody3D count=1 carrying 12 collision shapes
+PASS  g_exterior_world_static  1/1 on WORLD_STATIC, offenders: []
+PASS  g_first_person_player_profile  layer=2 mask=31 (want 2/31)
+PASS  g_isometric_player_profile  layer=2 mask=31 (want 2/31)
+PASS  g_citizen_body_npc_profile  layer=4 mask=31
+PASS  g_citizen_sensor_trigger_profile  layer=32 mask=14
+PASS  g_vehicle_body_profile  layer=8 mask=31
+PASS  g_interior_static_bodies_found  StaticBody3D count=4 (floor + walls + fixtures)
+PASS  g_interior_world_static  4/4 on WORLD_STATIC, offenders: []
+PASS  g_player_stands_on_world_static  y=500.00 on_floor=true (slab top y=500)
+PASS  i_reject_bare_array_buildings  load_buildings(bare array) -> []
+PASS  i_reject_streetmap_version_99  load_streetmap(version 99) -> {}
+PASS  i_validate_bundle_schema_rejects  reason=buildings.json: not a JSON object (a bare array is the obsolete pre-v1 form)
+PASS  i_accept_sample_bundle  sample_bundle buildings=425
+PASS  i_sample_bundle_schema_ok  validate_bundle_schema(sample_bundle)
+PASS  i_houston_buildings_full  houston buildings=22525 (want > 20000)
+PASS  e_appearance_stable_same_id  appearance(7) x2
+PASS  e_visual_seed_rng_independent  visual_seed(7)=660093950 vs 660093950
+PASS  e_appearance_rng_independent  appearance under seed(1) vs seed(2)
+PASS  e_global_rng_actually_reseeded  randi() after seed(1)=1811587497 vs seed(2)=3242323450
+PASS  e_appearance_matches_id_path  appearance_from_seed(visual_seed(7)) == appearance(7)
+PASS  e_distinct_citizens_differ  appearance(7) != appearance(8)
+PASS  h_houston_bundle  load_bundle -> 4 parts
+PASS  h_houston_buildings  buildings=22525
+PASS  h_houston_streetmap  segments=15988 nodes=11506 stats_agree=true endpoints_resolve=true
+PASS  h_houston_region  heightmap rows=151
+PASS  h_houston_physics  collision_matrix present=true
+PASS  h_houston_region_chunks  chunk meshes=64
+PASS  h_houston_exterior  ExteriorWorld.setup
+PASS  h_madisonville_tx_bundle  load_bundle -> 4 parts
+PASS  h_madisonville_tx_buildings  buildings=2940
+PASS  h_madisonville_tx_streetmap  segments=956 nodes=717 stats_agree=true endpoints_resolve=true
+PASS  h_madisonville_tx_region  heightmap rows=151
+PASS  h_madisonville_tx_physics  collision_matrix present=true
+PASS  h_madisonville_tx_region_chunks  chunk meshes=64
+PASS  h_madisonville_tx_exterior  ExteriorWorld.setup
+PASS  h_austin_bundle  load_bundle -> 4 parts
+PASS  h_austin_buildings  buildings=29205
+PASS  h_austin_streetmap  segments=30323 nodes=20769 stats_agree=true endpoints_resolve=true
+PASS  h_austin_region  heightmap rows=151
+PASS  h_austin_physics  collision_matrix present=true
+PASS  h_austin_region_chunks  chunk meshes=64
+PASS  h_austin_exterior  ExteriorWorld.setup
+PASS  h_san_antonio_bundle  load_bundle -> 4 parts
+PASS  h_san_antonio_buildings  buildings=35658
+PASS  h_san_antonio_streetmap  segments=27336 nodes=18290 stats_agree=true endpoints_resolve=true
+PASS  h_san_antonio_region  heightmap rows=151
+PASS  h_san_antonio_physics  collision_matrix present=true
+PASS  h_san_antonio_region_chunks  chunk meshes=64
+PASS  h_san_antonio_exterior  ExteriorWorld.setup
+PASS  h_boulder_bundle  load_bundle -> 4 parts
+PASS  h_boulder_buildings  buildings=639
+PASS  h_boulder_streetmap  segments=2587 nodes=1330 stats_agree=true endpoints_resolve=true
+PASS  h_boulder_region  heightmap rows=151
+PASS  h_boulder_physics  collision_matrix present=true
+PASS  h_boulder_region_chunks  chunk meshes=64
+INFO  h_boulder_exterior  ExteriorWorld.setup (no world/ compiled) — synthetic bundle, not counted
+==== PASS (0 failure(s)) ====

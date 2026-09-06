@@ -36,8 +36,11 @@ from .citizen import ScheduleEntry
 # v1: authoritative world (macro + agents + roster + citizens).
 # v2: + Package 3 survival runtime (player state, container deltas, dropped items).
 #     v1 saves are accepted via an explicit migration (survival starts empty).
-SAVE_VERSION = 2
-_READABLE_VERSIONS = (1, 2)
+# v3: + embodied mobility (sub-tick clock `subtick_s`, itineraries, executors,
+#     vehicles, parking occupancy). v1/v2 saves are accepted: they carry no
+#     "mobility" block, so the reloaded world simply has no mobility runtime.
+SAVE_VERSION = 3
+_READABLE_VERSIONS = (1, 2, 3)
 
 
 class SaveError(Exception):
@@ -267,6 +270,7 @@ def world_state(world: World, *, bundle: str | None = None,
             "seed": int(world._seed),
             "promo_counter": int(world._promo_counter),
             "start_hour": float(world.start_hour),
+            "subtick_s": float(world._subtick_s),
             "max_live_zones": world.max_live_zones,
             "max_live_agents": world.max_live_agents,
             "ref_density": float(world.ref_density),
@@ -284,6 +288,19 @@ def world_state(world: World, *, bundle: str | None = None,
                      for z, zone in world.promoted.items()},
         "roster": roster_state(world.roster),
         "citizens": _citizen_records(world),
+        # ASPHODEL_EMBODIED_MOBILITY_V1: itineraries, executor state, vehicles,
+        # parking occupancy, LOD bands (None when mobility is not enabled).
+        "mobility": (None if world.mobility is None else world.mobility.to_state()),
+        # ASPHODEL_OUTBREAK_V1: health records, events, disruptions (None when off).
+        "outbreak": (None if world.outbreak is None else world.outbreak.to_state()),
+        "work": (None if world.work is None else world.work.to_state()),
+        # ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1: memories, beliefs' evidence,
+        # relationships, social bookkeeping (None when off).
+        "cognition": (None if world.cognition is None else world.cognition.to_state()),
+        # ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1: conversations, requests, events.
+        "dialogue": (None if world.dialogue is None else world.dialogue.to_state()),
+        # ASPHODEL_SURVIVOR_GROUPS_COMMUNITIES_V1: groups, membership, shelters, roles.
+        "groups": (None if world.groups is None else world.groups.to_state()),
         # Package 3: survival runtime (None when the world has no survival loop).
         "survival": (world.survival.to_state() if world.survival is not None
                      else None),
@@ -311,6 +328,15 @@ def load_world(state: dict) -> World:
     restore_sim(world.sim, state["sim"])
     # Orchestrator book-keeping.
     world._promo_counter = int(w["promo_counter"])
+    world._subtick_s = float(w.get("subtick_s", 0.0))
+    # Mobility state is restored by World.enable_mobility once the caller has
+    # re-attached the bundle's street graph (the session does this on LOAD).
+    world._pending_mobility_state = state.get("mobility")
+    world._pending_outbreak_state = state.get("outbreak")
+    world._pending_work_state = state.get("work")
+    world._pending_cognition_state = state.get("cognition")
+    world._pending_dialogue_state = state.get("dialogue")
+    world._pending_groups_state = state.get("groups")
     world.focus = set(int(z) for z in w["focus"])
     world.reactions_enabled = bool(w["reactions_enabled"])
     world._proximity = {int(k): int(v) for k, v in w["proximity"].items()}

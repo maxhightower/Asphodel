@@ -1,0 +1,57 @@
+Godot Engine v4.4.stable.official.4c311cbee - https://godotengine.org
+
+INFO  exterior  compiled world streamed: true
+PASS  world_started_with_mobility  true
+PASS  citizen_registered  citizen 4 state=inside_building bid=13106.0
+PASS  still_home_before_commute  07:27 state=doing_activity bid=13106.0
+PASS  left_home_on_foot  citizen body appeared outside building 13106
+PASS  citizen_body_is_physical_npc  CitizenBody on CollisionLayers.NPC for 230 frames
+PASS  walked_to_car_physically  body walked 28.9 m; within leash 230/230 frames
+PASS  entered_vehicle  vehicle veh:4
+PASS  vehicle_body_exists_on_entry  VehicleBody veh:4 layer=8
+PASS  no_citizen_body_while_in_car  one body per identity
+PASS  saveload_mid_drive_identical  citizen row equal=true vehicle row equal=true
+PASS  physical_driving_followed_route  body drove 3697 m; within leash 3839/3860 frames; max lag 28.0 m; impacts 178
+PASS  traffic_vehicle_ahead_stopped_body  blocker placed=true stop seen=true
+PASS  authority_held_by_physics_while_blocked  authoritative car waited for the physical car
+PASS  parked_at_destination  state=parked
+PASS  vehicle_identity_preserved  vehicle veh:4 owner 4 parked=false
+PASS  exited_vehicle_on_foot  citizen body beside the car
+PASS  entered_work_building  building 4517
+PASS  no_bodies_inside  citizen body freed inside the building
+PASS  interior_occupant_because_arrived  GET_INTERIOR(4517) occupants include citizen 4: true
+PASS  scheduled_duty_after_arrival  08:01 activity=work state=doing_activity
+PASS  lod_demoted_when_player_left  bodies freed with focus 1.5 km away
+PASS  trip_progressed_abstractly_while_far  authoritative position moved 170 m while no body existed
+PASS  lod_promoted_back_same_identity  body recreated at authoritative pose (jump 0.00 m)
+PASS  returned_home  state=doing_activity bid=13106.0
+
+==== EMBODIED MOBILITY GATE RESULTS (houston, citizen 4) ====
+INFO  exterior  compiled world streamed: true
+PASS  world_started_with_mobility  true
+PASS  citizen_registered  citizen 4 state=inside_building bid=13106.0
+PASS  still_home_before_commute  07:27 state=doing_activity bid=13106.0
+PASS  left_home_on_foot  citizen body appeared outside building 13106
+PASS  citizen_body_is_physical_npc  CitizenBody on CollisionLayers.NPC for 230 frames
+PASS  walked_to_car_physically  body walked 28.9 m; within leash 230/230 frames
+PASS  entered_vehicle  vehicle veh:4
+PASS  vehicle_body_exists_on_entry  VehicleBody veh:4 layer=8
+PASS  no_citizen_body_while_in_car  one body per identity
+PASS  saveload_mid_drive_identical  citizen row equal=true vehicle row equal=true
+PASS  physical_driving_followed_route  body drove 3697 m; within leash 3839/3860 frames; max lag 28.0 m; impacts 178
+PASS  traffic_vehicle_ahead_stopped_body  blocker placed=true stop seen=true
+PASS  authority_held_by_physics_while_blocked  authoritative car waited for the physical car
+PASS  parked_at_destination  state=parked
+PASS  vehicle_identity_preserved  vehicle veh:4 owner 4 parked=false
+PASS  exited_vehicle_on_foot  citizen body beside the car
+PASS  entered_work_building  building 4517
+PASS  no_bodies_inside  citizen body freed inside the building
+PASS  interior_occupant_because_arrived  GET_INTERIOR(4517) occupants include citizen 4: true
+PASS  scheduled_duty_after_arrival  08:01 activity=work state=doing_activity
+PASS  lod_demoted_when_player_left  bodies freed with focus 1.5 km away
+PASS  trip_progressed_abstractly_while_far  authoritative position moved 170 m while no body existed
+PASS  lod_promoted_back_same_identity  body recreated at authoritative pose (jump 0.00 m)
+PASS  returned_home  state=doing_activity bid=13106.0
+==== PASS (0 failure(s)) ====
+TRACE saved: /home/user/Asphodel/artifacts/mobility/godot_probe_trace.json (17141 rows)
+GATE_EXIT=0 TRACE=artifacts/mobility/godot_probe_trace.json

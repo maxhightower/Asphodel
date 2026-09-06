@@ -764,10 +764,26 @@ func _build_t2(chunk: Dictionary, root: Node3D) -> Dictionary:
 			root.add_child(body)
 		var h := float(b.get("h", 3.0))
 		var cs := CollisionShape3D.new()
-		var shape := BoxShape3D.new()
-		shape.size = Vector3(bw, h, bd)
-		cs.shape = shape
-		cs.position = Vector3((min_x + max_x) * 0.5, h * 0.5, (min_z + max_z) * 0.5)
+		# The collider is the footprint's convex hull extruded to the building
+		# height (ASPHODEL_EMBODIED_MOBILITY_V1): an axis-aligned box of a
+		# rotated footprint bulged over streets and driveways and made the
+		# canonical vehicle/citizen bodies collide with buildings they were
+		# nowhere near. Concave footprints still get their hull (known limit).
+		var hull := _footprint_hull(poly)
+		if hull.size() >= 3:
+			var shape := ConvexPolygonShape3D.new()
+			var pts := PackedVector3Array()
+			for q in hull:
+				pts.append(Vector3(q.x, 0.0, q.y))
+				pts.append(Vector3(q.x, h, q.y))
+			shape.points = pts
+			cs.shape = shape
+			cs.position = Vector3.ZERO
+		else:
+			var shape := BoxShape3D.new()
+			shape.size = Vector3(bw, h, bd)
+			cs.shape = shape
+			cs.position = Vector3((min_x + max_x) * 0.5, h * 0.5, (min_z + max_z) * 0.5)
 		body.add_child(cs)
 		collisions += 1
 	if dverts > 0:
@@ -1595,6 +1611,34 @@ func _flat_roof_detail(st: SurfaceTool, ring: PackedVector2Array, h: float,
 ## with mitered joins, laid over the rasterized ground so curves read smoothly.
 ## Widths, curbs and sidewalks are data-driven (carriage_w / curb / sidewalk_w /
 ## verge_w from the world source), not tiles.
+## 2D convex hull (monotone chain) of a footprint polygon, as Vector2 list.
+static func _footprint_hull(poly: Array) -> Array:
+	var pts: Array = []
+	for p in poly:
+		pts.append(Vector2(float(p[0]), float(p[1])))
+	pts.sort_custom(func(a, b): return a.x < b.x or (a.x == b.x and a.y < b.y))
+	if pts.size() < 3:
+		return pts
+	var lower: Array = []
+	for q in pts:
+		while lower.size() >= 2 and _cross(lower[lower.size() - 2], lower[lower.size() - 1], q) <= 0.0:
+			lower.pop_back()
+		lower.append(q)
+	var upper: Array = []
+	for i in range(pts.size() - 1, -1, -1):
+		var q: Vector2 = pts[i]
+		while upper.size() >= 2 and _cross(upper[upper.size() - 2], upper[upper.size() - 1], q) <= 0.0:
+			upper.pop_back()
+		upper.append(q)
+	lower.pop_back()
+	upper.pop_back()
+	return lower + upper
+
+
+static func _cross(o: Vector2, a: Vector2, b: Vector2) -> float:
+	return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x)
+
+
 func _build_road_surfaces(chunk: Dictionary, root: Node3D,
 		cells: PackedByteArray, origin: Vector2) -> int:
 	var roads: Array = chunk.get("roads", [])
@@ -2062,6 +2106,37 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 		mm_count += xforms.size()
 
 	return {"quads": 0, "verts": 0, "buildings": 0, "mm_instances": mm_count, "collisions": 0}
+
+
+var _height_cells: Dictionary = {}   # chunk key -> decoded land-cover raster (for height sampling)
+
+
+func surface_height_at(wx: float, wz: float) -> float:
+	## Visual ground height at a continuous world position, sampled from the SAME
+	## land-cover raster the terrain mesh was built from. Embodied bodies are seated
+	## on this instead of a flat datum so they never sink under raised sidewalks /
+	## lots (Convergence V2 §17). Returns 0.0 (the road datum) when no chunk resolves.
+	var c := _chunk_of(wx, wz)
+	var key := _key(c.x, c.y)
+	var cells: PackedByteArray
+	if _height_cells.has(key):
+		cells = _height_cells[key]
+	else:
+		if _height_cells.size() > 96:
+			_height_cells.clear()
+		var chunk := _get_chunk(c.x, c.y)
+		var runs: Array = chunk.get("surface", []) if chunk is Dictionary else []
+		cells = _decode_rle(runs, CELLS * CELLS) if not runs.is_empty() else PackedByteArray()
+		_height_cells[key] = cells
+	if cells.is_empty():
+		return 0.0
+	var origin := _chunk_origin(c.x, c.y)
+	var klass := _surface_class(cells, origin, wx, wz)
+	if klass < 0:
+		return 0.0
+	if klass == S_ROAD:
+		return ROAD_CORRIDOR_Y
+	return _cell_h(klass)
 
 
 func _surface_class(cells: PackedByteArray, origin: Vector2, wx: float, wz: float) -> int:

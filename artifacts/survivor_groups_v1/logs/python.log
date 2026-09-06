@@ -1,0 +1,60 @@
+........................................................................ [  4%]
+........................................................................ [  9%]
+........................................................................ [ 13%]
+........................................................................ [ 18%]
+........................................................................ [ 22%]
+........................................................................ [ 27%]
+........................................................................ [ 32%]
+........................................................................ [ 36%]
+........................................................................ [ 41%]
+........................................................................ [ 45%]
+........................................................................ [ 50%]
+........................................................................ [ 54%]
+........................................................................ [ 59%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 73%]
+........................................................................ [ 77%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+........................................................................ [ 91%]
+........................................................................ [ 96%]
+..........................................F...................           [100%]
+=================================== FAILURES ===================================
+_________________ test_compile_writes_only_presentation_files __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-37/test_compile_writes_only_prese0')
+
+    def test_compile_writes_only_presentation_files(tmp_path):
+        """The exterior compiler must never touch simulation truth files."""
+        from asphodel.world_source.compile import compile_city
+        out = tmp_path / "bundle"
+        out.mkdir()
+>       compile_city("madisonville_tx", "2026-08-19.0", seed=0,
+                     out_dir=str(out))
+
+tests/test_world_from_compiled.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+asphodel/world_source/compile.py:82: in compile_city
+    ws = normalize.load_world_source(city, release, data_root=data_root)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+asphodel/world_source/normalize.py:236: in load_world_source
+    _table(data_root, release, city, "segment"), lat0, lon0, src)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+data_root = 'data/raw', release = '2026-08-19.0', city = 'madisonville_tx'
+name = 'segment'
+
+    def _table(data_root, release, city, name):
+        path = os.path.join(data_root, "overture", release, city, f"{name}.parquet")
+        if not os.path.exists(path):
+>           raise FileNotFoundError(
+                f"missing raw packet {path}; run `python -m asphodel.world_source "
+                f"acquire --city {city}` first")
+E           FileNotFoundError: missing raw packet data/raw/overture/2026-08-19.0/madisonville_tx/segment.parquet; run `python -m asphodel.world_source acquire --city madisonville_tx` first
+
+asphodel/world_source/normalize.py:52: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test_world_from_compiled.py::test_compile_writes_only_presentation_files
+1 failed, 1573 passed in 4292.79s (1:11:32)

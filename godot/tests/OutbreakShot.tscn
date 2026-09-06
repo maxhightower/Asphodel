@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8outbreakshot1"]
+
+[ext_resource type="Script" path="res://tests/outbreak_shot.gd" id="1_obshot"]
+
+[node name="OutbreakShot" type="Node"]
+script = ExtResource("1_obshot")

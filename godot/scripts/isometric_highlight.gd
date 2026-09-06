@@ -15,9 +15,13 @@ const RING_COL_BUILDING := Color(0.6, 1.0, 0.6)
 const RING_COL_FIXTURE := Color(1.0, 0.7, 0.4)
 const RING_COL_EXIT := Color(1.0, 0.5, 0.5)
 const PLAYER_COL := Color(1.0, 1.0, 1.0, 0.85)
+# The cursor reticle: a distinct cyan, deliberately different from the white
+# player ring and the kind-coloured target ring so all three read apart at once.
+const CURSOR_COL := Color(0.4, 0.95, 1.0, 0.9)
 
 var _target_ring: MeshInstance3D
 var _player_ring: MeshInstance3D
+var _cursor_ring: MeshInstance3D
 var _t := 0.0
 
 
@@ -29,6 +33,11 @@ func _ready() -> void:
 	_player_ring = _make_ring(0.6)
 	_set_ring_color(_player_ring, PLAYER_COL)
 	add_child(_player_ring)
+	# Small, calm reticle marking where the cursor meets the ground.
+	_cursor_ring = _make_ring(0.45)
+	_set_ring_color(_cursor_ring, CURSOR_COL)
+	_cursor_ring.visible = false
+	add_child(_cursor_ring)
 
 
 func _make_ring(radius: float) -> MeshInstance3D:
@@ -82,6 +91,25 @@ func clear_target() -> void:
 ## Keep the player marker under the player each frame (continuous position).
 func mark_player(world_pos: Vector3) -> void:
 	_player_ring.global_position = world_pos + Vector3(0.0, 0.1, 0.0)
+
+
+## Show the cursor reticle at the continuous ground point under the mouse.
+func show_cursor(world_pos: Vector3) -> void:
+	_cursor_ring.global_position = world_pos + Vector3(0.0, 0.12, 0.0)
+	_cursor_ring.visible = true
+
+
+func hide_cursor() -> void:
+	_cursor_ring.visible = false
+
+
+# --- test hooks -------------------------------------------------------------
+func is_cursor_visible() -> bool:
+	return _cursor_ring != null and _cursor_ring.visible
+
+
+func get_cursor_position() -> Vector3:
+	return _cursor_ring.global_position if _cursor_ring != null else Vector3.ZERO
 
 
 func _process(delta: float) -> void:

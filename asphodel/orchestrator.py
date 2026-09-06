@@ -143,6 +143,36 @@ class World:
         self.proximity_ticks = int(proximity_ticks)
         self._proximity: dict[int, int] = {}   # citizen_id -> consecutive ticks in focus
 
+        # --- ASPHODEL_EMBODIED_MOBILITY_V1: one movement authority ------------
+        # The epidemic tick is coarse (dt days); movement needs continuous time.
+        # `advance_seconds` runs a sub-tick clock (`_subtick_s`, game seconds
+        # into the current tick) and drives `self.mobility` — the
+        # MobilityRuntime that executes CitizenRuntime itineraries. When it is
+        # enabled, it is THE physical authority for every registered citizen;
+        # `embodiment.resolve_physical_location` remains only the FAR
+        # (schedule-state) authority for unregistered citizens and for worlds
+        # without a street graph.
+        self.mobility = None
+        self._subtick_s = 0.0
+        self._pending_mobility_state = None
+        # ASPHODEL_OUTBREAK_V1: the per-citizen outbreak runtime (health authority
+        # for registered citizens), advanced on the same movement clock.
+        self.outbreak = None
+        self._pending_outbreak_state = None
+        # ASPHODEL_SMART_OBJECTS_WORK_V1: rooms / smart objects / work execution
+        self.work = None
+        self._pending_work_state = None
+        # ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1: perception / memory / beliefs /
+        # relationships / social decisions (an input to the planner, never a mover)
+        self.cognition = None
+        self._pending_cognition_state = None
+        # ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1: grounded conversations on top of cognition
+        self.dialogue = None
+        self._pending_dialogue_state = None
+        # ASPHODEL_SURVIVOR_GROUPS_COMMUNITIES_V1: the survivor-group social layer
+        self.groups = None
+        self._pending_groups_state = None
+
     # ------------------------------------------------------------------ inputs
     def set_focus(self, zones) -> None:
         """Set the player-focus set: these zones are force-promoted (camera)."""
@@ -180,8 +210,311 @@ class World:
             self._zone_citizens[z].sort()
 
     def current_hour(self) -> float:
-        """The in-game hour [0,24) at the current authoritative tick."""
-        return npc.hour_of_day(self.sim.tick, self.dt, self.start_hour)
+        """The in-game hour [0,24) at the current authoritative tick, plus the
+        sub-tick seconds advanced by :meth:`advance_seconds` (0 unless the
+        embodied mobility clock is in use)."""
+        h = npc.hour_of_day(self.sim.tick, self.dt, self.start_hour)
+        if self._subtick_s:
+            h = (h + self._subtick_s / 3600.0) % 24.0
+        return h
+
+    @property
+    def tick_seconds(self) -> float:
+        """Length of one epidemic tick in game seconds."""
+        return float(self.dt) * 86400.0
+
+    @property
+    def game_seconds(self) -> float:
+        """Continuous game time since the world started (seconds)."""
+        return self.sim.tick * self.tick_seconds + self._subtick_s
+
+    # ------------------------------------------ embodied mobility (V1) -------
+    def enable_mobility(self, bundle_dir: str | None = None, runtime=None,
+                        register_all: bool = True):
+        """Attach the MobilityRuntime (the itinerary executor) to this world.
+
+        Builds one from the attached spatial context's street graph and the
+        bundle's entrance/parking anchors when ``runtime`` is not given.
+        Registers every citizen with a stored home building (bounded: the
+        bundle's canonical citizens) at ROUTE_SIMULATED fidelity. If a save
+        carried mobility state (``load_world``), it is restored instead of
+        re-registering, so trips continue exactly where they were.
+        """
+        from .embodied import MobilityRuntime, load_entrances
+        if runtime is None:
+            ctx = self.spatial_ctx
+            # errands go to staffed shops: a cheap archetype query the runtime
+            # applies at registration (fresh and restored worlds alike)
+            if ctx is not None and getattr(ctx, "shop_predicate", None) is None:
+                ctx.shop_predicate = self.is_shop
+            graph = getattr(ctx, "street_graph", None) if ctx is not None else None
+            if graph is None:
+                raise ValueError("enable_mobility needs a spatial context with a street graph")
+            entrances, anchors = load_entrances(bundle_dir) if bundle_dir else ({}, [])
+            pending = self._pending_mobility_state
+            if pending is not None:
+                runtime = MobilityRuntime.from_state(
+                    pending, graph, entrances, anchors, self.citizens, ctx=ctx,
+                    bundle_dir=bundle_dir, seed=self._seed)
+                self._pending_mobility_state = None
+                self.mobility = runtime
+                return runtime
+            runtime = MobilityRuntime(graph, entrances, anchors, ctx=ctx,
+                                      bundle_dir=bundle_dir, seed=self._seed)
+        self.mobility = runtime
+        if register_all:
+            hour = self.current_hour()
+            for cid in sorted(self.citizens):
+                prof = self.citizens[cid]
+                if getattr(prof, "home_building_id", None) is None:
+                    continue
+                runtime.register(prof, hour)
+        return runtime
+
+    def enable_outbreak(self, pathogen="classic_zombie", index_case=None,
+                        seed_index_case: bool = True):
+        """Attach the OutbreakRuntime (needs mobility). ``index_case`` = citizen id
+        or None for the data-driven choice; a pending saved state is restored
+        instead (no re-seeding)."""
+        from .outbreak import OutbreakRuntime, OutbreakPathogen, pathogen_by_name
+        if self.mobility is None:
+            raise ValueError("enable_outbreak needs enable_mobility first")
+        pending = self._pending_outbreak_state
+        if pending is not None:
+            self.outbreak = OutbreakRuntime.from_state(pending, self.mobility)
+            self._pending_outbreak_state = None
+            return self.outbreak
+        p = pathogen if isinstance(pathogen, OutbreakPathogen) else pathogen_by_name(str(pathogen))
+        ob = OutbreakRuntime(self.mobility, self._seed, p)
+        ob.now_s = self.mobility.now_s
+        ob._next_contact_s = ob.now_s
+        ob._next_undead_s = ob.now_s
+        self.outbreak = ob
+        if seed_index_case:
+            cid = index_case if index_case is not None else ob.choose_index_case()
+            if cid is not None:
+                ob.seed_index_case(int(cid))
+        return ob
+
+    def outbreak_snapshot(self, since_seq: int = 0) -> dict | None:
+        return None if self.outbreak is None else self.outbreak.snapshot(since_seq)
+
+    # ------------------------------------------------ smart objects / work
+    def enable_work(self, employ: bool = True):
+        """Attach the WorkRuntime (needs mobility): rooms and smart objects
+        are generated per building from the canonical interior descriptor;
+        employment is a deterministic function of seed/citizen/workplace. A
+        pending saved state is restored instead (no re-assignment)."""
+        from .smart import WorkRuntime
+        if self.mobility is None:
+            raise ValueError("enable_work needs enable_mobility first")
+        pending = self._pending_work_state
+        if pending is not None:
+            self.work = WorkRuntime.from_state(pending, self.mobility, self.interior_descriptor)
+            self._pending_work_state = None
+            return self.work
+        w = WorkRuntime(self.mobility, self._seed, self.interior_descriptor)
+        self.work = w
+        if employ:
+            w.employ_all(self.citizens)
+        return w
+
+    def work_snapshot(self, since_seq: int = 0) -> dict | None:
+        return None if self.work is None else self.work.snapshot(since_seq)
+
+    # ------------------------------------------------ npc cognition
+    def enable_cognition(self, priors: bool = True):
+        """Attach the CognitionRuntime (needs mobility; uses the work and
+        outbreak runtimes when present). Household/workplace priors are the
+        only non-experience relationship source. A pending saved state is
+        restored instead (no re-rolls)."""
+        from .cognition import CognitionRuntime
+        if self.mobility is None:
+            raise ValueError("enable_cognition needs enable_mobility first")
+        pending = self._pending_cognition_state
+        if pending is not None:
+            self.cognition = CognitionRuntime.from_state(pending, self.mobility, work=self.work,
+                                                         outbreak_fn=lambda: self.outbreak)
+            self._pending_cognition_state = None
+            return self.cognition
+        c = CognitionRuntime(self.mobility, self._seed, work=self.work, outbreak_fn=lambda: self.outbreak)
+        self.cognition = c
+        if priors:
+            c.init_priors(self.citizens)
+        return c
+
+    # ------------------------------------------------ npc dialogue
+    def enable_dialogue(self):
+        """Attach the DialogueRuntime (needs cognition). A pending saved state
+        is restored instead (no response rerolls)."""
+        from .dialogue import DialogueRuntime
+        if self.cognition is None:
+            raise ValueError("enable_dialogue needs enable_cognition first")
+        pending = self._pending_dialogue_state
+        if pending is not None:
+            self.dialogue = DialogueRuntime.from_state(pending, self.cognition)
+            self._pending_dialogue_state = None
+            return self.dialogue
+        self.dialogue = DialogueRuntime(self.cognition)
+        return self.dialogue
+
+    def dialogue_snapshot(self, since_seq: int = 0) -> dict | None:
+        return None if self.dialogue is None else self.dialogue.snapshot(since_seq)
+
+    def enable_groups(self):
+        """Attach the GroupRuntime (needs cognition; uses dialogue when present).
+        A pending saved state is restored instead."""
+        from .groups import GroupRuntime
+        if self.cognition is None:
+            raise ValueError("enable_groups needs enable_cognition first")
+        pending = self._pending_groups_state
+        if pending is not None:
+            self.groups = GroupRuntime.from_state(pending, self.cognition, self.dialogue)
+            self._pending_groups_state = None
+            return self.groups
+        self.groups = GroupRuntime(self.cognition, self.dialogue)
+        return self.groups
+
+    def groups_snapshot(self, since_seq: int = 0) -> dict | None:
+        return None if self.groups is None else self.groups.snapshot(since_seq)
+
+    def _merge_groups(self, snap: dict) -> None:
+        g = self.groups
+        for row in snap.get("citizens", []):
+            row["group"] = g.row(int(row["citizen_id"]))
+
+    def talk(self, player: int, npc: int, act: str, args: dict | None = None) -> dict | None:
+        return None if self.dialogue is None else self.dialogue.player_talk(int(player), int(npc), act, args or {})
+
+    def _merge_dialogue(self, snap: dict) -> None:
+        d = self.dialogue
+        for row in snap.get("citizens", []):
+            row["dialogue"] = d.row(int(row["citizen_id"]))
+
+    def cognition_snapshot(self, since_seq: int = 0) -> dict | None:
+        return None if self.cognition is None else self.cognition.snapshot(since_seq)
+
+    def citizen_context(self, cid: int) -> dict | None:
+        return None if self.cognition is None else self.cognition.citizen_context(int(cid))
+
+    def _merge_cognition(self, snap: dict) -> None:
+        c = self.cognition
+        for row in snap.get("citizens", []):
+            row["cognition"] = c.row(int(row["citizen_id"]))
+
+    def _merge_work(self, snap: dict) -> None:
+        """Stamp each mobility citizen row with its room/object/task context."""
+        w = self.work
+        for row in snap.get("citizens", []):
+            row["work"] = w.row(int(row["citizen_id"]))
+
+    def advance_seconds(self, seconds: float, focus_xy=None, auto_tick: bool = True) -> dict:
+        """Advance continuous game time by ``seconds`` (the embodied clock).
+
+        Movement (the MobilityRuntime) integrates in fixed 1 s substeps; when
+        the sub-tick clock crosses the epidemic tick length and ``auto_tick``
+        is set, :meth:`step` runs the epidemic tick (bit-identical to calling
+        it directly) and the remainder carries over. Returns a small summary.
+        """
+        seconds = float(seconds)
+        if seconds < 0:
+            raise ValueError("advance_seconds needs a non-negative duration")
+        ticks = 0
+        if self.mobility is not None and focus_xy is not None:
+            self.mobility.set_focus_xy(focus_xy)
+        remaining = seconds
+        while remaining > 1e-9:
+            room = self.tick_seconds - self._subtick_s
+            chunk = min(remaining, room) if auto_tick else remaining
+            if self.mobility is not None:
+                self._advance_runtimes(chunk)
+            self._subtick_s += chunk
+            remaining -= chunk
+            if auto_tick and self._subtick_s >= self.tick_seconds - 1e-9:
+                self.step()
+                ticks += 1
+            elif not auto_tick:
+                self._subtick_s = min(self._subtick_s, self.tick_seconds - 1e-6)
+                break
+        return {"seconds": seconds, "ticks": ticks, "tick": int(self.sim.tick),
+                "hour": self.current_hour(), "game_seconds": self.game_seconds}
+
+    def _advance_runtimes(self, chunk: float) -> None:
+        """Movement, outbreak, work and cognition interleaved in 1 s substeps.
+
+        Every runtime integrates in 1 s substeps internally; running them in
+        lock-step (rather than each over the whole chunk in turn) means an
+        event of one second is visible to the others in that same second —
+        a warning shouted at an attack reaches the next room before the
+        attacker does, whatever chunk size the caller advances by. The result
+        is therefore independent of the caller's step size.
+        """
+        hour = self.current_hour()
+        remaining = float(chunk)
+        while remaining > 1e-9:
+            step = min(1.0, remaining)
+            self.mobility.advance(step, hour)
+            if self.outbreak is not None:
+                self.outbreak.advance(step)
+            if self.work is not None:
+                self.work.advance(step)
+            if self.cognition is not None:
+                self.cognition.advance(step)
+            if self.dialogue is not None:
+                self.dialogue.advance(step)
+            if self.groups is not None:
+                self.groups.advance(step)
+            hour += step / 3600.0
+            remaining -= step
+
+    def mobility_snapshot(self, include_routes: bool = True) -> dict | None:
+        if self.mobility is None:
+            return None
+        snap = self.mobility.snapshot(include_routes=include_routes)
+        if self.outbreak is not None:
+            self._merge_health(snap)
+        if self.work is not None:
+            self._merge_work(snap)
+        if self.cognition is not None:
+            self._merge_cognition(snap)
+        if self.dialogue is not None:
+            self._merge_dialogue(snap)
+        if self.groups is not None:
+            self._merge_groups(snap)
+        return snap
+
+    def _merge_health(self, snap: dict) -> None:
+        """Stamp each mobility citizen row with its health state (one row per
+        citizen on the wire; Godot embodies corpse/undead from it)."""
+        recs = self.outbreak.records
+        for row in snap.get("citizens", []):
+            r = recs.get(int(row["citizen_id"]))
+            row["health"] = "susceptible" if r is None else r.state.value
+
+    def _mobility_location(self, cid: int, zone):
+        """PhysicalLocation from the executor (MID/NEAR authority), or None."""
+        m = self.mobility
+        if m is None:
+            return None
+        ex = m.execs.get(int(cid))
+        if ex is None:
+            return None
+        if int(cid) in m.frozen_at and m.focus_xy is not None:
+            # Frozen (ABSTRACT band): its last executed situation still holds.
+            pass
+        dest = ex.destination()
+        mode = embodiment.LocationMode.BUILDING if ex.inside else embodiment.LocationMode.STREET
+        mv = ex.movement()
+        movement = {"walking": embodiment.Movement.WALKING, "driving": embodiment.Movement.DRIVING,
+                    "stationary": embodiment.Movement.STATIONARY}[mv]
+        return embodiment.PhysicalLocation(
+            version=embodiment.LOCATION_SCHEMA_VERSION, citizen_id=int(cid),
+            zone=int(zone if zone is not None else -1), x=float(ex.pos[0]), y=float(ex.pos[1]),
+            mode=mode, building_id=int(ex.building_id), activity=ex.activity,
+            action=self._citizen_action(int(cid)), movement=movement,
+            destination_x=None if dest is None else float(dest[0]),
+            destination_y=None if dest is None else float(dest[1]),
+            route_frac=float(ex.route_progress()))
 
     # ------------------------------------------------------- Package 2: embodiment
     def set_spatial_context(self, ctx) -> None:
@@ -198,6 +531,53 @@ class World:
             self.survival = Survival(world_seed=self._seed)
         return self.survival
 
+    def building_archetype(self, building_id: int) -> str:
+        """The interior archetype a building would get (house / retail /
+        office / clinic / industrial / school / civic), without building it."""
+        from . import interiors
+        ctx = self.spatial_ctx
+        if ctx is None:
+            return "generic"
+        bid = int(building_id)
+        poly = ctx.building_poly(bid)
+        height = ctx.building_height(bid)
+        arch_hint = ctx.building_arch(bid) if hasattr(ctx, "building_arch") else None
+        if not poly:
+            return "generic"
+        xs = [p[0] for p in poly]
+        ys = [p[1] for p in poly]
+        area = (max(xs) - min(xs)) * (max(ys) - min(ys))
+        return interiors.archetype_for(self._seed, bid, area, height, arch_hint)
+
+    def is_shop(self, building_id: int, hour: float | None = None) -> bool:
+        """A retail interior that somebody in the canonical population works
+        at (and, when ``hour`` is given, is on shift at that hour): errands go
+        where there is a till to be served at. Pure data: the workplace set and
+        shifts come from the bundle's citizens, the archetype from the
+        building's footprint/exterior class and the world seed."""
+        bid = int(building_id)
+        staff = getattr(self, "_workplace_staff", None)
+        if staff is None:
+            staff = {}
+            for c in self.citizens.values():
+                wb = getattr(c, "work_building_id", None)
+                if wb is None:
+                    continue
+                blocks = [(float(e.start_hour), float(e.end_hour))
+                          for e in (getattr(c, "schedule", None) or []) if e.activity == "work"]
+                staff.setdefault(int(wb), []).append(blocks)
+            self._workplace_staff = staff
+        if bid not in staff or self.building_archetype(bid) != "retail":
+            return False
+        if hour is None:
+            return True
+        h = float(hour) % 24.0
+        for blocks in staff[bid]:
+            for a, b in blocks:
+                if a <= h < b or a <= h + 24.0 < b:
+                    return True
+        return False
+
     def interior_descriptor(self, building_id: int, gen_version: int | None = None):
         """The authoritative, deterministic interior for a building (immutable base
         geometry). Regenerable from (world seed, building_id, gen_version) + the
@@ -205,6 +585,11 @@ class World:
         to the *existing* containers (building_id, container_index)."""
         from . import interiors
         gv = interiors.INTERIOR_GEN_VERSION if gen_version is None else int(gen_version)
+        cache = self.__dict__.setdefault("_interior_cache", {})
+        key = (int(building_id), gv)
+        hit = cache.get(key)
+        if hit is not None:
+            return hit
         ctx = self.spatial_ctx
         poly = ctx.building_poly(building_id) if ctx is not None else None
         height = ctx.building_height(building_id) if ctx is not None else 6.0
@@ -214,9 +599,11 @@ class World:
             road_xy = ctx.nearest_road_xy(ctx.building_centroids[building_id])
             if hasattr(ctx, "building_arch"):
                 arch_hint = ctx.building_arch(building_id)
-        return interiors.build_interior(
+        desc = interiors.build_interior(
             building_id, self._seed, poly, height=height, road_xy=road_xy,
             gen_version=gv, arch_hint=arch_hint)
+        cache[key] = desc                  # immutable geometry: safe to share
+        return desc
 
     def interior_state(self, building_id: int, gen_version: int | None = None) -> dict:
         """Interior descriptor + the per-fixture *persistent delta* overlay (which
@@ -304,6 +691,10 @@ class World:
         home_xy, work_xy, home_zone, work_zone = self._spatial.get(
             cid, (None, None, None, None))
         home_bid, work_bid = self._buildings.get(cid, (None, None))
+        # Embodied mobility: the executor IS the location of a registered citizen.
+        loc = self._mobility_location(cid, home_zone)
+        if loc is not None:
+            return loc
         # Report the zone the macro currently associates with the citizen (home
         # zone is the stable authoritative association).
         return embodiment.resolve_physical_location(
@@ -388,6 +779,9 @@ class World:
 
     # --------------------------------------------------------------- one tick
     def step(self) -> WorldTick:
+        # The epidemic tick consumes the sub-tick movement clock: after this
+        # tick the hour is exactly the tick's hour again (embodied mobility V1).
+        self._subtick_s = 0.0
         # --- 1. membership: decide the promoted set (hysteresis + focus) -----
         self._update_membership()
         frozen = list(self.promoted)
@@ -520,6 +914,11 @@ class World:
         }
         if self.citizens:
             out["activity_occupancy"] = self.activity_occupancy()
+        if self.mobility is not None:
+            out["mobility"] = self.mobility.snapshot(include_routes=True)
+            if self.outbreak is not None:
+                self._merge_health(out["mobility"])
+                out["outbreak"] = self.outbreak.snapshot()
         if len(self.roster) > 0:
             out["roster"] = [
                 {"citizen_id": r.citizen_id,
@@ -555,13 +954,15 @@ class World:
                 home_xy, work_xy, hz, wz = self._spatial.get(
                     cid, (None, None, None, None))
                 home_bid, work_bid = self._buildings.get(cid, (None, None))
-                loc = embodiment.resolve_physical_location(
-                    citizen_id=cid, schedule=self._schedules.get(cid, []),
-                    hour=hour, home_xy=home_xy, work_xy=work_xy,
-                    home_zone=hz, work_zone=wz,
-                    action=npc.action_name(int(zone.chosen_action[slot])),
-                    zone=z, ctx=ctx,
-                    home_building_id=home_bid, work_building_id=work_bid)
+                loc = self._mobility_location(cid, z)
+                if loc is None:
+                    loc = embodiment.resolve_physical_location(
+                        citizen_id=cid, schedule=self._schedules.get(cid, []),
+                        hour=hour, home_xy=home_xy, work_xy=work_xy,
+                        home_zone=hz, work_zone=wz,
+                        action=npc.action_name(int(zone.chosen_action[slot])),
+                        zone=z, ctx=ctx,
+                        home_building_id=home_bid, work_building_id=work_bid)
                 world_xy[slot] = [loc.x, loc.y]
                 mode[slot] = loc.mode
                 building_id[slot] = loc.building_id

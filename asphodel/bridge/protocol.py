@@ -29,7 +29,21 @@ from typing import Any
 # a different major version is rejected (see WorldSession.handle / Command.HELLO).
 # v1: authoritative world (M1). v2: + Package 3 survival/interaction commands.
 # v3: + GET_INTERIOR (walk-in interiors: authoritative interior descriptor).
-PROTOCOL_VERSION = 3
+# v4: + ADVANCE_TIME / MOBILITY_REPORT / GET_MOBILITY (embodied mobility: the
+#      continuous movement clock, NEAR-body physical reports, the movement snapshot).
+# v5: + SEED_OUTBREAK / GET_OUTBREAK and the START_WORLD `outbreak` option
+#      (ASPHODEL_OUTBREAK_V1: per-citizen health, events, disruptions).
+# v6: + GET_WORK / GET_ROOMS / SET_OBJECT_STATE and the START_WORLD `work`
+#      option (ASPHODEL_SMART_OBJECTS_WORK_V1: rooms, smart objects, work).
+# v7: + GET_COGNITION / GET_CITIZEN_CONTEXT and the START_WORLD `cognition`
+#      option (ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1: memory, beliefs,
+#      relationships, social actions; the context API for dialogue).
+# v8: + TALK / GET_DIALOGUE and the START_WORLD `dialogue` option
+#      (ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1: grounded conversations).
+# v9: + GET_GROUPS / GROUP_QUERY and the START_WORLD `groups` option
+#      (ASPHODEL_SURVIVOR_GROUPS_COMMUNITIES_V1: survivor groups, membership,
+#      shelters, roles; a bounded player ask-to-join).
+PROTOCOL_VERSION = 9
 
 
 class Command:
@@ -61,12 +75,40 @@ class Command:
     # --- Walk-in interiors (v3) -------------------------------------------
     GET_INTERIOR = "GET_INTERIOR"            # authoritative interior descriptor + deltas
 
+    # --- Embodied mobility (v4) -------------------------------------------
+    ADVANCE_TIME = "ADVANCE_TIME"            # advance continuous game seconds (movement clock)
+    MOBILITY_REPORT = "MOBILITY_REPORT"      # NEAR bodies report physical positions/blockage
+    GET_MOBILITY = "GET_MOBILITY"            # movement snapshot without advancing
+
+    # --- Outbreak (v5) ----------------------------------------------------
+    SEED_OUTBREAK = "SEED_OUTBREAK"          # enable the outbreak runtime / seed an index case
+    GET_OUTBREAK = "GET_OUTBREAK"            # health rows + events since a sequence number
+    # --- smart objects / work (v6) --------------------------------------
+    GET_WORK = "GET_WORK"                    # sessions, reservations, queues, events since seq
+    GET_ROOMS = "GET_ROOMS"                  # rooms, zones, smart objects and occupants of a building
+    SET_OBJECT_STATE = "SET_OBJECT_STATE"    # authoritative external object state change
+    # --- npc cognition (v7) ---------------------------------------------
+    GET_COGNITION = "GET_COGNITION"          # cognition events since seq, counts, who is avoiding what
+    GET_CITIZEN_CONTEXT = "GET_CITIZEN_CONTEXT"  # the structured context of one citizen (dialogue input)
+    # --- npc dialogue (v8) ------------------------------------------------
+    TALK = "TALK"                            # the player speaks one structured act to a NEAR citizen
+    GET_DIALOGUE = "GET_DIALOGUE"            # dialogue events since seq, active conversations, requests
+    # --- survivor groups (v9) --------------------------------------------
+    GET_GROUPS = "GET_GROUPS"                # group events since seq, group snapshots, counts
+    GROUP_QUERY = "GROUP_QUERY"              # bounded player query: is X in a group / where / ask-to-join
+
     ALL = frozenset({
         HELLO, START_WORLD, SET_FOCUS, ADVANCE, INTERVENE, INTERACT_WITH,
         PAUSE, RESUME, SNAPSHOT, SAVE, LOAD, SHUTDOWN,
         ENTER_BUILDING, LEAVE_BUILDING, INSPECT_BUILDING, SEARCH_CONTAINER,
         TAKE_ITEM, DROP_ITEM, USE_ITEM, INSPECT_INVENTORY,
         GET_INTERIOR,
+        ADVANCE_TIME, MOBILITY_REPORT, GET_MOBILITY,
+        SEED_OUTBREAK, GET_OUTBREAK,
+        GET_WORK, GET_ROOMS, SET_OBJECT_STATE,
+        GET_COGNITION, GET_CITIZEN_CONTEXT,
+        TALK, GET_DIALOGUE,
+        GET_GROUPS, GROUP_QUERY,
     })
 
 

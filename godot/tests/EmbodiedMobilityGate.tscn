@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8embodiedgate1"]
+
+[ext_resource type="Script" path="res://tests/embodied_mobility_gate.gd" id="1_emgate"]
+
+[node name="EmbodiedMobilityGate" type="Node3D"]
+script = ExtResource("1_emgate")

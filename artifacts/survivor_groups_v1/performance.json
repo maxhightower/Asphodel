@@ -1,0 +1,78 @@
+{
+  "milestone": "ASPHODEL_SURVIVOR_GROUPS_COMMUNITIES_V1",
+  "python": "3.11.15",
+  "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+  "measured": {
+    "city": "houston",
+    "protocol_version": 9,
+    "clock_x": 24.0,
+    "budget_ms_per_game_minute": 2500.0,
+    "population": 297,
+    "normal_window": {
+      "hour": 10.25,
+      "minutes_timed": 15,
+      "world_step_ms_per_game_minute": 55.6838,
+      "groups_advance_ms_per_game_minute": 1.4657,
+      "groups_share_of_world_step": 0.02632,
+      "n_groups": 0,
+      "note": "groups on, no group formed yet in a fresh window \u2014 the pure advance overhead"
+    },
+    "formation_scan": {
+      "median_ms": 2.2862,
+      "max_ms": 2.577,
+      "repeats": 25,
+      "population": 297,
+      "scan_interval_s": 120.0,
+      "note": "edge-indexed O(sum of member degrees) scan; the 1 s advance runs it at most once every 120 game seconds, so its amortised per-second cost is this divided by that interval",
+      "amortised_ms_per_game_minute": 1.14309
+    },
+    "two_groups": {
+      "n_groups": 2,
+      "group_ids": [
+        "group:1",
+        "group:2"
+      ],
+      "members": {
+        "group:1": [
+          42,
+          87,
+          117
+        ],
+        "group:2": [
+          120,
+          129,
+          225
+        ]
+      },
+      "world_step_ms_per_game_minute": 103.8859,
+      "groups_advance_ms_per_game_minute": 23.688,
+      "groups_share_of_world_step": 0.22802,
+      "note": "per-group objective/influence/departure tick is linear in the number of groups"
+    },
+    "outbreak_window": {
+      "hour": 10.25,
+      "minutes_timed": 15,
+      "seed": {
+        "seeded": true,
+        "fallback": true,
+        "index_case": 42
+      },
+      "world_step_ms_per_game_minute": 51.5299,
+      "groups_advance_ms_per_game_minute": 1.3658,
+      "groups_share_of_world_step": 0.0265,
+      "n_groups": 0,
+      "note": "threats drive formation scans and warnings \u2014 the group layer's busiest window"
+    },
+    "headline": {
+      "max_groups_advance_ms_per_game_minute": 23.688,
+      "max_groups_share_of_world_step": 0.22802,
+      "max_groups_share_of_realtime_budget": 0.009475,
+      "groups_advance_ms_per_game_minute_normal": 1.4657,
+      "groups_advance_ms_per_game_minute_outbreak": 1.3658,
+      "formation_scan_median_ms": 2.2862,
+      "budget_ms_per_game_minute": 2500.0,
+      "verdict": "the survivor-group layer is a small fraction of the real-time budget (worst case 23.69 ms per game minute = 0.95% of the 2500 ms budget); its share of the bridge world step ranges 2.6%-22.8% because that step excludes Godot rendering/physics, so a cheap FAR-focus step inflates the ratio"
+    }
+  },
+  "wall_s": 26.9
+}

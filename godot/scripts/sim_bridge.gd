@@ -20,15 +20,62 @@ signal connected_changed(is_connected: bool)
 signal world_started(summary: Dictionary)
 signal advanced(tick: int, outbreak: float, summary: Dictionary)
 
-const PROTOCOL_VERSION := 3   # v3: + GET_INTERIOR (walk-in interiors)
+const PROTOCOL_VERSION := 9   # v9: + GET_GROUPS / GROUP_QUERY (survivor groups); v8 dialogue; v7 cognition
 
 var _peer: StreamPeerTCP = null
 var _id := 0
 var _connected := false
 var last_summary: Dictionary = {}
+var last_hello: Dictionary = {}   # the HELLO reply (server/sim_sha/protocol/save_version)
 
 # The most recent authoritative snapshot (World.snapshot()), or {} if none.
 var last_world: Dictionary = {}
+
+# --- Embodied mobility (v4) --------------------------------------------------
+# Whether the started world executes citizen itineraries (START_WORLD reply
+# `mobility`). When true the GameClock drives ADVANCE_TIME (continuous game
+# seconds) instead of tick-granular ADVANCE, and EmbodiedMobility instantiates
+# CitizenBody/VehicleBody for the NEAR band around `focus_xy`.
+var mobility_enabled := false
+var focus_xy := Vector2.ZERO          # the player's ground position (sim frame: x, z)
+var has_focus_xy := false
+# The most recent movement block (World.mobility_snapshot()), or {} if none.
+var last_mobility: Dictionary = {}
+# --- Outbreak (v5) ---------------------------------------------------------------
+var outbreak_enabled := false
+var last_outbreak: Dictionary = {}
+# --- smart objects / work (v6) ---------------------------------------------------
+# Whether the started world runs the WorkRuntime (START_WORLD reply
+# `work_enabled`; `work: false` opts out). When true, mobility citizen rows carry
+# a `work` block (role/workplace_id/task/phase/object_id/room_id/zone/carrying)
+# and GET_ROOMS/GET_WORK describe the building's rooms, smart objects and events.
+var work_enabled := false
+var last_work: Dictionary = {}
+var last_rooms: Dictionary = {}
+# --- npc cognition / social memory (v7) ------------------------------------------
+# Whether the started world runs the CognitionRuntime (START_WORLD reply
+# `cognition_enabled`; `cognition: false` opts out). When true, GET_COGNITION
+# reports the perception/memory/social event log and GET_CITIZEN_CONTEXT the
+# structured context of one citizen.
+var cognition_enabled := false
+var last_cognition: Dictionary = {}
+var last_context: Dictionary = {}
+# --- npc dialogue (v8) -----------------------------------------------------------
+# Whether the started world runs the DialogueRuntime (START_WORLD reply
+# `dialogue_enabled`; `dialogue: false` opts out). When true, TALK drives a
+# player<->NPC conversation and GET_DIALOGUE reports every conversation, speech
+# act and request the authority ran. Every line displayed comes from here.
+var dialogue_enabled := false
+var last_dialogue: Dictionary = {}
+
+# --- survivor groups (v9) --------------------------------------------------------
+# Whether the started world runs the GroupRuntime (START_WORLD / LOAD reply
+# `groups_enabled`; `groups: false` opts out). When true, GET_GROUPS reports the
+# roster of survivor groups (membership, shelter, roles, shared record, event
+# delta) and GROUP_QUERY answers a bounded player question (membership / where /
+# a grounded ask-to-join). Every group fact rendered comes from here.
+var groups_enabled := false
+var last_groups: Dictionary = {}
 
 
 func is_connected_to_sim() -> bool:
@@ -52,7 +99,8 @@ func connect_to_sim(host: String = "127.0.0.1", port: int = 8765, timeout_ms: in
 	if _peer.get_status() != StreamPeerTCP.STATUS_CONNECTED:
 		push_error("SimBridge: not connected (status %d)" % _peer.get_status())
 		return false
-	var reply := _send("HELLO", {"protocol_version": PROTOCOL_VERSION})
+	var reply := _send("HELLO", {"protocol_version": PROTOCOL_VERSION}, maxi(timeout_ms, 1000))
+	last_hello = reply
 	if not _ok(reply):
 		push_error("SimBridge: HELLO rejected: %s" % str(reply))
 		return false
@@ -77,12 +125,189 @@ func start_world(bundle: String, opts: Dictionary = {}) -> Dictionary:
 	var r := _send("START_WORLD", fields)
 	if _ok(r):
 		last_summary = r
+		mobility_enabled = bool(r.get("mobility_enabled", false))
+		outbreak_enabled = bool(r.get("outbreak_enabled", false))
+		work_enabled = bool(r.get("work_enabled", false))
+		cognition_enabled = bool(r.get("cognition_enabled", false))
+		dialogue_enabled = bool(r.get("dialogue_enabled", false))
+		groups_enabled = bool(r.get("groups_enabled", false))
 		world_started.emit(r)
 	return r
 
 
-func set_focus(zones: Array) -> Dictionary:
-	return _send("SET_FOCUS", {"zones": zones})
+func set_focus(zones: Array, xy = null) -> Dictionary:
+	var fields := {"zones": zones}
+	if xy != null:
+		fields["xy"] = [float(xy.x), float(xy.y)]
+	elif has_focus_xy:
+		fields["xy"] = [focus_xy.x, focus_xy.y]
+	return _send("SET_FOCUS", fields)
+
+
+# ---------------------------------------------------- embodied mobility (v4)
+func advance_time(seconds: float, want: String = "mobility") -> Dictionary:
+	## Advance the continuous movement clock by `seconds` of GAME time. The
+	## server auto-runs the epidemic tick when the sub-tick clock crosses the
+	## tick length (bit-identical to ADVANCE). `want` = "mobility" (movement
+	## block), "world" (full snapshot) or "" (summary only).
+	var fields := {"seconds": seconds}
+	if has_focus_xy:
+		fields["focus_xy"] = [focus_xy.x, focus_xy.y]
+	if want == "mobility":
+		fields["snapshot"] = "mobility"
+	elif want == "world":
+		fields["snapshot"] = true
+	var r := _send("ADVANCE_TIME", fields)
+	if _ok(r):
+		last_summary = r
+		if r.has("mobility") and r["mobility"] != null:
+			last_mobility = r["mobility"]
+		if r.has("world"):
+			last_world = r["world"]
+			if r["world"].has("mobility"):
+				last_mobility = r["world"]["mobility"]
+	return r
+
+
+func mobility_report(bodies: Array, dt: float) -> Dictionary:
+	## NEAR bodies report where physics actually put them (the physical result
+	## is the authority for NEAR progress; it can hold a trip back, never push it).
+	## bodies: [{"id": "cit:4", "x": .., "z": .., "blocked": bool}, ...]
+	return _send("MOBILITY_REPORT", {"bodies": bodies, "dt": dt})
+
+
+# ------------------------------------------------------------ outbreak (v5)
+func seed_outbreak(pathogen: String = "classic_zombie", citizen_id: int = -1) -> Dictionary:
+	## Enable the per-citizen outbreak and seed an index case (citizen_id < 0 =
+	## the data-driven choice). Python decides everything; Godot only embodies.
+	var fields := {"pathogen": pathogen}
+	if citizen_id >= 0:
+		fields["citizen_id"] = citizen_id
+	var r := _send("SEED_OUTBREAK", fields)
+	if _ok(r):
+		outbreak_enabled = true
+		if r.has("outbreak") and r["outbreak"] != null:
+			last_outbreak = r["outbreak"]
+	return r
+
+
+func get_outbreak(since_seq: int = 0) -> Dictionary:
+	var r := _send("GET_OUTBREAK", {"since_seq": since_seq})
+	if _ok(r) and r.has("outbreak") and r["outbreak"] != null:
+		last_outbreak = r["outbreak"]
+	return r
+
+
+# ------------------------------------------------- smart objects / work (v6)
+func get_work(since_seq: int = 0) -> Dictionary:
+	## Live work state: sessions, reservations, queues and the event log since
+	## `since_seq` (EMPLOYED, CLOCK_IN, TASK_START, MOVE_TO_OBJECT, RESERVED,
+	## USE_START/USE_END, SERVED, STATE_CHANGE, CLOCK_OUT, ...). Read-only truth:
+	## Godot never invents a session, a reservation or an event.
+	var r := _send("GET_WORK", {"since_seq": since_seq})
+	if _ok(r) and r.has("work") and r["work"] != null:
+		last_work = r["work"]
+	return r
+
+
+func get_rooms(building_id: int) -> Dictionary:
+	## The rooms (kind + zone + AABB + doors), smart objects (stable
+	## "so:<building>:<k>" ids, live state, holders, queue), entrance, occupants
+	## by room and workplace status of one building. Interior coordinates are
+	## WORLD metres — a staged interior adds IsometricWorld.interior_offset().
+	var r := _send("GET_ROOMS", {"building_id": building_id})
+	if _ok(r):
+		last_rooms = r
+	return r
+
+
+func set_object_state(object_id: String, key: String, value) -> Dictionary:
+	## Authoritative external change to one smart object (e.g. key "working"
+	## value false breaks a station: Python evicts its holders and they re-select).
+	## Godot asks; Python decides and reports the consequences.
+	return _send("SET_OBJECT_STATE", {"object_id": object_id, "key": key, "value": value})
+
+
+# ------------------------------------------------------- npc cognition (v7)
+func get_cognition(since_seq: int = 0) -> Dictionary:
+	## Live cognition state: the event log since `since_seq` (PERCEIVED,
+	## WARNING_SHARED/RECEIVED, HELP_DECIDED/STARTED/COMPLETED, RECIPROCATED,
+	## AVOID_ROOM_DECIDED, AVOID_DECIDED, AVOID_ENDED, SOCIAL_ACTION, ...), the
+	## per-kind counts, who is avoiding what, and the memory/relationship totals.
+	## Read-only truth: Godot never invents a memory, a belief or a decision.
+	var r := _send("GET_COGNITION", {"since_seq": since_seq})
+	if _ok(r) and r.has("cognition") and r["cognition"] != null:
+		last_cognition = r["cognition"]
+	return r
+
+
+func get_citizen_context(citizen_id: int) -> Dictionary:
+	## The structured context of one citizen: location, task, goal, needs,
+	## health, personality, salient memories (+ n_memories), people nearby,
+	## relationships, beliefs, perceived danger, what it is avoiding and the
+	## recent social events it took part in. The authority's own row — the gate
+	## and the dialogue layer read it, neither of them writes it.
+	var r := _send("GET_CITIZEN_CONTEXT", {"citizen_id": citizen_id})
+	if _ok(r) and r.has("context") and r["context"] != null:
+		last_context = r["context"]
+	return r
+
+
+# --------------------------------------------------- npc dialogue (v8)
+func talk(citizen_id: int, act: String, args: Dictionary = {}, player_citizen: int = -1) -> Dictionary:
+	## The player speaks to one NPC. `act` is one of the authority's bounded
+	## player acts (GREET, ASK_FACT, ASK_LOCATION, ASK_PERSON, ASK_SAFETY,
+	## ASK_FOR_HELP, THANK, END_CONVERSATION) and `args` its structured
+	## arguments (building_id / room_id / subject / citizen_id / event_ref /
+	## kind / object_id). The reply carries the authority's own rendered lines
+	## (`acts`, `lines`, `transcript`), the bounded `options`, the relationship
+	## `warmth` — or ok:false with a `reason` when the NPC is unavailable or not
+	## co-present. Godot composes NO dialogue: it displays these lines verbatim.
+	var f := {"citizen_id": citizen_id, "act": act, "args": args}
+	if player_citizen >= 0:
+		f["player_citizen"] = player_citizen
+	return _send("TALK", f)
+
+
+func get_dialogue(since_seq: int = 0) -> Dictionary:
+	## Live conversation state: active conversations, open requests and the
+	## event log since `since_seq` (CONVERSATION_STARTED/ENDED/INTERRUPTED,
+	## SPEECH_ACT, QUESTION_ASKED, ANSWERED, ANSWER_UNKNOWN, FACT_SHARED/
+	## RECEIVED, REQUEST_MADE/ACCEPTED/REFUSED/COMPLETED/FAILED, GROUNDING_*).
+	var r := _send("GET_DIALOGUE", {"since_seq": since_seq})
+	if _ok(r) and r.has("dialogue") and r["dialogue"] != null:
+		last_dialogue = r["dialogue"]
+	return r
+
+
+func get_groups_snapshot(since_seq: int = 0) -> Dictionary:
+	## Live survivor-group state (v9): the roster of groups (membership, shelter,
+	## roles, coordinator, shared record) and the event delta since `since_seq`
+	## (GROUP_FORMED, SHELTER_SELECTED, ROLE_PROPOSED/ACCEPTED, SUPPLY_*,
+	## GROUP_WARNING, MEMBER_LEFT, ...). The authority owns every fact here.
+	var r := _send("GET_GROUPS", {"since_seq": since_seq})
+	if _ok(r) and r.has("groups") and r["groups"] != null:
+		last_groups = r["groups"]
+	return r
+
+
+func group_query(op: String, citizen_id: int, player_citizen: int = -1) -> Dictionary:
+	## A bounded player question into the group layer (v9). `op` is one of:
+	##   membership  -> {in_group, role}         does this citizen belong to a group?
+	##   where       -> {group: {shelter, ...}}  where does its group shelter?
+	##   ask_to_join -> {result: {ok, accept, reason, aggregate}}  a grounded admission
+	## No free text; the reply is authoritative (the same decision NPCs use).
+	var fields := {"op": op, "citizen_id": citizen_id}
+	if player_citizen >= 0:
+		fields["player_citizen"] = player_citizen
+	return _send("GROUP_QUERY", fields)
+
+
+func get_mobility(routes: bool = true) -> Dictionary:
+	var r := _send("GET_MOBILITY", {"routes": routes})
+	if _ok(r) and r.has("mobility") and r["mobility"] != null:
+		last_mobility = r["mobility"]
+	return r
 
 
 func advance(ticks: int = 1, want_snapshot: bool = false) -> Dictionary:
@@ -177,6 +402,8 @@ func snapshot() -> Dictionary:
 	var r := _send("SNAPSHOT", {})
 	if _ok(r) and r.has("world"):
 		last_world = r["world"]
+		if r["world"].has("mobility"):
+			last_mobility = r["world"]["mobility"]
 	return r
 
 
@@ -193,6 +420,12 @@ func load(path: String) -> Dictionary:
 	var r := _send("LOAD", {"path": path})
 	if _ok(r):
 		last_summary = r
+		mobility_enabled = bool(r.get("mobility_enabled", mobility_enabled))
+		outbreak_enabled = bool(r.get("outbreak_enabled", outbreak_enabled))
+		work_enabled = bool(r.get("work_enabled", work_enabled))
+		cognition_enabled = bool(r.get("cognition_enabled", cognition_enabled))
+		dialogue_enabled = bool(r.get("dialogue_enabled", dialogue_enabled))
+		groups_enabled = bool(r.get("groups_enabled", groups_enabled))
 	return r
 
 
@@ -223,7 +456,7 @@ func _mean_belief_from(reply: Dictionary) -> float:
 	return clampf(s / zones.size(), 0.0, 1.0)
 
 
-func _send(cmd: String, fields: Dictionary) -> Dictionary:
+func _send(cmd: String, fields: Dictionary, timeout_ms: int = 120000) -> Dictionary:
 	if _peer == null:
 		return {"ok": false, "error": {"code": "no_connection", "message": "not connected"}}
 	_id += 1
@@ -231,18 +464,27 @@ func _send(cmd: String, fields: Dictionary) -> Dictionary:
 	for k in fields:
 		msg[k] = fields[k]
 	var line := JSON.stringify(msg) + "\n"
-	_peer.put_data(line.to_utf8_buffer())
-	return _read_reply()
+	if _peer.put_data(line.to_utf8_buffer()) != OK:
+		return _transport_error("send_failed", "could not send request")
+	var reply := _read_reply(timeout_ms)
+	if reply.get("ok", false) and not reply.has("id"):
+		return _transport_error("reply_mismatch", "successful response has no request id")
+	if reply.has("id") and int(reply["id"]) != _id:
+		return _transport_error("reply_mismatch", "response id does not match request")
+	return reply
 
 
-func _read_reply() -> Dictionary:
+func _read_reply(timeout_ms: int = 120000) -> Dictionary:
 	## Block until a full newline-terminated JSON line is available.
 	var buf := PackedByteArray()
+	var deadline := Time.get_ticks_msec() + timeout_ms
 	while true:
+		if Time.get_ticks_msec() >= deadline:
+			return _transport_error("reply_timeout", "authority did not return a complete response")
 		_peer.poll()
 		var status := _peer.get_status()
 		if status != StreamPeerTCP.STATUS_CONNECTED:
-			return {"ok": false, "error": {"code": "disconnected", "message": "peer closed"}}
+			return _transport_error("disconnected", "peer closed")
 		var avail := _peer.get_available_bytes()
 		if avail > 0:
 			var chunk := _peer.get_data(avail)
@@ -255,9 +497,19 @@ func _read_reply() -> Dictionary:
 					var parsed = JSON.parse_string(text)
 					if parsed is Dictionary:
 						return parsed
-					return {"ok": false, "error": {"code": "bad_reply", "message": text}}
+					return _transport_error("bad_reply", "authority returned invalid JSON")
 		else:
 			OS.delay_msec(1)
 	# Unreachable (the loop only exits via return), but GDScript's static analyser
 	# requires every code path to return a Dictionary.
 	return {"ok": false, "error": {"code": "unreachable", "message": ""}}
+
+
+func _transport_error(code: String, message: String) -> Dictionary:
+	# After timeout/correlation failure the stream cannot safely serve another
+	# request: a late response could otherwise be mistaken for the next command.
+	if _peer != null:
+		_peer.disconnect_from_host()
+	_peer = null
+	_set_connected(false)
+	return {"ok": false, "error": {"code": code, "message": message}}

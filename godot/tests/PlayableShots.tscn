@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bplyblshots1"]
+
+[ext_resource type="Script" path="res://tests/playable_shots.gd" id="1_plshot"]
+
+[node name="PlayableShots" type="Node"]
+script = ExtResource("1_plshot")

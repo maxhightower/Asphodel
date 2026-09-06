@@ -30,6 +30,8 @@ SOURCE_BASE_PRIORITY = {
     "need": 0.35,
     "schedule": 0.55,
     "social": 0.45,
+    "group": 0.62,       # a survivor-group objective the citizen accepted; clears the schedule preempt margin, below belief/health/emergency
+    "belief": 0.66,      # a citizen acting on what it knows (cognition layer); above any schedule goal
     "emergency": 0.92,
     "player": 1.0,
 }
@@ -71,8 +73,14 @@ class GoalStack:
         self.goals: List[Goal] = []
         self.preempt_margin = preempt_margin
         self._active: Optional[Goal] = None
+        # Per-stack id sequence: goal ids are unique within a citizen and
+        # reproducible across save/load (the module counter is only the
+        # default for goals built outside a stack).
+        self.seq = 0
 
     def push(self, goal: Goal) -> None:
+        goal.id = self.seq
+        self.seq += 1
         self.goals.append(goal)
 
     def remove(self, goal_id: int) -> None:

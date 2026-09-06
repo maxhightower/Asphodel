@@ -23,3 +23,12 @@ data/raw/
 
 # Claude Code agent worktrees (session tooling, never repository content)
 /.claude/
+
+# Windows-playable build outputs (Convergence V2). The client PCK/exe, the
+# frozen authority, and the shipped zip are large and reproducible from source
+# via tools/build_windows_playable.py — never committed. The honest build
+# record (manifest, export/freeze probes) lives under
+# artifacts/windows_playable_v2/ and IS committed.
+/dist/
+godot/dist/
+artifacts/windows_playable_v2/logs/

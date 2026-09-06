@@ -222,7 +222,7 @@ def test_saveload_preserves_survival_and_continuation(tmp_path):
 
 
 def test_save_version_bumped():
-    assert SAVE_VERSION == 2
+    assert SAVE_VERSION == 3
 
 
 # --------------------------------------------------------------------------- #

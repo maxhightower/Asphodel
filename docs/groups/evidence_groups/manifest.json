@@ -1,0 +1,483 @@
+{
+	"bundle": "houston",
+	"frames": [
+		{
+			"caption": "The three citizens ([42.0, 87.0, 117.0]) who will form the survivor group, co-present at 08:01 in the fresh world before any group exists. The pre-step drives their real cooperation (repeated mutual aid + fleeing danger together) here; a group forms only from that history — the fresh world's GET_GROUPS reports none yet.",
+			"clock": "08:01",
+			"co_present": true,
+			"file": "00_citizens_cooperating_before_formation.png",
+			"group_snapshot": {
+				"coordinator": null,
+				"entrance_room": null,
+				"group_id": "group:1",
+				"members": null,
+				"roles": null,
+				"shelter_building": null,
+				"shelter_room": null,
+				"supplies": null,
+				"threat_state": null
+			},
+			"hour": 8.02011111111111,
+			"inside_building": 2318,
+			"rendered_bodies": [
+				42,
+				87,
+				117
+			],
+			"trio": [
+				42.0,
+				87.0,
+				117.0
+			]
+		},
+		{
+			"caption": "The group's members [42, 87, 117] regrouped inside their shelter (building 6353). Each was sent there by a group REACH_SHELTER objective realised as a real hold goal on the individual — the group moved nobody directly. Rendered member bodies present: [42].",
+			"clock": "15:00",
+			"file": "01_members_regrouping_at_the_shelter.png",
+			"group_snapshot": {
+				"coordinator": 117.0,
+				"entrance_room": 0.0,
+				"group_id": "group:1",
+				"members": {
+					"117": "member",
+					"42": "member",
+					"87": "member"
+				},
+				"roles": {
+					"coordinator": 117.0,
+					"guard": 87.0
+				},
+				"shelter_building": 6353.0,
+				"shelter_room": 0.0,
+				"supplies": {
+					"food": 3.0
+				},
+				"threat_state": "calm"
+			},
+			"hour": 15.0027777777778,
+			"inside_building": 6353,
+			"regrouped_sidecar": [
+				42.0,
+				87.0,
+				117.0
+			],
+			"rendered_bodies": [
+				42
+			]
+		},
+		{
+			"caption": "The shelter building 6353 the group chose, seen from outside. It was selected from the buildings the members THEMSELVES know (aggregated from their node_meta, scored by member homes, believed safety and capacity) — never a citywide scan. SHELTER_SELECTED=1, SHELTER_PROPOSED=7 in the tape.",
+			"clock": "15:00",
+			"file": "02_selected_shelter_building.png",
+			"group_snapshot": {
+				"coordinator": 117.0,
+				"entrance_room": 0.0,
+				"group_id": "group:1",
+				"members": {
+					"117": "member",
+					"42": "member",
+					"87": "member"
+				},
+				"roles": {
+					"coordinator": 117.0,
+					"guard": 87.0
+				},
+				"shelter_building": 6353.0,
+				"shelter_room": 0.0,
+				"supplies": {
+					"food": 3.0
+				},
+				"threat_state": "calm"
+			},
+			"hour": 15.0041666666667,
+			"inside_building": -1,
+			"rendered_bodies": []
+		},
+		{
+			"caption": "AUTHORITY ROWS ONLY (the pixels show the world at this place/time, the group fact is proven by the paired snapshot): The coordinator (citizen 117) and members at the shelter. Roles were assigned through a REAL Dialogue V1 exchange (ASSIGN_ROLE -> ACCEPT/REFUSE): the authority logged ROLE_PROPOSED=2 and ROLE_ACCEPTED=3. The coordinator itself emerged at formation from highest influence. Held roles now: { \"coordinator\": 117.0, \"guard\": 87.0 }.",
+			"clock": "15:00",
+			"file": "03_role_assignment_conversation.png",
+			"group_snapshot": {
+				"coordinator": 117.0,
+				"entrance_room": 0.0,
+				"group_id": "group:1",
+				"members": {
+					"117": "member",
+					"42": "member",
+					"87": "member"
+				},
+				"roles": {
+					"coordinator": 117.0,
+					"guard": 87.0
+				},
+				"shelter_building": 6353.0,
+				"shelter_room": 0.0,
+				"supplies": {
+					"food": 3.0
+				},
+				"threat_state": "calm"
+			},
+			"hour": 15.0058333333333,
+			"inside_building": 6353,
+			"rendered_bodies": [
+				42
+			],
+			"role_events": [
+				{
+					"citizen_id": 117.0,
+					"event": "ROLE_ACCEPTED",
+					"group_id": "group:1",
+					"reason": "highest influence at formation",
+					"role": "coordinator",
+					"seq": 3.0,
+					"t": 7200.0
+				},
+				{
+					"citizen_id": 87.0,
+					"event": "ROLE_ACCEPTED",
+					"group_id": "group:1",
+					"obj_id": "group:1:obj:5",
+					"role": "guard",
+					"seq": 21.0,
+					"t": 10800.0
+				},
+				{
+					"citizen_id": 42.0,
+					"event": "ROLE_ACCEPTED",
+					"group_id": "group:1",
+					"obj_id": "group:1:obj:6",
+					"role": "scavenger",
+					"seq": 25.0,
+					"t": 10800.0
+				}
+			]
+		},
+		{
+			"caption": "AUTHORITY ROWS ONLY (the pixels show the world at this place/time, the group fact is proven by the paired snapshot): The group's guard (citizen 87) holding the shelter's entrance room (0.0). The guard was assigned through the role path and holds a real position goal at the entrance node — a physical watch, not a Smart Object task. Guard body rendered: false.",
+			"clock": "15:00",
+			"file": "04_guard_at_the_entrance.png",
+			"group_snapshot": {
+				"coordinator": 117.0,
+				"entrance_room": 0.0,
+				"group_id": "group:1",
+				"members": {
+					"117": "member",
+					"42": "member",
+					"87": "member"
+				},
+				"roles": {
+					"coordinator": 117.0,
+					"guard": 87.0
+				},
+				"shelter_building": 6353.0,
+				"shelter_room": 0.0,
+				"supplies": {
+					"food": 3.0
+				},
+				"threat_state": "calm"
+			},
+			"hour": 15.0072222222222,
+			"inside_building": 6353,
+			"rendered_bodies": [
+				42
+			]
+		},
+		{
+			"caption": "AUTHORITY ROWS ONLY (the pixels show the world at this place/time, the group fact is proven by the paired snapshot): The scavenger (citizen 42) the group sent for supplies. A supply shortage the group noticed (SUPPLY_NEED) assigned a scavenger through the role path (SUPPLY_RUN_ASSIGNED=1) who left for a shop it KNOWS holding stock. The outbound leg completed before the save; the tape proves it ran.",
+			"clock": "15:00",
+			"file": "05_scavenger_departing.png",
+			"group_snapshot": {
+				"coordinator": 117.0,
+				"entrance_room": 0.0,
+				"group_id": "group:1",
+				"members": {
+					"117": "member",
+					"42": "member",
+					"87": "member"
+				},
+				"roles": {
+					"coordinator": 117.0,
+					"guard": 87.0
+				},
+				"shelter_building": 6353.0,
+				"shelter_room": 0.0,
+				"supplies": {
+					"food": 3.0
+				},
+				"threat_state": "calm"
+			},
+			"hour": 15.0086111111111,
+			"inside_building": 6353,
+			"rendered_bodies": [
+				42
+			],
+			"supply_events": [
+				{
+					"citizen_id": 42.0,
+					"event": "SUPPLY_RUN_ASSIGNED",
+					"group_id": "group:1",
+					"node": "ent:2318",
+					"obj_id": "group:1:obj:6",
+					"object_id": "so:2318:1",
+					"seq": 26.0,
+					"source_building": 2318.0,
+					"t": 10801.0
+				}
+			]
+		},
+		{
+			"caption": "AUTHORITY ROWS ONLY (the pixels show the world at this place/time, the group fact is proven by the paired snapshot): The scavenger returning to the shelter. It decremented the shop object's stock (SUPPLY_ACQUIRED=1) and the group's supplies rose on return (SUPPLY_RETURNED=1); supplies now { \"food\": 3.0 }. The role was retired on completion (ROLE_COMPLETED).",
+			"clock": "15:00",
+			"file": "06_scavenger_returning.png",
+			"group_snapshot": {
+				"coordinator": 117.0,
+				"entrance_room": 0.0,
+				"group_id": "group:1",
+				"members": {
+					"117": "member",
+					"42": "member",
+					"87": "member"
+				},
+				"roles": {
+					"coordinator": 117.0,
+					"guard": 87.0
+				},
+				"shelter_building": 6353.0,
+				"shelter_room": 0.0,
+				"supplies": {
+					"food": 3.0
+				},
+				"threat_state": "calm"
+			},
+			"hour": 15.0091666666667,
+			"inside_building": 6353,
+			"rendered_bodies": [
+				42
+			],
+			"supply_returned": [
+				{
+					"amount": 3.0,
+					"building_id": 6353.0,
+					"citizen_id": 42.0,
+					"event": "SUPPLY_RETURNED",
+					"group_id": "group:1",
+					"have": 3.0,
+					"resource": "food",
+					"seq": 28.0,
+					"t": 11725.0
+				}
+			]
+		},
+		{
+			"caption": "AUTHORITY ROWS ONLY (the pixels show the world at this place/time, the group fact is proven by the paired snapshot): An outsider (citizen 0) near the group's shelter — a non-member the group can assess because some members remember it helping them. It is NOT in the group unless admitted through the real decision.",
+			"clock": "15:00",
+			"file": "07_outsider_at_the_shelter.png",
+			"group_snapshot": {
+				"coordinator": 117.0,
+				"entrance_room": 0.0,
+				"group_id": "group:1",
+				"members": {
+					"117": "member",
+					"42": "member",
+					"87": "member"
+				},
+				"roles": {
+					"coordinator": 117.0,
+					"guard": 87.0
+				},
+				"shelter_building": 6353.0,
+				"shelter_room": 0.0,
+				"supplies": {
+					"food": 3.0
+				},
+				"threat_state": "calm"
+			},
+			"hour": 15.0105555555556,
+			"inside_building": 6353,
+			"rendered_bodies": [
+				42
+			]
+		},
+		{
+			"admission_result": {
+				"accept": true,
+				"aggregate": 0.405,
+				"ok": true,
+				"reason": "group_agrees"
+			},
+			"caption": "The group deciding on the outsider (citizen 0), asked live through GROUP_QUERY ask_to_join via member 117: accept=true, reason=\"group_agrees\", aggregate=0.405. Each member voted from its OWN knowledge of the outsider, influence-weighted, resolved by the coordinator within capacity — a grounded decision.",
+			"clock": "15:00",
+			"file": "08_admission_or_refusal_interaction.png",
+			"group_snapshot": {
+				"coordinator": 117.0,
+				"entrance_room": 0.0,
+				"group_id": "group:1",
+				"members": {
+					"0": "provisional",
+					"117": "member",
+					"42": "member",
+					"87": "member"
+				},
+				"roles": {
+					"coordinator": 117.0,
+					"guard": 87.0
+				},
+				"shelter_building": 6353.0,
+				"shelter_room": 0.0,
+				"supplies": {
+					"food": 3.0
+				},
+				"threat_state": "calm"
+			},
+			"hour": 15.0119444444444,
+			"inside_building": 6353,
+			"rendered_bodies": [
+				42
+			]
+		},
+		{
+			"caption": "The collective threat response: a fresh threat seeded on/near the group (citizen 87). A member warns the group through the legitimate dialogue channel (the saved shared record already holds a GROUP_WARNING with preserved provenance, origin_witness set) and the group evacuates — each member's own flee/avoidance takes over. Group threat_state now \"calm\"; GROUP_WARNING count 1.",
+			"clock": "15:04",
+			"file": "09_collective_threat_response.png",
+			"group_snapshot": {
+				"coordinator": 117.0,
+				"entrance_room": 0.0,
+				"group_id": "group:1",
+				"members": {
+					"0": "provisional",
+					"117": "member",
+					"42": "member",
+					"87": "member"
+				},
+				"roles": {
+					"coordinator": 117.0,
+					"guard": 87.0
+				},
+				"shelter_building": 6353.0,
+				"shelter_room": 0.0,
+				"supplies": {
+					"food": 3.0
+				},
+				"threat_state": "calm"
+			},
+			"hour": 15.0702777777778,
+			"inside_building": 6353,
+			"rendered_bodies": [
+				42
+			],
+			"seeded": 87,
+			"warnings": [
+				{
+					"building_id": 6353.0,
+					"event": "GROUP_WARNING",
+					"fact_id": "group:1:fact:7",
+					"group_id": "group:1",
+					"reporter": 42.0,
+					"room_id": 0.0,
+					"seq": 29.0,
+					"subject": 888.0,
+					"t": 25200.0,
+					"told": [
+						87.0,
+						117.0
+					],
+					"uncontacted": []
+				}
+			]
+		}
+	],
+	"group_id": "group:1",
+	"save_path": "/tmp/asph_group_save.json",
+	"sidecar": {
+		"bundle": "houston",
+		"coordinator": 117.0,
+		"counts": {
+			"GROUP_DECISION": 1.0,
+			"GROUP_FORMED": 1.0,
+			"GROUP_OBJECTIVE_CREATED": 5.0,
+			"GROUP_PROPOSED": 1.0,
+			"GROUP_WARNING": 1.0,
+			"ROLE_ACCEPTED": 3.0,
+			"ROLE_COMPLETED": 3.0,
+			"ROLE_PROPOSED": 2.0,
+			"SHELTER_PROPOSED": 7.0,
+			"SHELTER_SELECTED": 1.0,
+			"SUPPLY_ACQUIRED": 1.0,
+			"SUPPLY_NEED": 1.0,
+			"SUPPLY_RETURNED": 1.0,
+			"SUPPLY_RUN_ASSIGNED": 1.0
+		},
+		"entrance_room": 0.0,
+		"formed_reason": "workplace:42-87; helped:42-87; trust:42-87; workplace:42-117; helped:42-117; trust:42-117",
+		"founders": [
+			42.0,
+			87.0,
+			117.0
+		],
+		"group_id": "group:1",
+		"guard_result": {
+			"accept": true,
+			"citizen_id": 87.0,
+			"reason": "",
+			"role": "guard",
+			"score": 0.89728
+		},
+		"hour_saved": 15.0,
+		"member_states": {
+			"117": "member",
+			"42": "member",
+			"87": "member"
+		},
+		"members": [
+			42.0,
+			87.0,
+			117.0
+		],
+		"n_groups": 1.0,
+		"non_member": 1.0,
+		"outsider": 0.0,
+		"regrouped": [
+			42.0,
+			87.0,
+			117.0
+		],
+		"reporter": 42.0,
+		"roles": {
+			"coordinator": 117.0,
+			"guard": 87.0
+		},
+		"save_path": "/tmp/asph_group_save.json",
+		"scavenger_result": {
+			"accept": true,
+			"citizen_id": 42.0,
+			"reason": "",
+			"role": "scavenger",
+			"score": 0.5682
+		},
+		"seed": 0.0,
+		"shelter_building": 6353.0,
+		"shelter_node": "ent:6353",
+		"shelter_room": 0.0,
+		"start_hour": 8.0,
+		"supplies": {
+			"food": 3.0
+		},
+		"threat_state": "calm",
+		"warn": {
+			"fact_id": "group:1:fact:7",
+			"told": [
+				87.0,
+				117.0
+			]
+		},
+		"warned_fact": {
+			"building_id": 6353.0,
+			"fact_id": "group:1:fact:7",
+			"kind": "threat_location",
+			"origin_witness": 42.0,
+			"source_citizen": 42.0,
+			"subject": 888.0
+		}
+	},
+	"version": 1
+}

@@ -45,6 +45,11 @@ from . import items
 # fixed (world_seed, building_id). A saved delta records the gen_version it was
 # made against; a mismatch is surfaced, never silently reinterpreted.
 INTERIOR_GEN_VERSION = 1
+# Note (ASPHODEL_SMART_OBJECTS_WORK_V1): the retail back-room decor palette
+# gained employee seating. Rooms, doorways, entrances and fixtures (the
+# authoritative container anchors) are generated before decor and are
+# unchanged for every (seed, building); only the presentation dressing of
+# retail interiors differs, so the generation version is not bumped.
 # Bump on a breaking change to the descriptor *shape* (wire contract).
 INTERIOR_SCHEMA_VERSION = 1
 
@@ -233,7 +238,7 @@ _ROOM_DECOR = {
     "hall": ["bench", "sideboard"],
     "garage": ["workbench", "tool_cabinet", "washer", "dryer", "water_heater", "shelf"],
     "shop_floor": ["gondola", "gondola", "checkout", "fridge_case", "display"],
-    "back_room": ["pallet_rack", "shelf", "crate", "freezer_case"],
+    "back_room": ["pallet_rack", "shelf", "crate", "freezer_case", "chair", "chair"],
     "storeroom": ["pallet_rack", "shelf", "crate"],
     "open_office": ["cubicle", "cubicle", "cubicle", "printer", "filing_cabinet"],
     "meeting": ["table", "chair", "chair", "chair", "chair", "monitor"],
@@ -527,7 +532,25 @@ def _place_decor(rng, rooms, fixtures) -> list:
         area = max((rx1 - rx0) * (ry1 - ry0), 1.0)
         target = max(len(kinds), min(len(slots), int(area / 12.0)))
         room_fx = [(f.x, f.y) for f in fixtures if f.room_id == room.room_id]
-        placed = list(room_fx)
+        # Spatial hash of placed pieces (1.2 m clearance -> 2 m cells): the
+        # clearance test is O(1) per slot instead of O(placed); the result is
+        # identical to the all-pairs test, so geometry hashes are unchanged.
+        cells: dict = {}
+
+        def _put(px, py):
+            cells.setdefault((int(px // 2.0), int(py // 2.0)), []).append((px, py))
+
+        def _clear(sx, sy):
+            cx_, cy_ = int(sx // 2.0), int(sy // 2.0)
+            for ix in (cx_ - 1, cx_, cx_ + 1):
+                for iy in (cy_ - 1, cy_, cy_ + 1):
+                    for px, py in cells.get((ix, iy), ()):
+                        if (sx - px) ** 2 + (sy - py) ** 2 <= 1.44:
+                            return False
+            return True
+
+        for px, py in room_fx:
+            _put(px, py)
         si = 0
         for n in range(target):
             kind = kinds[n % len(kinds)]   # cycle the room's palette to fill space
@@ -535,7 +558,7 @@ def _place_decor(rng, rooms, fixtures) -> list:
             while si < len(slots):
                 sx, sy = slots[si]
                 si += 1
-                if all((sx - px) ** 2 + (sy - py) ** 2 > 1.44 for px, py in placed):
+                if _clear(sx, sy):
                     chosen = (sx, sy)
                     break
             if chosen is None:
@@ -546,7 +569,7 @@ def _place_decor(rng, rooms, fixtures) -> list:
                                kind=kind, facing=float(facing),
                                variant=int(rng.integers(0, 3))))
             did += 1
-            placed.append(chosen)
+            _put(chosen[0], chosen[1])
     return decor
 
 

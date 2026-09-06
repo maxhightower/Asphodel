@@ -43,6 +43,7 @@ var _sun: DirectionalLight3D
 var _exterior: ExteriorWorld = null
 var _region_loader: RegionLoader = null
 var _citizen_render: Node3D
+var _embodied: EmbodiedMobility = null     # NEAR bodies of the embodied mobility runtime
 var _has_compiled_world := false
 
 # --- authoritative bookkeeping (identity, not truth) ------------------------
@@ -59,6 +60,10 @@ var _spawn_pos: Vector3
 # --- interior state ---------------------------------------------------------
 var _active_interior: Node3D = null
 var _inside_building := -1
+## The translation _enter_building staged the active interior with
+## (INTERIOR_STAGE_ANCHOR - hull centre). Authoritative interior coordinates are
+## WORLD metres, so a point p reported by Python renders at _interior_offset + p.
+var _interior_offset := Vector3.ZERO
 var _interior_return_pos := Vector3.ZERO
 
 # --- HUD --------------------------------------------------------------------
@@ -68,6 +73,15 @@ var _target_label: Label
 var _inventory_label: Label
 var _status_label: Label
 var _pause_layer: CanvasLayer
+
+# --- npc dialogue (ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1) ------------------
+var _dialogue: DialoguePanel = null
+var _inspector: SimulationInspector = null       # F3 developer/player simulation lens (read-only)
+var _build_overlay: BuildOverlay = null          # F10 build/sim SHA + flags overlay
+var _event_feed: EventFeed = null                # bounded developer event feed
+var _follow_cam: FollowCamera = null             # presentation-only follow helper
+var _speech_bubble: Label3D = null          # the NPC's last line, over its body
+var _last_citizen_seen := -1                # ASK_PERSON fallback subject
 
 
 func _ready() -> void:
@@ -102,6 +116,7 @@ func _ready() -> void:
 
 	_spawn_player(_bundle_roads(bundle))
 	_setup_camera()
+	_attach_player_body()
 	_setup_interaction()
 	_build_hud()
 	_build_pause_overlay()
@@ -134,7 +149,9 @@ func _ensure_input() -> void:
 	var key_binds := {
 		"move_forward": KEY_W, "move_back": KEY_S,
 		"move_left": KEY_A, "move_right": KEY_D, "sprint": KEY_SHIFT,
-		"interact": KEY_E,
+		"interact": KEY_E, "talk": KEY_T,
+		"dialogue_1": KEY_1, "dialogue_2": KEY_2, "dialogue_3": KEY_3,
+		"dialogue_4": KEY_4, "dialogue_5": KEY_5, "dialogue_6": KEY_6,
 		"cam_rotate_left": KEY_BRACKETLEFT, "cam_rotate_right": KEY_BRACKETRIGHT,
 		"cam_zoom_in": KEY_EQUAL, "cam_zoom_out": KEY_MINUS,
 		"time_pause": KEY_SPACE, "time_fast": KEY_F,
@@ -367,6 +384,43 @@ func _setup_camera() -> void:
 		_exterior.force_materialize(_camera.get_focus())
 
 
+## Give the embodied player a VISIBLE character model, built from the same
+## humanoid system as the crowd (CitizenAvatar + the shared NPC shader) so the
+## person you inhabit is shaded and animated exactly like everyone else. The look
+## is presentation-only: a deterministic function of the citizen's name (see
+## player_appearance), so it never touches the authority or simulation identity.
+func _attach_player_body() -> void:
+	if _player == null:
+		return
+	var appearance := player_appearance(Session.citizen)
+	var material := CitizenVisualIdentity.build_material()
+	var avatar := CitizenAvatar.new()
+	# cid = -1: the body is not an interaction candidate and must never masquerade
+	# as a persisted, identified citizen — appearance is passed in directly.
+	avatar.configure(-1, appearance, material, 0.0, CitizenMeshes.LOD_NEAR)
+	_player.set_body(avatar)
+
+
+## The player's appearance, derived deterministically from their citizen name so
+## the same person always looks the same across sessions, without depending on a
+## citizen id the roster does not carry. No name => the anonymous seed-0 look.
+static func player_appearance(citizen: Dictionary) -> Dictionary:
+	var name := str(citizen.get("name", ""))
+	if name == "":
+		return CitizenVisualIdentity.appearance_from_seed(0)
+	return CitizenVisualIdentity.appearance_from_seed(_name_seed(name))
+
+
+## Stable 31-bit hash of a name (FNV-1a). Independent of the citizen-id seed used
+## by the crowd, but every bit as deterministic.
+static func _name_seed(name: String) -> int:
+	var h := 2166136261
+	for b in name.to_utf8_buffer():
+		h = (h ^ int(b)) & 0xFFFFFFFF
+		h = (h * 16777619) & 0xFFFFFFFF
+	return h & 0x7FFFFFFF
+
+
 func _find_clear_spawn(desired: Vector2) -> Vector2:
 	if not _inside_building_footprint(desired):
 		return desired
@@ -393,22 +447,30 @@ func _inside_building_footprint(p: Vector2) -> bool:
 # ------------------------------------------------------------------ live world
 func _connect_live_world(dir: String, meta: Dictionary) -> void:
 	var bundle_name := dir.get_file()
-	if not SimBridge.connect_to_sim():
-		push_warning("isometric_world: no live World bridge — outbreak holds. "
-			+ "Start it with: python -m asphodel.bridge.server")
+	# Convergence V2: bring up the owned authority automatically (no manual server,
+	# no terminal) and FAIL CLOSED — never fall back to a silent, dead viewer.
+	var boot: Dictionary = AuthorityLauncher.ensure_authority()
+	if not boot.get("ok", false):
+		FatalError.show_error(get_tree(), AuthorityLauncher.last_error_code,
+			AuthorityLauncher.last_error_detail)
 		return
-	var opts := {"seed": int(meta.get("seed", 0))}
+	var opts := {"seed": int(meta.get("seed", 0)), "require_full_stack": true}
 	# If the flow told us which citizen the player embodies, pass it so the player's
 	# home zone is promoted with them (and their identified neighbours) present.
 	var pcid := int(Session.citizen.get("citizen_id", -1)) if Session.citizen.has("citizen_id") else -1
 	if pcid >= 0:
 		opts["player_citizen_id"] = pcid
+	# A harness may ask for a specific in-game start hour (Session.start_hour);
+	# the authority owns the clock either way.
+	if Session.start_hour >= 0.0:
+		opts["start_hour"] = Session.start_hour
 	var started: Dictionary = SimBridge.start_world(bundle_name, opts)
 	if not started.get("ok", false):
-		push_warning("isometric_world: START_WORLD failed: %s" % str(started))
-		SimBridge.disconnect_from_sim()
+		FatalError.show_error(get_tree(), "authority_crashed",
+			"START_WORLD failed: %s" % str(started))
 		return
-	_player_home_zone = int(started.get("player_home_zone", -1))
+	var phz = started.get("player_home_zone")
+	_player_home_zone = int(phz) if phz != null else -1
 	GameClock.bind_bridge(SimBridge)
 	_zone_map = ZoneMap.new()
 	_zone_map.load_from_zones(_zones)
@@ -417,6 +479,22 @@ func _connect_live_world(dir: String, meta: Dictionary) -> void:
 	_citizen_render = load("res://scripts/citizen_render.gd").new()
 	_citizen_render.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(_citizen_render)
+	# Embodied mobility: the movement clock's NEAR band becomes real bodies
+	# (CitizenBody / VehicleBody) around the player and reports physics back.
+	if SimBridge.mobility_enabled:
+		_embodied = EmbodiedMobility.new()
+		_embodied.name = "EmbodiedMobility"
+		_embodied.process_mode = Node.PROCESS_MODE_PAUSABLE
+		# Seat exterior bodies on the real rendered ground, not a flat datum (§17).
+		if _exterior != null:
+			_embodied.set_height_provider(_exterior)
+		# Bodies must keep up with the clock's pacing (game seconds per real second).
+		_embodied.time_scale = (24.0 * 3600.0 / GameClock.REAL_SECONDS_PER_DAY) * GameClock.time_scale
+		add_child(_embodied)
+		GameClock.mobility_updated.connect(_embodied.apply)
+		if _player != null:
+			SimBridge.focus_xy = Vector2(_player.position.x, _player.position.z)
+			SimBridge.has_focus_xy = true
 	var snap: Dictionary = SimBridge.snapshot()
 	if snap.get("ok", false):
 		GameClock.apply_outbreak(SimBridge._mean_belief_from(snap))
@@ -459,6 +537,8 @@ func _zone_extent(zid: int) -> Vector2:
 
 # ------------------------------------------------------------------ per-frame
 func _physics_process(_delta: float) -> void:
+	if _dialogue != null and _dialogue.is_open():
+		_update_speech_bubble()
 	if _player != null and _player.position.y < FALL_KILL_Y and _inside_building < 0:
 		_player.teleport(_spawn_pos + Vector3(0.0, 2.0, 0.0))
 	_update_live_bubble()
@@ -468,6 +548,10 @@ func _physics_process(_delta: float) -> void:
 func _update_live_bubble() -> void:
 	if _zone_map == null or _player == null or not SimBridge.is_connected_to_sim():
 		return
+	# The player's ground position is the embodied LOD focus (bodies within the
+	# physical radius); sent with every ADVANCE_TIME.
+	SimBridge.focus_xy = Vector2(_player.position.x, _player.position.z)
+	SimBridge.has_focus_xy = true
 	if _inside_building >= 0:
 		return
 	var z := _zone_map.zone_of_xy(_player.position.x, _player.position.z)
@@ -485,6 +569,7 @@ func _update_highlight() -> void:
 	if _highlight == null or _interaction == null or _player == null:
 		return
 	_highlight.mark_player(_player.global_position)
+	_update_cursor()
 	var target: Dictionary = _interaction.resolve_target(true)
 	if target.is_empty():
 		_highlight.clear_target()
@@ -495,7 +580,56 @@ func _update_highlight() -> void:
 		if _target_label != null:
 			var actions: Array = _interaction.query_affordances(target)
 			var verb := str(actions[0]) if actions.size() > 0 else ""
-			_target_label.text = "%s   [E / click: %s]" % [_interaction.describe(target), verb]
+			var extra := "   [T: Talk]" if actions.has("Talk") else ""
+			_target_label.text = "%s   [E / click: %s]%s" % [_interaction.describe(target), verb, extra]
+		var tk := int(target.get("kind", 0))
+		if tk == IsometricInteraction.CITIZEN or tk == IsometricInteraction.OCCUPANT:
+			_last_citizen_seen = int(target.get("id", -1))
+
+
+## Place the cursor reticle at the ground point under the mouse. Prefer the real
+## surface (a physics ray against the world's static geometry — ground, roads,
+## buildings), so the reticle rides roofs and slopes; fall back to the flat ground
+## plane, and hide when the cursor points at nothing (e.g. off the world, or the
+## far city plane while inside a staged interior).
+func _update_cursor() -> void:
+	if _highlight == null or _camera == null or not is_instance_valid(_camera):
+		return
+	var vp := _camera.get_viewport()
+	if vp == null:
+		_highlight.hide_cursor()
+		return
+	var mouse := vp.get_mouse_position()
+	var from := _camera.project_ray_origin(mouse)
+	var dir := _camera.project_ray_normal(mouse)
+	var space := get_world_3d().direct_space_state
+	var q := PhysicsRayQueryParameters3D.create(
+		from, from + dir * 4000.0, CollisionLayers.WORLD_STATIC)
+	var hit := space.intersect_ray(q)
+	if not hit.is_empty():
+		_highlight.show_cursor(hit["position"])
+		return
+	if _inside_building >= 0:
+		_highlight.hide_cursor()
+		return
+	var ground_y := -0.5 if _has_compiled_world else 0.0
+	var p = ray_ground_point(from, dir, ground_y)
+	if p == null:
+		_highlight.hide_cursor()
+	else:
+		_highlight.show_cursor(p)
+
+
+## Intersect the ray origin + t*dir with the horizontal plane y = ground_y for the
+## first t >= 0. Returns a Vector3, or null when the ray is parallel to the plane
+## or points away from it. Pure and continuous — no snapping, unit-tested.
+static func ray_ground_point(origin: Vector3, dir: Vector3, ground_y: float) -> Variant:
+	if absf(dir.y) < 0.000001:
+		return null
+	var t := (ground_y - origin.y) / dir.y
+	if t < 0.0:
+		return null
+	return origin + dir * t
 
 
 # ------------------------------------------------------------------ interaction
@@ -647,9 +781,18 @@ func _enter_building(bid: int) -> void:
 			sx += float(p[0]); sy += float(p[1])
 		hc = Vector3(sx / hull.size(), 0.0, sy / hull.size())
 	var offset := INTERIOR_STAGE_ANCHOR - hc
+	_interior_offset = offset
 	_active_interior = InteriorBuilder.build(desc, offset)
 	add_child(_active_interior)
 	_inside_building = bid
+	# ASPHODEL_SMART_OBJECTS_WORK_V1: embody the occupants/workers of THIS
+	# building inside the staged interior (authoritative interior positions) and
+	# ring the smart objects that currently have a holder.
+	if _embodied != null:
+		_embodied.set_interior(bid, offset, _active_interior, InteriorBuilder.FLOOR_Y)
+		if not SimBridge.last_mobility.is_empty():
+			_embodied.apply(SimBridge.last_mobility, 0.0)
+		_embodied.refresh_object_markers()
 	var ents: Array = desc.get("entrances", [])
 	var spawn := offset + hc + Vector3(0, 1.5, 0)
 	if ents.size() > 0:
@@ -676,8 +819,11 @@ func _leave_building() -> void:
 		return
 	if _cutaway != null:
 		_cutaway.clear()
+	if _embodied != null:
+		_embodied.clear_interior()
 	_active_interior.queue_free()
 	_active_interior = null
+	_interior_offset = Vector3.ZERO
 	var bid := _inside_building
 	_inside_building = -1
 	SimBridge.leave_building()
@@ -751,7 +897,184 @@ func _build_hud() -> void:
 	layer.add_child(_status_label)
 
 	_build_time_controls(layer)
+	_build_dialogue_panel()
+	_build_observer_layer()
 	_refresh_inventory_hud()
+
+
+# ------------------------------------------- observer / simulation lens (read-only)
+func _build_observer_layer() -> void:
+	## Developer/observer surfaces that make the authoritative backend legible
+	## (Convergence V2 §19-§25). Every one is READ-ONLY: they call only the
+	## bridge's GET_* / query commands and never mutate the world.
+	_build_overlay = BuildOverlay.new()
+	_build_overlay.name = "BuildOverlay"
+	add_child(_build_overlay)
+	_build_overlay.set_bridge(SimBridge)
+
+	_inspector = SimulationInspector.new()
+	_inspector.name = "SimulationInspector"
+	add_child(_inspector)
+	_inspector.set_bridge(SimBridge)
+
+	_event_feed = EventFeed.new()
+	_event_feed.name = "EventFeed"
+	add_child(_event_feed)
+	_event_feed.set_bridge(SimBridge)
+
+	_follow_cam = FollowCamera.new()
+	_follow_cam.name = "FollowCamera"
+	add_child(_follow_cam)
+	_follow_cam.set_bridge(SimBridge)
+
+	# Default the lens to the player's own citizen so F3 shows something at once.
+	var pcid := int(Session.citizen.get("citizen_id", -1)) if Session.citizen.has("citizen_id") else -1
+	if pcid >= 0:
+		_inspector.set_selected(pcid)
+		_follow_cam.follow(pcid)
+
+	# Drive the event feed's bounded poll (the inspector/overlay self-refresh).
+	var t := Timer.new()
+	t.name = "ObserverPoll"
+	t.wait_time = 1.0
+	t.autostart = true
+	add_child(t)
+	t.timeout.connect(func():
+		if _event_feed != null:
+			_event_feed.poll())
+
+
+# --------------------------------------------- npc dialogue (player <-> NPC)
+func _build_dialogue_panel() -> void:
+	## The panel is a window on the authority: it sends TALK and displays the
+	## lines the DialogueRuntime rendered. Godot writes no dialogue.
+	_dialogue = DialoguePanel.new()
+	_dialogue.name = "DialoguePanel"
+	add_child(_dialogue)
+	_dialogue.player_citizen = int(Session.citizen.get("citizen_id", -1)) \
+		if Session.citizen.has("citizen_id") else -1
+	# Display names only (identity, never truth): the bundle roster, by index.
+	var dir: String = Session.bundle_dir if Session.bundle_dir != "" else "res://sample_bundle"
+	var roster := BundleLoader.load_citizens(dir)
+	var names := {}
+	for i in range(roster.size()):
+		names[i] = str(roster[i].get("name", ""))
+	_dialogue.names = names
+	_dialogue.talked.connect(_on_dialogue_reply)
+
+
+## Open the dialogue panel on one citizen id (the authority decides whether the
+## conversation happens at all). Public so the gate/shots drive the real path.
+func talk_to_citizen(cid: int) -> Dictionary:
+	if _dialogue == null or cid < 0 or not SimBridge.is_connected_to_sim():
+		return {}
+	_dialogue.context_building_id = _inside_building
+	_dialogue.context_room_id = -1
+	_dialogue.context_subject = _last_citizen_seen if _last_citizen_seen != cid else -1
+	_dialogue.context_object_id = _nearest_station_id()
+	var reply: Dictionary = _dialogue.open_with(cid)
+	if reply.get("ok", false) == true:
+		_set_status("Talking to citizen %d — 1..6 to speak, T to close" % cid)
+	else:
+		_set_status("citizen %d will not talk: %s" % [cid, str(reply.get("reason", reply.get("error")))])
+	return reply
+
+
+## Resolve the current interaction target and talk to it if it is a citizen.
+func talk_to_target() -> Dictionary:
+	if _interaction == null:
+		return {}
+	var target: Dictionary = _interaction.resolve_target(true)
+	var kind := int(target.get("kind", 0))
+	if kind != IsometricInteraction.CITIZEN and kind != IsometricInteraction.OCCUPANT:
+		_set_status("Nobody to talk to here")
+		return {}
+	_interaction.set_selected(target)
+	return talk_to_citizen(int(target.get("id", -1)))
+
+
+## Send bounded option i (0..5) of the open panel.
+func dialogue_choose(i: int) -> Dictionary:
+	if _dialogue == null or not _dialogue.is_open():
+		return {}
+	_dialogue.context_building_id = _inside_building
+	_dialogue.context_object_id = _nearest_station_id()
+	var reply: Dictionary = _dialogue.choose(i)
+	if str(DialoguePanel.OPTIONS[i]["act"]) == "END_CONVERSATION":
+		_close_dialogue_soon()
+	return reply
+
+
+func get_dialogue_panel() -> DialoguePanel:
+	return _dialogue
+
+
+func close_dialogue() -> void:
+	if _dialogue != null and _dialogue.is_open():
+		_dialogue.close()
+	_clear_speech_bubble()
+
+
+func _close_dialogue_soon() -> void:
+	# leave the goodbye lines up for a moment, then close
+	await get_tree().create_timer(1.2).timeout
+	close_dialogue()
+
+
+func _on_dialogue_reply(_reply: Dictionary) -> void:
+	_update_speech_bubble()
+
+
+## The smart object nearest the player inside the current building, from the
+## authority's own GET_ROOMS list ("" when outdoors or none). Used only as the
+## optional object_id of an ASK_FOR_HELP.
+func _nearest_station_id() -> String:
+	if _inside_building < 0 or not SimBridge.is_connected_to_sim():
+		return ""
+	var rooms: Dictionary = SimBridge.get_rooms(_inside_building)
+	var best := ""
+	var best_d := INF
+	var pp := _player.global_position if _player != null else Vector3.ZERO
+	for o in rooms.get("objects", []):
+		var w: Vector3 = _interior_offset + Vector3(float(o["x"]), 0.0, float(o["y"]))
+		var d := Vector2(w.x, w.z).distance_to(Vector2(pp.x, pp.z))
+		if d < best_d:
+			best_d = d
+			best = str(o["object_id"])
+	return best
+
+
+## Draw the NPC's last line above its body (the same authority string the panel
+## shows; no second rendering path).
+func _update_speech_bubble() -> void:
+	if _dialogue == null or not _dialogue.is_open() or _embodied == null:
+		_clear_speech_bubble()
+		return
+	var line := str(_dialogue.last_npc_line)
+	var body: Node3D = _embodied.body_of("cit:%d" % _dialogue.npc)
+	if line == "" or body == null or not is_instance_valid(body):
+		_clear_speech_bubble()
+		return
+	if _speech_bubble == null or not is_instance_valid(_speech_bubble):
+		_speech_bubble = Label3D.new()
+		_speech_bubble.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		_speech_bubble.no_depth_test = true
+		_speech_bubble.fixed_size = true
+		_speech_bubble.pixel_size = 0.0016
+		_speech_bubble.font_size = 44
+		_speech_bubble.outline_size = 12
+		_speech_bubble.modulate = Color(1.0, 1.0, 0.85)
+		_speech_bubble.width = 900
+		_speech_bubble.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		add_child(_speech_bubble)
+	_speech_bubble.text = line
+	_speech_bubble.global_position = body.global_position + Vector3(0.0, 2.2, 0.0)
+	_speech_bubble.visible = true
+
+
+func _clear_speech_bubble() -> void:
+	if _speech_bubble != null and is_instance_valid(_speech_bubble):
+		_speech_bubble.visible = false
 
 
 func _build_time_controls(layer: CanvasLayer) -> void:
@@ -881,12 +1204,28 @@ func _to_menu() -> void:
 	get_tree().change_scene_to_file("res://MainMenu.tscn")
 
 
+func _dialogue_key(event: InputEvent) -> int:
+	for i in range(6):
+		if event.is_action_pressed("dialogue_%d" % (i + 1)):
+			return i
+	return -1
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		if _pause_layer != null and _pause_layer.visible:
+		if _dialogue != null and _dialogue.is_open():
+			close_dialogue()
+		elif _pause_layer != null and _pause_layer.visible:
 			_resume()
 		elif _pause_layer != null:
 			_pause()
+	elif event.is_action_pressed("talk"):
+		if _dialogue != null and _dialogue.is_open():
+			close_dialogue()
+		else:
+			talk_to_target()
+	elif _dialogue != null and _dialogue.is_open() and _dialogue_key(event) >= 0:
+		dialogue_choose(_dialogue_key(event))
 	elif event.is_action_pressed("interact"):
 		interact()
 	elif event.is_action_pressed("time_pause"):
@@ -894,6 +1233,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("time_fast"):
 		GameClock.set_paused(false)
 		GameClock.time_scale = FAST_TIME_SCALE if GameClock.time_scale < FAST_TIME_SCALE else 1.0
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F3:
+		if _inspector != null:
+			_inspector.toggle()
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F4:
+		if _event_feed != null:
+			_event_feed.toggle()
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		interact()
 
@@ -903,14 +1248,19 @@ func get_player() -> Node3D: return _player
 func get_camera() -> Camera3D: return _camera
 func get_exterior() -> ExteriorWorld: return _exterior
 func get_interaction() -> Node: return _interaction
+func get_highlight() -> Node3D: return _highlight
 func get_cutaway() -> Node: return _cutaway
 func active_interior() -> Node3D: return _active_interior
 func inside_building() -> int: return _inside_building
+## The offset the active interior is staged with: world point p (authoritative
+## interior metres) renders at interior_offset() + Vector3(p.x, floor_y, p.y).
+func interior_offset() -> Vector3: return _interior_offset
 func focus_zone() -> int: return _current_focus_zone
 func building_count() -> int: return _building_aabb.size()
 
 
 func get_citizen_render() -> Node3D: return _citizen_render
+func get_embodied() -> EmbodiedMobility: return _embodied
 func render_live_now() -> void: _render_live()
 func gather_candidates() -> Array: return _gather_candidates()
 func enter_building_by_id(bid: int) -> void: _enter_building(bid)

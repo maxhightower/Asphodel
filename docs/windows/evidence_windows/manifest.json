@@ -1,0 +1,3540 @@
+{
+	"bundle": "houston",
+	"frames": [
+		{
+			"authoritative_trace": "Every line is read verbatim from the already-fetched handshake/summary: SimBridge.last_summary + SimBridge.PROTOCOL_VERSION. The paired 'overlay' dict is exactly what the panel displayed.",
+			"authority": {
+				"flags": {
+					"cognition": true,
+					"dialogue": true,
+					"groups": true,
+					"mobility": true,
+					"outbreak": false,
+					"work": true
+				},
+				"overlay": {
+					"city": "houston",
+					"connected": true,
+					"flags": {
+						"cognition": true,
+						"dialogue": true,
+						"groups": true,
+						"mobility": true,
+						"outbreak": false,
+						"work": true
+					},
+					"game_day": 1,
+					"godot_sha": "dev",
+					"hour": 8.27267524666667,
+					"protocol_reported": 9.0,
+					"protocol_speaks": 9,
+					"sim_sha": "7eb287b11b1946544f19751a2c929466c8f781cb"
+				},
+				"protocol_reported": 9.0,
+				"protocol_speaks": 9,
+				"sim_sha": "7eb287b11b1946544f19751a2c929466c8f781cb"
+			},
+			"clock": "08:00",
+			"distinct_colors_sampled": 588,
+			"file": "00_build_metadata.png",
+			"hour": 8.00350858,
+			"inference": "The overlay proves WHICH client is bound to WHICH authority; it does not by itself prove any downstream system is running (the later frames do).",
+			"inside_building": -1,
+			"kind": "full_render",
+			"size": [
+				1280,
+				720
+			],
+			"visible_fact": "The BuildOverlay panel (top-left) rendered over the live city: it names this Godot client's build, the authority's sim SHA, the protocol version the client speaks vs the handshake reported, the city, the CONNECTED state, the game clock and which feature flags are on."
+		},
+		{
+			"authoritative_trace": "Focus citizen c10 at authoritative (1616.13, -19.401), state=on_foot; the rendered ground surface height there is 0.020 m (a flat datum would be 0). Rendered NEAR bodies present: [10, 130].",
+			"authority": {
+				"focus_citizen": 10,
+				"rendered_bodies": [
+					10,
+					130
+				],
+				"row": {
+					"activity": "traveling",
+					"band": "physical",
+					"blocked": false,
+					"building_id": -1.0,
+					"citizen_id": 10.0,
+					"cognition": {
+						"avoiding": null,
+						"helping": null,
+						"n_memories": 0.0,
+						"n_relationships": 0.0,
+						"top_belief": null
+					},
+					"destination": [
+						1724.88,
+						-385.85
+					],
+					"dialogue": {
+						"channel": null,
+						"conversation": null,
+						"open_requests": [],
+						"with": null
+					},
+					"failure": "",
+					"goal": "do_activity",
+					"goal_target": "ent:8439",
+					"group": {
+						"group": null
+					},
+					"heading": -3.1175,
+					"in_vehicle_speed": null,
+					"n_steps": 4.0,
+					"override": "",
+					"progress": 0.1339,
+					"speed": 1.4,
+					"state": "on_foot",
+					"step": "walk",
+					"step_index": 1.0,
+					"trip_failed": false,
+					"vehicle_id": null,
+					"work": {
+						"carrying": "",
+						"help_for": null,
+						"object_id": null,
+						"phase": null,
+						"role": null,
+						"room_id": null,
+						"task": null,
+						"workplace_id": null,
+						"zone": null
+					},
+					"x": 1616.13,
+					"y": -19.401
+				},
+				"surface_height_m": 0.02
+			},
+			"clock": "10:31",
+			"distinct_colors_sampled": 356,
+			"file": "01_ordinary_street_citizens.png",
+			"hour": 10.51850858,
+			"inference": "The screenshot shows placement on the surface; it does not show WHY a citizen walks there (that is the mobility authority, sampled in the paired rows).",
+			"inside_building": -1,
+			"kind": "full_render",
+			"size": [
+				1280,
+				720
+			],
+			"visible_fact": "An ordinary street with embodied CitizenBody agents standing/walking on the exterior ground. The VISIBLE FACT is feet-on-surface: the bodies rest on the sidewalk/lot they occupy, NOT sunk beneath the raised relief (the §17 ground-height fix seats each body on ExteriorWorld.surface_height_at, not a flat datum)."
+		},
+		{
+			"authoritative_trace": "A still cannot show motion, but the authoritative rows do: over the 10 minutes advanced between samples, 134 citizens changed position by >1 m; the mobility block reports 223 vehicles now (was 223). n_vehicles=223.0.",
+			"authority": {
+				"citizens_moved_gt1m": 134,
+				"focus_citizen": 6,
+				"framed_at_vehicle": true,
+				"n_vehicles": 223,
+				"sample_minutes": 10
+			},
+			"clock": "10:41",
+			"distinct_colors_sampled": 252,
+			"file": "02_commute.png",
+			"hour": 10.6873974688889,
+			"inference": "That some bodies stand still in the frame is not evidence of a frozen sim — motion is proven by the paired position deltas, not the pixels.",
+			"inside_building": -1,
+			"kind": "full_render",
+			"size": [
+				1280,
+				720
+			],
+			"visible_fact": "The city mid-commute: embodied pedestrians on the streets and, where the mobility block reports them in the physical band, VehicleBody vehicles on the roads."
+		},
+		{
+			"authoritative_trace": "Entered building 15873 via SimBridge.enter_building. GET_ROOMS reports 119 smart objects in it; 12 citizens are inside it (states doing_activity/inside_building): [8, 19, 25, 82, 132, 143, 167, 169, 222, 277, 287, 297]. Rendered worker bodies present: [8, 19, 25, 82, 132, 143, 167, 169, 222, 277, 287, 297].",
+			"authority": {
+				"building_id": 15873,
+				"n_smart_objects": 119,
+				"objects": [
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -1.571,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:0",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "fixture",
+						"state": {
+							"dirty": false,
+							"stock": 60.0
+						},
+						"x": -2208.64,
+						"y": 1198.44
+					},
+					{
+						"affordances": [
+							"use_storage"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"food",
+							"storage"
+						],
+						"exclusive": true,
+						"facing": 1.571,
+						"holders": [],
+						"kind": "fridge",
+						"object_id": "so:15873:1",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "fixture",
+						"state": {
+							"stock": 50.0
+						},
+						"x": -2219.5,
+						"y": 1199.64
+					},
+					{
+						"affordances": [
+							"occupy_station",
+							"transact",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"counter",
+							"station",
+							"transact"
+						],
+						"exclusive": true,
+						"facing": -0.384,
+						"holders": [],
+						"kind": "checkout",
+						"object_id": "so:15873:10",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"served": 0.0,
+							"working": true
+						},
+						"x": -2233.98,
+						"y": 1197.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -0.313,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:100",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 52.0
+						},
+						"x": -2233.98,
+						"y": 1220.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -0.488,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:101",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2233.98,
+						"y": 1223.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": true,
+						"facing": -0.636,
+						"holders": [],
+						"kind": "freezer_case",
+						"object_id": "so:15873:102",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2233.98,
+						"y": 1226.94
+					},
+					{
+						"affordances": [
+							"sit"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"seat"
+						],
+						"exclusive": true,
+						"facing": -0.757,
+						"holders": [],
+						"kind": "chair",
+						"object_id": "so:15873:103",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2233.98,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"sit"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"seat"
+						],
+						"exclusive": true,
+						"facing": 0.958,
+						"holders": [],
+						"kind": "chair",
+						"object_id": "so:15873:104",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2230.98,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -0.873,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:105",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2230.98,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 1.092,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:106",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 36.0
+						},
+						"x": -2227.98,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -1.016,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:107",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2227.98,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": true,
+						"facing": 1.247,
+						"holders": [],
+						"kind": "freezer_case",
+						"object_id": "so:15873:108",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2224.98,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"sit"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"seat"
+						],
+						"exclusive": true,
+						"facing": -1.19,
+						"holders": [],
+						"kind": "chair",
+						"object_id": "so:15873:109",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2224.98,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 0.448,
+						"holders": [],
+						"kind": "fridge_case",
+						"object_id": "so:15873:11",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"stock": 60.0
+						},
+						"x": -2230.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"sit"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"seat"
+						],
+						"exclusive": true,
+						"facing": 1.42,
+						"holders": [],
+						"kind": "chair",
+						"object_id": "so:15873:110",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": true
+						},
+						"x": -2221.98,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -1.392,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:111",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2221.98,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -1.609,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:112",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 35.0
+						},
+						"x": -2218.98,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 1.784,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:113",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2215.98,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": true,
+						"facing": -1.823,
+						"holders": [],
+						"kind": "freezer_case",
+						"object_id": "so:15873:114",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2215.98,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"sit"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"seat"
+						],
+						"exclusive": true,
+						"facing": 1.951,
+						"holders": [],
+						"kind": "chair",
+						"object_id": "so:15873:115",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2212.98,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"sit"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"seat"
+						],
+						"exclusive": true,
+						"facing": -2.016,
+						"holders": [],
+						"kind": "chair",
+						"object_id": "so:15873:116",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": true
+						},
+						"x": -2212.98,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 2.099,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:117",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2209.98,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -2.179,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:118",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 60.0
+						},
+						"x": -2209.98,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 2.226,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:119",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2206.98,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf"
+						],
+						"exclusive": false,
+						"facing": -0.43,
+						"holders": [],
+						"kind": "display",
+						"object_id": "so:15873:12",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2230.98,
+						"y": 1197.64
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": true,
+						"facing": 2.326,
+						"holders": [],
+						"kind": "freezer_case",
+						"object_id": "so:15873:120",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2206.98,
+						"y": 1202.94
+					},
+					{
+						"affordances": [
+							"sit"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"seat"
+						],
+						"exclusive": true,
+						"facing": 2.453,
+						"holders": [],
+						"kind": "chair",
+						"object_id": "so:15873:121",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2206.98,
+						"y": 1205.94
+					},
+					{
+						"affordances": [
+							"sit"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"seat"
+						],
+						"exclusive": true,
+						"facing": 2.613,
+						"holders": [],
+						"kind": "chair",
+						"object_id": "so:15873:122",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2206.98,
+						"y": 1208.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 2.81,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:123",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2206.98,
+						"y": 1211.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 3.037,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:124",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 60.0
+						},
+						"x": -2206.98,
+						"y": 1214.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -3.008,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:125",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2206.98,
+						"y": 1217.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": true,
+						"facing": -2.783,
+						"holders": [],
+						"kind": "freezer_case",
+						"object_id": "so:15873:126",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2206.98,
+						"y": 1220.94
+					},
+					{
+						"affordances": [
+							"sit"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"seat"
+						],
+						"exclusive": true,
+						"facing": -2.591,
+						"holders": [],
+						"kind": "chair",
+						"object_id": "so:15873:127",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2206.98,
+						"y": 1223.94
+					},
+					{
+						"affordances": [
+							"sit"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"seat"
+						],
+						"exclusive": true,
+						"facing": -2.435,
+						"holders": [],
+						"kind": "chair",
+						"object_id": "so:15873:128",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2206.98,
+						"y": 1226.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -2.312,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:129",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2206.98,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 3.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 0.507,
+						"holders": [],
+						"kind": "gondola",
+						"object_id": "so:15873:13",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 60.0
+						},
+						"x": -2227.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 0.859,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:130",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 60.0
+						},
+						"x": -2230.98,
+						"y": 1202.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 0.732,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:131",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2230.98,
+						"y": 1205.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": true,
+						"facing": 0.567,
+						"holders": [],
+						"kind": "freezer_case",
+						"object_id": "so:15873:132",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2230.98,
+						"y": 1208.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 3.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -0.487,
+						"holders": [],
+						"kind": "gondola",
+						"object_id": "so:15873:14",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"stock": 38.0
+						},
+						"x": -2227.98,
+						"y": 1197.64
+					},
+					{
+						"affordances": [
+							"occupy_station",
+							"transact",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"counter",
+							"station",
+							"transact"
+						],
+						"exclusive": true,
+						"facing": 0.582,
+						"holders": [],
+						"kind": "checkout",
+						"object_id": "so:15873:15",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"served": 0.0,
+							"working": true
+						},
+						"x": -2224.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -0.56,
+						"holders": [],
+						"kind": "fridge_case",
+						"object_id": "so:15873:16",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"stock": 60.0
+						},
+						"x": -2224.98,
+						"y": 1197.64
+					},
+					{
+						"affordances": [
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf"
+						],
+						"exclusive": false,
+						"facing": 0.678,
+						"holders": [],
+						"kind": "display",
+						"object_id": "so:15873:17",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2221.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 1.022,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:171",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2203.23,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 0.928,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:172",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"stock": 60.0
+						},
+						"x": -2203.23,
+						"y": 1202.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 0.802,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:173",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2203.23,
+						"y": 1205.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 0.633,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:174",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2203.23,
+						"y": 1208.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 0.408,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:175",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 22.0
+						},
+						"x": -2203.23,
+						"y": 1211.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 0.131,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:176",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2203.23,
+						"y": 1214.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -0.168,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:177",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2203.23,
+						"y": 1217.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -0.44,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:178",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 60.0
+						},
+						"x": -2203.23,
+						"y": 1220.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -0.657,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:179",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2203.23,
+						"y": 1223.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 3.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -0.655,
+						"holders": [],
+						"kind": "gondola",
+						"object_id": "so:15873:18",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 52.0
+						},
+						"x": -2221.98,
+						"y": 1197.64
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -0.82,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:180",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2203.23,
+						"y": 1226.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -0.941,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:181",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"stock": 21.0
+						},
+						"x": -2203.23,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 1.167,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:182",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2200.23,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -1.1,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:183",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2200.23,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 1.332,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:184",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 27.0
+						},
+						"x": -2197.23,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -1.289,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:185",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2197.23,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 1.511,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:186",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2194.23,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -1.5,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:187",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 60.0
+						},
+						"x": -2194.23,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 1.695,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:188",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2191.23,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -1.718,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:189",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2191.23,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 3.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 0.805,
+						"holders": [],
+						"kind": "gondola",
+						"object_id": "so:15873:19",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 25.0
+						},
+						"x": -2218.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 1.87,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:190",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"stock": 44.0
+						},
+						"x": -2188.23,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -1.923,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:191",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2188.23,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 2.028,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:192",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2185.23,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 2.114,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:193",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"stock": 52.0
+						},
+						"x": -2185.23,
+						"y": 1202.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 2.232,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:194",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2185.23,
+						"y": 1205.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 2.403,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:195",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2185.23,
+						"y": 1208.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 2.649,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:196",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"stock": 60.0
+						},
+						"x": -2185.23,
+						"y": 1211.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 2.98,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:197",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2185.23,
+						"y": 1214.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -2.934,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:198",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2185.23,
+						"y": 1217.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -2.613,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:199",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 20.0
+						},
+						"x": -2185.23,
+						"y": 1220.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 3.142,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:2",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "fixture",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2182.99,
+						"y": 1216.25
+					},
+					{
+						"affordances": [
+							"occupy_station",
+							"transact",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"counter",
+							"station",
+							"transact"
+						],
+						"exclusive": true,
+						"facing": -0.781,
+						"holders": [],
+						"kind": "checkout",
+						"object_id": "so:15873:20",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"served": 0.0,
+							"working": true
+						},
+						"x": -2218.98,
+						"y": 1197.64
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -2.378,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:200",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2185.23,
+						"y": 1223.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -2.215,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:201",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2185.23,
+						"y": 1226.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -2.101,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:202",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 60.0
+						},
+						"x": -2185.23,
+						"y": 1229.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 1.088,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:203",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2200.23,
+						"y": 1202.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 0.976,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:204",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2200.23,
+						"y": 1205.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 0.809,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:205",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"stock": 60.0
+						},
+						"x": -2200.23,
+						"y": 1208.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 0.554,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:206",
+						"queue": [],
+						"room_id": 2.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2200.23,
+						"y": 1211.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 0.971,
+						"holders": [],
+						"kind": "fridge_case",
+						"object_id": "so:15873:21",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 33.0
+						},
+						"x": -2215.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf"
+						],
+						"exclusive": false,
+						"facing": -0.949,
+						"holders": [],
+						"kind": "display",
+						"object_id": "so:15873:22",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2215.98,
+						"y": 1197.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 3.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 1.187,
+						"holders": [],
+						"kind": "gondola",
+						"object_id": "so:15873:23",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 60.0
+						},
+						"x": -2212.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 3.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -1.17,
+						"holders": [],
+						"kind": "gondola",
+						"object_id": "so:15873:24",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 31.0
+						},
+						"x": -2212.98,
+						"y": 1197.64
+					},
+					{
+						"affordances": [
+							"occupy_station",
+							"transact",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"counter",
+							"station",
+							"transact"
+						],
+						"exclusive": true,
+						"facing": 1.446,
+						"holders": [],
+						"kind": "checkout",
+						"object_id": "so:15873:25",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"served": 0.0,
+							"working": true
+						},
+						"x": -2209.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -1.44,
+						"holders": [],
+						"kind": "fridge_case",
+						"object_id": "so:15873:26",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 22.0
+						},
+						"x": -2209.98,
+						"y": 1197.64
+					},
+					{
+						"affordances": [
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf"
+						],
+						"exclusive": false,
+						"facing": 1.724,
+						"holders": [],
+						"kind": "display",
+						"object_id": "so:15873:27",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2206.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 3.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -1.731,
+						"holders": [],
+						"kind": "gondola",
+						"object_id": "so:15873:28",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 60.0
+						},
+						"x": -2206.98,
+						"y": 1197.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 3.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 1.98,
+						"holders": [],
+						"kind": "gondola",
+						"object_id": "so:15873:29",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 23.0
+						},
+						"x": -2203.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 3.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 0.401,
+						"holders": [],
+						"kind": "gondola",
+						"object_id": "so:15873:3",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 60.0
+						},
+						"x": -2233.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"occupy_station",
+							"transact",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"counter",
+							"station",
+							"transact"
+						],
+						"exclusive": true,
+						"facing": -1.997,
+						"holders": [],
+						"kind": "checkout",
+						"object_id": "so:15873:30",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"served": 0.0,
+							"working": true
+						},
+						"x": -2203.98,
+						"y": 1197.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 2.19,
+						"holders": [],
+						"kind": "fridge_case",
+						"object_id": "so:15873:31",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"stock": 60.0
+						},
+						"x": -2200.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf"
+						],
+						"exclusive": false,
+						"facing": -2.212,
+						"holders": [],
+						"kind": "display",
+						"object_id": "so:15873:32",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2200.98,
+						"y": 1197.64
+					},
+					{
+						"affordances": [
+							"occupy_station",
+							"transact",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"counter",
+							"station",
+							"transact"
+						],
+						"exclusive": true,
+						"facing": 2.475,
+						"holders": [],
+						"kind": "checkout",
+						"object_id": "so:15873:35",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"served": 0.0,
+							"working": true
+						},
+						"x": -2194.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -2.498,
+						"holders": [],
+						"kind": "fridge_case",
+						"object_id": "so:15873:36",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"stock": 60.0
+						},
+						"x": -2194.98,
+						"y": 1197.64
+					},
+					{
+						"affordances": [
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf"
+						],
+						"exclusive": false,
+						"facing": 2.569,
+						"holders": [],
+						"kind": "display",
+						"object_id": "so:15873:37",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2191.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 3.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 0.297,
+						"holders": [],
+						"kind": "gondola",
+						"object_id": "so:15873:4",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 60.0
+						},
+						"x": -2233.98,
+						"y": 1179.64
+					},
+					{
+						"affordances": [
+							"occupy_station",
+							"transact",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"counter",
+							"station",
+							"transact"
+						],
+						"exclusive": true,
+						"facing": -2.661,
+						"holders": [],
+						"kind": "checkout",
+						"object_id": "so:15873:40",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"served": 0.0,
+							"working": true
+						},
+						"x": -2188.98,
+						"y": 1197.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 2.699,
+						"holders": [],
+						"kind": "fridge_case",
+						"object_id": "so:15873:41",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 23.0
+						},
+						"x": -2185.98,
+						"y": 1176.64
+					},
+					{
+						"affordances": [
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf"
+						],
+						"exclusive": false,
+						"facing": 2.812,
+						"holders": [],
+						"kind": "display",
+						"object_id": "so:15873:42",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2185.98,
+						"y": 1179.64
+					},
+					{
+						"affordances": [
+							"occupy_station",
+							"transact",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"counter",
+							"station",
+							"transact"
+						],
+						"exclusive": true,
+						"facing": -3.086,
+						"holders": [],
+						"kind": "checkout",
+						"object_id": "so:15873:45",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"served": 0.0,
+							"working": true
+						},
+						"x": -2185.98,
+						"y": 1188.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -2.956,
+						"holders": [],
+						"kind": "fridge_case",
+						"object_id": "so:15873:46",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"stock": 60.0
+						},
+						"x": -2185.98,
+						"y": 1191.64
+					},
+					{
+						"affordances": [
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf"
+						],
+						"exclusive": false,
+						"facing": -2.832,
+						"holders": [],
+						"kind": "display",
+						"object_id": "so:15873:47",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": true
+						},
+						"x": -2185.98,
+						"y": 1194.64
+					},
+					{
+						"affordances": [
+							"occupy_station",
+							"transact",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"counter",
+							"station",
+							"transact"
+						],
+						"exclusive": true,
+						"facing": 0.185,
+						"holders": [
+							297.0
+						],
+						"kind": "checkout",
+						"object_id": "so:15873:5",
+						"queue": [
+							277.0,
+							143.0,
+							169.0,
+							19.0,
+							132.0,
+							25.0,
+							287.0,
+							167.0
+						],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"served": 3.0,
+							"working": true
+						},
+						"x": -2233.98,
+						"y": 1182.64
+					},
+					{
+						"affordances": [
+							"occupy_station",
+							"transact",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"counter",
+							"station",
+							"transact"
+						],
+						"exclusive": true,
+						"facing": 0.209,
+						"holders": [],
+						"kind": "checkout",
+						"object_id": "so:15873:50",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"served": 0.0,
+							"working": true
+						},
+						"x": -2230.98,
+						"y": 1182.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 0.069,
+						"holders": [],
+						"kind": "fridge_case",
+						"object_id": "so:15873:6",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": true,
+							"stock": 60.0
+						},
+						"x": -2233.98,
+						"y": 1185.64
+					},
+					{
+						"affordances": [
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf"
+						],
+						"exclusive": false,
+						"facing": -0.049,
+						"holders": [],
+						"kind": "display",
+						"object_id": "so:15873:7",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2233.98,
+						"y": 1188.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 3.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -0.166,
+						"holders": [],
+						"kind": "gondola",
+						"object_id": "so:15873:8",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 33.0
+						},
+						"x": -2233.98,
+						"y": 1191.64
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 3.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": -0.279,
+						"holders": [],
+						"kind": "gondola",
+						"object_id": "so:15873:9",
+						"queue": [],
+						"room_id": 0.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 60.0
+						},
+						"x": -2233.98,
+						"y": 1194.64
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 0.845,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:93",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2233.98,
+						"y": 1199.94
+					},
+					{
+						"affordances": [
+							"restock",
+							"browse",
+							"clean"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"browse",
+							"shelf",
+							"stock"
+						],
+						"exclusive": false,
+						"facing": 0.744,
+						"holders": [],
+						"kind": "shelf",
+						"object_id": "so:15873:94",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false,
+							"stock": 52.0
+						},
+						"x": -2233.98,
+						"y": 1202.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": 0.619,
+						"holders": [],
+						"kind": "crate",
+						"object_id": "so:15873:95",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2233.98,
+						"y": 1205.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": true,
+						"facing": 0.468,
+						"holders": [],
+						"kind": "freezer_case",
+						"object_id": "so:15873:96",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2233.98,
+						"y": 1208.94
+					},
+					{
+						"affordances": [
+							"sit"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"seat"
+						],
+						"exclusive": true,
+						"facing": 0.29,
+						"holders": [],
+						"kind": "chair",
+						"object_id": "so:15873:97",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2233.98,
+						"y": 1211.94
+					},
+					{
+						"affordances": [
+							"sit"
+						],
+						"building_id": 15873.0,
+						"capacity": 1.0,
+						"caps": [
+							"seat"
+						],
+						"exclusive": true,
+						"facing": 0.09,
+						"holders": [],
+						"kind": "chair",
+						"object_id": "so:15873:98",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"dirty": false
+						},
+						"x": -2233.98,
+						"y": 1214.94
+					},
+					{
+						"affordances": [
+							"retrieve_goods"
+						],
+						"building_id": 15873.0,
+						"capacity": 2.0,
+						"caps": [
+							"goods",
+							"storage"
+						],
+						"exclusive": false,
+						"facing": -0.116,
+						"holders": [],
+						"kind": "pallet_rack",
+						"object_id": "so:15873:99",
+						"queue": [],
+						"room_id": 1.0,
+						"source": "decor",
+						"state": {
+							"stock": 100.0
+						},
+						"x": -2233.98,
+						"y": 1217.94
+					}
+				],
+				"rendered_bodies": [
+					8,
+					19,
+					25,
+					82,
+					132,
+					143,
+					167,
+					169,
+					222,
+					277,
+					287,
+					297
+				],
+				"workers_inside": [
+					8,
+					19,
+					25,
+					82,
+					132,
+					143,
+					167,
+					169,
+					222,
+					277,
+					287,
+					297
+				]
+			},
+			"clock": "10:43",
+			"distinct_colors_sampled": 583,
+			"file": "03_workplace_interior.png",
+			"hour": 10.7237863577778,
+			"inference": "The rooms and object positions are authoritative interior descriptors; the frame shows they render, not what any worker is thinking.",
+			"inside_building": 15873,
+			"kind": "full_render",
+			"size": [
+				1280,
+				720
+			],
+			"visible_fact": "The staged interior of a workplace building (cutaway ceiling/near-walls) with its rooms, its smart-object fixtures, and embodied worker bodies standing inside the rooms."
+		},
+		{
+			"authoritative_trace": "Worker c297 inside building 15873; its authoritative work row: { \"role\": \"cashier\", \"workplace_id\": 15873.0, \"task\": \"man_register\", \"phase\": \"using\", \"object_id\": \"so:15873:5\", \"room_id\": 0.0, \"zone\": \"sales_floor\", \"carrying\": \"\", \"help_for\": <null> }. Rendered body present: [297].",
+			"authority": {
+				"building_id": 15873,
+				"rendered_bodies": [
+					297
+				],
+				"work": {
+					"carrying": "",
+					"help_for": null,
+					"object_id": "so:15873:5",
+					"phase": "using",
+					"role": "cashier",
+					"room_id": 0.0,
+					"task": "man_register",
+					"workplace_id": 15873.0,
+					"zone": "sales_floor"
+				},
+				"worker": 297
+			},
+			"clock": "10:43",
+			"distinct_colors_sampled": 510,
+			"file": "04_smart_object_use.png",
+			"hour": 10.7251752466667,
+			"inference": "The highlight reflects the authority's reported work.phase; the pixels do not independently prove the task's internal state (the work row does).",
+			"inside_building": 15873,
+			"kind": "full_render",
+			"size": [
+				1280,
+				720
+			],
+			"visible_fact": "A worker body at a smart object inside the workplace; smart objects that currently have a holder are ringed by EmbodiedMobility.refresh_object_markers."
+		},
+		{
+			"authoritative_trace": "The panel is a read-only window: it calls only GET_CITIZEN_CONTEXT / GROUP_QUERY(membership,where) / GET_GROUPS and never a mutating command. The paired 'inspector' dict is exactly what the panel rendered; the 'context' dict is the same GET_CITIZEN_CONTEXT reply.",
+			"authority": {
+				"context": {
+					"avoid_rooms_here": [],
+					"avoiding": null,
+					"beliefs": [],
+					"citizen_id": 6.0,
+					"goal": {
+						"activity": "errand",
+						"deadline": 12.0,
+						"id": 1.0,
+						"kind": "do_activity",
+						"priority": 0.55,
+						"reason": "scheduled errand: run errands",
+						"source": "schedule",
+						"target": "ent:80"
+					},
+					"health": "susceptible",
+					"location": {
+						"band": null,
+						"building_id": null,
+						"inside": false,
+						"room_id": null,
+						"x": 889.54,
+						"y": -2546.49,
+						"zone": null
+					},
+					"memories": [],
+					"n_memories": 0.0,
+					"needs": {
+						"energy": 1.0,
+						"hunger": 0.0,
+						"safety": 1.0,
+						"social": 0.6
+					},
+					"people_nearby": [],
+					"perceived_danger": 0.0,
+					"personality": {
+						"helpfulness": 0.583,
+						"loyalty": 0.611,
+						"risk_tolerance": 0.651,
+						"sociability": 0.812,
+						"suspicion": 0.322
+					},
+					"recent_social": [],
+					"relationships": [],
+					"task": {
+						"object_id": null,
+						"phase": null,
+						"role": null,
+						"task_id": null
+					}
+				},
+				"context_ok": true,
+				"inspector": {
+					"behavior": {
+						"goal_kind": "do_activity",
+						"goal_reason": "scheduled errand: run errands",
+						"goal_source": "schedule",
+						"goal_target": "ent:80",
+						"object_id": null,
+						"phase": null,
+						"role": null,
+						"task_id": null
+					},
+					"citizen_id": 6,
+					"cognition": {
+						"avoid_rooms_here": [],
+						"avoiding_building": null,
+						"belief_keys": [],
+						"memory_kinds": [],
+						"n_beliefs": 0,
+						"n_memories": 0.0,
+						"n_salient": 0,
+						"perceived_danger": 0.0
+					},
+					"group": {
+						"coordinator": null,
+						"in_group": null,
+						"members": [],
+						"role": null,
+						"shelter_building": null
+					},
+					"health": "susceptible",
+					"identity": {
+						"band": "—",
+						"citizen_id": 6
+					},
+					"mode": "DEV TRUTH",
+					"physical": {
+						"band": null,
+						"building_id": null,
+						"inside": false,
+						"room_id": null,
+						"x": 889.16,
+						"y": -2545.15,
+						"zone": null
+					},
+					"social": {
+						"nearby": [],
+						"relationships": []
+					}
+				},
+				"selected": 6
+			},
+			"clock": "10:43",
+			"distinct_colors_sampled": 198,
+			"file": "05_inspector.png",
+			"hour": 10.7268419133333,
+			"inference": "The screenshot proves the panel DISPLAYS the authority's reported context for c6. It does NOT prove the NPC 'really thinks' — the cognition is the authority's; the frame only shows the lens is faithful to it.",
+			"inside_building": -1,
+			"kind": "full_render",
+			"size": [
+				1280,
+				720
+			],
+			"visible_fact": "The SimulationInspector overlay (right side) open over selected NPC c6, laid out with the authority's own identity / physical / behavior / cognition / social / group rows."
+		},
+		{
+			"authoritative_trace": "The panel is a thin window: it sent TALK GREET through SimBridge and displays acts[i].line VERBATIM (no word composed in Godot). Authority ok=true; the paired 'lines' are the authority's rendered strings.",
+			"authority": {
+				"lines": [
+					"Is room 0 of building 15873 safe?",
+					"I don't know."
+				],
+				"listener": 19,
+				"speaker": 8,
+				"talk_ok": true,
+				"warmth": 0.0
+			},
+			"clock": "10:43",
+			"distinct_colors_sampled": 117,
+			"file": "06_dialogue.png",
+			"hour": 10.7282308022222,
+			"inference": "The frame proves the panel shows the authority's own line; it does not prove the NPC 'meant' it — the DialogueRuntime authored the words.",
+			"inside_building": -1,
+			"kind": "full_render",
+			"size": [
+				1280,
+				720
+			],
+			"visible_fact": "The DialoguePanel (bottom-left) showing the line the authority rendered for a real TALK between co-present citizens c8 and c19."
+		},
+		{
+			"authoritative_trace": "SEED_OUTBREAK ok=true index_case=6 (a dev control, Python decides progression). GET_OUTBREAK totals now: {  }. Rendered undead body present: [6].",
+			"authority": {
+				"index_case": 6,
+				"rendered_bodies": [
+					6
+				],
+				"seed_ok": true,
+				"totals": {
+
+				},
+				"undead_citizen": 6
+			},
+			"clock": "10:54",
+			"distinct_colors_sampled": 245,
+			"file": "08_outbreak.png",
+			"hour": 10.9018419133333,
+			"inference": "The outbreak progression is the authority's; the frame shows the embodied result (an undead body / the index case), not the epidemic model.",
+			"inside_building": -1,
+			"kind": "full_render",
+			"size": [
+				1280,
+				720
+			],
+			"visible_fact": "After SEED_OUTBREAK and advancing, a reanimated/undead CitizenBody rendered on the street (c6, shown with the undead look)."
+		},
+		{
+			"authoritative_trace": "The deterministic group was formed + SAVEd by tools/groups_build_scenario.py (real cooperation -> emergence) and LOADed here (ok=true). GET_GROUPS reports members={ \"42\": \"member\", \"87\": \"member\", \"117\": \"member\" } coordinator=117.0 shelter_building=6353.0 roles={ \"coordinator\": 117.0, \"guard\": 87.0 }. Rendered member bodies present: [42].",
+			"authority": {
+				"coordinator": 117.0,
+				"group_id": "group:1",
+				"loaded": true,
+				"members": {
+					"117": "member",
+					"42": "member",
+					"87": "member"
+				},
+				"rendered_bodies": [
+					42
+				],
+				"roles": {
+					"coordinator": 117.0,
+					"guard": 87.0
+				},
+				"shelter_building": 6353.0,
+				"sidecar_members": [
+					42.0,
+					87.0,
+					117.0
+				]
+			},
+			"clock": "15:00",
+			"distinct_colors_sampled": 187,
+			"file": "07_group_shelter.png",
+			"hour": 15.0030555555556,
+			"inference": "Membership, roles and the shelter are proven by the paired GET_GROUPS rows, not by the pixels; the frame shows the members are co-located where the authority says the shelter is.",
+			"inside_building": 6353,
+			"kind": "full_render",
+			"size": [
+				1280,
+				720
+			],
+			"visible_fact": "A survivor group at its shelter: a member CitizenBody agent inside the shelter interior (building 6353), with the SimulationInspector (right) open on coordinator c117 showing its authoritative context — its received group threat-warning memories (WARNED_BY / ATTACK_SEEN) among them — and the event feed showing the group's WARNING_SHARED / WARNING_RECEIVED. (The inspector's explicit [GROUP] section sits below the visible fold; the membership/roles/shelter it names are carried in the paired GET_GROUPS trace.)"
+		},
+		{
+			"authoritative_trace": "SAVE ok=true -> LOAD ok=true. Continuity in the authority's own summary: hour 15.003 -> 15.005, total_pop 2300000.0 -> 2300000.0 (a clean reload preserves the world state).",
+			"authority": {
+				"load_ok": true,
+				"post_hour": 15.0052777777778,
+				"post_pop": 2300000.0,
+				"pre_hour": 15.0030555555556,
+				"pre_pop": 2300000.0,
+				"save_ok": true
+			},
+			"clock": "15:00",
+			"distinct_colors_sampled": 290,
+			"file": "09_saveload_continuation.png",
+			"hour": 15.0052777777778,
+			"inference": "The frame shows the city still renders after reload; the state-continuity claim rests on the paired hour/pop trace, not the pixels.",
+			"inside_building": -1,
+			"kind": "full_render",
+			"size": [
+				1280,
+				720
+			],
+			"visible_fact": "The same city rendered and continuing after a real SAVE -> LOAD round-trip through the bridge."
+		}
+	],
+	"group_save": "/tmp/asph_group_save.json",
+	"group_sidecar": "/tmp/asph_group_scenario.json",
+	"milestone": "ASPHODEL_WINDOWS_PLAYABLE_CONVERGENCE_V2",
+	"player_citizen": 82,
+	"protocol": 9,
+	"scene": "res://IsometricWorld.tscn (real canonical playable)",
+	"sim_sha": "7eb287b11b1946544f19751a2c929466c8f781cb",
+	"version": 1
+}

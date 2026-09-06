@@ -1,0 +1,17 @@
+{
+  "freeze": {
+    "target": "linux",
+    "host": "linux",
+    "method": "pyinstaller-onedir",
+    "entry": "tools/authority_entry.py",
+    "status": "OK",
+    "dist_path": "dist/authority",
+    "blocked_reason": null,
+    "executable": "dist/authority/authority",
+    "build_seconds": 22.3
+  },
+  "launched": false,
+  "hello_ok": null,
+  "note": "freeze not OK on this host; see freeze.blocked_reason",
+  "recorded_utc": "2026-09-06T21:44:55Z"
+}

@@ -60,6 +60,61 @@ splits are named in that report.
   authoritative Python state transition.
 * Save/load preserves deterministic continuation.
 
+## Embodied mobility (2026-09-05)
+
+`ASPHODEL_EMBODIED_MOBILITY_V1` closed the Planner ↔ World and vehicles-in-
+the-playable-scene splits: `asphodel/embodied/` executes CitizenRuntime
+itineraries on a sub-tick movement clock inside `World`, persistent
+`VehicleInstance`s drive the canonical road route, and Godot realises the NEAR
+band as `CitizenBody`/`VehicleBody` with physics reported back. See
+`docs/mobility/EMBODIED_MOBILITY_ARCHITECTURE.md` and
+`docs/mobility/EMBODIED_MOBILITY_REPORT.md`.
+
+## Embodied outbreak (2026-09-05)
+
+`ASPHODEL_OUTBREAK_V1` put the outbreak on the same persistent citizens:
+`asphodel/outbreak/` holds one `HealthRecord` per registered citizen
+(susceptible → incubating → symptomatic → incapacitated → corpse → undead,
+every outcome a seeded draw stamped at infection), exposure comes from real
+co-presence in buildings, vehicles and the street, sickness changes plans
+through the ordinary `CitizenRuntime` → `TripExecutor` chain, the dead stay
+where they died, the risen keep their `citizen_id`, abandoned cars become
+wrecks that close their segment and disrupted workplaces send workers home.
+The June `claude/outbreak-config-types-A8fTw` branch was audited as a donor
+(`docs/outbreak/OUTBREAK_DONOR_AUDIT.md`) and its archetype values were
+carried into the per-citizen grammar; its macro-compartment engine was not.
+See `docs/outbreak/OUTBREAK_V1_ARCHITECTURE.md` and
+`docs/outbreak/OUTBREAK_V1_REPORT.md`.
+
+## Smart objects and work (2026-09-05)
+
+`ASPHODEL_SMART_OBJECTS_WORK_V1` replaced "arrived at the building, doing
+work" with execution through `building → room/zone → station → smart object →
+affordance → action` (`asphodel/smart/`): rooms come from the canonical
+interior descriptor, smart objects are generated from its furniture with
+capability-composed affordances and persisted mutable state, one reservation
+ledger prevents double occupancy, a data-driven job/task grammar with
+deterministic employment drives cashiers, desk workers and cleaners (and
+customers and residents through the same affordances), and the existing
+planner/executor interrupt work exactly as they interrupt trips. See
+`docs/work/SMART_OBJECTS_WORK_V1_ARCHITECTURE.md` and
+`docs/work/SMART_OBJECTS_WORK_V1_REPORT.md`.
+
+## NPC cognition and social memory (2026-09-06)
+
+`ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1` added the cognition underneath
+future dialogue (`asphodel/cognition/`): a perception pipeline limited to the
+citizen's own room, participation and what others tell it; bounded structured
+memory with decay, merging and provenance; beliefs derived from evidence;
+six-dimensional relationships with household/workplace priors and
+experience-driven rules; deterministic personality; a social-action grammar
+(help through real smart-object tasks, warnings with lineage, room- and
+building-level avoidance) that feeds the existing CitizenRuntime and
+WorkRuntime instead of replacing them; a structured context API for dialogue.
+The world clock now interleaves movement, outbreak, work and cognition per
+second. See `docs/npc/NPC_COGNITION_SOCIAL_MEMORY_V1_ARCHITECTURE.md` and
+`docs/npc/NPC_COGNITION_SOCIAL_MEMORY_V1_REPORT.md`.
+
 ## Historical reports
 
 The milestone findings that used to sit at the repository root are in

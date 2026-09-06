@@ -22,9 +22,20 @@ extends CharacterBody3D
 const _GRAVITY := 20.0
 const _CAPSULE_R := 0.35
 const _CAPSULE_H := 1.8
+# Below this planar speed (m/s) the body reads as standing still, so idle drift
+# from move_and_slide never spins the model or triggers a walk cycle.
+const _IDLE_SPEED := 0.15
+# How fast the body turns toward its heading, per physics tick (0..1 lerp factor).
+const _TURN_RATE := 0.25
 
 var camera: Camera3D = null       # framing camera; supplies the movement basis
 var movement_enabled: bool = true # gate (e.g. while a modal UI is open)
+
+## The visible character model (a CitizenAvatar), attached via set_body. Purely
+## presentation — the body's transform is driven from this node's velocity, never
+## the other way round. Null until a body is attached (headless tests, etc.).
+var body: Node3D = null
+var _facing: float = 0.0          # smoothed heading yaw the body is turned to
 
 
 func _ready() -> void:
@@ -45,6 +56,45 @@ func _ready() -> void:
 
 func set_camera(cam: Camera3D) -> void:
 	camera = cam
+
+
+## Attach (or replace) the visible character model. The avatar is parented at the
+## player's origin, so its feet sit at y=0 exactly like the collision capsule.
+func set_body(avatar: Node3D) -> void:
+	if body != null and is_instance_valid(body):
+		if body.get_parent() == self:
+			remove_child(body)
+		body.queue_free()
+	body = avatar
+	if avatar.get_parent() != self:
+		add_child(avatar)
+	avatar.position = Vector3.ZERO
+
+
+## Map a planar speed to a gait amplitude (0 idle, 0.5 walk, 1.0 run) — the same
+## channel the crowd shader uses to drive the walk cycle. Run kicks in at the
+## midpoint between walk and sprint so a normal walk never reads as a run.
+static func gait_for_speed(speed: float, walk_speed: float, sprint_speed: float) -> float:
+	if speed < _IDLE_SPEED:
+		return 0.0
+	if speed >= (walk_speed + sprint_speed) * 0.5:
+		return 1.0
+	return 0.5
+
+
+func _update_body() -> void:
+	if body == null or not is_instance_valid(body):
+		return
+	var planar := Vector2(velocity.x, velocity.z)
+	var speed := planar.length()
+	if speed > _IDLE_SPEED:
+		# Heading from motion, same convention as the crowd (atan2(x, z)); retain
+		# the last heading while stationary so the body doesn't snap back to 0.
+		_facing = lerp_angle(_facing, atan2(velocity.x, velocity.z), _TURN_RATE)
+	if body.has_method("set_heading"):
+		body.set_heading(_facing)
+	if body.has_method("set_gait"):
+		body.set_gait(gait_for_speed(speed, walk_speed, sprint_speed))
 
 
 ## Move the player to a continuous world position and stop it dead. Used for
@@ -92,3 +142,4 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 
 	move_and_slide()
+	_update_body()

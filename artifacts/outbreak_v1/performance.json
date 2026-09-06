@@ -1,0 +1,426 @@
+{
+  "version": 1,
+  "city": "houston",
+  "bundle_dir": "/home/user/Asphodel/godot/bundles/houston",
+  "pathogen": "classic_zombie",
+  "repeats": 3,
+  "unit": "milliseconds",
+  "machine": {
+    "python": "3.11.15",
+    "implementation": "CPython",
+    "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "processor": "x86_64",
+    "cpu_count": 4
+  },
+  "wall_s": 208.1,
+  "world": {
+    "n_citizens": 297,
+    "n_vehicles": 224,
+    "build_ms": 3668.7,
+    "n_workplaces": 167
+  },
+  "advance_offpeak_1_infected": {
+    "total_ms_per_game_minute": 21.439,
+    "mobility_ms_per_game_minute": 21.155,
+    "outbreak_ms_per_game_minute": 0.27,
+    "repeats": 3,
+    "game_minutes_per_block": 20,
+    "blocks": [
+      {
+        "total_ms_per_game_minute": 21.802,
+        "mobility_ms_per_game_minute": 21.505,
+        "outbreak_ms_per_game_minute": 0.276,
+        "game_minutes": 20
+      },
+      {
+        "total_ms_per_game_minute": 21.439,
+        "mobility_ms_per_game_minute": 21.155,
+        "outbreak_ms_per_game_minute": 0.265,
+        "game_minutes": 20
+      },
+      {
+        "total_ms_per_game_minute": 21.381,
+        "mobility_ms_per_game_minute": 21.094,
+        "outbreak_ms_per_game_minute": 0.27,
+        "game_minutes": 20
+      }
+    ],
+    "hour_after": 6.0,
+    "scenario": "off-peak 05:00, 1 infected (incubating index case)",
+    "n_records": 1,
+    "health": {
+      "incubating": 1
+    },
+    "infectious_sources": 0
+  },
+  "advance_commute_peak": {
+    "total_ms_per_game_minute": 168.658,
+    "mobility_ms_per_game_minute": 168.348,
+    "outbreak_ms_per_game_minute": 0.286,
+    "repeats": 3,
+    "game_minutes_per_block": 20,
+    "blocks": [
+      {
+        "total_ms_per_game_minute": 21.157,
+        "mobility_ms_per_game_minute": 20.877,
+        "outbreak_ms_per_game_minute": 0.262,
+        "game_minutes": 20
+      },
+      {
+        "total_ms_per_game_minute": 1615.579,
+        "mobility_ms_per_game_minute": 1615.271,
+        "outbreak_ms_per_game_minute": 0.286,
+        "game_minutes": 20
+      },
+      {
+        "total_ms_per_game_minute": 168.658,
+        "mobility_ms_per_game_minute": 168.348,
+        "outbreak_ms_per_game_minute": 0.289,
+        "game_minutes": 20
+      }
+    ],
+    "hour_after": 8.0,
+    "scenario": "commute peak 07:00-08:00, 1 infected",
+    "n_records": 1,
+    "health": {
+      "incubating": 1
+    },
+    "infectious_sources": 0
+  },
+  "advance_infection_heavy": {
+    "total_ms_per_game_minute": 245.807,
+    "mobility_ms_per_game_minute": 82.653,
+    "outbreak_ms_per_game_minute": 171.08,
+    "repeats": 3,
+    "game_minutes_per_block": 5,
+    "blocks": [
+      {
+        "total_ms_per_game_minute": 370.512,
+        "mobility_ms_per_game_minute": 168.573,
+        "outbreak_ms_per_game_minute": 201.908,
+        "game_minutes": 5
+      },
+      {
+        "total_ms_per_game_minute": 240.797,
+        "mobility_ms_per_game_minute": 82.653,
+        "outbreak_ms_per_game_minute": 158.114,
+        "game_minutes": 5
+      },
+      {
+        "total_ms_per_game_minute": 245.807,
+        "mobility_ms_per_game_minute": 74.697,
+        "outbreak_ms_per_game_minute": 171.08,
+        "game_minutes": 5
+      }
+    ],
+    "hour_after": 12.25,
+    "scenario": "infection-heavy 12:00, 20 seeded index cases",
+    "seeded_index_cases": [
+      29,
+      33,
+      42,
+      44,
+      77,
+      87,
+      93,
+      97,
+      117,
+      120,
+      129,
+      135,
+      146,
+      163,
+      170,
+      175,
+      182,
+      225,
+      247,
+      295
+    ],
+    "warmup_to_1200_s": 89.7,
+    "warmup_curve_per_game_hour": [
+      {
+        "total_ms_per_game_minute": 22.391,
+        "mobility_ms_per_game_minute": 20.4,
+        "outbreak_ms_per_game_minute": 1.972,
+        "game_minutes": 60,
+        "hour_after": 6.0,
+        "n_records": 21,
+        "n_undead": 0,
+        "n_events": 40
+      },
+      {
+        "total_ms_per_game_minute": 24.935,
+        "mobility_ms_per_game_minute": 21.656,
+        "outbreak_ms_per_game_minute": 3.259,
+        "game_minutes": 60,
+        "hour_after": 7.0,
+        "n_records": 21,
+        "n_undead": 0,
+        "n_events": 42
+      },
+      {
+        "total_ms_per_game_minute": 614.403,
+        "mobility_ms_per_game_minute": 608.408,
+        "outbreak_ms_per_game_minute": 5.973,
+        "game_minutes": 60,
+        "hour_after": 8.0,
+        "n_records": 22,
+        "n_undead": 0,
+        "n_events": 60
+      },
+      {
+        "total_ms_per_game_minute": 149.881,
+        "mobility_ms_per_game_minute": 121.089,
+        "outbreak_ms_per_game_minute": 28.768,
+        "game_minutes": 60,
+        "hour_after": 9.0,
+        "n_records": 26,
+        "n_undead": 3,
+        "n_events": 106
+      },
+      {
+        "total_ms_per_game_minute": 126.353,
+        "mobility_ms_per_game_minute": 49.082,
+        "outbreak_ms_per_game_minute": 77.246,
+        "game_minutes": 60,
+        "hour_after": 10.0,
+        "n_records": 32,
+        "n_undead": 6,
+        "n_events": 214
+      },
+      {
+        "total_ms_per_game_minute": 274.119,
+        "mobility_ms_per_game_minute": 92.538,
+        "outbreak_ms_per_game_minute": 181.536,
+        "game_minutes": 60,
+        "hour_after": 11.0,
+        "n_records": 52,
+        "n_undead": 15,
+        "n_events": 456
+      },
+      {
+        "total_ms_per_game_minute": 282.542,
+        "mobility_ms_per_game_minute": 88.818,
+        "outbreak_ms_per_game_minute": 193.693,
+        "game_minutes": 60,
+        "hour_after": 12.0,
+        "n_records": 67,
+        "n_undead": 19,
+        "n_events": 633
+      }
+    ],
+    "n_records": 67,
+    "health": {
+      "dead": 1,
+      "incapacitated": 1,
+      "incubating": 45,
+      "susceptible": 1,
+      "undead": 19
+    },
+    "infectious_sources": 40,
+    "n_undead": 19,
+    "n_events": 654,
+    "n_disrupted_buildings": 27,
+    "n_obstructions": 4
+  },
+  "focus": {
+    "far": {
+      "total_ms_per_game_minute": 274.545,
+      "mobility_ms_per_game_minute": 83.565,
+      "outbreak_ms_per_game_minute": 190.942,
+      "repeats": 3,
+      "game_minutes_per_block": 5,
+      "blocks": [
+        {
+          "total_ms_per_game_minute": 255.921,
+          "mobility_ms_per_game_minute": 77.799,
+          "outbreak_ms_per_game_minute": 178.089,
+          "game_minutes": 5
+        },
+        {
+          "total_ms_per_game_minute": 274.545,
+          "mobility_ms_per_game_minute": 83.565,
+          "outbreak_ms_per_game_minute": 190.942,
+          "game_minutes": 5
+        },
+        {
+          "total_ms_per_game_minute": 298.25,
+          "mobility_ms_per_game_minute": 92.498,
+          "outbreak_ms_per_game_minute": 205.721,
+          "game_minutes": 5
+        }
+      ],
+      "hour_after": 12.5,
+      "focus_xy": [
+        1000000.0,
+        1000000.0
+      ],
+      "bands": {
+        "route_simulated": 297
+      }
+    },
+    "near": {
+      "total_ms_per_game_minute": 251.341,
+      "mobility_ms_per_game_minute": 83.45,
+      "outbreak_ms_per_game_minute": 171.107,
+      "repeats": 3,
+      "game_minutes_per_block": 5,
+      "blocks": [
+        {
+          "total_ms_per_game_minute": 256.851,
+          "mobility_ms_per_game_minute": 85.216,
+          "outbreak_ms_per_game_minute": 171.605,
+          "game_minutes": 5
+        },
+        {
+          "total_ms_per_game_minute": 251.341,
+          "mobility_ms_per_game_minute": 80.192,
+          "outbreak_ms_per_game_minute": 171.107,
+          "game_minutes": 5
+        },
+        {
+          "total_ms_per_game_minute": 248.305,
+          "mobility_ms_per_game_minute": 83.45,
+          "outbreak_ms_per_game_minute": 164.824,
+          "game_minutes": 5
+        }
+      ],
+      "hour_after": 12.75,
+      "focus_xy": [
+        -535.0,
+        865.2
+      ],
+      "bands": {
+        "route_simulated": 297
+      },
+      "n_undead": 19
+    },
+    "max_active": 1024,
+    "note": "the outbreak scans every registered citizen regardless of the mobility LOD band, so a NEAR undead costs exactly the same Python as a FAR one (the Godot body cost of a NEAR undead is measured in-engine, separately). Mobility only freezes citizens into ABSTRACT beyond its max_active=1024 budget, and this city registers 297, so nothing froze and the far focus changed nothing on the mobility side either: far bands {'route_simulated': 297}, near bands {'route_simulated': 297}."
+  },
+  "contacts": {
+    "note": "sources are seeded index cases with infectious_from_t forced to 0 so the scan really has N infectious sources; records are restored after every timed call, so the scans are comparable",
+    "by_sources": {
+      "1": {
+        "infectious_sources": 1,
+        "ms": 0.451,
+        "ms_per_source": 0.4509,
+        "n_registered": 297,
+        "per_source_per_citizen_us": 1.518
+      },
+      "5": {
+        "infectious_sources": 5,
+        "ms": 1.511,
+        "ms_per_source": 0.3022,
+        "n_registered": 297,
+        "per_source_per_citizen_us": 1.018
+      },
+      "20": {
+        "infectious_sources": 20,
+        "ms": 6.049,
+        "ms_per_source": 0.3024,
+        "n_registered": 297,
+        "per_source_per_citizen_us": 1.018
+      }
+    }
+  },
+  "progression": {
+    "heavy_ms": 0.0499,
+    "heavy_n_records": 69,
+    "light_ms": 0.0012,
+    "light_n_records": 1,
+    "note": "_progress runs on every 1 s substep, i.e. 60x per game-minute",
+    "heavy_ms_per_game_minute": 2.994
+  },
+  "snapshot": {
+    "ms": 0.107,
+    "json_bytes": 68291,
+    "n_records": 69,
+    "counts": {
+      "undead": 19,
+      "dead": 1,
+      "incubating": 46,
+      "susceptible": 229,
+      "corpse": 1,
+      "incapacitated": 1
+    }
+  },
+  "persistence": {
+    "to_state_plus_dumps_ms": 4.999,
+    "from_state_ms": 3.447,
+    "state_bytes": 211350,
+    "n_events_in_state": 714
+  },
+  "mobility_only_baseline": {
+    "offpeak_0500": {
+      "total_ms_per_game_minute": 23.498,
+      "mobility_ms_per_game_minute": 23.478,
+      "outbreak_ms_per_game_minute": 0.0,
+      "repeats": 3,
+      "game_minutes_per_block": 20,
+      "blocks": [
+        {
+          "total_ms_per_game_minute": 23.596,
+          "mobility_ms_per_game_minute": 23.575,
+          "outbreak_ms_per_game_minute": 0.0,
+          "game_minutes": 20
+        },
+        {
+          "total_ms_per_game_minute": 23.498,
+          "mobility_ms_per_game_minute": 23.478,
+          "outbreak_ms_per_game_minute": 0.0,
+          "game_minutes": 20
+        },
+        {
+          "total_ms_per_game_minute": 23.295,
+          "mobility_ms_per_game_minute": 23.277,
+          "outbreak_ms_per_game_minute": 0.0,
+          "game_minutes": 20
+        }
+      ],
+      "hour_after": 6.0
+    },
+    "commute_peak_0700": {
+      "total_ms_per_game_minute": 186.875,
+      "mobility_ms_per_game_minute": 186.856,
+      "outbreak_ms_per_game_minute": 0.0,
+      "repeats": 3,
+      "game_minutes_per_block": 20,
+      "blocks": [
+        {
+          "total_ms_per_game_minute": 24.339,
+          "mobility_ms_per_game_minute": 24.318,
+          "outbreak_ms_per_game_minute": 0.0,
+          "game_minutes": 20
+        },
+        {
+          "total_ms_per_game_minute": 1822.506,
+          "mobility_ms_per_game_minute": 1822.489,
+          "outbreak_ms_per_game_minute": 0.0,
+          "game_minutes": 20
+        },
+        {
+          "total_ms_per_game_minute": 186.875,
+          "mobility_ms_per_game_minute": 186.856,
+          "outbreak_ms_per_game_minute": 0.0,
+          "game_minutes": 20
+        }
+      ],
+      "hour_after": 8.0
+    }
+  },
+  "budget": {
+    "clock_multiplier": 24.0,
+    "real_seconds_per_game_minute": 2.5,
+    "budget_ms": 2500.0,
+    "worst_total_ms_per_game_minute": 245.807,
+    "worst_scenario": "infection-heavy 12:00, 20 seeded index cases",
+    "budget_used_fraction_worst": 0.0983,
+    "outbreak_share_offpeak": 0.013,
+    "outbreak_share_heavy": 0.696,
+    "headroom_x": 10.2,
+    "note": "at 24x one game minute is 2.5 s of real time (2500 ms). The heaviest measured game-minute (245.807 ms, 297 citizens) uses 9.83% of it; the outbreak itself is 171.08 ms of that."
+  }
+}
