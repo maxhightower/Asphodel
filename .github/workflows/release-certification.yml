@@ -7,10 +7,15 @@ permissions:
   contents: read
 concurrency:
   group: release-certification-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   windows-native:
+    name: windows-${{ matrix.purpose }}
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        purpose: [regression, package]
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
@@ -37,15 +42,18 @@ jobs:
       - name: Import project
         run: godot --headless --path godot --import
       - name: Sequential regressions W48 through W51
+        if: matrix.purpose == 'regression'
         run: python tools/certify_release.py --output artifacts/release_closure/windows-regression
       - name: Build native Windows package
+        if: matrix.purpose == 'package'
         run: python tools/build_windows_playable.py --target windows --zip
       - name: Run exported client without repository or system Python
+        if: matrix.purpose == 'package'
         run: python tools/certify_packaged.py --package dist/asphodel-windows-v2 --output artifacts/release_closure/windows-packaged
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: windows-release-evidence
+          name: windows-${{ matrix.purpose }}-evidence
           path: |
             artifacts/release_closure/
             artifacts/windows_playable_v2/build_manifest.json

@@ -19,7 +19,7 @@ import time
 
 REPO = Path(__file__).resolve().parents[1]
 SCENES = {"W48": ["OutbreakGate"], "W49": ["EmbodiedMobilityGate"],
-          "W50": ["PhysicsGate", "RegionGate", "NavGate", "ConvergenceGate"]}
+          "W50": ["PhysicsGate", "RegionGate", "NavGate", "ConvergenceGate", "TransportGate"]}
 
 
 def stop_owned(proc):
@@ -67,7 +67,9 @@ def run_scene(godot, scene, out, timeout):
                 time.sleep(.1)
             if port is None:
                 raise RuntimeError("owned authority did not announce readiness")
-            command += ["--port", str(port)]
+            # Match the previously certified shell runners, not the scenes'
+            # different default. Physical controller gates depend on this dt.
+            command += ["--port", str(port), "--game-dt", "0.1"]
         logfile = out / f"{scene}.log"
         with logfile.open("w", encoding="utf-8") as stream:
             proc = subprocess.run(command, cwd=REPO, stdout=stream,

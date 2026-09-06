@@ -46,3 +46,37 @@ def test_malformed_save_preserves_current_world(tmp_path):
     response = session.handle({"cmd": "LOAD", "path": str(path)})
     assert not response["ok"]
     assert session.world is original
+
+
+def test_full_stack_load_and_continuation_are_identical(tmp_path):
+    """Use the real city/command path, not mocks, for successful restoration."""
+    session = WorldSession()
+    started = session.handle({"cmd": "START_WORLD", "bundle": "madisonville_tx",
+                              "start_hour": 8.0, "require_full_stack": True,
+                              "outbreak": {"seed_index_case": False}})
+    assert started["ok"], started
+    flags = ("mobility_enabled", "outbreak_enabled", "work_enabled", "cognition_enabled",
+             "dialogue_enabled", "groups_enabled")
+    assert all(started.get(flag) for flag in flags)
+    checkpoint = tmp_path / "checkpoint.json"
+    assert session.handle({"cmd": "SAVE", "path": str(checkpoint)})["ok"]
+    assert session.handle({"cmd": "ADVANCE_TIME", "seconds": 2.0})["ok"]
+    control = tmp_path / "control.json"
+    assert session.handle({"cmd": "SAVE", "path": str(control)})["ok"]
+    restored = WorldSession()
+    loaded = restored.handle({"cmd": "LOAD", "path": str(checkpoint)})
+    assert loaded["ok"], loaded
+    assert all(loaded.get(flag) for flag in flags)
+    assert restored.handle({"cmd": "ADVANCE_TIME", "seconds": 2.0})["ok"]
+    replay = tmp_path / "replay.json"
+    assert restored.handle({"cmd": "SAVE", "path": str(replay)})["ok"]
+    assert json.loads(control.read_text()) == json.loads(replay.read_text())
+
+
+def test_playable_start_rejects_missing_stack_without_publishing_world():
+    session = WorldSession()
+    reply = session.handle({"cmd": "START_WORLD", "bundle": "madisonville_tx",
+                            "citizens": False, "require_full_stack": True})
+    assert not reply["ok"]
+    assert "required runtimes" in reply["error"]["message"]
+    assert session.world is None

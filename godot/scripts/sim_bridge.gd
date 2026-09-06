@@ -99,7 +99,7 @@ func connect_to_sim(host: String = "127.0.0.1", port: int = 8765, timeout_ms: in
 	if _peer.get_status() != StreamPeerTCP.STATUS_CONNECTED:
 		push_error("SimBridge: not connected (status %d)" % _peer.get_status())
 		return false
-	var reply := _send("HELLO", {"protocol_version": PROTOCOL_VERSION})
+	var reply := _send("HELLO", {"protocol_version": PROTOCOL_VERSION}, maxi(timeout_ms, 1000))
 	last_hello = reply
 	if not _ok(reply):
 		push_error("SimBridge: HELLO rejected: %s" % str(reply))
@@ -456,7 +456,7 @@ func _mean_belief_from(reply: Dictionary) -> float:
 	return clampf(s / zones.size(), 0.0, 1.0)
 
 
-func _send(cmd: String, fields: Dictionary) -> Dictionary:
+func _send(cmd: String, fields: Dictionary, timeout_ms: int = 120000) -> Dictionary:
 	if _peer == null:
 		return {"ok": false, "error": {"code": "no_connection", "message": "not connected"}}
 	_id += 1
@@ -464,18 +464,27 @@ func _send(cmd: String, fields: Dictionary) -> Dictionary:
 	for k in fields:
 		msg[k] = fields[k]
 	var line := JSON.stringify(msg) + "\n"
-	_peer.put_data(line.to_utf8_buffer())
-	return _read_reply()
+	if _peer.put_data(line.to_utf8_buffer()) != OK:
+		return _transport_error("send_failed", "could not send request")
+	var reply := _read_reply(timeout_ms)
+	if reply.get("ok", false) and not reply.has("id"):
+		return _transport_error("reply_mismatch", "successful response has no request id")
+	if reply.has("id") and int(reply["id"]) != _id:
+		return _transport_error("reply_mismatch", "response id does not match request")
+	return reply
 
 
-func _read_reply() -> Dictionary:
+func _read_reply(timeout_ms: int = 120000) -> Dictionary:
 	## Block until a full newline-terminated JSON line is available.
 	var buf := PackedByteArray()
+	var deadline := Time.get_ticks_msec() + timeout_ms
 	while true:
+		if Time.get_ticks_msec() >= deadline:
+			return _transport_error("reply_timeout", "authority did not return a complete response")
 		_peer.poll()
 		var status := _peer.get_status()
 		if status != StreamPeerTCP.STATUS_CONNECTED:
-			return {"ok": false, "error": {"code": "disconnected", "message": "peer closed"}}
+			return _transport_error("disconnected", "peer closed")
 		var avail := _peer.get_available_bytes()
 		if avail > 0:
 			var chunk := _peer.get_data(avail)
@@ -488,9 +497,19 @@ func _read_reply() -> Dictionary:
 					var parsed = JSON.parse_string(text)
 					if parsed is Dictionary:
 						return parsed
-					return {"ok": false, "error": {"code": "bad_reply", "message": text}}
+					return _transport_error("bad_reply", "authority returned invalid JSON")
 		else:
 			OS.delay_msec(1)
 	# Unreachable (the loop only exits via return), but GDScript's static analyser
 	# requires every code path to return a Dictionary.
 	return {"ok": false, "error": {"code": "unreachable", "message": ""}}
+
+
+func _transport_error(code: String, message: String) -> Dictionary:
+	# After timeout/correlation failure the stream cannot safely serve another
+	# request: a late response could otherwise be mistaken for the next command.
+	if _peer != null:
+		_peer.disconnect_from_host()
+	_peer = null
+	_set_connected(false)
+	return {"ok": false, "error": {"code": code, "message": message}}

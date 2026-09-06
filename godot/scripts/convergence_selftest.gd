@@ -43,7 +43,7 @@ func _run() -> void:
 	if restore != "":
 		started = SimBridge.load(restore)
 	else:
-		started = SimBridge.start_world(bundle, {"start_hour": 8.0})
+		started = SimBridge.start_world(bundle, {"start_hour": 8.0, "require_full_stack": true})
 	var flags_on = started.get("mobility_enabled", false) and started.get("cognition_enabled", false) \
 		and started.get("dialogue_enabled", false) and started.get("groups_enabled", false) \
 		and started.get("work_enabled", false)

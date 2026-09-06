@@ -454,7 +454,7 @@ func _connect_live_world(dir: String, meta: Dictionary) -> void:
 		FatalError.show_error(get_tree(), AuthorityLauncher.last_error_code,
 			AuthorityLauncher.last_error_detail)
 		return
-	var opts := {"seed": int(meta.get("seed", 0))}
+	var opts := {"seed": int(meta.get("seed", 0)), "require_full_stack": true}
 	# If the flow told us which citizen the player embodies, pass it so the player's
 	# home zone is promoted with them (and their identified neighbours) present.
 	var pcid := int(Session.citizen.get("citizen_id", -1)) if Session.citizen.has("citizen_id") else -1

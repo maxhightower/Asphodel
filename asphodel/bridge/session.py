@@ -107,6 +107,9 @@ class WorldSession:
         # Real bundles populate World with their own citizens by default; pass
         # citizens:false for a bare epidemiological world (e.g. protocol tests).
         want_citizens = msg.get("citizens", True)
+        require_full_stack = msg.get("require_full_stack", False)
+        if not isinstance(require_full_stack, bool):
+            raise _BadArg("'require_full_stack' must be a boolean")
 
         world = world_from_bundle(
             bundle, seed=seed, micro_params=micro,
@@ -189,6 +192,11 @@ class WorldSession:
                 # ASPHODEL_SURVIVOR_GROUPS_COMMUNITIES_V1: survivor groups, on with dialogue
                 if bool(msg.get("groups", True)):
                     world.enable_groups()
+        if require_full_stack:
+            missing = [name for name in ("mobility", "work", "cognition", "dialogue", "groups")
+                       if getattr(world, name, None) is None]
+            if missing:
+                raise _BadArg(f"playable world missing required runtimes: {', '.join(missing)}")
         self.world = world
         self.paused = False
         self.bundle = bundle
