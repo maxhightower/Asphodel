@@ -527,14 +527,17 @@ def test_every_received_fact_is_really_in_the_listeners_store(day):
         assert fact is not None, f"the told fact is not in {row['listener']}'s store: {row}"
         assert fact["owner"] == row["listener"]
         assert fact["fact_id"] == row["fact_id"] and fact["kind"] == row["fact_kind"]
-        assert fact["origin_id"] == row["origin_id"] and fact["hops"] == row["hops"]
-        assert fact["origin_witness"] == row["origin_witness"] not in (None, row["listener"])
+        # the event reports the lineage that was TOLD (a real origin witness, one hop on)
+        assert row["origin_witness"] not in (None, row["listener"]) and row["hops"] >= 1, row
         if row["created"]:
+            # a freshly created told fact stores exactly the told lineage
             assert fact["source"] == M.TOLD, row
             assert fact["source_citizen"] == row["speaker"], row
-            assert fact["hops"] >= 1, row
+            assert fact["origin_id"] == row["origin_id"] and fact["hops"] == row["hops"], row
+            assert fact["origin_witness"] == row["origin_witness"], row
         else:
-            # a telling that reinforced a fact the listener already held
+            # a telling that reinforced a fact the listener already held from elsewhere:
+            # the stored copy keeps its own lineage, the event still reports what was said
             assert fact["source"] in (M.TOLD, M.DIRECT, M.PARTICIPANT), row
             assert fact["count"] > 1, row
 
