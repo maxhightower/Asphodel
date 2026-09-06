@@ -78019,32 +78019,32 @@
   {
    "gate": "N31",
    "name": "Smart Objects/Work gate remains PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/npc_cognition_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 44, \"fail\": 0, \"info\": 0, \"exit\": 0, \"log\": \"g_work.log\"}"
   },
   {
    "gate": "N32",
    "name": "Outbreak gate remains PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/npc_cognition_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 36, \"fail\": 0, \"info\": 2, \"exit\": 0, \"log\": \"g_outbreak.log\"}"
   },
   {
    "gate": "N33",
    "name": "Mobility gate remains PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/npc_cognition_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 48, \"fail\": 0, \"info\": 2, \"exit\": 0, \"log\": \"g_mobility.log\"}"
   },
   {
    "gate": "N34",
    "name": "Existing Godot gates remain PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/npc_cognition_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 85, \"fail\": 0, \"exited_nonzero\": 0, \"scenes\": [\"tests/PhysicsGate.tscn\", \"tests/RegionGate.tscn\", \"tests/NavGate.tscn\", \"tests/ConvergenceGate.tscn\"]}"
   },
   {
    "gate": "N35",
    "name": "Multi-city smoke",
-   "status": "NOT_RUN",
-   "detail": "artifacts/npc_cognition_v1/city_smoke.json missing"
+   "status": "PASS",
+   "detail": "{\"houston\": \"PASS\", \"madisonville_tx\": \"PASS\", \"austin\": \"PASS\", \"san_antonio\": \"PASS\", \"boulder\": \"INFO\"}"
   },
   {
    "gate": "N36",

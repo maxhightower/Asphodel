@@ -30,9 +30,9 @@
 | N28 | Counterfactual helping test passes | PASS | same world restored twice before the break: with the morning's help in memory 79 decides repair_station (score 1.137); with HELPED_BY erased (1 facts) and trust/affinity/obligation back at the workplace prior (familiarity kept) it does not (score without the help 0.320 < 0.4); of 9 helper/beneficiary pairs available at 13:00, 9 flip on the help history, 0 would repair anyway (helpfulness + familiarity) |
 | N29 | Counterfactual warning test passes | PASS | same world restored twice before the seeding: warned, citizen 297 leaves on a belief goal at 10.77 (own first perception 10.771); never warned, it stays on its schedule until it perceives the threat itself at 10.771 (flee 10.771) — no belief goal |
 | N30 | Godot embodiment demonstrates social action | PASS | godot probe:  0 FAIL rows |
-| N31 | Smart Objects/Work gate remains PASS | NOT_RUN | artifacts/npc_cognition_v1/regression.json missing |
-| N32 | Outbreak gate remains PASS | NOT_RUN | artifacts/npc_cognition_v1/regression.json missing |
-| N33 | Mobility gate remains PASS | NOT_RUN | artifacts/npc_cognition_v1/regression.json missing |
-| N34 | Existing Godot gates remain PASS | NOT_RUN | artifacts/npc_cognition_v1/regression.json missing |
-| N35 | Multi-city smoke | NOT_RUN | artifacts/npc_cognition_v1/city_smoke.json missing |
+| N31 | Smart Objects/Work gate remains PASS | PASS | {"status": "PASS", "pass": 44, "fail": 0, "info": 0, "exit": 0, "log": "g_work.log"} |
+| N32 | Outbreak gate remains PASS | PASS | {"status": "PASS", "pass": 36, "fail": 0, "info": 2, "exit": 0, "log": "g_outbreak.log"} |
+| N33 | Mobility gate remains PASS | PASS | {"status": "PASS", "pass": 48, "fail": 0, "info": 2, "exit": 0, "log": "g_mobility.log"} |
+| N34 | Existing Godot gates remain PASS | PASS | {"status": "PASS", "pass": 85, "fail": 0, "exited_nonzero": 0, "scenes": ["tests/PhysicsGate.tscn", "tests/RegionGate.tscn", "tests/NavGate.tscn", "tests/ConvergenceGate.tscn"]} |
+| N35 | Multi-city smoke | PASS | {"houston": "PASS", "madisonville_tx": "PASS", "austin": "PASS", "san_antonio": "PASS", "boulder": "INFO"} |
 | N36 | No city-name special cases | PASS | city-name matches in cognition/work/outbreak/world code: [] |
