@@ -248,12 +248,13 @@ def day():
     # state, where multi-hop rumours have had time to spread (they do not exist yet
     # in the minute right after the first attack).
     if scen_a and scen_a.get("A_witness") is not None:
-        # a citizen whose ONLY threat knowledge is a two-hop rumour (no first-hand fact it
-        # would answer with instead): asked, it speaks as hearsay two hops from the witness
+        # a citizen asked about a place where its only knowledge is a two-hop rumour speaks
+        # as hearsay two hops from the witness. Probe each holder about that fact's building
+        # and accept the first whose answer really is hearsay (a holder that also saw the
+        # event first-hand would answer first-hand instead, and is skipped).
         weak = sorted([(cid, f) for cid, st in c.memories.items() for f in st.facts.values()
                        if f.kind in THREAT and f.source == M.TOLD and f.hops >= 2
-                       and f.effective(c.now_s) >= G.RETRIEVAL_FLOOR and c._can_perceive(cid)
-                       and not any(g.first_hand() for g in st.facts.values() if g.kind in THREAT)],
+                       and f.effective(c.now_s) >= G.RETRIEVAL_FLOOR and c._can_perceive(cid)],
                       key=lambda x: (-x[1].hops, x[0]))
         for cid, f in weak:
             asker = next((a for a in sorted(w.mobility.execs) if a != cid and c._can_perceive(a)), scen_a["A_witness"])
