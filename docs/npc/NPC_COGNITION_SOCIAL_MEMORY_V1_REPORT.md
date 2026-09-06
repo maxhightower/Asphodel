@@ -9,9 +9,9 @@
 | starting SHA | `285828b` (certified `ASPHODEL_SMART_OBJECTS_WORK_V1: PASS`; verified on the branch before work began) |
 | merge base with `main` | `bee2f18a1827` |
 | branch | `claude/asphodel-embodied-mobility-v1-6gl4a8` |
-| certification SHA | `CERT_SHA_PLACEHOLDER` (the commit whose code every artifact in `artifacts/npc_cognition_v1/` was produced with) |
-| final SHA | `FINAL_SHA_PLACEHOLDER` (this stamp; pushed to `origin/claude/asphodel-embodied-mobility-v1-6gl4a8`) |
-| commits in this milestone | COMMITS_PLACEHOLDER |
+| certification SHA | `a1ec5ed` (the commit whose code every artifact in `artifacts/npc_cognition_v1/` was produced with) |
+| final SHA | the commit following the certification SHA (this stamp only; pushed to `origin/claude/asphodel-embodied-mobility-v1-6gl4a8`) |
+| commits in this milestone | 7 |
 
 Nothing was branched from an experimental branch; every change sits on the
 certified work spine.
