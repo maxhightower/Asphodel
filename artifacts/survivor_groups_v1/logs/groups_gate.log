@@ -1,0 +1,53 @@
+[run_group_gate] building deterministic group scenario (pre-step)...
+SCENARIO OK group=group:1 members=[42, 87, 117] coordinator=117 roles={'coordinator': 117, 'guard': 87} shelter=6353 outsider=0 non_member=1 warned_fact=True
+SAVE=/tmp/asph_group_save.json SIDECAR=/tmp/asph_group_scenario.json
+Godot Engine v4.4.stable.official.4c311cbee - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:360)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+libpulse.so.0: cannot open shared object file: No such file or directory
+libpulse.so.0: cannot open shared object file: No such file or directory
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5727:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:90)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio_server.cpp:246)
+
+PASS  protocol_v9  START_WORLD reply protocol_version=9, SimBridge speaks v9 (GET_GROUPS / GROUP_QUERY)
+PASS  world_started_with_groups  the scene's own START_WORLD (bundle houston, start_hour 8.0) left the world at hour 8.00186084888889 with groups_enabled=true (dialogue=true cognition=true work=true mobility=true). START_WORLD enables the survivor-group layer by default alongside dialogue.
+INFO  fresh_world_baseline  before LOAD, the scene's just-booted world reports 0 group(s) (a group emerges only from real cooperation, so a freshly started world has none — this is why the deterministic scenario is built by the pre-step and reached here through the real save/load path)
+PASS  loaded_world_with_group  LOAD /tmp/asph_group_save.json over the live bridge -> ok=true, groups_enabled=true, hour=15.0. The pre-step formed the group 'group:1' (reason "workplace:42-87; helped:42-87; trust:42-87; workplace:42-117; helped:42-117; trust:42-117") and SAVEd it; this is the real save/load + bridge path reaching the emerged group.
+PASS  get_groups_snapshot_shape  GET_GROUPS v1.0: keys ["version", "now_s", "groups", "member_of", "events", "event_seq", "counts"], missing []; 1 group(s), member_of={ "42": "group:1", "87": "group:1", "117": "group:1" }, event_seq=29.0, counts={ "GROUP_DECISION": 1.0, "GROUP_FORMED": 1.0, "GROUP_OBJECTIVE_CREATED": 5.0, "GROUP_PROPOSED": 1.0, "GROUP_WARNING": 1.0, "ROLE_ACCEPTED": 3.0, "ROLE_COMPLETED": 3.0, "ROLE_PROPOSED": 2.0, "SHELTER_PROPOSED": 7.0, "SHELTER_SELECTED": 1.0, "SUPPLY_ACQUIRED": 1.0, "SUPPLY_NEED": 1.0, "SUPPLY_RETURNED": 1.0, "SUPPLY_RUN_ASSIGNED": 1.0 }
+PASS  real_group_present  group 'group:1' formed at 7200.0s holds 3 active members [42, 87, 117], shelters in building 6353 (room 0.0, entrance room 0.0, node ent:6353), and its coordinator is citizen 117 (an active member). founders [42.0, 87.0, 117.0], formed_reason "workplace:42-87; helped:42-87; trust:42-87; workplace:42-117; helped:42-117; trust:42-117".
+PASS  membership_states_valid  the group's membership map is { "42": "member", "87": "member", "117": "member" }; every state is one of ["candidate", "invited", "provisional", "member", "departed", "expelled"] (invalid: [])
+PASS  a_role_is_held  the group's active members hold real roles ["coordinator=117", "guard=87"] (from { "coordinator": 117.0, "guard": 87.0 }). The roles were taken through the real role-request path (ROLE_PROPOSED -> ROLE_ACCEPTED), the coordinator emerged at formation from highest influence.
+PASS  group_query_membership  GROUP_QUERY membership(citizen 117) -> in_group=group:1 role=coordinator (a member of 'group:1'); membership(citizen 1) -> in_group=<null> (a non-member the pre-step confirmed is in no group). The authority answered both from live state.
+PASS  group_query_where_returns_shelter  GROUP_QUERY where(citizen 117) -> shelter_building=6353.0 (room 0.0), members [42.0, 87.0, 117.0] — the same shelter (6353) the group selected from its members' own knowledge and recorded in the snapshot.
+PASS  shared_record_shows_provenance  the group's shared record holds a fact with preserved provenance: fact group:1:fact:7 (kind threat_location) records origin_witness=42.0, source_citizen=42.0, subject=888.0, building=6353.0 — the lineage of the citizen who first knew it, never an omniscient copy. A GROUP_WARNING event references fact group:1:fact:7 (reporter 42.0, told [87.0, 117.0], uncontacted []), and that fact is in the shared record.
+PASS  group_query_ask_to_join_is_grounded  GROUP_QUERY ask_to_join(via member 117, player citizen 0) -> ok=true, accept=true, reason="group_agrees", aggregate=0.403. The group ran its real admission decision (each member votes from its own knowledge of the outsider, influence-weighted, resolved within capacity) — a grounded accept/refuse, not a free-text guess.
+PASS  group_persists_live_after_advance  after one live ADVANCE_TIME (1.0s) the authority still reports group 'group:1' with 4 active members [0, 42, 87, 117] and coordinator 117 — membership and roles are LOD/clock independent and survive the load into a running world.
+
+==== GROUP GATE RESULTS (houston, group group:1) ====
+PASS  protocol_v9  START_WORLD reply protocol_version=9, SimBridge speaks v9 (GET_GROUPS / GROUP_QUERY)
+PASS  world_started_with_groups  the scene's own START_WORLD (bundle houston, start_hour 8.0) left the world at hour 8.00186084888889 with groups_enabled=true (dialogue=true cognition=true work=true mobility=true). START_WORLD enables the survivor-group layer by default alongside dialogue.
+INFO  fresh_world_baseline  before LOAD, the scene's just-booted world reports 0 group(s) (a group emerges only from real cooperation, so a freshly started world has none — this is why the deterministic scenario is built by the pre-step and reached here through the real save/load path)
+PASS  loaded_world_with_group  LOAD /tmp/asph_group_save.json over the live bridge -> ok=true, groups_enabled=true, hour=15.0. The pre-step formed the group 'group:1' (reason "workplace:42-87; helped:42-87; trust:42-87; workplace:42-117; helped:42-117; trust:42-117") and SAVEd it; this is the real save/load + bridge path reaching the emerged group.
+PASS  get_groups_snapshot_shape  GET_GROUPS v1.0: keys ["version", "now_s", "groups", "member_of", "events", "event_seq", "counts"], missing []; 1 group(s), member_of={ "42": "group:1", "87": "group:1", "117": "group:1" }, event_seq=29.0, counts={ "GROUP_DECISION": 1.0, "GROUP_FORMED": 1.0, "GROUP_OBJECTIVE_CREATED": 5.0, "GROUP_PROPOSED": 1.0, "GROUP_WARNING": 1.0, "ROLE_ACCEPTED": 3.0, "ROLE_COMPLETED": 3.0, "ROLE_PROPOSED": 2.0, "SHELTER_PROPOSED": 7.0, "SHELTER_SELECTED": 1.0, "SUPPLY_ACQUIRED": 1.0, "SUPPLY_NEED": 1.0, "SUPPLY_RETURNED": 1.0, "SUPPLY_RUN_ASSIGNED": 1.0 }
+PASS  real_group_present  group 'group:1' formed at 7200.0s holds 3 active members [42, 87, 117], shelters in building 6353 (room 0.0, entrance room 0.0, node ent:6353), and its coordinator is citizen 117 (an active member). founders [42.0, 87.0, 117.0], formed_reason "workplace:42-87; helped:42-87; trust:42-87; workplace:42-117; helped:42-117; trust:42-117".
+PASS  membership_states_valid  the group's membership map is { "42": "member", "87": "member", "117": "member" }; every state is one of ["candidate", "invited", "provisional", "member", "departed", "expelled"] (invalid: [])
+PASS  a_role_is_held  the group's active members hold real roles ["coordinator=117", "guard=87"] (from { "coordinator": 117.0, "guard": 87.0 }). The roles were taken through the real role-request path (ROLE_PROPOSED -> ROLE_ACCEPTED), the coordinator emerged at formation from highest influence.
+PASS  group_query_membership  GROUP_QUERY membership(citizen 117) -> in_group=group:1 role=coordinator (a member of 'group:1'); membership(citizen 1) -> in_group=<null> (a non-member the pre-step confirmed is in no group). The authority answered both from live state.
+PASS  group_query_where_returns_shelter  GROUP_QUERY where(citizen 117) -> shelter_building=6353.0 (room 0.0), members [42.0, 87.0, 117.0] — the same shelter (6353) the group selected from its members' own knowledge and recorded in the snapshot.
+PASS  shared_record_shows_provenance  the group's shared record holds a fact with preserved provenance: fact group:1:fact:7 (kind threat_location) records origin_witness=42.0, source_citizen=42.0, subject=888.0, building=6353.0 — the lineage of the citizen who first knew it, never an omniscient copy. A GROUP_WARNING event references fact group:1:fact:7 (reporter 42.0, told [87.0, 117.0], uncontacted []), and that fact is in the shared record.
+PASS  group_query_ask_to_join_is_grounded  GROUP_QUERY ask_to_join(via member 117, player citizen 0) -> ok=true, accept=true, reason="group_agrees", aggregate=0.403. The group ran its real admission decision (each member votes from its own knowledge of the outsider, influence-weighted, resolved within capacity) — a grounded accept/refuse, not a free-text guess.
+PASS  group_persists_live_after_advance  after one live ADVANCE_TIME (1.0s) the authority still reports group 'group:1' with 4 active members [0, 42, 87, 117] and coordinator 117 — membership and roles are LOD/clock independent and survive the load into a running world.
+==== PASS (0 failure(s)) ====
+TRACE saved: /home/user/Asphodel/artifacts/survivor_groups_v1/godot_probe_trace.json
+GATE_EXIT=0 TRACE=artifacts/survivor_groups_v1/godot_probe_trace.json

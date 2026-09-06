@@ -1,0 +1,68 @@
+Godot Engine v4.4.stable.official.4c311cbee - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:360)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+libpulse.so.0: cannot open shared object file: No such file or directory
+libpulse.so.0: cannot open shared object file: No such file or directory
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5727:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:90)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio_server.cpp:246)
+
+PASS  world_started_with_work  START_WORLD by the scene: mobility_enabled=true work_enabled=true, player_citizen=<null>, hour=0.00185250222222
+PASS  rooms_and_objects_stable  3 rooms ["shop_floor", "back_room", "storeroom"] zones=["sales_floor", "employee_area", "stock_room"], 119 objects, ids identical across two GET_ROOMS=true, entrance=[2780.52, 444.04]
+PASS  worker_commuted_into_workplace  citizen 68 state=doing_activity building=12013.0 at hour 8.56990805777778, interior xy=(2829.173,395.905) role=cashier
+PASS  interior_position_is_inside_the_footprint  authoritative interior position (2829.17, 395.90) lies in a room of building 12013
+PASS  player_inside_building_worker_embodied  inside_building()=12013, CitizenBody cit:68 at (48.64819, 0.9, 8978.005) (staged interior offset (-2780.525, 0.0, 8582.1)), 2 interior bodies
+PASS  interior_body_at_authoritative_pose  materialized 0.00 m from interior_offset + (row.x, row.y) of the block it was built from
+PASS  phase_to_object_then_using  to_object (target so:12013:5, 35 frames) -> using object so:12013:5 task man_register in room 0.0 zone sales_floor
+PASS  body_walked_inside_the_interior  CitizenBody cit:68 moved 45.5 m inside the staged interior while phase was to_object
+PASS  station_held_exclusively  so:12013:5 holders == [68] in 8/8 GET_ROOMS samples taken while the worker was using it (last [68]); other holders seen: []
+PASS  used_stations_marked  2 holder markers rendered in the staged interior, including so:12013:5
+PASS  customer_served_by_worker  SERVED: citizen 68 served customer 260.0 at so:12013:5 (1 in total)
+PASS  customer_served_in_workplace  1 SERVED events in building 12013, e.g. cashier 68.0 served customer 260.0 at so:12013:5; CUSTOMER_ARRIVED=2 QUEUED=2 UNSERVED=0
+PASS  broken_station_substituted  SET_OBJECT_STATE(so:12013:5, working, false) -> after 5 game s citizen 68 is on so:12013:20 (phase to_object); broken station holders=[]; OBJECT_UNAVAILABLE events=1
+PASS  object_state_changed_in_building  2 STATE_CHANGE events in building 12013, e.g. { "seq": 40823.0, "t": 38750.7, "event": "STATE_CHANGE", "citizen_id": 260.0, "object_id": "so:12013:490", "key": "stock", "value": 23.0, "building_id": 12013.0, "room_id": 1.0 }
+PASS  saveload_mid_use_identical  xy (2785.653,393.057)->(2785.653,393.057), object so:12013:20->so:12013:20, task man_register->man_register, 3 held objects identical=true
+PASS  no_bodies_while_far  player 1.5 km away, interior left: no CitizenBody for any of the 2 workers of building 12013 ([68, 271])
+PASS  session_continues_while_far  GET_WORK session for 68 still in building 12013.0: object so:12013:20 (was so:12013:20), task man_register (was man_register), phase using
+PASS  session_object_and_task_unchanged_while_far  object so:12013:20 and task man_register unchanged over 20 game minutes with no body
+PASS  promoted_back_at_authoritative_pose  body recreated inside the interior 0.000 m from the authoritative pose; object so:12013:20 (session object so:12013:20)
+PASS  shift_ended_with_clock_out  hour=16.0035191688889 state=on_foot phase=<null>; CLOCK_OUT=1 { "seq": 106796.0, "t": 57601.7, "event": "CLOCK_OUT", "citizen_id": 68.0, "role": "cashier", "served": 2.0, "documents": 0.0, "cleaned": 0.0, "restocked": 0.0, "reason": "shift_end", "x": 2782.69, "y": 398.96, "building_id": 12013.0, "room_id": 0.0, "object_id": "so:12013:5", "task_id": "man_register", "phase": "using" } WORK_INTERRUPTED=0
+PASS  no_reservations_left_for_worker  the reservation ledger holds nothing for citizen 68 after the shift ([])
+PASS  worker_leaves_on_foot  citizen 68 is on_foot outside (building -1.0) at hour 16.0118525022222 — existing mobility took over
+
+==== WORK GATE RESULTS (houston, citizen 68, building 12013) ====
+PASS  world_started_with_work  START_WORLD by the scene: mobility_enabled=true work_enabled=true, player_citizen=<null>, hour=0.00185250222222
+PASS  rooms_and_objects_stable  3 rooms ["shop_floor", "back_room", "storeroom"] zones=["sales_floor", "employee_area", "stock_room"], 119 objects, ids identical across two GET_ROOMS=true, entrance=[2780.52, 444.04]
+PASS  worker_commuted_into_workplace  citizen 68 state=doing_activity building=12013.0 at hour 8.56990805777778, interior xy=(2829.173,395.905) role=cashier
+PASS  interior_position_is_inside_the_footprint  authoritative interior position (2829.17, 395.90) lies in a room of building 12013
+PASS  player_inside_building_worker_embodied  inside_building()=12013, CitizenBody cit:68 at (48.64819, 0.9, 8978.005) (staged interior offset (-2780.525, 0.0, 8582.1)), 2 interior bodies
+PASS  interior_body_at_authoritative_pose  materialized 0.00 m from interior_offset + (row.x, row.y) of the block it was built from
+PASS  phase_to_object_then_using  to_object (target so:12013:5, 35 frames) -> using object so:12013:5 task man_register in room 0.0 zone sales_floor
+PASS  body_walked_inside_the_interior  CitizenBody cit:68 moved 45.5 m inside the staged interior while phase was to_object
+PASS  station_held_exclusively  so:12013:5 holders == [68] in 8/8 GET_ROOMS samples taken while the worker was using it (last [68]); other holders seen: []
+PASS  used_stations_marked  2 holder markers rendered in the staged interior, including so:12013:5
+PASS  customer_served_by_worker  SERVED: citizen 68 served customer 260.0 at so:12013:5 (1 in total)
+PASS  customer_served_in_workplace  1 SERVED events in building 12013, e.g. cashier 68.0 served customer 260.0 at so:12013:5; CUSTOMER_ARRIVED=2 QUEUED=2 UNSERVED=0
+PASS  broken_station_substituted  SET_OBJECT_STATE(so:12013:5, working, false) -> after 5 game s citizen 68 is on so:12013:20 (phase to_object); broken station holders=[]; OBJECT_UNAVAILABLE events=1
+PASS  object_state_changed_in_building  2 STATE_CHANGE events in building 12013, e.g. { "seq": 40823.0, "t": 38750.7, "event": "STATE_CHANGE", "citizen_id": 260.0, "object_id": "so:12013:490", "key": "stock", "value": 23.0, "building_id": 12013.0, "room_id": 1.0 }
+PASS  saveload_mid_use_identical  xy (2785.653,393.057)->(2785.653,393.057), object so:12013:20->so:12013:20, task man_register->man_register, 3 held objects identical=true
+PASS  no_bodies_while_far  player 1.5 km away, interior left: no CitizenBody for any of the 2 workers of building 12013 ([68, 271])
+PASS  session_continues_while_far  GET_WORK session for 68 still in building 12013.0: object so:12013:20 (was so:12013:20), task man_register (was man_register), phase using
+PASS  session_object_and_task_unchanged_while_far  object so:12013:20 and task man_register unchanged over 20 game minutes with no body
+PASS  promoted_back_at_authoritative_pose  body recreated inside the interior 0.000 m from the authoritative pose; object so:12013:20 (session object so:12013:20)
+PASS  shift_ended_with_clock_out  hour=16.0035191688889 state=on_foot phase=<null>; CLOCK_OUT=1 { "seq": 106796.0, "t": 57601.7, "event": "CLOCK_OUT", "citizen_id": 68.0, "role": "cashier", "served": 2.0, "documents": 0.0, "cleaned": 0.0, "restocked": 0.0, "reason": "shift_end", "x": 2782.69, "y": 398.96, "building_id": 12013.0, "room_id": 0.0, "object_id": "so:12013:5", "task_id": "man_register", "phase": "using" } WORK_INTERRUPTED=0
+PASS  no_reservations_left_for_worker  the reservation ledger holds nothing for citizen 68 after the shift ([])
+PASS  worker_leaves_on_foot  citizen 68 is on_foot outside (building -1.0) at hour 16.0118525022222 — existing mobility took over
+==== PASS (0 failure(s)) ====
+TRACE saved: /home/user/Asphodel/artifacts/smart_objects_work_v1/godot_probe_trace.json (1094 rows, 193 events)
+GATE_EXIT=0 TRACE=artifacts/smart_objects_work_v1/godot_probe_trace.json
