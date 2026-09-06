@@ -1,0 +1,22 @@
+{
+  "milestone": "ASPHODEL_WINDOWS_PLAYABLE_CONVERGENCE_V2",
+  "measured_on": "linux proxy (real authority over the bridge)",
+  "authority_startup_ms": 2.0,
+  "hello_handshake_ms": 3.8,
+  "start_world_houston_ms": 5735.6,
+  "advance_time_1min_ms": {
+    "median": 57.71,
+    "max": 273.1,
+    "n": 10
+  },
+  "get_citizen_context_ms": {
+    "median": 0.13,
+    "max": 1.19,
+    "note": "selection-scoped inspector poll (\u00a735): one selected citizen, ~0.5s cadence"
+  },
+  "get_groups_ms": {
+    "median": 0.06,
+    "max": 0.18
+  },
+  "note": "FPS / Godot frame time are a render-path metric captured with the playable shots; these are the authority/bridge costs the client pays."
+}
