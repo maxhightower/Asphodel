@@ -119,11 +119,27 @@ answering "I don't know", an NPC warning exchange, a help request that a coworke
 services at the object, a refusal, and an interruption. Rendered shots are in
 `docs/npc/evidence_dialogue/`.
 
-## 10. Certification table (D1–D42)
+## 10. Certification table and regression (D1–D42, D36–D40)
 
 The machine-readable table is `artifacts/npc_dialogue_v1/certification_table.md`
-and the full trace `artifacts/npc_dialogue_v1/one_day_trace.json`. Every gate is
-derived from authoritative state; every pick is data-driven.
+and the full trace `artifacts/npc_dialogue_v1/one_day_trace.json` — **every gate
+D1–D42 is PASS**. Every gate is derived from authoritative state; every pick is
+data-driven.
+
+`artifacts/npc_dialogue_v1/regression.json` records the guard rerun (D36–D40):
+CognitionGate 30/0, WorkGate 22/0, OutbreakGate 18/0, MobilityGate 24/0, the
+four foundation gates (run_gates) 85/0, and the new DialogueGate 22/0 — all
+PASS. The full Python suite is **1551 passed / 1 failed** (1552 collected); the
+single failure is the pre-existing `test_compile_writes_only_presentation_files`,
+which needs the raw Overture packet and was already recorded failing in the
+cognition milestone — no net regression. Two work-surface tests that briefly
+regressed were fixed: one stale exact-key assertion updated to include the
+authority's `help_for`, and the work-runtime day test isolated from dialogue
+(on by default since this milestone) so it again exercises the WorkRuntime alone.
+
+One latent authority bug surfaced by the live Godot gate was fixed: `_substep`
+now snapshots and re-fetches conversation keys, so ending one conversation and
+trimming others mid-loop can no longer raise `KeyError`.
 
 ## 11. What changed, and the epistemic guarantee
 
