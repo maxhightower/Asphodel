@@ -166,6 +166,9 @@ class World:
         # relationships / social decisions (an input to the planner, never a mover)
         self.cognition = None
         self._pending_cognition_state = None
+        # ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1: grounded conversations on top of cognition
+        self.dialogue = None
+        self._pending_dialogue_state = None
 
     # ------------------------------------------------------------------ inputs
     def set_focus(self, zones) -> None:
@@ -337,6 +340,32 @@ class World:
             c.init_priors(self.citizens)
         return c
 
+    # ------------------------------------------------ npc dialogue
+    def enable_dialogue(self):
+        """Attach the DialogueRuntime (needs cognition). A pending saved state
+        is restored instead (no response rerolls)."""
+        from .dialogue import DialogueRuntime
+        if self.cognition is None:
+            raise ValueError("enable_dialogue needs enable_cognition first")
+        pending = self._pending_dialogue_state
+        if pending is not None:
+            self.dialogue = DialogueRuntime.from_state(pending, self.cognition)
+            self._pending_dialogue_state = None
+            return self.dialogue
+        self.dialogue = DialogueRuntime(self.cognition)
+        return self.dialogue
+
+    def dialogue_snapshot(self, since_seq: int = 0) -> dict | None:
+        return None if self.dialogue is None else self.dialogue.snapshot(since_seq)
+
+    def talk(self, player: int, npc: int, act: str, args: dict | None = None) -> dict | None:
+        return None if self.dialogue is None else self.dialogue.player_talk(int(player), int(npc), act, args or {})
+
+    def _merge_dialogue(self, snap: dict) -> None:
+        d = self.dialogue
+        for row in snap.get("citizens", []):
+            row["dialogue"] = d.row(int(row["citizen_id"]))
+
     def cognition_snapshot(self, since_seq: int = 0) -> dict | None:
         return None if self.cognition is None else self.cognition.snapshot(since_seq)
 
@@ -406,6 +435,8 @@ class World:
                 self.work.advance(step)
             if self.cognition is not None:
                 self.cognition.advance(step)
+            if self.dialogue is not None:
+                self.dialogue.advance(step)
             hour += step / 3600.0
             remaining -= step
 
@@ -419,6 +450,8 @@ class World:
             self._merge_work(snap)
         if self.cognition is not None:
             self._merge_cognition(snap)
+        if self.dialogue is not None:
+            self._merge_dialogue(snap)
         return snap
 
     def _merge_health(self, snap: dict) -> None:

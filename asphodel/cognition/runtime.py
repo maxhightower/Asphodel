@@ -113,6 +113,7 @@ class CognitionRuntime:
         self._pers: Dict[int, Personality] = {}
         self._occ_cache: Dict[int, Tuple[float, Dict[int, List[int]]]] = {}
         self._alarmed: List[int] = []
+        self.dialogue = None                                  # DialogueRuntime, when conversations are enabled
         if self.work is not None:
             self.work.room_filter = self.avoid_rooms
         mobility.cognition = self
@@ -357,6 +358,8 @@ class CognitionRuntime:
                         self.remember(o, M.SAW_HELP, actor=helper, target=ben, building_id=bid, room_id=rid)
                         self.relate(o, helper, "saw_help")
                 dec = self.pending_help.pop(helper, None)
+                if self.dialogue is not None:
+                    self.dialogue.on_help_done(helper, ben, str(e.get("task_id", "")), str(e.get("object_id", "")))
                 self.event("HELP_COMPLETED", citizen_id=helper, beneficiary=ben, task_id=e.get("task_id"),
                            object_id=e.get("object_id"), effect=e.get("effect"), building_id=bid, room_id=rid,
                            decision_seq=(dec or {}).get("seq"))
@@ -556,46 +559,65 @@ class CognitionRuntime:
                 continue
             self.told.add(tk)
             self.pair_last_s[key] = self.now_s
-            rrel = self.rels.get(recipient, sender, create=True)
-            rpers = self.personality(recipient)
-            conf = S.told_confidence(f.effective(self.now_s), rrel.trust, rpers.suspicion)
-            g, created = rst.remember(f.kind, self.now_s, actor=f.actor, target=f.target, building_id=f.building_id,
-                                      room_id=f.room_id, object_id=f.object_id, source=M.TOLD,
-                                      source_citizen=sender, origin_witness=f.origin_witness,
-                                      origin_id=f.origin_id, hops=f.hops + 1, confidence=conf,
-                                      detail=f.detail, t=f.t)
-            self._beliefs.pop(recipient, None)
-            self._invalidate_avoid(recipient)
-            rst.remember(M.WARNED_BY, self.now_s, actor=sender, building_id=bid, room_id=rid,
-                         source=M.PARTICIPANT, salience=0.5, detail=f.kind)
-            self.event("WARNING_SHARED", citizen_id=sender, recipient=recipient, fact_id=f.fact_id,
-                       fact_kind=f.kind, actor=f.actor, target=f.target, about_building=f.building_id,
-                       about_room=f.room_id, origin_witness=f.origin_witness, origin_id=f.origin_id,
-                       hops=f.hops + 1, channel=channel, building_id=bid, room_id=rid,
-                       utterance=(S.UTTERANCE[S.WARN] if f.kind in M.THREAT_KINDS else S.UTTERANCE[S.SHARE_INFORMATION]),
-                       sender_confidence=round(f.effective(self.now_s), 3))
-            rrt = self.mobility.citizens.get(recipient)
-            rg = rrt.active_goal if rrt is not None else None
-            self.event("WARNING_RECEIVED", citizen_id=recipient, sender=sender, fact_id=g.fact_id,
-                       fact_kind=f.kind, goal_before=(None if rg is None else rg.source),
-                       goal_building=(None if rrt is None else self._building_of_goal(rrt, rg)),
-                       danger_after=round(danger_of_building(self.beliefs(recipient), f.building_id), 3)
-                       if f.building_id is not None else None,
-                       threshold=round(self.building_threshold(recipient), 3), actor=f.actor, target=f.target, about_building=f.building_id,
-                       about_room=f.room_id, origin_witness=f.origin_witness, origin_id=f.origin_id,
-                       hops=f.hops + 1, channel=channel, confidence=round(conf, 3),
-                       trust_in_sender=round(rrel.trust, 3), created=created, utterance=S.ACKNOWLEDGE)
-            act = S.WARN if f.kind in M.THREAT_KINDS else S.SHARE_INFORMATION
-            self.event("SOCIAL_ACTION", citizen_id=sender, target=recipient, action=act,
-                       utterance=S.UTTERANCE[act], fact_id=f.fact_id, channel=channel,
-                       building_id=bid, room_id=rid)
-            self.relate(recipient, sender, "warned_by")
-            if f.kind in (M.THREAT_PERSON, M.ATTACK_SEEN, M.ATTACKED_BY) and f.actor is not None:
-                self.relate(recipient, int(f.actor), "told_threat", scale=conf)
-            if f.kind in M.THREAT_KINDS:
-                self._decide_avoid_one(recipient)      # a warning is acted on at once, not next minute
+            if self.dialogue is not None:
+                # a conversation is the channel: the dialogue layer speaks the fact
+                # (grounded against the sender) and hands it to receive_fact below
+                self.dialogue.warn(sender, recipient, f, channel, bid, rid)
+                return True
+            self.receive_fact(recipient, sender, f, channel, bid, rid)
             return True
         return False
+
+    def receive_fact(self, recipient: int, sender: int, f: M.MemoryFact, channel: str, bid=None, rid=None):
+        """THE transmission path: ``sender`` has told ``recipient`` the fact
+        ``f`` (the sender's own). The recipient's copy carries provenance
+        (teller, origin witness, hops), a told confidence scaled by its trust
+        in the sender and its suspicion, the ``warned_by`` / ``told_threat``
+        relationship rules, and an immediate avoidance decision for threats.
+        Returns (told fact, created, confidence) or None when the recipient
+        cannot perceive."""
+        if not self._can_perceive(recipient) or not self._can_perceive(sender):
+            return None
+        rst = self.store(recipient)
+        rrel = self.rels.get(recipient, sender, create=True)
+        rpers = self.personality(recipient)
+        conf = S.told_confidence(f.effective(self.now_s), rrel.trust, rpers.suspicion)
+        g, created = rst.remember(f.kind, self.now_s, actor=f.actor, target=f.target, building_id=f.building_id,
+                                  room_id=f.room_id, object_id=f.object_id, source=M.TOLD,
+                                  source_citizen=sender, origin_witness=f.origin_witness,
+                                  origin_id=f.origin_id, hops=f.hops + 1, confidence=conf,
+                                  detail=f.detail, t=f.t)
+        self._beliefs.pop(recipient, None)
+        self._invalidate_avoid(recipient)
+        rst.remember(M.WARNED_BY, self.now_s, actor=sender, building_id=bid, room_id=rid,
+                     source=M.PARTICIPANT, salience=0.5, detail=f.kind)
+        self.event("WARNING_SHARED", citizen_id=sender, recipient=recipient, fact_id=f.fact_id,
+                   fact_kind=f.kind, actor=f.actor, target=f.target, about_building=f.building_id,
+                   about_room=f.room_id, origin_witness=f.origin_witness, origin_id=f.origin_id,
+                   hops=f.hops + 1, channel=channel, building_id=bid, room_id=rid,
+                   utterance=(S.UTTERANCE[S.WARN] if f.kind in M.THREAT_KINDS else S.UTTERANCE[S.SHARE_INFORMATION]),
+                   sender_confidence=round(f.effective(self.now_s), 3))
+        rrt = self.mobility.citizens.get(recipient)
+        rg = rrt.active_goal if rrt is not None else None
+        self.event("WARNING_RECEIVED", citizen_id=recipient, sender=sender, fact_id=g.fact_id,
+                   fact_kind=f.kind, goal_before=(None if rg is None else rg.source),
+                   goal_building=(None if rrt is None else self._building_of_goal(rrt, rg)),
+                   danger_after=round(danger_of_building(self.beliefs(recipient), f.building_id), 3)
+                   if f.building_id is not None else None,
+                   threshold=round(self.building_threshold(recipient), 3), actor=f.actor, target=f.target,
+                   about_building=f.building_id, about_room=f.room_id, origin_witness=f.origin_witness,
+                   origin_id=f.origin_id, hops=f.hops + 1, channel=channel, confidence=round(conf, 3),
+                   trust_in_sender=round(rrel.trust, 3), created=created, utterance=S.ACKNOWLEDGE)
+        act = S.WARN if f.kind in M.THREAT_KINDS else S.SHARE_INFORMATION
+        self.event("SOCIAL_ACTION", citizen_id=sender, target=recipient, action=act,
+                   utterance=S.UTTERANCE[act], fact_id=f.fact_id, channel=channel,
+                   building_id=bid, room_id=rid)
+        self.relate(recipient, sender, "warned_by")
+        if f.kind in (M.THREAT_PERSON, M.ATTACK_SEEN, M.ATTACKED_BY) and f.actor is not None:
+            self.relate(recipient, int(f.actor), "told_threat", scale=conf)
+        if f.kind in M.THREAT_KINDS:
+            self._decide_avoid_one(recipient)      # a warning is acted on at once, not next minute
+        return g, created, conf
 
     def _share_burst(self, witness: int, f: M.MemoryFact) -> None:
         ex = self.mobility.execs.get(witness)
@@ -716,6 +738,10 @@ class CognitionRuntime:
                  "cost": -cost}
         return round(sum(comps.values()), 3), comps
 
+    def _closeness(self, a: int, b: int) -> float:
+        r = self.rels.get(a, b)
+        return (r.familiarity + r.affinity + r.obligation) if r else 0.0
+
     def _helpers_at(self, bid: int, w) -> List[int]:
         out = []
         for c, a in sorted(w.activities.items()):
@@ -773,6 +799,20 @@ class CognitionRuntime:
                         continue
                     if best is None or (score, -h) > (best[0], -best[1]):
                         best = (score, h, comps, tgt)
+                if self.dialogue is not None:
+                    # with conversations on, the coworker with the problem ASKS the
+                    # coworker it knows best; that one decides (accept / refuse)
+                    cands = [h for h in helpers if h != ben and h not in used
+                             and not (pr["kind"] in ("cleaning_workload", "restock_workload")
+                                      and w.activities[h].role == ben_role)
+                             and self.help_pairs.get((h, ben), 0) < HELP_MAX_PER_PAIR]
+                    if not cands:
+                        continue
+                    asked = max(cands, key=lambda h: (self._closeness(ben, h), -h))
+                    req = self.dialogue.request_help(ben, asked, pr)
+                    if req is not None and req.state == "accepted":
+                        used.add(asked)
+                    continue
                 if best is None:
                     continue
                 score, h, comps, (task_id, oid) = best

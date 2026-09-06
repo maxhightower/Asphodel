@@ -20,7 +20,7 @@ signal connected_changed(is_connected: bool)
 signal world_started(summary: Dictionary)
 signal advanced(tick: int, outbreak: float, summary: Dictionary)
 
-const PROTOCOL_VERSION := 7   # v7: + GET_COGNITION / GET_CITIZEN_CONTEXT (npc cognition); v6 rooms/smart objects/work
+const PROTOCOL_VERSION := 8   # v8: + TALK / GET_DIALOGUE (npc dialogue); v7 cognition; v6 rooms/smart objects/work
 
 var _peer: StreamPeerTCP = null
 var _id := 0

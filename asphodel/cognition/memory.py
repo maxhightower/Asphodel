@@ -44,10 +44,11 @@ DEATH_SEEN = "DEATH_SEEN"                # target died at place
 PLACE_SAFE = "PLACE_SAFE"                # owner was at place and saw no threat (contradicting evidence)
 FLED_WITH = "FLED_WITH"                  # actor fled the same threat
 ABANDONED_BY = "ABANDONED_BY"            # actor left owner in danger
+REFUSED_BY = "REFUSED_BY"                # actor refused owner's request for help
 
 KINDS = (WORKED_BESIDE, MET, SERVED_BY, SERVED, HELPED_BY, HELPED, SAW_HELP, STATION_FAILED,
          COWORKER_INTERRUPTED, WORKPLACE_DISRUPTED, WARNED_BY, FALSE_WARNING, THREAT_PERSON,
-         ATTACK_SEEN, ATTACKED_BY, CORPSE_SEEN, DEATH_SEEN, PLACE_SAFE, FLED_WITH, ABANDONED_BY)
+         ATTACK_SEEN, ATTACKED_BY, CORPSE_SEEN, DEATH_SEEN, PLACE_SAFE, FLED_WITH, ABANDONED_BY, REFUSED_BY)
 
 # --- sources ----------------------------------------------------------------
 DIRECT = "direct"            # saw it happen
@@ -60,12 +61,14 @@ SALIENCE: Dict[str, float] = {
     SAW_HELP: 0.45, STATION_FAILED: 0.40, COWORKER_INTERRUPTED: 0.45, WORKPLACE_DISRUPTED: 0.60,
     WARNED_BY: 0.50, FALSE_WARNING: 0.70, THREAT_PERSON: 0.95, ATTACK_SEEN: 1.0, ATTACKED_BY: 1.0,
     CORPSE_SEEN: 0.90, DEATH_SEEN: 1.0, PLACE_SAFE: 0.35, FLED_WITH: 0.75, ABANDONED_BY: 0.85,
+    REFUSED_BY: 0.55,
 }
 VALENCE: Dict[str, float] = {
     HELPED_BY: 0.8, HELPED: 0.4, SAW_HELP: 0.3, SERVED_BY: 0.1, SERVED: 0.05, WORKED_BESIDE: 0.05,
     MET: 0.02, WARNED_BY: 0.3, FALSE_WARNING: -0.5, THREAT_PERSON: -0.9, ATTACK_SEEN: -0.9,
     ATTACKED_BY: -1.0, CORPSE_SEEN: -0.7, DEATH_SEEN: -0.9, FLED_WITH: 0.3, ABANDONED_BY: -0.8,
     STATION_FAILED: -0.2, COWORKER_INTERRUPTED: -0.2, WORKPLACE_DISRUPTED: -0.5, PLACE_SAFE: 0.1,
+    REFUSED_BY: -0.5,
 }
 DURABLE_SALIENCE = 0.80
 CAPACITY = 64                  # episodic facts per citizen

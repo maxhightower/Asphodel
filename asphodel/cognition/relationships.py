@@ -70,6 +70,7 @@ RULES: Dict[str, Tuple[Tuple[str, float], ...]] = {
     "attack_seen":       (("fear", 0.85), ("hostility", 0.70), ("trust", -0.85)),
     "fled_with":         (("familiarity", 0.12), ("affinity", 0.15), ("trust", 0.10)),
     "abandoned_by":      (("trust", -0.40), ("affinity", -0.30)),
+    "refused_by":        (("affinity", -0.15), ("trust", -0.05)),
     "told_threat":       (("fear", 0.35),),          # about the threat person, via hearsay
 }
 

@@ -181,6 +181,9 @@ class WorldSession:
         # decisions, on by default whenever mobility is on (`cognition: false` opts out).
         if world.mobility is not None and bool(msg.get("cognition", True)):
             world.enable_cognition()
+            # ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1: conversations, on with cognition
+            if bool(msg.get("dialogue", True)):
+                world.enable_dialogue()
         self.world = world
         self.paused = False
         self.bundle = bundle
@@ -360,6 +363,32 @@ class WorldSession:
             raise _BadArg(f"citizen {cid} is not a registered citizen")
         return P.response(Command.GET_CITIZEN_CONTEXT, id=rid,
                           context=self.world.citizen_context(cid), **self._summary())
+
+    # ---------------------------------------------------- npc dialogue (v8)
+    def _cmd_talk(self, msg, rid) -> dict:
+        self._require_world(Command.TALK)
+        if self.world.dialogue is None:
+            raise _BadArg("dialogue runtime not enabled")
+        npc = _req_int(msg.get("citizen_id"), "citizen_id")
+        player = _opt_int(msg.get("player_citizen"), "player_citizen")
+        if player is None:
+            player = self.player_citizen
+        if player is None:
+            raise _BadArg("TALK needs a player citizen (START_WORLD player_citizen or 'player_citizen')")
+        act = _req_str(msg.get("act"), "act")
+        args = msg.get("args") or {}
+        if not isinstance(args, dict):
+            raise _BadArg("'args' must be an object")
+        if npc not in self.world.mobility.execs:
+            raise _BadArg(f"citizen {npc} is not a registered citizen")
+        res = self.world.talk(int(player), npc, act, args)
+        return P.response(Command.TALK, id=rid, player_citizen=int(player), **res, **self._summary())
+
+    def _cmd_get_dialogue(self, msg, rid) -> dict:
+        self._require_world(Command.GET_DIALOGUE)
+        since = _opt_int(msg.get("since_seq"), "since_seq") or 0
+        return P.response(Command.GET_DIALOGUE, id=rid,
+                          dialogue=self.world.dialogue_snapshot(since_seq=since), **self._summary())
 
     def _cmd_get_mobility(self, msg, rid) -> dict:
         self._require_world(Command.GET_MOBILITY)
@@ -587,6 +616,8 @@ class WorldSession:
                 # Cognition: restore memories, beliefs, relationships, social state.
                 if world._pending_cognition_state is not None and world.mobility is not None:
                     world.enable_cognition()
+                    if world._pending_dialogue_state is not None:
+                        world.enable_dialogue()
         except Exception:
             pass
         return P.response(Command.LOAD, id=rid, path=path, **self._summary())
@@ -618,6 +649,7 @@ class WorldSession:
             "outbreak_enabled": self.world.outbreak is not None,
             "work_enabled": self.world.work is not None,
             "cognition_enabled": self.world.cognition is not None,
+            "dialogue_enabled": self.world.dialogue is not None,
         }
 
 

@@ -38,7 +38,9 @@ from typing import Any
 # v7: + GET_COGNITION / GET_CITIZEN_CONTEXT and the START_WORLD `cognition`
 #      option (ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1: memory, beliefs,
 #      relationships, social actions; the context API for dialogue).
-PROTOCOL_VERSION = 7
+# v8: + TALK / GET_DIALOGUE and the START_WORLD `dialogue` option
+#      (ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1: grounded conversations).
+PROTOCOL_VERSION = 8
 
 
 class Command:
@@ -85,6 +87,9 @@ class Command:
     # --- npc cognition (v7) ---------------------------------------------
     GET_COGNITION = "GET_COGNITION"          # cognition events since seq, counts, who is avoiding what
     GET_CITIZEN_CONTEXT = "GET_CITIZEN_CONTEXT"  # the structured context of one citizen (dialogue input)
+    # --- npc dialogue (v8) ------------------------------------------------
+    TALK = "TALK"                            # the player speaks one structured act to a NEAR citizen
+    GET_DIALOGUE = "GET_DIALOGUE"            # dialogue events since seq, active conversations, requests
 
     ALL = frozenset({
         HELLO, START_WORLD, SET_FOCUS, ADVANCE, INTERVENE, INTERACT_WITH,
@@ -96,6 +101,7 @@ class Command:
         SEED_OUTBREAK, GET_OUTBREAK,
         GET_WORK, GET_ROOMS, SET_OBJECT_STATE,
         GET_COGNITION, GET_CITIZEN_CONTEXT,
+        TALK, GET_DIALOGUE,
     })
 
 
