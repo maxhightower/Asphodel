@@ -165,31 +165,31 @@
    "citizen_id": 42,
    "vehicle_id": "veh:42",
    "reason": "driver incapacitated",
-   "x": -1269.4,
-   "y": -1334.7,
-   "segment": "bf368bb4-0c9e-4829-87cc-3c69b328af6a#1"
+   "x": -1301.5,
+   "y": -1307.7,
+   "segment": "bf368bb4-0c9e-4829-87cc-3c69b328af6a#0"
   },
   {
    "seq": 10,
    "t": 17937.0,
    "event": "ROAD_OBSTRUCTED",
    "vehicle_id": "veh:42",
-   "segment": "bf368bb4-0c9e-4829-87cc-3c69b328af6a#1",
+   "segment": "bf368bb4-0c9e-4829-87cc-3c69b328af6a#0",
    "obstruction_id": "wreck:veh:42",
    "closed_modes": [
     "car",
     "heavy"
    ],
-   "x": -1269.4,
-   "y": -1334.7
+   "x": -1301.5,
+   "y": -1307.7
   },
   {
    "seq": 11,
    "t": 17937.0,
    "event": "INCAPACITATED",
    "citizen_id": 42,
-   "x": -1269.4,
-   "y": -1334.7,
+   "x": -1301.5,
+   "y": -1307.7,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "embodiment": "incapacitated"
@@ -200,8 +200,8 @@
    "event": "PLAN_INVALIDATED",
    "citizen_id": 42,
    "reason": "incapacitated",
-   "x": -1269.4,
-   "y": -1334.7,
+   "x": -1301.5,
+   "y": -1307.7,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "embodiment": "incapacitated"
@@ -249,8 +249,8 @@
    "citizen_id": 42,
    "will_reanimate": true,
    "reanimate_t": 20143.257203494406,
-   "x": -1269.4,
-   "y": -1334.7,
+   "x": -1301.5,
+   "y": -1307.7,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "embodiment": "corpse"
@@ -261,8 +261,8 @@
    "event": "CORPSE_CREATED",
    "citizen_id": 42,
    "corpse_xy": [
-    -1269.41,
-    -1334.74
+    -1301.52,
+    -1307.65
    ],
    "corpse_building_id": -1,
    "corpse_vehicle_id": "veh:42"
@@ -274,8 +274,8 @@
    "citizen_id": 42,
    "original_citizen_id": 42,
    "lineage": [],
-   "x": -1269.4,
-   "y": -1334.7,
+   "x": -1301.5,
+   "y": -1307.7,
    "building_id": -1,
    "vehicle_id": null,
    "embodiment": "undead"
@@ -286,55 +286,28 @@
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6353",
-   "x": -1269.4,
-   "y": -1334.7,
+   "x": -1301.5,
+   "y": -1307.7,
    "building_id": -1,
    "vehicle_id": null,
    "embodiment": "undead"
   },
   {
    "seq": 19,
-   "t": 20821.0,
+   "t": 20771.0,
    "event": "HUNT",
    "citizen_id": 42,
    "target_citizen": 127,
-   "distance_m": 44.4,
-   "x": -1853.8,
-   "y": -1439.4,
+   "distance_m": 58.5,
+   "x": -1811.5,
+   "y": -1437.7,
    "building_id": -1,
    "vehicle_id": null,
    "embodiment": "on_foot"
   },
   {
    "seq": 20,
-   "t": 20941.0,
-   "event": "WORKPLACE_DISRUPTED",
-   "building_id": 6255,
-   "reason": "1 incapacitated/dead/undead inside",
-   "workers": [
-    127
-   ],
-   "down": [],
-   "hazard": [
-    42
-   ]
-  },
-  {
-   "seq": 21,
-   "t": 20941.0,
-   "event": "PLAN_INVALIDATED",
-   "citizen_id": 127,
-   "reason": "workplace 6255 disrupted",
-   "goal": "go_home",
-   "x": -1851.6,
-   "y": -1395.0,
-   "building_id": 6255,
-   "vehicle_id": null,
-   "embodiment": "doing_activity"
-  },
-  {
-   "seq": 22,
-   "t": 20941.0,
+   "t": 20901.0,
    "event": "ATTACK",
    "citizen_id": 42,
    "victim_citizen": 127,
@@ -347,8 +320,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 23,
-   "t": 20941.0,
+   "seq": 21,
+   "t": 20901.0,
    "event": "EXPOSURE",
    "citizen_id": 127,
    "source_citizen": 42,
@@ -360,16 +333,16 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 24,
-   "t": 20941.0,
+   "seq": 22,
+   "t": 20901.0,
    "event": "INFECTED",
    "citizen_id": 127,
    "source_citizen": 42,
    "pathogen": "classic_zombie",
-   "symptom_t": 37113.35595602986,
-   "incapacitation_t": 37594.006077125494,
-   "death_t": 39599.943794835875,
-   "reanimate_t": 41147.74262629471,
+   "symptom_t": 37073.35595602986,
+   "incapacitation_t": 37554.006077125494,
+   "death_t": 39559.943794835875,
+   "reanimate_t": 41107.74262629471,
    "fatal": true,
    "will_reanimate": true,
    "lineage": [
@@ -382,8 +355,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 25,
-   "t": 20941.0,
+   "seq": 23,
+   "t": 20901.0,
    "event": "FLEE",
    "citizen_id": 127,
    "threat_citizen": 42,
@@ -396,8 +369,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 26,
-   "t": 20946.0,
+   "seq": 24,
+   "t": 20906.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:2318",
@@ -408,7 +381,7 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 27,
+   "seq": 25,
    "t": 21876.0,
    "event": "SYMPTOM_ONSET",
    "citizen_id": 247,
@@ -419,7 +392,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 28,
+   "seq": 26,
    "t": 21876.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 247,
@@ -433,21 +406,21 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 29,
-   "t": 21961.0,
+   "seq": 27,
+   "t": 21896.0,
    "event": "HUNT",
    "citizen_id": 42,
    "target_citizen": 294,
-   "distance_m": 40.0,
-   "x": -1236.7,
-   "y": -1368.2,
+   "distance_m": 59.9,
+   "x": -1257.4,
+   "y": -1350.8,
    "building_id": -1,
    "vehicle_id": null,
    "embodiment": "on_foot"
   },
   {
-   "seq": 30,
-   "t": 22021.0,
+   "seq": 28,
+   "t": 21986.0,
    "event": "ATTACK",
    "citizen_id": 42,
    "victim_citizen": 294,
@@ -460,8 +433,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 31,
-   "t": 22021.0,
+   "seq": 29,
+   "t": 21986.0,
    "event": "EXPOSURE",
    "citizen_id": 294,
    "source_citizen": 42,
@@ -473,15 +446,15 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 32,
-   "t": 22021.0,
+   "seq": 30,
+   "t": 21986.0,
    "event": "INFECTED",
    "citizen_id": 294,
    "source_citizen": 42,
    "pathogen": "classic_zombie",
-   "symptom_t": 40548.25382888986,
-   "incapacitation_t": 40978.71177320566,
-   "death_t": 42180.24947796481,
+   "symptom_t": 40513.25382888986,
+   "incapacitation_t": 40943.71177320566,
+   "death_t": 42145.24947796481,
    "reanimate_t": null,
    "fatal": true,
    "will_reanimate": false,
@@ -495,8 +468,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 33,
-   "t": 22021.0,
+   "seq": 31,
+   "t": 21986.0,
    "event": "FLEE",
    "citizen_id": 294,
    "threat_citizen": 42,
@@ -509,8 +482,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 34,
-   "t": 22026.0,
+   "seq": 32,
+   "t": 21991.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6255",
@@ -521,7 +494,7 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 35,
+   "seq": 33,
    "t": 22225.0,
    "event": "INCAPACITATED",
    "citizen_id": 247,
@@ -532,7 +505,7 @@
    "embodiment": "incapacitated"
   },
   {
-   "seq": 36,
+   "seq": 34,
    "t": 22225.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 247,
@@ -544,8 +517,8 @@
    "embodiment": "incapacitated"
   },
   {
-   "seq": 37,
-   "t": 22981.0,
+   "seq": 35,
+   "t": 22911.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6366",
@@ -556,7 +529,7 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 38,
+   "seq": 36,
    "t": 23749.0,
    "event": "DEATH",
    "citizen_id": 247,
@@ -569,7 +542,7 @@
    "embodiment": "corpse"
   },
   {
-   "seq": 39,
+   "seq": 37,
    "t": 23749.0,
    "event": "CORPSE_CREATED",
    "citizen_id": 247,
@@ -581,8 +554,8 @@
    "corpse_vehicle_id": null
   },
   {
-   "seq": 40,
-   "t": 24061.0,
+   "seq": 38,
+   "t": 23991.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6353",
@@ -593,8 +566,8 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 41,
-   "t": 26041.0,
+   "seq": 39,
+   "t": 25941.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6255",
@@ -605,8 +578,8 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 42,
-   "t": 27481.0,
+   "seq": 40,
+   "t": 27336.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6351",
@@ -617,8 +590,8 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 43,
-   "t": 28741.0,
+   "seq": 41,
+   "t": 28546.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6366",
@@ -629,8 +602,8 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 44,
-   "t": 30781.0,
+   "seq": 42,
+   "t": 30536.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6353",
@@ -641,7 +614,7 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 45,
+   "seq": 43,
    "t": 31561.0,
    "event": "EXPOSURE",
    "citizen_id": 87,
@@ -654,7 +627,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 46,
+   "seq": 44,
    "t": 31561.0,
    "event": "INFECTED",
    "citizen_id": 87,
@@ -678,8 +651,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 47,
-   "t": 32761.0,
+   "seq": 45,
+   "t": 32486.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6255",
@@ -690,7 +663,7 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 48,
+   "seq": 46,
    "t": 33188.0,
    "event": "SYMPTOM_ONSET",
    "citizen_id": 117,
@@ -701,7 +674,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 49,
+   "seq": 47,
    "t": 33188.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 117,
@@ -715,7 +688,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 50,
+   "seq": 48,
    "t": 33574.0,
    "event": "INCAPACITATED",
    "citizen_id": 117,
@@ -726,7 +699,7 @@
    "embodiment": "incapacitated"
   },
   {
-   "seq": 51,
+   "seq": 49,
    "t": 33574.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 117,
@@ -738,7 +711,7 @@
    "embodiment": "incapacitated"
   },
   {
-   "seq": 52,
+   "seq": 50,
    "t": 33601.0,
    "event": "WORKPLACE_DISRUPTED",
    "building_id": 2318,
@@ -759,7 +732,7 @@
    "hazard": []
   },
   {
-   "seq": 53,
+   "seq": 51,
    "t": 33601.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 87,
@@ -772,7 +745,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 54,
+   "seq": 52,
    "t": 33601.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 135,
@@ -785,7 +758,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 55,
+   "seq": 53,
    "t": 33601.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 170,
@@ -798,8 +771,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 56,
-   "t": 34201.0,
+   "seq": 54,
+   "t": 33881.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6351",
@@ -810,7 +783,19 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 57,
+   "seq": 55,
+   "t": 35091.0,
+   "event": "ROAM",
+   "citizen_id": 42,
+   "target": "ent:6366",
+   "x": -2789.3,
+   "y": -1336.8,
+   "building_id": 6351,
+   "vehicle_id": null,
+   "embodiment": "inside_building"
+  },
+  {
+   "seq": 56,
    "t": 35131.0,
    "event": "DEATH",
    "citizen_id": 117,
@@ -823,7 +808,7 @@
    "embodiment": "corpse"
   },
   {
-   "seq": 58,
+   "seq": 57,
    "t": 35131.0,
    "event": "CORPSE_CREATED",
    "citizen_id": 117,
@@ -835,19 +820,7 @@
    "corpse_vehicle_id": null
   },
   {
-   "seq": 59,
-   "t": 35461.0,
-   "event": "ROAM",
-   "citizen_id": 42,
-   "target": "ent:6366",
-   "x": -2789.3,
-   "y": -1336.8,
-   "building_id": 6351,
-   "vehicle_id": null,
-   "embodiment": "inside_building"
-  },
-  {
-   "seq": 60,
+   "seq": 58,
    "t": 36086.0,
    "event": "REANIMATION",
    "citizen_id": 117,
@@ -863,7 +836,7 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 61,
+   "seq": 59,
    "t": 36086.0,
    "event": "ROAM",
    "citizen_id": 117,
@@ -875,8 +848,8 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 62,
-   "t": 37114.0,
+   "seq": 60,
+   "t": 37074.0,
    "event": "SYMPTOM_ONSET",
    "citizen_id": 127,
    "x": 1389.0,
@@ -886,8 +859,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 63,
-   "t": 37114.0,
+   "seq": 61,
+   "t": 37074.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 127,
    "reason": "symptomatic: going home",
@@ -900,8 +873,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 64,
-   "t": 37501.0,
+   "seq": 62,
+   "t": 37081.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6353",
@@ -912,8 +885,8 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 65,
-   "t": 37595.0,
+   "seq": 63,
+   "t": 37555.0,
    "event": "INCAPACITATED",
    "citizen_id": 127,
    "x": 1389.0,
@@ -923,8 +896,8 @@
    "embodiment": "incapacitated"
   },
   {
-   "seq": 66,
-   "t": 37595.0,
+   "seq": 64,
+   "t": 37555.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 127,
    "reason": "incapacitated",
@@ -935,48 +908,34 @@
    "embodiment": "incapacitated"
   },
   {
-   "seq": 67,
-   "t": 38161.0,
+   "seq": 65,
+   "t": 37561.0,
+   "event": "WORKPLACE_DISRUPTED",
+   "building_id": 6255,
+   "reason": "1/1 workers down",
+   "workers": [
+    127
+   ],
+   "down": [
+    127
+   ],
+   "hazard": []
+  },
+  {
+   "seq": 66,
+   "t": 38171.0,
    "event": "HUNT",
    "citizen_id": 117,
    "target_citizen": 191,
-   "distance_m": 51.6,
-   "x": 343.9,
-   "y": -2368.8,
+   "distance_m": 58.3,
+   "x": 332.8,
+   "y": -2361.2,
    "building_id": -1,
    "vehicle_id": null,
    "embodiment": "on_foot"
   },
   {
-   "seq": 68,
-   "t": 38281.0,
-   "event": "WORKPLACE_DISRUPTED",
-   "building_id": 4075,
-   "reason": "1 incapacitated/dead/undead inside",
-   "workers": [
-    191,
-    196
-   ],
-   "down": [],
-   "hazard": [
-    117
-   ]
-  },
-  {
-   "seq": 69,
-   "t": 38281.0,
-   "event": "PLAN_INVALIDATED",
-   "citizen_id": 191,
-   "reason": "workplace 4075 disrupted",
-   "goal": "go_home",
-   "x": 387.7,
-   "y": -2341.5,
-   "building_id": 4075,
-   "vehicle_id": null,
-   "embodiment": "doing_activity"
-  },
-  {
-   "seq": 70,
+   "seq": 67,
    "t": 38281.0,
    "event": "ATTACK",
    "citizen_id": 117,
@@ -990,7 +949,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 71,
+   "seq": 68,
    "t": 38281.0,
    "event": "EXPOSURE",
    "citizen_id": 191,
@@ -1003,7 +962,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 72,
+   "seq": 69,
    "t": 38281.0,
    "event": "INFECTED",
    "citizen_id": 191,
@@ -1027,7 +986,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 73,
+   "seq": 70,
    "t": 38281.0,
    "event": "FLEE",
    "citizen_id": 191,
@@ -1041,7 +1000,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 74,
+   "seq": 71,
    "t": 38286.0,
    "event": "ROAM",
    "citizen_id": 117,
@@ -1053,7 +1012,7 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 75,
+   "seq": 72,
    "t": 38305.0,
    "event": "SYMPTOM_ONSET",
    "citizen_id": 170,
@@ -1064,7 +1023,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 76,
+   "seq": 73,
    "t": 38305.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 170,
@@ -1078,8 +1037,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 77,
-   "t": 38701.0,
+   "seq": 74,
+   "t": 38686.0,
    "event": "ROAM",
    "citizen_id": 117,
    "target": "ent:8036",
@@ -1090,7 +1049,7 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 78,
+   "seq": 75,
    "t": 38772.0,
    "event": "INCAPACITATED",
    "citizen_id": 170,
@@ -1101,7 +1060,7 @@
    "embodiment": "incapacitated"
   },
   {
-   "seq": 79,
+   "seq": 76,
    "t": 38772.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 170,
@@ -1113,8 +1072,8 @@
    "embodiment": "incapacitated"
   },
   {
-   "seq": 80,
-   "t": 39481.0,
+   "seq": 77,
+   "t": 39031.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6255",
@@ -1125,12 +1084,12 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 81,
-   "t": 39600.0,
+   "seq": 78,
+   "t": 39560.0,
    "event": "DEATH",
    "citizen_id": 127,
    "will_reanimate": true,
-   "reanimate_t": 41147.74262629471,
+   "reanimate_t": 41107.74262629471,
    "x": 1389.0,
    "y": -47.0,
    "building_id": 9578,
@@ -1138,8 +1097,8 @@
    "embodiment": "corpse"
   },
   {
-   "seq": 82,
-   "t": 39600.0,
+   "seq": 79,
+   "t": 39560.0,
    "event": "CORPSE_CREATED",
    "citizen_id": 127,
    "corpse_xy": [
@@ -1150,8 +1109,75 @@
    "corpse_vehicle_id": null
   },
   {
+   "seq": 80,
+   "t": 39716.0,
+   "event": "THREAT_OBSERVED",
+   "citizen_id": 112,
+   "threat_citizen": 117,
+   "threat": "undead",
+   "x": 224.9,
+   "y": -1872.1,
+   "building_id": -1,
+   "vehicle_id": "veh:112",
+   "embodiment": "driving"
+  },
+  {
+   "seq": 81,
+   "t": 39716.0,
+   "event": "FLEE",
+   "citizen_id": 112,
+   "threat_citizen": 117,
+   "target": "ent:993",
+   "reason": "saw undead citizen 117",
+   "x": 224.9,
+   "y": -1872.1,
+   "building_id": -1,
+   "vehicle_id": "veh:112",
+   "embodiment": "driving"
+  },
+  {
+   "seq": 82,
+   "t": 39856.0,
+   "event": "THREAT_OBSERVED",
+   "citizen_id": 141,
+   "threat_citizen": 117,
+   "threat": "undead",
+   "x": 202.2,
+   "y": -1741.1,
+   "building_id": -1,
+   "vehicle_id": "veh:141",
+   "embodiment": "driving"
+  },
+  {
    "seq": 83,
-   "t": 39601.0,
+   "t": 39856.0,
+   "event": "FLEE",
+   "citizen_id": 141,
+   "threat_citizen": 117,
+   "target": "ent:18616",
+   "reason": "saw undead citizen 117",
+   "x": 202.2,
+   "y": -1741.1,
+   "building_id": -1,
+   "vehicle_id": "veh:141",
+   "embodiment": "driving"
+  },
+  {
+   "seq": 84,
+   "t": 40146.0,
+   "event": "HUNT",
+   "citizen_id": 117,
+   "target_citizen": 246,
+   "distance_m": 59.9,
+   "x": 201.1,
+   "y": -1467.1,
+   "building_id": -1,
+   "vehicle_id": null,
+   "embodiment": "on_foot"
+  },
+  {
+   "seq": 85,
+   "t": 40151.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6351",
@@ -1162,8 +1188,8 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 84,
-   "t": 39721.0,
+   "seq": 86,
+   "t": 40251.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6366",
@@ -1174,8 +1200,8 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 85,
-   "t": 40549.0,
+   "seq": 87,
+   "t": 40514.0,
    "event": "SYMPTOM_ONSET",
    "citizen_id": 294,
    "x": -1118.3,
@@ -1185,8 +1211,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 86,
-   "t": 40549.0,
+   "seq": 88,
+   "t": 40514.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 294,
    "reason": "symptomatic: going home",
@@ -1199,7 +1225,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 87,
+   "seq": 89,
    "t": 40689.0,
    "event": "DEATH",
    "citizen_id": 170,
@@ -1212,7 +1238,7 @@
    "embodiment": "corpse"
   },
   {
-   "seq": 88,
+   "seq": 90,
    "t": 40689.0,
    "event": "CORPSE_CREATED",
    "citizen_id": 170,
@@ -1224,8 +1250,8 @@
    "corpse_vehicle_id": null
   },
   {
-   "seq": 89,
-   "t": 40979.0,
+   "seq": 91,
+   "t": 40944.0,
    "event": "INCAPACITATED",
    "citizen_id": 294,
    "x": -1118.3,
@@ -1235,8 +1261,8 @@
    "embodiment": "incapacitated"
   },
   {
-   "seq": 90,
-   "t": 40979.0,
+   "seq": 92,
+   "t": 40944.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 294,
    "reason": "incapacitated",
@@ -1247,7 +1273,7 @@
    "embodiment": "incapacitated"
   },
   {
-   "seq": 91,
+   "seq": 93,
    "t": 40981.0,
    "event": "WORKPLACE_DISRUPTED",
    "building_id": 8289,
@@ -1261,8 +1287,8 @@
    "hazard": []
   },
   {
-   "seq": 92,
-   "t": 41148.0,
+   "seq": 94,
+   "t": 41108.0,
    "event": "REANIMATION",
    "citizen_id": 127,
    "original_citizen_id": 127,
@@ -1276,8 +1302,8 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 93,
-   "t": 41151.0,
+   "seq": 95,
+   "t": 41111.0,
    "event": "ROAM",
    "citizen_id": 127,
    "target": "ent:6255",
@@ -1288,46 +1314,21 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 94,
-   "t": 41161.0,
-   "event": "ROAM",
-   "citizen_id": 117,
-   "target": "ent:2318",
-   "x": 216.3,
-   "y": -678.5,
-   "building_id": 7928,
-   "vehicle_id": null,
-   "embodiment": "inside_building"
-  },
-  {
-   "seq": 95,
-   "t": 41281.0,
-   "event": "HUNT",
-   "citizen_id": 117,
-   "target_citizen": 204,
-   "distance_m": 29.7,
-   "x": 157.0,
-   "y": -722.8,
-   "building_id": -1,
-   "vehicle_id": null,
-   "embodiment": "on_foot"
-  },
-  {
    "seq": 96,
-   "t": 41401.0,
+   "t": 41381.0,
    "event": "HUNT",
    "citizen_id": 127,
    "target_citizen": 188,
-   "distance_m": 57.3,
-   "x": 1326.6,
-   "y": -122.5,
+   "distance_m": 57.8,
+   "x": 1297.4,
+   "y": -135.5,
    "building_id": -1,
    "vehicle_id": null,
    "embodiment": "on_foot"
   },
   {
    "seq": 97,
-   "t": 41521.0,
+   "t": 41461.0,
    "event": "ATTACK",
    "citizen_id": 127,
    "victim_citizen": 188,
@@ -1341,7 +1342,7 @@
   },
   {
    "seq": 98,
-   "t": 41521.0,
+   "t": 41461.0,
    "event": "EXPOSURE",
    "citizen_id": 188,
    "source_citizen": 127,
@@ -1354,15 +1355,15 @@
   },
   {
    "seq": 99,
-   "t": 41521.0,
+   "t": 41461.0,
    "event": "INFECTED",
    "citizen_id": 188,
    "source_citizen": 127,
    "pathogen": "classic_zombie",
-   "symptom_t": 52850.45176684192,
-   "incapacitation_t": 53220.127950600356,
-   "death_t": 55526.180218800284,
-   "reanimate_t": 57110.14201463853,
+   "symptom_t": 52790.45176684192,
+   "incapacitation_t": 53160.127950600356,
+   "death_t": 55466.180218800284,
+   "reanimate_t": 57050.14201463853,
    "fatal": true,
    "will_reanimate": true,
    "lineage": [
@@ -1377,7 +1378,7 @@
   },
   {
    "seq": 100,
-   "t": 41521.0,
+   "t": 41461.0,
    "event": "FLEE",
    "citizen_id": 188,
    "threat_citizen": 127,
@@ -1391,7 +1392,7 @@
   },
   {
    "seq": 101,
-   "t": 41526.0,
+   "t": 41466.0,
    "event": "ROAM",
    "citizen_id": 127,
    "target": "ent:6255",
@@ -1443,7 +1444,7 @@
   },
   {
    "seq": 105,
-   "t": 42181.0,
+   "t": 42146.0,
    "event": "DEATH",
    "citizen_id": 294,
    "will_reanimate": false,
@@ -1456,7 +1457,7 @@
   },
   {
    "seq": 106,
-   "t": 42181.0,
+   "t": 42146.0,
    "event": "CORPSE_CREATED",
    "citizen_id": 294,
    "corpse_xy": [
@@ -1468,176 +1469,7 @@
   },
   {
    "seq": 107,
-   "t": 42481.0,
-   "event": "HUNT",
-   "citizen_id": 117,
-   "target_citizen": 259,
-   "distance_m": 34.7,
-   "x": 157.2,
-   "y": -791.7,
-   "building_id": -1,
-   "vehicle_id": null,
-   "embodiment": "trip_failed"
-  },
-  {
-   "seq": 108,
-   "t": 42486.0,
-   "event": "HUNT",
-   "citizen_id": 117,
-   "target_citizen": 259,
-   "distance_m": 34.7,
-   "x": 157.2,
-   "y": -791.7,
-   "building_id": -1,
-   "vehicle_id": null,
-   "embodiment": "trip_failed"
-  },
-  {
-   "seq": 109,
-   "t": 42491.0,
-   "event": "HUNT",
-   "citizen_id": 117,
-   "target_citizen": 259,
-   "distance_m": 34.7,
-   "x": 157.2,
-   "y": -791.7,
-   "building_id": -1,
-   "vehicle_id": null,
-   "embodiment": "trip_failed"
-  },
-  {
-   "seq": 110,
-   "t": 42496.0,
-   "event": "HUNT",
-   "citizen_id": 117,
-   "target_citizen": 259,
-   "distance_m": 34.7,
-   "x": 157.2,
-   "y": -791.7,
-   "building_id": -1,
-   "vehicle_id": null,
-   "embodiment": "trip_failed"
-  },
-  {
-   "seq": 111,
-   "t": 42501.0,
-   "event": "HUNT",
-   "citizen_id": 117,
-   "target_citizen": 259,
-   "distance_m": 34.7,
-   "x": 157.2,
-   "y": -791.7,
-   "building_id": -1,
-   "vehicle_id": null,
-   "embodiment": "trip_failed"
-  },
-  {
-   "seq": 112,
-   "t": 42506.0,
-   "event": "HUNT",
-   "citizen_id": 117,
-   "target_citizen": 259,
-   "distance_m": 34.7,
-   "x": 157.2,
-   "y": -791.7,
-   "building_id": -1,
-   "vehicle_id": null,
-   "embodiment": "trip_failed"
-  },
-  {
-   "seq": 113,
-   "t": 42511.0,
-   "event": "HUNT",
-   "citizen_id": 117,
-   "target_citizen": 259,
-   "distance_m": 34.7,
-   "x": 157.2,
-   "y": -791.7,
-   "building_id": -1,
-   "vehicle_id": null,
-   "embodiment": "trip_failed"
-  },
-  {
-   "seq": 114,
-   "t": 42516.0,
-   "event": "HUNT",
-   "citizen_id": 117,
-   "target_citizen": 259,
-   "distance_m": 34.7,
-   "x": 157.2,
-   "y": -791.7,
-   "building_id": -1,
-   "vehicle_id": null,
-   "embodiment": "trip_failed"
-  },
-  {
-   "seq": 115,
-   "t": 42521.0,
-   "event": "HUNT",
-   "citizen_id": 117,
-   "target_citizen": 259,
-   "distance_m": 34.7,
-   "x": 157.2,
-   "y": -791.7,
-   "building_id": -1,
-   "vehicle_id": null,
-   "embodiment": "trip_failed"
-  },
-  {
-   "seq": 116,
-   "t": 42526.0,
-   "event": "HUNT",
-   "citizen_id": 117,
-   "target_citizen": 259,
-   "distance_m": 34.7,
-   "x": 157.2,
-   "y": -791.7,
-   "building_id": -1,
-   "vehicle_id": null,
-   "embodiment": "trip_failed"
-  },
-  {
-   "seq": 117,
-   "t": 42531.0,
-   "event": "HUNT",
-   "citizen_id": 117,
-   "target_citizen": 259,
-   "distance_m": 34.7,
-   "x": 157.2,
-   "y": -791.7,
-   "building_id": -1,
-   "vehicle_id": null,
-   "embodiment": "trip_failed"
-  },
-  {
-   "seq": 118,
-   "t": 42536.0,
-   "event": "HUNT",
-   "citizen_id": 117,
-   "target_citizen": 259,
-   "distance_m": 34.7,
-   "x": 157.2,
-   "y": -791.7,
-   "building_id": -1,
-   "vehicle_id": null,
-   "embodiment": "trip_failed"
-  },
-  {
-   "seq": 119,
-   "t": 42601.0,
-   "event": "HUNT",
-   "citizen_id": 127,
-   "target_citizen": 229,
-   "distance_m": 54.2,
-   "x": 1209.5,
-   "y": -708.7,
-   "building_id": -1,
-   "vehicle_id": null,
-   "embodiment": "on_foot"
-  },
-  {
-   "seq": 120,
-   "t": 42961.0,
+   "t": 42546.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6353",
@@ -1648,8 +1480,48 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 121,
-   "t": 43081.0,
+   "seq": 108,
+   "t": 42616.0,
+   "event": "HUNT",
+   "citizen_id": 127,
+   "target_citizen": 229,
+   "distance_m": 52.8,
+   "x": 1146.5,
+   "y": -708.4,
+   "building_id": -1,
+   "vehicle_id": null,
+   "embodiment": "on_foot"
+  },
+  {
+   "seq": 109,
+   "t": 42631.0,
+   "event": "THREAT_OBSERVED",
+   "citizen_id": 229,
+   "threat_citizen": 127,
+   "threat": "undead",
+   "x": 1118.3,
+   "y": -727.8,
+   "building_id": -1,
+   "vehicle_id": null,
+   "embodiment": "on_foot"
+  },
+  {
+   "seq": 110,
+   "t": 42631.0,
+   "event": "FLEE",
+   "citizen_id": 229,
+   "threat_citizen": 127,
+   "target": "ent:11502",
+   "reason": "saw undead citizen 127",
+   "x": 1118.3,
+   "y": -727.8,
+   "building_id": -1,
+   "vehicle_id": null,
+   "embodiment": "on_foot"
+  },
+  {
+   "seq": 111,
+   "t": 42646.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6255",
@@ -1660,7 +1532,7 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 122,
+   "seq": 112,
    "t": 43527.0,
    "event": "SYMPTOM_ONSET",
    "citizen_id": 87,
@@ -1671,7 +1543,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 123,
+   "seq": 113,
    "t": 43527.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 87,
@@ -1685,7 +1557,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 124,
+   "seq": 114,
    "t": 43935.0,
    "event": "INCAPACITATED",
    "citizen_id": 87,
@@ -1696,7 +1568,7 @@
    "embodiment": "incapacitated"
   },
   {
-   "seq": 125,
+   "seq": 115,
    "t": 43935.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 87,
@@ -1708,8 +1580,8 @@
    "embodiment": "incapacitated"
   },
   {
-   "seq": 126,
-   "t": 44521.0,
+   "seq": 116,
+   "t": 44041.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:6351",
@@ -1720,7 +1592,19 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 127,
+   "seq": 117,
+   "t": 45251.0,
+   "event": "ROAM",
+   "citizen_id": 42,
+   "target": "ent:6366",
+   "x": -2789.3,
+   "y": -1336.8,
+   "building_id": 6351,
+   "vehicle_id": null,
+   "embodiment": "inside_building"
+  },
+  {
+   "seq": 118,
    "t": 45458.0,
    "event": "DEATH",
    "citizen_id": 87,
@@ -1733,7 +1617,7 @@
    "embodiment": "corpse"
   },
   {
-   "seq": 128,
+   "seq": 119,
    "t": 45458.0,
    "event": "CORPSE_CREATED",
    "citizen_id": 87,
@@ -1745,8 +1629,8 @@
    "corpse_vehicle_id": null
   },
   {
-   "seq": 129,
-   "t": 45601.0,
+   "seq": 120,
+   "t": 45621.0,
    "event": "ROAM",
    "citizen_id": 170,
    "target": "ent:11630",
@@ -1757,19 +1641,7 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 130,
-   "t": 45781.0,
-   "event": "ROAM",
-   "citizen_id": 42,
-   "target": "ent:6366",
-   "x": -2789.3,
-   "y": -1336.8,
-   "building_id": 6351,
-   "vehicle_id": null,
-   "embodiment": "inside_building"
-  },
-  {
-   "seq": 131,
+   "seq": 121,
    "t": 46893.0,
    "event": "REANIMATION",
    "citizen_id": 87,
@@ -1786,7 +1658,7 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 132,
+   "seq": 122,
    "t": 46896.0,
    "event": "ROAM",
    "citizen_id": 87,
@@ -1798,8 +1670,8 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 133,
-   "t": 47041.0,
+   "seq": 123,
+   "t": 47076.0,
    "event": "ROAM",
    "citizen_id": 87,
    "target": "ent:2318",
@@ -1810,8 +1682,8 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 134,
-   "t": 47701.0,
+   "seq": 124,
+   "t": 48321.0,
    "event": "ROAM",
    "citizen_id": 42,
    "target": "ent:2318",
@@ -1822,21 +1694,21 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 135,
-   "t": 48361.0,
+   "seq": 125,
+   "t": 48381.0,
    "event": "HUNT",
    "citizen_id": 87,
    "target_citizen": 2,
-   "distance_m": 44.3,
-   "x": 446.0,
-   "y": 1370.4,
+   "distance_m": 57.8,
+   "x": 442.7,
+   "y": 1383.5,
    "building_id": -1,
    "vehicle_id": null,
    "embodiment": "on_foot"
   },
   {
-   "seq": 136,
-   "t": 48481.0,
+   "seq": 126,
+   "t": 48461.0,
    "event": "ATTACK",
    "citizen_id": 87,
    "victim_citizen": 2,
@@ -1849,8 +1721,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 137,
-   "t": 48481.0,
+   "seq": 127,
+   "t": 48461.0,
    "event": "EXPOSURE",
    "citizen_id": 2,
    "source_citizen": 87,
@@ -1862,15 +1734,15 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 138,
-   "t": 48481.0,
+   "seq": 128,
+   "t": 48461.0,
    "event": "INFECTED",
    "citizen_id": 2,
    "source_citizen": 87,
    "pathogen": "classic_zombie",
-   "symptom_t": 59664.89553373266,
-   "incapacitation_t": 59907.869618805664,
-   "death_t": 61697.37949205185,
+   "symptom_t": 59644.89553373266,
+   "incapacitation_t": 59887.869618805664,
+   "death_t": 61677.37949205185,
    "reanimate_t": null,
    "fatal": true,
    "will_reanimate": false,
@@ -1887,8 +1759,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 139,
-   "t": 48481.0,
+   "seq": 129,
+   "t": 48461.0,
    "event": "FLEE",
    "citizen_id": 2,
    "threat_citizen": 87,
@@ -1901,8 +1773,8 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 140,
-   "t": 48486.0,
+   "seq": 130,
+   "t": 48466.0,
    "event": "ROAM",
    "citizen_id": 87,
    "target": "ent:2318",
@@ -1913,7 +1785,7 @@
    "embodiment": "inside_building"
   },
   {
-   "seq": 141,
+   "seq": 131,
    "t": 49129.0,
    "event": "SYMPTOM_ONSET",
    "citizen_id": 191,
@@ -1924,7 +1796,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 142,
+   "seq": 132,
    "t": 49129.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 191,
@@ -1938,7 +1810,7 @@
    "embodiment": "doing_activity"
   },
   {
-   "seq": 143,
+   "seq": 133,
    "t": 49523.0,
    "event": "INCAPACITATED",
    "citizen_id": 191,
@@ -1949,7 +1821,7 @@
    "embodiment": "incapacitated"
   },
   {
-   "seq": 144,
+   "seq": 134,
    "t": 49523.0,
    "event": "PLAN_INVALIDATED",
    "citizen_id": 191,
@@ -1961,8 +1833,23 @@
    "embodiment": "incapacitated"
   },
   {
-   "seq": 145,
+   "seq": 135,
    "t": 49561.0,
+   "event": "WORKPLACE_DISRUPTED",
+   "building_id": 4075,
+   "reason": "1/2 workers down",
+   "workers": [
+    191,
+    196
+   ],
+   "down": [
+    191
+   ],
+   "hazard": []
+  },
+  {
+   "seq": 136,
+   "t": 49576.0,
    "event": "ROAM",
    "citizen_id": 170,
    "target": "ent:2318",
@@ -1984,12 +1871,12 @@
     452.28,
     1326.48
    ],
-   "exposure_t": 48481.0,
-   "infection_t": 48481.0,
-   "infectious_from_t": 52464.89553373266,
-   "symptom_t": 59664.89553373266,
-   "incapacitation_t": 59907.869618805664,
-   "death_t": 61697.37949205185,
+   "exposure_t": 48461.0,
+   "infection_t": 48461.0,
+   "infectious_from_t": 52444.89553373266,
+   "symptom_t": 59644.89553373266,
+   "incapacitation_t": 59887.869618805664,
+   "death_t": 61677.37949205185,
    "recovery_t": null,
    "fatal": true,
    "asymptomatic": false,
@@ -2007,7 +1894,7 @@
     117,
     87
    ],
-   "exposures_resisted": 1
+   "exposures_resisted": 0
   },
   "42": {
    "citizen_id": 42,
@@ -2031,8 +1918,8 @@
    "will_reanimate": true,
    "reanimate_t": 20143.257203494406,
    "corpse_xy": [
-    -1269.41,
-    -1334.74
+    -1301.52,
+    -1307.65
    ],
    "corpse_building_id": -1,
    "corpse_vehicle_id": "veh:42",
@@ -2125,30 +2012,30 @@
     -1851.57,
     -1395.03
    ],
-   "exposure_t": 20941.0,
-   "infection_t": 20941.0,
-   "infectious_from_t": 29913.35595602986,
-   "symptom_t": 37113.35595602986,
-   "incapacitation_t": 37594.006077125494,
-   "death_t": 39599.943794835875,
+   "exposure_t": 20901.0,
+   "infection_t": 20901.0,
+   "infectious_from_t": 29873.35595602986,
+   "symptom_t": 37073.35595602986,
+   "incapacitation_t": 37554.006077125494,
+   "death_t": 39559.943794835875,
    "recovery_t": null,
    "fatal": true,
    "asymptomatic": false,
    "will_reanimate": true,
-   "reanimate_t": 41147.74262629471,
+   "reanimate_t": 41107.74262629471,
    "corpse_xy": [
     1389.04,
     -47.04
    ],
    "corpse_building_id": 9578,
    "corpse_vehicle_id": null,
-   "undead_since_t": 41148.0,
+   "undead_since_t": 41108.0,
    "attacks": 1,
    "bitten_by": 42,
    "lineage": [
     42
    ],
-   "exposures_resisted": 1
+   "exposures_resisted": 0
   },
   "135": {
    "citizen_id": 135,
@@ -2175,7 +2062,7 @@
    "attacks": 0,
    "bitten_by": null,
    "lineage": [],
-   "exposures_resisted": 370
+   "exposures_resisted": 369
   },
   "170": {
    "citizen_id": 170,
@@ -2211,7 +2098,7 @@
     42,
     247
    ],
-   "exposures_resisted": 168
+   "exposures_resisted": 167
   },
   "188": {
    "citizen_id": 188,
@@ -2223,17 +2110,17 @@
     1335.33,
     -179.15
    ],
-   "exposure_t": 41521.0,
-   "infection_t": 41521.0,
-   "infectious_from_t": 45650.45176684192,
-   "symptom_t": 52850.45176684192,
-   "incapacitation_t": 53220.127950600356,
-   "death_t": 55526.180218800284,
+   "exposure_t": 41461.0,
+   "infection_t": 41461.0,
+   "infectious_from_t": 45590.45176684192,
+   "symptom_t": 52790.45176684192,
+   "incapacitation_t": 53160.127950600356,
+   "death_t": 55466.180218800284,
    "recovery_t": null,
    "fatal": true,
    "asymptomatic": false,
    "will_reanimate": true,
-   "reanimate_t": 57110.14201463853,
+   "reanimate_t": 57050.14201463853,
    "corpse_xy": null,
    "corpse_building_id": -1,
    "corpse_vehicle_id": null,
@@ -2244,7 +2131,7 @@
     42,
     127
    ],
-   "exposures_resisted": 1
+   "exposures_resisted": 0
   },
   "191": {
    "citizen_id": 191,
@@ -2278,7 +2165,7 @@
     247,
     117
    ],
-   "exposures_resisted": 1
+   "exposures_resisted": 0
   },
   "247": {
    "citizen_id": 247,
@@ -2325,12 +2212,12 @@
     -1197.93,
     -1358.25
    ],
-   "exposure_t": 22021.0,
-   "infection_t": 22021.0,
-   "infectious_from_t": 33348.25382888986,
-   "symptom_t": 40548.25382888986,
-   "incapacitation_t": 40978.71177320566,
-   "death_t": 42180.24947796481,
+   "exposure_t": 21986.0,
+   "infection_t": 21986.0,
+   "infectious_from_t": 33313.25382888986,
+   "symptom_t": 40513.25382888986,
+   "incapacitation_t": 40943.71177320566,
+   "death_t": 42145.24947796481,
    "recovery_t": null,
    "fatal": true,
    "asymptomatic": false,
@@ -2348,21 +2235,10 @@
    "lineage": [
     42
    ],
-   "exposures_resisted": 1
+   "exposures_resisted": 0
   }
  },
  "disrupted_buildings": {
-  "6255": {
-   "t": 20941.0,
-   "reason": "1 incapacitated/dead/undead inside",
-   "workers": [
-    127
-   ],
-   "down": [],
-   "hazard": [
-    42
-   ]
-  },
   "2318": {
    "t": 33601.0,
    "reason": "3/6 workers down",
@@ -2381,17 +2257,16 @@
    ],
    "hazard": []
   },
-  "4075": {
-   "t": 38281.0,
-   "reason": "1 incapacitated/dead/undead inside",
+  "6255": {
+   "t": 37561.0,
+   "reason": "1/1 workers down",
    "workers": [
-    191,
-    196
+    127
    ],
-   "down": [],
-   "hazard": [
-    117
-   ]
+   "down": [
+    127
+   ],
+   "hazard": []
   },
   "8289": {
    "t": 40981.0,
@@ -2401,6 +2276,18 @@
    ],
    "down": [
     294
+   ],
+   "hazard": []
+  },
+  "4075": {
+   "t": 49561.0,
+   "reason": "1/2 workers down",
+   "workers": [
+    191,
+    196
+   ],
+   "down": [
+    191
    ],
    "hazard": []
   }
@@ -5242,10 +5129,10 @@
   {
    "hour": 9.9,
    "health": "symptomatic",
-   "emb": "doing_activity",
-   "x": 506.98,
-   "y": -2605.63,
-   "building_id": 2318,
+   "emb": "on_foot",
+   "x": 503.72,
+   "y": -2602.98,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -5253,8 +5140,8 @@
    "hour": 10.083,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5263,8 +5150,8 @@
    "hour": 10.1,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5273,8 +5160,8 @@
    "hour": 10.117,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5283,8 +5170,8 @@
    "hour": 10.133,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5293,8 +5180,8 @@
    "hour": 10.15,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5303,8 +5190,8 @@
    "hour": 10.167,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5313,8 +5200,8 @@
    "hour": 10.183,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5323,8 +5210,8 @@
    "hour": 10.2,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5333,8 +5220,8 @@
    "hour": 10.217,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5343,8 +5230,8 @@
    "hour": 10.233,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5353,8 +5240,8 @@
    "hour": 10.25,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5363,8 +5250,8 @@
    "hour": 10.267,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5373,8 +5260,8 @@
    "hour": 10.283,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5383,8 +5270,8 @@
    "hour": 10.3,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5393,8 +5280,8 @@
    "hour": 10.317,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5403,8 +5290,8 @@
    "hour": 10.333,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5413,8 +5300,8 @@
    "hour": 10.35,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5423,8 +5310,8 @@
    "hour": 10.367,
    "health": "incapacitated",
    "emb": "incapacitated",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5433,8 +5320,8 @@
    "hour": 10.383,
    "health": "corpse",
    "emb": "corpse",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5443,8 +5330,8 @@
    "hour": 10.567,
    "health": "corpse",
    "emb": "corpse",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5453,8 +5340,8 @@
    "hour": 10.583,
    "health": "corpse",
    "emb": "corpse",
-   "x": -1269.41,
-   "y": -1334.74,
+   "x": -1301.52,
+   "y": -1307.65,
    "building_id": -1,
    "vehicle_id": "veh:42",
    "band": "route_simulated"
@@ -5462,9 +5349,9 @@
   {
    "hour": 10.6,
    "health": "undead",
-   "emb": "undead",
-   "x": -1269.41,
-   "y": -1334.74,
+   "emb": "on_foot",
+   "x": -1309.41,
+   "y": -1319.56,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5473,8 +5360,8 @@
    "hour": 10.783,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1799.84,
-   "y": -1437.05,
+   "x": -1855.67,
+   "y": -1440.59,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5483,8 +5370,8 @@
    "hour": 10.8,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1853.77,
-   "y": -1439.36,
+   "x": -1837.25,
+   "y": -1396.86,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5493,8 +5380,8 @@
    "hour": 10.817,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1837.39,
-   "y": -1398.87,
+   "x": -1851.67,
+   "y": -1415.24,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5502,10 +5389,110 @@
   {
    "hour": 10.833,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -1851.57,
-   "y": -1395.03,
-   "building_id": 6255,
+   "emb": "on_foot",
+   "x": -1886.94,
+   "y": -1439.02,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 10.85,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -1933.6,
+   "y": -1447.02,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 10.867,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -1889.36,
+   "y": -1457.54,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 10.883,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -1835.37,
+   "y": -1457.42,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 10.9,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -1781.48,
+   "y": -1454.29,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 10.917,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -1728.96,
+   "y": -1442.05,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 10.933,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -1675.65,
+   "y": -1433.75,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 10.95,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -1621.78,
+   "y": -1430.71,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 10.967,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -1567.78,
+   "y": -1430.54,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 10.983,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -1513.78,
+   "y": -1430.54,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 11.0,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -1459.86,
+   "y": -1428.02,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -5513,8 +5500,8 @@
    "hour": 11.017,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1490.39,
-   "y": -1429.96,
+   "x": -1407.45,
+   "y": -1416.18,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5523,8 +5510,8 @@
    "hour": 11.033,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1436.71,
-   "y": -1424.97,
+   "x": -1362.41,
+   "y": -1387.53,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5533,8 +5520,8 @@
    "hour": 11.05,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1386.04,
-   "y": -1406.85,
+   "x": -1327.74,
+   "y": -1355.19,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5543,8 +5530,8 @@
    "hour": 11.067,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1346.62,
-   "y": -1370.51,
+   "x": -1295.87,
+   "y": -1318.3,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5553,8 +5540,8 @@
    "hour": 11.083,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1312.5,
-   "y": -1337.46,
+   "x": -1254.48,
+   "y": -1352.97,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5563,8 +5550,8 @@
    "hour": 11.1,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1277.98,
-   "y": -1333.39,
+   "x": -1215.27,
+   "y": -1349.31,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5573,8 +5560,8 @@
    "hour": 11.117,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1236.71,
-   "y": -1368.21,
+   "x": -1213.98,
+   "y": -1343.71,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5582,10 +5569,10 @@
   {
    "hour": 11.133,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -1197.93,
-   "y": -1358.25,
-   "building_id": 6366,
+   "emb": "on_foot",
+   "x": -1250.86,
+   "y": -1344.65,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -5593,8 +5580,8 @@
    "hour": 11.15,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1232.38,
-   "y": -1354.32,
+   "x": -1292.17,
+   "y": -1309.93,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5603,8 +5590,8 @@
    "hour": 11.167,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1272.11,
-   "y": -1326.57,
+   "x": -1329.34,
+   "y": -1344.05,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5613,8 +5600,8 @@
    "hour": 11.183,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1312.92,
-   "y": -1323.78,
+   "x": -1365.74,
+   "y": -1356.26,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5623,8 +5610,8 @@
    "hour": 11.2,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1348.39,
-   "y": -1336.95,
+   "x": -1407.43,
+   "y": -1389.93,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5633,8 +5620,8 @@
    "hour": 11.217,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1385.75,
-   "y": -1375.44,
+   "x": -1458.02,
+   "y": -1407.62,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5643,8 +5630,8 @@
    "hour": 11.233,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1432.73,
-   "y": -1401.44,
+   "x": -1511.83,
+   "y": -1410.73,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5653,8 +5640,8 @@
    "hour": 11.25,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1485.74,
-   "y": -1410.12,
+   "x": -1565.83,
+   "y": -1410.86,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5663,8 +5650,8 @@
    "hour": 11.267,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1539.73,
-   "y": -1410.8,
+   "x": -1619.83,
+   "y": -1411.13,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5673,8 +5660,8 @@
    "hour": 11.283,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1593.73,
-   "y": -1410.93,
+   "x": -1673.79,
+   "y": -1413.05,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5683,8 +5670,8 @@
    "hour": 11.3,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1647.71,
-   "y": -1412.02,
+   "x": -1727.01,
+   "y": -1421.54,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5693,8 +5680,8 @@
    "hour": 11.317,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1701.49,
-   "y": -1416.14,
+   "x": -1779.51,
+   "y": -1434.1,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5703,8 +5690,8 @@
    "hour": 11.333,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1754.01,
-   "y": -1428.56,
+   "x": -1833.21,
+   "y": -1438.83,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5713,8 +5700,8 @@
    "hour": 11.35,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1807.15,
-   "y": -1437.44,
+   "x": -1842.31,
+   "y": -1417.97,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5723,8 +5710,8 @@
    "hour": 11.367,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1856.87,
-   "y": -1437.5,
+   "x": -1849.15,
+   "y": -1398.77,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5733,8 +5720,8 @@
    "hour": 11.383,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1840.33,
-   "y": -1395.48,
+   "x": -1864.51,
+   "y": -1440.36,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5742,10 +5729,10 @@
   {
    "hour": 11.4,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -1851.57,
-   "y": -1395.03,
-   "building_id": 6255,
+   "emb": "on_foot",
+   "x": -1918.43,
+   "y": -1439.62,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -5753,8 +5740,8 @@
    "hour": 11.417,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1863.8,
-   "y": -1432.83,
+   "x": -1911.86,
+   "y": -1457.39,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5763,8 +5750,8 @@
    "hour": 11.433,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1910.33,
-   "y": -1439.41,
+   "x": -1857.86,
+   "y": -1457.75,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5773,8 +5760,8 @@
    "hour": 11.45,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1919.96,
-   "y": -1457.33,
+   "x": -1803.9,
+   "y": -1456.03,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5783,8 +5770,8 @@
    "hour": 11.467,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1865.96,
-   "y": -1457.7,
+   "x": -1750.62,
+   "y": -1448.15,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5793,8 +5780,8 @@
    "hour": 11.483,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1811.99,
-   "y": -1456.38,
+   "x": -1698.0,
+   "y": -1436.4,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5803,8 +5790,8 @@
    "hour": 11.5,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1758.48,
-   "y": -1450.08,
+   "x": -1644.27,
+   "y": -1431.31,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5813,8 +5800,8 @@
    "hour": 11.517,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1706.03,
-   "y": -1437.4,
+   "x": -1590.28,
+   "y": -1430.54,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5823,8 +5810,8 @@
    "hour": 11.533,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1652.36,
-   "y": -1431.52,
+   "x": -1536.28,
+   "y": -1430.54,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5833,8 +5820,8 @@
    "hour": 11.55,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1598.38,
-   "y": -1430.54,
+   "x": -1482.29,
+   "y": -1429.73,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5843,8 +5830,8 @@
    "hour": 11.567,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1544.38,
-   "y": -1430.54,
+   "x": -1428.85,
+   "y": -1423.03,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5853,8 +5840,8 @@
    "hour": 11.583,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1490.39,
-   "y": -1429.96,
+   "x": -1379.36,
+   "y": -1402.32,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5863,8 +5850,8 @@
    "hour": 11.6,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1436.71,
-   "y": -1424.97,
+   "x": -1342.15,
+   "y": -1363.75,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5873,8 +5860,8 @@
    "hour": 11.617,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1386.04,
-   "y": -1406.85,
+   "x": -1307.43,
+   "y": -1331.13,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5883,8 +5870,8 @@
    "hour": 11.633,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1346.62,
-   "y": -1370.51,
+   "x": -1271.8,
+   "y": -1338.62,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5893,8 +5880,8 @@
    "hour": 11.65,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1312.5,
-   "y": -1337.46,
+   "x": -1230.56,
+   "y": -1362.02,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5903,8 +5890,8 @@
    "hour": 11.667,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1277.98,
-   "y": -1333.39,
+   "x": -1201.58,
+   "y": -1356.76,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5913,8 +5900,8 @@
    "hour": 11.683,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1235.92,
-   "y": -1367.23,
+   "x": -1237.82,
+   "y": -1357.06,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5922,10 +5909,10 @@
   {
    "hour": 11.7,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -1197.93,
-   "y": -1358.25,
-   "building_id": 6366,
+   "emb": "on_foot",
+   "x": -1278.3,
+   "y": -1321.35,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -5933,8 +5920,8 @@
    "hour": 11.717,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1232.38,
-   "y": -1354.32,
+   "x": -1318.05,
+   "y": -1330.04,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5943,8 +5930,8 @@
    "hour": 11.733,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1272.11,
-   "y": -1326.57,
+   "x": -1353.79,
+   "y": -1342.8,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5953,8 +5940,8 @@
    "hour": 11.75,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1312.92,
-   "y": -1323.78,
+   "x": -1392.5,
+   "y": -1379.93,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5963,8 +5950,8 @@
    "hour": 11.767,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1348.39,
-   "y": -1336.95,
+   "x": -1440.45,
+   "y": -1403.9,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5973,8 +5960,8 @@
    "hour": 11.783,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1385.75,
-   "y": -1375.44,
+   "x": -1493.84,
+   "y": -1410.31,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5983,8 +5970,8 @@
    "hour": 11.8,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1432.73,
-   "y": -1401.44,
+   "x": -1547.83,
+   "y": -1410.82,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -5993,8 +5980,8 @@
    "hour": 11.817,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1485.74,
-   "y": -1410.12,
+   "x": -1601.83,
+   "y": -1410.95,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6003,8 +5990,8 @@
    "hour": 11.833,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1539.73,
-   "y": -1410.8,
+   "x": -1655.81,
+   "y": -1412.28,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6013,8 +6000,8 @@
    "hour": 11.85,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1593.73,
-   "y": -1410.93,
+   "x": -1709.49,
+   "y": -1417.39,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6023,8 +6010,8 @@
    "hour": 11.867,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1647.71,
-   "y": -1412.02,
+   "x": -1761.9,
+   "y": -1430.4,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6033,8 +6020,8 @@
    "hour": 11.883,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1701.49,
-   "y": -1416.14,
+   "x": -1815.24,
+   "y": -1437.87,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6043,8 +6030,8 @@
    "hour": 11.9,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1754.01,
-   "y": -1428.56,
+   "x": -1869.19,
+   "y": -1439.2,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6053,8 +6040,8 @@
    "hour": 11.917,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1807.15,
-   "y": -1437.44,
+   "x": -1923.19,
+   "y": -1438.7,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6063,8 +6050,8 @@
    "hour": 11.933,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1861.09,
-   "y": -1439.28,
+   "x": -1977.19,
+   "y": -1439.16,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6073,8 +6060,8 @@
    "hour": 11.95,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1915.09,
-   "y": -1438.77,
+   "x": -2031.18,
+   "y": -1439.77,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6083,8 +6070,8 @@
    "hour": 11.967,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1969.09,
-   "y": -1439.07,
+   "x": -2085.18,
+   "y": -1440.35,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6093,8 +6080,8 @@
    "hour": 11.983,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2023.08,
-   "y": -1439.68,
+   "x": -2139.18,
+   "y": -1440.83,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6103,8 +6090,8 @@
    "hour": 12.0,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2077.08,
-   "y": -1440.26,
+   "x": -2193.18,
+   "y": -1441.05,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6113,8 +6100,8 @@
    "hour": 12.017,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2131.08,
-   "y": -1440.8,
+   "x": -2247.18,
+   "y": -1441.28,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6123,8 +6110,8 @@
    "hour": 12.033,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2185.08,
-   "y": -1441.02,
+   "x": -2301.18,
+   "y": -1441.5,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6133,8 +6120,8 @@
    "hour": 12.05,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2239.08,
-   "y": -1441.24,
+   "x": -2355.17,
+   "y": -1441.93,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6143,8 +6130,8 @@
    "hour": 12.067,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2293.08,
-   "y": -1441.47,
+   "x": -2409.16,
+   "y": -1441.51,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6153,8 +6140,8 @@
    "hour": 12.083,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2347.07,
-   "y": -1442.0,
+   "x": -2463.11,
+   "y": -1439.91,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6163,8 +6150,8 @@
    "hour": 12.1,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2401.06,
-   "y": -1441.54,
+   "x": -2516.72,
+   "y": -1433.45,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6173,8 +6160,8 @@
    "hour": 12.117,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2455.03,
-   "y": -1440.47,
+   "x": -2570.47,
+   "y": -1428.68,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6183,8 +6170,8 @@
    "hour": 12.133,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2508.69,
-   "y": -1434.55,
+   "x": -2624.44,
+   "y": -1428.23,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6193,8 +6180,8 @@
    "hour": 12.15,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2562.39,
-   "y": -1429.17,
+   "x": -2678.44,
+   "y": -1428.59,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6203,8 +6190,8 @@
    "hour": 12.167,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2616.34,
-   "y": -1428.11,
+   "x": -2732.44,
+   "y": -1428.8,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6213,8 +6200,8 @@
    "hour": 12.183,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2670.34,
-   "y": -1428.56,
+   "x": -2746.24,
+   "y": -1389.85,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6223,8 +6210,8 @@
    "hour": 12.2,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2724.34,
-   "y": -1428.76,
+   "x": -2749.76,
+   "y": -1336.19,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6233,8 +6220,8 @@
    "hour": 12.217,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2746.19,
-   "y": -1397.95,
+   "x": -2753.93,
+   "y": -1353.52,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6243,8 +6230,8 @@
    "hour": 12.233,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2748.13,
-   "y": -1344.12,
+   "x": -2745.86,
+   "y": -1398.19,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6252,10 +6239,10 @@
   {
    "hour": 12.25,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -2758.78,
-   "y": -1328.84,
-   "building_id": 6353,
+   "emb": "on_foot",
+   "x": -2740.85,
+   "y": -1448.84,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -6263,8 +6250,8 @@
    "hour": 12.267,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2746.4,
-   "y": -1363.1,
+   "x": -2686.85,
+   "y": -1448.66,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6273,8 +6260,8 @@
    "hour": 12.283,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2745.57,
-   "y": -1417.09,
+   "x": -2632.85,
+   "y": -1448.48,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6283,8 +6270,8 @@
    "hour": 12.3,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2721.95,
-   "y": -1448.78,
+   "x": -2578.87,
+   "y": -1448.81,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6293,8 +6280,8 @@
    "hour": 12.317,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2667.95,
-   "y": -1448.6,
+   "x": -2525.09,
+   "y": -1453.38,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6303,8 +6290,8 @@
    "hour": 12.333,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2613.95,
-   "y": -1448.42,
+   "x": -2471.5,
+   "y": -1459.99,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6313,8 +6300,8 @@
    "hour": 12.35,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2560.02,
-   "y": -1450.14,
+   "x": -2417.58,
+   "y": -1462.04,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6323,8 +6310,8 @@
    "hour": 12.367,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2506.36,
-   "y": -1455.91,
+   "x": -2363.59,
+   "y": -1461.19,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6333,8 +6320,8 @@
    "hour": 12.383,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2452.66,
-   "y": -1461.52,
+   "x": -2309.61,
+   "y": -1460.26,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6343,8 +6330,8 @@
    "hour": 12.4,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2398.68,
-   "y": -1461.9,
+   "x": -2255.61,
+   "y": -1460.19,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6353,8 +6340,8 @@
    "hour": 12.417,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2344.69,
-   "y": -1460.96,
+   "x": -2201.61,
+   "y": -1460.1,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6363,8 +6350,8 @@
    "hour": 12.433,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2290.71,
-   "y": -1460.24,
+   "x": -2147.61,
+   "y": -1459.98,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6373,8 +6360,8 @@
    "hour": 12.45,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2236.71,
-   "y": -1460.17,
+   "x": -2093.61,
+   "y": -1459.68,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6383,8 +6370,8 @@
    "hour": 12.467,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2182.71,
-   "y": -1460.06,
+   "x": -2039.61,
+   "y": -1459.27,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6393,8 +6380,8 @@
    "hour": 12.483,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2128.71,
-   "y": -1459.93,
+   "x": -1985.61,
+   "y": -1458.87,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6403,8 +6390,8 @@
    "hour": 12.5,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2074.71,
-   "y": -1459.53,
+   "x": -1931.61,
+   "y": -1458.47,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6413,8 +6400,8 @@
    "hour": 12.517,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2020.71,
-   "y": -1459.13,
+   "x": -1877.62,
+   "y": -1458.06,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6423,8 +6410,8 @@
    "hour": 12.533,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1966.71,
-   "y": -1458.73,
+   "x": -1823.64,
+   "y": -1456.81,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6433,8 +6420,8 @@
    "hour": 12.55,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1912.71,
-   "y": -1458.33,
+   "x": -1794.3,
+   "y": -1438.04,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6443,8 +6430,8 @@
    "hour": 12.567,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1858.72,
-   "y": -1457.92,
+   "x": -1848.26,
+   "y": -1439.81,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6453,8 +6440,8 @@
    "hour": 12.583,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1804.8,
-   "y": -1455.32,
+   "x": -1837.75,
+   "y": -1404.29,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6463,8 +6450,8 @@
    "hour": 12.6,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1813.19,
-   "y": -1438.57,
+   "x": -1846.23,
+   "y": -1408.24,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6473,8 +6460,8 @@
    "hour": 12.617,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1855.47,
-   "y": -1431.58,
+   "x": -1877.94,
+   "y": -1439.11,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6483,8 +6470,8 @@
    "hour": 12.633,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1846.28,
-   "y": -1396.76,
+   "x": -1931.94,
+   "y": -1438.64,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6492,10 +6479,10 @@
   {
    "hour": 12.65,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -1851.57,
-   "y": -1395.03,
-   "building_id": 6255,
+   "emb": "on_foot",
+   "x": -1985.93,
+   "y": -1439.26,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -6503,8 +6490,8 @@
    "hour": 12.667,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1863.8,
-   "y": -1432.83,
+   "x": -2039.93,
+   "y": -1439.86,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6513,8 +6500,8 @@
    "hour": 12.683,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1910.34,
-   "y": -1438.81,
+   "x": -2093.93,
+   "y": -1440.44,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6523,8 +6510,8 @@
    "hour": 12.7,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1964.34,
-   "y": -1439.01,
+   "x": -2147.93,
+   "y": -1440.87,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6533,8 +6520,8 @@
    "hour": 12.717,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2018.33,
-   "y": -1439.62,
+   "x": -2201.93,
+   "y": -1441.09,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6543,8 +6530,8 @@
    "hour": 12.733,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2072.33,
-   "y": -1440.21,
+   "x": -2255.92,
+   "y": -1441.31,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6553,8 +6540,8 @@
    "hour": 12.75,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2126.33,
-   "y": -1440.78,
+   "x": -2309.92,
+   "y": -1441.53,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6563,8 +6550,8 @@
    "hour": 12.767,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2180.33,
-   "y": -1441.0,
+   "x": -2363.91,
+   "y": -1441.86,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6573,8 +6560,8 @@
    "hour": 12.783,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2234.33,
-   "y": -1441.22,
+   "x": -2417.91,
+   "y": -1441.49,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6583,8 +6570,8 @@
    "hour": 12.8,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2288.32,
-   "y": -1441.45,
+   "x": -2471.81,
+   "y": -1438.99,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6593,8 +6580,8 @@
    "hour": 12.817,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2342.31,
-   "y": -1442.04,
+   "x": -2525.38,
+   "y": -1432.25,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6603,8 +6590,8 @@
    "hour": 12.833,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2396.31,
-   "y": -1441.58,
+   "x": -2579.2,
+   "y": -1428.15,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6613,8 +6600,8 @@
    "hour": 12.85,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2450.29,
-   "y": -1440.76,
+   "x": -2633.18,
+   "y": -1428.34,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6623,8 +6610,8 @@
    "hour": 12.867,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2503.99,
-   "y": -1435.21,
+   "x": -2687.18,
+   "y": -1428.62,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6633,8 +6620,8 @@
    "hour": 12.883,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2557.64,
-   "y": -1429.46,
+   "x": -2741.18,
+   "y": -1428.89,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6643,8 +6630,8 @@
    "hour": 12.9,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2611.59,
-   "y": -1428.05,
+   "x": -2747.11,
+   "y": -1381.12,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6653,8 +6640,8 @@
    "hour": 12.917,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2665.58,
-   "y": -1428.54,
+   "x": -2769.59,
+   "y": -1350.72,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6663,8 +6650,8 @@
    "hour": 12.933,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2719.58,
-   "y": -1428.75,
+   "x": -2789.28,
+   "y": -1346.73,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6673,8 +6660,8 @@
    "hour": 12.95,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2746.61,
-   "y": -1402.71,
+   "x": -2746.46,
+   "y": -1358.95,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6683,8 +6670,8 @@
    "hour": 12.967,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2748.06,
-   "y": -1348.95,
+   "x": -2745.64,
+   "y": -1412.94,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6693,8 +6680,8 @@
    "hour": 12.983,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2789.31,
-   "y": -1339.66,
+   "x": -2726.1,
+   "y": -1448.79,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6702,10 +6689,10 @@
   {
    "hour": 13.0,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -2789.32,
-   "y": -1336.83,
-   "building_id": 6351,
+   "emb": "on_foot",
+   "x": -2672.1,
+   "y": -1448.61,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -6713,8 +6700,8 @@
    "hour": 13.017,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2753.68,
-   "y": -1356.35,
+   "x": -2618.1,
+   "y": -1448.43,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6723,8 +6710,8 @@
    "hour": 13.033,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2745.83,
-   "y": -1400.34,
+   "x": -2564.16,
+   "y": -1449.84,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6733,8 +6720,8 @@
    "hour": 13.05,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2738.7,
-   "y": -1448.83,
+   "x": -2510.47,
+   "y": -1455.36,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6743,8 +6730,8 @@
    "hour": 13.067,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2684.7,
-   "y": -1448.65,
+   "x": -2456.81,
+   "y": -1461.26,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6753,8 +6740,8 @@
    "hour": 13.083,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2630.7,
-   "y": -1448.47,
+   "x": -2402.83,
+   "y": -1461.98,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6763,8 +6750,8 @@
    "hour": 13.1,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2576.73,
-   "y": -1448.96,
+   "x": -2348.84,
+   "y": -1461.01,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6773,8 +6760,8 @@
    "hour": 13.117,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2522.95,
-   "y": -1453.66,
+   "x": -2294.86,
+   "y": -1460.24,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6783,8 +6770,8 @@
    "hour": 13.133,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2469.36,
-   "y": -1460.21,
+   "x": -2240.86,
+   "y": -1460.17,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6793,8 +6780,8 @@
    "hour": 13.15,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2415.43,
-   "y": -1462.03,
+   "x": -2186.86,
+   "y": -1460.07,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6803,8 +6790,8 @@
    "hour": 13.167,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2361.44,
-   "y": -1461.15,
+   "x": -2132.86,
+   "y": -1459.94,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6813,8 +6800,8 @@
    "hour": 13.183,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2307.46,
-   "y": -1460.26,
+   "x": -2078.86,
+   "y": -1459.56,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6823,8 +6810,8 @@
    "hour": 13.2,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2253.46,
-   "y": -1460.19,
+   "x": -2024.86,
+   "y": -1459.16,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6833,8 +6820,8 @@
    "hour": 13.217,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2199.46,
-   "y": -1460.1,
+   "x": -1970.86,
+   "y": -1458.76,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6843,8 +6830,8 @@
    "hour": 13.233,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2145.46,
-   "y": -1459.97,
+   "x": -1916.86,
+   "y": -1458.36,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6853,8 +6840,8 @@
    "hour": 13.25,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2091.46,
-   "y": -1459.66,
+   "x": -1862.87,
+   "y": -1457.95,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6863,8 +6850,8 @@
    "hour": 13.267,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2037.46,
-   "y": -1459.25,
+   "x": -1808.9,
+   "y": -1456.25,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6873,8 +6860,8 @@
    "hour": 13.283,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1983.46,
-   "y": -1458.86,
+   "x": -1755.45,
+   "y": -1449.46,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6883,8 +6870,8 @@
    "hour": 13.3,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1929.46,
-   "y": -1458.46,
+   "x": -1702.96,
+   "y": -1437.02,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6893,8 +6880,8 @@
    "hour": 13.317,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1875.46,
-   "y": -1458.05,
+   "x": -1649.27,
+   "y": -1431.44,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6903,8 +6890,8 @@
    "hour": 13.333,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1821.49,
-   "y": -1456.8,
+   "x": -1595.28,
+   "y": -1430.54,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6913,8 +6900,8 @@
    "hour": 13.35,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1767.79,
-   "y": -1452.0,
+   "x": -1541.28,
+   "y": -1430.54,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6923,8 +6910,8 @@
    "hour": 13.367,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1715.37,
-   "y": -1439.21,
+   "x": -1487.29,
+   "y": -1429.87,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6933,8 +6920,8 @@
    "hour": 13.383,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1661.83,
-   "y": -1432.34,
+   "x": -1433.71,
+   "y": -1424.23,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6943,8 +6930,8 @@
    "hour": 13.4,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1607.88,
-   "y": -1430.54,
+   "x": -1383.31,
+   "y": -1405.4,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6953,8 +6940,8 @@
    "hour": 13.417,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1553.88,
-   "y": -1430.54,
+   "x": -1344.86,
+   "y": -1367.96,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6963,8 +6950,8 @@
    "hour": 13.433,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1499.89,
-   "y": -1430.22,
+   "x": -1310.56,
+   "y": -1335.04,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6973,8 +6960,8 @@
    "hour": 13.45,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1446.02,
-   "y": -1426.77,
+   "x": -1275.62,
+   "y": -1335.39,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6983,8 +6970,8 @@
    "hour": 13.467,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1394.52,
-   "y": -1411.15,
+   "x": -1233.82,
+   "y": -1365.83,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -6993,8 +6980,8 @@
    "hour": 13.483,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1352.02,
-   "y": -1378.33,
+   "x": -1198.51,
+   "y": -1358.94,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7003,8 +6990,8 @@
    "hour": 13.5,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1318.5,
-   "y": -1344.83,
+   "x": -1234.72,
+   "y": -1357.06,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7013,8 +7000,8 @@
    "hour": 13.517,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1285.25,
-   "y": -1327.26,
+   "x": -1274.86,
+   "y": -1324.25,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7023,8 +7010,8 @@
    "hour": 13.533,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1243.46,
-   "y": -1361.44,
+   "x": -1315.2,
+   "y": -1326.56,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7033,8 +7020,8 @@
    "hour": 13.55,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1203.49,
-   "y": -1356.67,
+   "x": -1350.8,
+   "y": -1339.43,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7042,10 +7029,10 @@
   {
    "hour": 13.567,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -1197.93,
-   "y": -1358.25,
-   "building_id": 6366,
+   "emb": "on_foot",
+   "x": -1388.71,
+   "y": -1377.49,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -7053,8 +7040,8 @@
    "hour": 13.583,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1232.38,
-   "y": -1354.32,
+   "x": -1436.16,
+   "y": -1402.54,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7063,8 +7050,8 @@
    "hour": 13.6,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1272.11,
-   "y": -1326.57,
+   "x": -1489.34,
+   "y": -1410.21,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7073,8 +7060,8 @@
    "hour": 13.617,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1312.92,
-   "y": -1323.78,
+   "x": -1543.33,
+   "y": -1410.81,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7083,8 +7070,8 @@
    "hour": 13.633,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1348.39,
-   "y": -1336.95,
+   "x": -1597.33,
+   "y": -1410.94,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7093,8 +7080,8 @@
    "hour": 13.65,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1385.75,
-   "y": -1375.44,
+   "x": -1651.31,
+   "y": -1412.14,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7103,8 +7090,8 @@
    "hour": 13.667,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1432.73,
-   "y": -1401.44,
+   "x": -1705.05,
+   "y": -1416.66,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7113,8 +7100,8 @@
    "hour": 13.683,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1485.74,
-   "y": -1410.12,
+   "x": -1757.51,
+   "y": -1429.4,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7123,8 +7110,8 @@
    "hour": 13.7,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1539.73,
-   "y": -1410.8,
+   "x": -1810.74,
+   "y": -1437.63,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7133,8 +7120,8 @@
    "hour": 13.717,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1593.73,
-   "y": -1410.93,
+   "x": -1864.69,
+   "y": -1439.24,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7143,8 +7130,8 @@
    "hour": 13.733,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1647.71,
-   "y": -1412.02,
+   "x": -1918.69,
+   "y": -1438.74,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7153,8 +7140,8 @@
    "hour": 13.75,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1701.49,
-   "y": -1416.14,
+   "x": -1972.69,
+   "y": -1439.11,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7163,8 +7150,8 @@
    "hour": 13.767,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1754.01,
-   "y": -1428.56,
+   "x": -2026.68,
+   "y": -1439.72,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7173,8 +7160,8 @@
    "hour": 13.783,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1807.15,
-   "y": -1437.44,
+   "x": -2080.68,
+   "y": -1440.3,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7183,8 +7170,8 @@
    "hour": 13.8,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1861.09,
-   "y": -1439.28,
+   "x": -2134.68,
+   "y": -1440.81,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7193,8 +7180,8 @@
    "hour": 13.817,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1915.09,
-   "y": -1438.77,
+   "x": -2188.68,
+   "y": -1441.04,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7203,8 +7190,8 @@
    "hour": 13.833,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1969.09,
-   "y": -1439.07,
+   "x": -2242.68,
+   "y": -1441.26,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7213,8 +7200,8 @@
    "hour": 13.85,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2023.08,
-   "y": -1439.68,
+   "x": -2296.68,
+   "y": -1441.48,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7223,8 +7210,8 @@
    "hour": 13.867,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2077.08,
-   "y": -1440.26,
+   "x": -2350.67,
+   "y": -1441.97,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7233,8 +7220,8 @@
    "hour": 13.883,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2131.08,
-   "y": -1440.8,
+   "x": -2404.66,
+   "y": -1441.53,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7243,8 +7230,8 @@
    "hour": 13.9,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2185.08,
-   "y": -1441.02,
+   "x": -2458.63,
+   "y": -1440.24,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7253,8 +7240,8 @@
    "hour": 13.917,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2239.08,
-   "y": -1441.24,
+   "x": -2512.26,
+   "y": -1434.06,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7263,8 +7250,8 @@
    "hour": 13.933,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2293.08,
-   "y": -1441.47,
+   "x": -2565.98,
+   "y": -1428.95,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7273,8 +7260,8 @@
    "hour": 13.95,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2347.07,
-   "y": -1442.0,
+   "x": -2619.94,
+   "y": -1428.16,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7283,8 +7270,8 @@
    "hour": 13.967,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2401.06,
-   "y": -1441.54,
+   "x": -2673.94,
+   "y": -1428.57,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7293,8 +7280,8 @@
    "hour": 13.983,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2455.03,
-   "y": -1440.47,
+   "x": -2727.94,
+   "y": -1428.78,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7303,8 +7290,8 @@
    "hour": 14.0,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2508.69,
-   "y": -1434.55,
+   "x": -2746.21,
+   "y": -1394.35,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7313,8 +7300,8 @@
    "hour": 14.017,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2562.39,
-   "y": -1429.17,
+   "x": -2748.86,
+   "y": -1340.59,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7323,8 +7310,8 @@
    "hour": 14.033,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2616.34,
-   "y": -1428.11,
+   "x": -2753.46,
+   "y": -1349.04,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7333,8 +7320,8 @@
    "hour": 14.05,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2670.34,
-   "y": -1428.56,
+   "x": -2745.93,
+   "y": -1393.69,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7343,8 +7330,8 @@
    "hour": 14.067,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2724.34,
-   "y": -1428.76,
+   "x": -2744.27,
+   "y": -1447.61,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7353,8 +7340,8 @@
    "hour": 14.083,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2746.19,
-   "y": -1397.95,
+   "x": -2691.35,
+   "y": -1448.68,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7363,8 +7350,8 @@
    "hour": 14.1,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2748.13,
-   "y": -1344.12,
+   "x": -2637.35,
+   "y": -1448.5,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7372,10 +7359,10 @@
   {
    "hour": 14.117,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -2758.78,
-   "y": -1328.84,
-   "building_id": 6353,
+   "emb": "on_foot",
+   "x": -2583.36,
+   "y": -1448.49,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -7383,8 +7370,8 @@
    "hour": 14.133,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2746.4,
-   "y": -1363.1,
+   "x": -2529.54,
+   "y": -1452.77,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7393,8 +7380,8 @@
    "hour": 14.15,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2745.57,
-   "y": -1417.09,
+   "x": -2475.97,
+   "y": -1459.51,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7403,8 +7390,8 @@
    "hour": 14.167,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2721.95,
-   "y": -1448.78,
+   "x": -2422.08,
+   "y": -1462.06,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7413,8 +7400,8 @@
    "hour": 14.183,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2667.95,
-   "y": -1448.6,
+   "x": -2368.09,
+   "y": -1461.27,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7423,8 +7410,8 @@
    "hour": 14.2,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2613.95,
-   "y": -1448.42,
+   "x": -2314.11,
+   "y": -1460.26,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7433,8 +7420,8 @@
    "hour": 14.217,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2560.02,
-   "y": -1450.14,
+   "x": -2260.11,
+   "y": -1460.2,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7443,8 +7430,8 @@
    "hour": 14.233,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2506.36,
-   "y": -1455.91,
+   "x": -2206.11,
+   "y": -1460.12,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7453,8 +7440,8 @@
    "hour": 14.25,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2452.66,
-   "y": -1461.52,
+   "x": -2152.11,
+   "y": -1459.99,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7463,8 +7450,8 @@
    "hour": 14.267,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2398.68,
-   "y": -1461.9,
+   "x": -2098.11,
+   "y": -1459.71,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7473,8 +7460,8 @@
    "hour": 14.283,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2344.69,
-   "y": -1460.96,
+   "x": -2044.11,
+   "y": -1459.3,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7483,8 +7470,8 @@
    "hour": 14.3,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2290.71,
-   "y": -1460.24,
+   "x": -1990.11,
+   "y": -1458.9,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7493,8 +7480,8 @@
    "hour": 14.317,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2236.71,
-   "y": -1460.17,
+   "x": -1936.11,
+   "y": -1458.51,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7503,8 +7490,8 @@
    "hour": 14.333,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2182.71,
-   "y": -1460.06,
+   "x": -1882.12,
+   "y": -1458.1,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7513,109 +7500,9 @@
    "hour": 14.35,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2128.71,
-   "y": -1459.93,
+   "x": -1828.13,
+   "y": -1457.1,
    "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 14.367,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -2074.71,
-   "y": -1459.53,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 14.383,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -2020.71,
-   "y": -1459.13,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 14.4,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -1966.71,
-   "y": -1458.73,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 14.417,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -1912.71,
-   "y": -1458.33,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 14.433,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -1858.72,
-   "y": -1457.92,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 14.45,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -1804.8,
-   "y": -1455.32,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 14.467,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -1813.19,
-   "y": -1438.57,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 14.483,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -1855.47,
-   "y": -1431.58,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 14.5,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -1846.28,
-   "y": -1396.76,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 14.517,
-   "health": "undead",
-   "emb": "inside_building",
-   "x": -1851.57,
-   "y": -1395.03,
-   "building_id": 6255,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -7623,8 +7510,8 @@
    "hour": 14.533,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1863.8,
-   "y": -1432.83,
+   "x": -2197.43,
+   "y": -1441.07,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7633,8 +7520,8 @@
    "hour": 14.55,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1910.34,
-   "y": -1438.81,
+   "x": -2251.42,
+   "y": -1441.29,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7643,8 +7530,8 @@
    "hour": 14.567,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1964.34,
-   "y": -1439.01,
+   "x": -2305.42,
+   "y": -1441.51,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7653,8 +7540,8 @@
    "hour": 14.583,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2018.33,
-   "y": -1439.62,
+   "x": -2359.41,
+   "y": -1441.9,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7663,8 +7550,8 @@
    "hour": 14.6,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2072.33,
-   "y": -1440.21,
+   "x": -2413.41,
+   "y": -1441.5,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7673,8 +7560,8 @@
    "hour": 14.617,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2126.33,
-   "y": -1440.78,
+   "x": -2467.34,
+   "y": -1439.46,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7683,8 +7570,8 @@
    "hour": 14.633,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2180.33,
-   "y": -1441.0,
+   "x": -2520.93,
+   "y": -1432.86,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7693,8 +7580,8 @@
    "hour": 14.65,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2234.33,
-   "y": -1441.22,
+   "x": -2574.71,
+   "y": -1428.42,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7703,8 +7590,8 @@
    "hour": 14.667,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2288.32,
-   "y": -1441.45,
+   "x": -2628.68,
+   "y": -1428.28,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7713,8 +7600,8 @@
    "hour": 14.683,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2342.31,
-   "y": -1442.04,
+   "x": -2682.68,
+   "y": -1428.6,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7723,8 +7610,8 @@
    "hour": 14.7,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2396.31,
-   "y": -1441.58,
+   "x": -2736.68,
+   "y": -1428.81,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7733,8 +7620,8 @@
    "hour": 14.717,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2450.29,
-   "y": -1440.76,
+   "x": -2747.0,
+   "y": -1385.62,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7743,8 +7630,8 @@
    "hour": 14.733,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2503.99,
-   "y": -1435.21,
+   "x": -2765.1,
+   "y": -1350.35,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7753,8 +7640,8 @@
    "hour": 14.75,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2557.64,
-   "y": -1429.46,
+   "x": -2789.3,
+   "y": -1342.23,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7763,8 +7650,8 @@
    "hour": 14.767,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2611.59,
-   "y": -1428.05,
+   "x": -2745.74,
+   "y": -1355.42,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7773,8 +7660,8 @@
    "hour": 14.783,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2665.58,
-   "y": -1428.54,
+   "x": -2745.71,
+   "y": -1408.44,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7783,8 +7670,8 @@
    "hour": 14.8,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2719.58,
-   "y": -1428.75,
+   "x": -2730.6,
+   "y": -1448.81,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7793,8 +7680,8 @@
    "hour": 14.817,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2746.61,
-   "y": -1402.71,
+   "x": -2676.6,
+   "y": -1448.63,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7803,8 +7690,8 @@
    "hour": 14.833,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2748.06,
-   "y": -1348.95,
+   "x": -2622.6,
+   "y": -1448.45,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7813,8 +7700,8 @@
    "hour": 14.85,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2789.31,
-   "y": -1339.66,
+   "x": -2568.65,
+   "y": -1449.53,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7822,10 +7709,10 @@
   {
    "hour": 14.867,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -2789.32,
-   "y": -1336.83,
-   "building_id": 6351,
+   "emb": "on_foot",
+   "x": -2514.93,
+   "y": -1454.75,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -7833,8 +7720,8 @@
    "hour": 14.883,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2753.68,
-   "y": -1356.35,
+   "x": -2461.3,
+   "y": -1460.99,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7843,8 +7730,8 @@
    "hour": 14.9,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2745.83,
-   "y": -1400.34,
+   "x": -2407.33,
+   "y": -1462.0,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7853,8 +7740,8 @@
    "hour": 14.917,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2738.7,
-   "y": -1448.83,
+   "x": -2353.34,
+   "y": -1461.06,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7863,8 +7750,8 @@
    "hour": 14.933,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2684.7,
-   "y": -1448.65,
+   "x": -2299.36,
+   "y": -1460.25,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7873,8 +7760,8 @@
    "hour": 14.95,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2630.7,
-   "y": -1448.47,
+   "x": -2245.36,
+   "y": -1460.18,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7883,8 +7770,8 @@
    "hour": 14.967,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2576.73,
-   "y": -1448.96,
+   "x": -2191.36,
+   "y": -1460.08,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7893,8 +7780,8 @@
    "hour": 14.983,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2522.95,
-   "y": -1453.66,
+   "x": -2137.36,
+   "y": -1459.95,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7903,8 +7790,8 @@
    "hour": 15.0,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2469.36,
-   "y": -1460.21,
+   "x": -2083.36,
+   "y": -1459.6,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7913,8 +7800,8 @@
    "hour": 15.017,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2415.43,
-   "y": -1462.03,
+   "x": -2029.36,
+   "y": -1459.19,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7923,8 +7810,8 @@
    "hour": 15.033,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2361.44,
-   "y": -1461.15,
+   "x": -1975.36,
+   "y": -1458.8,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7933,8 +7820,8 @@
    "hour": 15.05,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2307.46,
-   "y": -1460.26,
+   "x": -1921.36,
+   "y": -1458.39,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7943,8 +7830,8 @@
    "hour": 15.067,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2253.46,
-   "y": -1460.19,
+   "x": -1867.37,
+   "y": -1457.99,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7953,8 +7840,8 @@
    "hour": 15.083,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2199.46,
-   "y": -1460.1,
+   "x": -1813.4,
+   "y": -1456.45,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7963,8 +7850,8 @@
    "hour": 15.1,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2145.46,
-   "y": -1459.97,
+   "x": -1759.86,
+   "y": -1450.37,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7973,8 +7860,8 @@
    "hour": 15.117,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2091.46,
-   "y": -1459.66,
+   "x": -1707.42,
+   "y": -1437.63,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7983,8 +7870,8 @@
    "hour": 15.133,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2037.46,
-   "y": -1459.25,
+   "x": -1653.77,
+   "y": -1431.56,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -7993,8 +7880,8 @@
    "hour": 15.15,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1983.46,
-   "y": -1458.86,
+   "x": -1599.78,
+   "y": -1430.54,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8003,8 +7890,8 @@
    "hour": 15.167,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1929.46,
-   "y": -1458.46,
+   "x": -1545.78,
+   "y": -1430.54,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8013,8 +7900,8 @@
    "hour": 15.183,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1875.46,
-   "y": -1458.05,
+   "x": -1491.79,
+   "y": -1430.0,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8023,8 +7910,8 @@
    "hour": 15.2,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1821.49,
-   "y": -1456.8,
+   "x": -1438.08,
+   "y": -1425.31,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8033,8 +7920,8 @@
    "hour": 15.217,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1767.79,
-   "y": -1452.0,
+   "x": -1387.29,
+   "y": -1407.49,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8043,8 +7930,8 @@
    "hour": 15.233,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1715.37,
-   "y": -1439.21,
+   "x": -1347.42,
+   "y": -1371.67,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8053,8 +7940,8 @@
    "hour": 15.25,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1661.83,
-   "y": -1432.34,
+   "x": -1313.38,
+   "y": -1338.55,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8063,8 +7950,8 @@
    "hour": 15.267,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1607.88,
-   "y": -1430.54,
+   "x": -1279.06,
+   "y": -1332.48,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8073,8 +7960,8 @@
    "hour": 15.283,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1553.88,
-   "y": -1430.54,
+   "x": -1237.04,
+   "y": -1366.38,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8083,8 +7970,8 @@
    "hour": 15.3,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1499.89,
-   "y": -1430.22,
+   "x": -1197.93,
+   "y": -1358.25,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8093,8 +7980,8 @@
    "hour": 15.317,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1446.02,
-   "y": -1426.77,
+   "x": -1231.79,
+   "y": -1353.64,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8103,8 +7990,8 @@
    "hour": 15.333,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1394.52,
-   "y": -1411.15,
+   "x": -1271.42,
+   "y": -1327.16,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8113,8 +8000,8 @@
    "hour": 15.35,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1352.02,
-   "y": -1378.33,
+   "x": -1312.34,
+   "y": -1323.08,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8123,8 +8010,8 @@
    "hour": 15.367,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1318.5,
-   "y": -1344.83,
+   "x": -1347.66,
+   "y": -1337.48,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8133,8 +8020,8 @@
    "hour": 15.383,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1285.25,
-   "y": -1327.26,
+   "x": -1385.01,
+   "y": -1374.93,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8143,8 +8030,8 @@
    "hour": 15.4,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1243.46,
-   "y": -1361.44,
+   "x": -1431.87,
+   "y": -1401.17,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8153,8 +8040,8 @@
    "hour": 15.417,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1203.49,
-   "y": -1356.67,
+   "x": -1484.84,
+   "y": -1410.1,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8162,10 +8049,10 @@
   {
    "hour": 15.433,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -1197.93,
-   "y": -1358.25,
-   "building_id": 6366,
+   "emb": "on_foot",
+   "x": -1538.83,
+   "y": -1410.8,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -8173,8 +8060,8 @@
    "hour": 15.45,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1232.38,
-   "y": -1354.32,
+   "x": -1592.83,
+   "y": -1410.93,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8183,8 +8070,8 @@
    "hour": 15.467,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1272.11,
-   "y": -1326.57,
+   "x": -1646.81,
+   "y": -1411.99,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8193,8 +8080,8 @@
    "hour": 15.483,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1312.92,
-   "y": -1323.78,
+   "x": -1700.6,
+   "y": -1416.01,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8203,8 +8090,8 @@
    "hour": 15.5,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1348.39,
-   "y": -1336.95,
+   "x": -1753.13,
+   "y": -1428.34,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8213,8 +8100,8 @@
    "hour": 15.517,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1385.75,
-   "y": -1375.44,
+   "x": -1806.25,
+   "y": -1437.39,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8223,8 +8110,8 @@
    "hour": 15.533,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1432.73,
-   "y": -1401.44,
+   "x": -1860.19,
+   "y": -1439.29,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8233,8 +8120,8 @@
    "hour": 15.55,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1485.74,
-   "y": -1410.12,
+   "x": -1914.19,
+   "y": -1438.78,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8243,8 +8130,8 @@
    "hour": 15.567,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1539.73,
-   "y": -1410.8,
+   "x": -1968.19,
+   "y": -1439.06,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8253,8 +8140,8 @@
    "hour": 15.583,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1593.73,
-   "y": -1410.93,
+   "x": -2022.18,
+   "y": -1439.67,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8263,8 +8150,8 @@
    "hour": 15.6,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1647.71,
-   "y": -1412.02,
+   "x": -2076.18,
+   "y": -1440.25,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8273,8 +8160,8 @@
    "hour": 15.617,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1701.49,
-   "y": -1416.14,
+   "x": -2130.18,
+   "y": -1440.79,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8283,8 +8170,8 @@
    "hour": 15.633,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1754.01,
-   "y": -1428.56,
+   "x": -2184.18,
+   "y": -1441.02,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8293,8 +8180,8 @@
    "hour": 15.65,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1807.15,
-   "y": -1437.44,
+   "x": -2238.18,
+   "y": -1441.24,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8303,8 +8190,8 @@
    "hour": 15.667,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1861.09,
-   "y": -1439.28,
+   "x": -2292.18,
+   "y": -1441.47,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8313,8 +8200,8 @@
    "hour": 15.683,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1915.09,
-   "y": -1438.77,
+   "x": -2346.17,
+   "y": -1442.01,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8323,8 +8210,8 @@
    "hour": 15.7,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1969.09,
-   "y": -1439.07,
+   "x": -2400.16,
+   "y": -1441.55,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8333,8 +8220,8 @@
    "hour": 15.717,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2023.08,
-   "y": -1439.68,
+   "x": -2454.14,
+   "y": -1440.52,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8343,8 +8230,8 @@
    "hour": 15.733,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2077.08,
-   "y": -1440.26,
+   "x": -2507.8,
+   "y": -1434.68,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8353,8 +8240,8 @@
    "hour": 15.75,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2131.08,
-   "y": -1440.8,
+   "x": -2561.49,
+   "y": -1429.23,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8363,8 +8250,8 @@
    "hour": 15.767,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2185.08,
-   "y": -1441.02,
+   "x": -2615.44,
+   "y": -1428.1,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8373,8 +8260,8 @@
    "hour": 15.783,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2239.08,
-   "y": -1441.24,
+   "x": -2669.44,
+   "y": -1428.55,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8383,8 +8270,8 @@
    "hour": 15.8,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2293.08,
-   "y": -1441.47,
+   "x": -2723.44,
+   "y": -1428.76,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8393,8 +8280,8 @@
    "hour": 15.817,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2347.07,
-   "y": -1442.0,
+   "x": -2746.18,
+   "y": -1398.85,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8403,8 +8290,8 @@
    "hour": 15.833,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2401.06,
-   "y": -1441.54,
+   "x": -2747.95,
+   "y": -1345.0,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8413,8 +8300,8 @@
    "hour": 15.85,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2455.03,
-   "y": -1440.47,
+   "x": -2752.98,
+   "y": -1344.57,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8423,8 +8310,8 @@
    "hour": 15.867,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2508.69,
-   "y": -1434.55,
+   "x": -2746.0,
+   "y": -1389.2,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8433,8 +8320,8 @@
    "hour": 15.883,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2562.39,
-   "y": -1429.17,
+   "x": -2744.87,
+   "y": -1443.15,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8443,8 +8330,8 @@
    "hour": 15.9,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2616.34,
-   "y": -1428.11,
+   "x": -2695.85,
+   "y": -1448.69,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8453,8 +8340,8 @@
    "hour": 15.917,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2670.34,
-   "y": -1428.56,
+   "x": -2641.85,
+   "y": -1448.51,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8463,8 +8350,8 @@
    "hour": 15.933,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2724.34,
-   "y": -1428.76,
+   "x": -2587.85,
+   "y": -1448.29,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8473,8 +8360,8 @@
    "hour": 15.95,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2746.19,
-   "y": -1397.95,
+   "x": -2534.0,
+   "y": -1452.17,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8483,8 +8370,8 @@
    "hour": 15.967,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2748.13,
-   "y": -1344.12,
+   "x": -2480.45,
+   "y": -1459.03,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8492,10 +8379,10 @@
   {
    "hour": 15.983,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -2758.78,
-   "y": -1328.84,
-   "building_id": 6353,
+   "emb": "on_foot",
+   "x": -2426.58,
+   "y": -1462.08,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -8503,8 +8390,8 @@
    "hour": 16.0,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2746.4,
-   "y": -1363.1,
+   "x": -2372.59,
+   "y": -1461.37,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8512,10 +8399,10 @@
   {
    "hour": 16.017,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -2758.78,
-   "y": -1328.84,
-   "building_id": 6353,
+   "emb": "on_foot",
+   "x": -2416.74,
+   "y": -1442.24,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -8523,8 +8410,8 @@
    "hour": 16.033,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2771.39,
-   "y": -1352.25,
+   "x": -2470.63,
+   "y": -1439.11,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8532,10 +8419,10 @@
   {
    "hour": 16.05,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -2789.32,
-   "y": -1336.83,
-   "building_id": 6351,
+   "emb": "on_foot",
+   "x": -2524.21,
+   "y": -1432.41,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -8543,8 +8430,8 @@
    "hour": 16.067,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2753.68,
-   "y": -1356.35,
+   "x": -2578.02,
+   "y": -1428.22,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8553,8 +8440,8 @@
    "hour": 16.083,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2745.83,
-   "y": -1400.34,
+   "x": -2632.0,
+   "y": -1428.33,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8563,8 +8450,8 @@
    "hour": 16.1,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2738.7,
-   "y": -1448.83,
+   "x": -2686.0,
+   "y": -1428.62,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8573,8 +8460,8 @@
    "hour": 16.117,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2684.7,
-   "y": -1448.65,
+   "x": -2740.0,
+   "y": -1428.83,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8583,8 +8470,8 @@
    "hour": 16.133,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2630.7,
-   "y": -1448.47,
+   "x": -2746.29,
+   "y": -1382.29,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8593,8 +8480,8 @@
    "hour": 16.15,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2576.73,
-   "y": -1448.96,
+   "x": -2751.29,
+   "y": -1328.78,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8603,8 +8490,8 @@
    "hour": 16.167,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2522.95,
-   "y": -1453.66,
+   "x": -2761.49,
+   "y": -1352.21,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8613,8 +8500,8 @@
    "hour": 16.183,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2469.36,
-   "y": -1460.21,
+   "x": -2789.3,
+   "y": -1342.23,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8623,8 +8510,8 @@
    "hour": 16.2,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2415.43,
-   "y": -1462.03,
+   "x": -2745.74,
+   "y": -1355.42,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8633,8 +8520,8 @@
    "hour": 16.217,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2361.44,
-   "y": -1461.15,
+   "x": -2745.71,
+   "y": -1408.44,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8643,8 +8530,8 @@
    "hour": 16.233,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2307.46,
-   "y": -1460.26,
+   "x": -2730.6,
+   "y": -1448.81,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8653,8 +8540,8 @@
    "hour": 16.25,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2253.46,
-   "y": -1460.19,
+   "x": -2676.6,
+   "y": -1448.63,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8663,8 +8550,8 @@
    "hour": 16.267,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2199.46,
-   "y": -1460.1,
+   "x": -2622.6,
+   "y": -1448.45,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8673,8 +8560,8 @@
    "hour": 16.283,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2145.46,
-   "y": -1459.97,
+   "x": -2568.65,
+   "y": -1449.53,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8683,8 +8570,8 @@
    "hour": 16.3,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2091.46,
-   "y": -1459.66,
+   "x": -2514.93,
+   "y": -1454.75,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8693,8 +8580,8 @@
    "hour": 16.317,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2037.46,
-   "y": -1459.25,
+   "x": -2461.3,
+   "y": -1460.99,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8703,8 +8590,8 @@
    "hour": 16.333,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1983.46,
-   "y": -1458.86,
+   "x": -2407.33,
+   "y": -1462.0,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8713,8 +8600,8 @@
    "hour": 16.35,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1929.46,
-   "y": -1458.46,
+   "x": -2353.34,
+   "y": -1461.06,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8723,8 +8610,8 @@
    "hour": 16.367,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1875.46,
-   "y": -1458.05,
+   "x": -2299.36,
+   "y": -1460.25,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8733,8 +8620,8 @@
    "hour": 16.383,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1821.49,
-   "y": -1456.8,
+   "x": -2245.36,
+   "y": -1460.18,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8743,8 +8630,8 @@
    "hour": 16.4,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1767.79,
-   "y": -1452.0,
+   "x": -2191.36,
+   "y": -1460.08,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8753,8 +8640,8 @@
    "hour": 16.417,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1715.37,
-   "y": -1439.21,
+   "x": -2137.36,
+   "y": -1459.95,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8763,8 +8650,8 @@
    "hour": 16.433,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1661.83,
-   "y": -1432.34,
+   "x": -2083.36,
+   "y": -1459.6,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8773,8 +8660,8 @@
    "hour": 16.45,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1607.88,
-   "y": -1430.54,
+   "x": -2029.36,
+   "y": -1459.19,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8783,8 +8670,8 @@
    "hour": 16.467,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1553.88,
-   "y": -1430.54,
+   "x": -1975.36,
+   "y": -1458.8,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8793,8 +8680,8 @@
    "hour": 16.483,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1499.89,
-   "y": -1430.22,
+   "x": -1921.36,
+   "y": -1458.39,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8803,8 +8690,8 @@
    "hour": 16.5,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1446.02,
-   "y": -1426.77,
+   "x": -1867.37,
+   "y": -1457.99,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8813,8 +8700,8 @@
    "hour": 16.517,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1500.02,
-   "y": -1426.17,
+   "x": -1921.25,
+   "y": -1454.52,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8823,8 +8710,8 @@
    "hour": 16.533,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1545.8,
-   "y": -1411.46,
+   "x": -1967.21,
+   "y": -1439.82,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8833,8 +8720,8 @@
    "hour": 16.55,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1599.79,
-   "y": -1410.95,
+   "x": -2021.21,
+   "y": -1439.8,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8843,8 +8730,8 @@
    "hour": 16.567,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1653.77,
-   "y": -1412.22,
+   "x": -2075.21,
+   "y": -1440.24,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8853,8 +8740,8 @@
    "hour": 16.583,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1707.49,
-   "y": -1417.02,
+   "x": -2129.21,
+   "y": -1440.79,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8863,8 +8750,8 @@
    "hour": 16.6,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1759.91,
-   "y": -1429.95,
+   "x": -2183.21,
+   "y": -1441.01,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8873,8 +8760,8 @@
    "hour": 16.617,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1813.2,
-   "y": -1437.76,
+   "x": -2237.21,
+   "y": -1441.24,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8883,8 +8770,8 @@
    "hour": 16.633,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1867.15,
-   "y": -1439.22,
+   "x": -2291.21,
+   "y": -1441.46,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8893,8 +8780,8 @@
    "hour": 16.65,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1921.15,
-   "y": -1438.71,
+   "x": -2345.2,
+   "y": -1442.02,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8903,8 +8790,8 @@
    "hour": 16.667,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1975.15,
-   "y": -1439.13,
+   "x": -2399.19,
+   "y": -1441.56,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8913,8 +8800,8 @@
    "hour": 16.683,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2029.15,
-   "y": -1439.75,
+   "x": -2453.17,
+   "y": -1440.58,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8923,8 +8810,8 @@
    "hour": 16.7,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2083.14,
-   "y": -1440.33,
+   "x": -2506.84,
+   "y": -1434.81,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8933,8 +8820,8 @@
    "hour": 16.717,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2137.14,
-   "y": -1440.82,
+   "x": -2560.52,
+   "y": -1429.28,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8943,8 +8830,8 @@
    "hour": 16.733,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2191.14,
-   "y": -1441.05,
+   "x": -2614.47,
+   "y": -1428.09,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8953,8 +8840,8 @@
    "hour": 16.75,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2245.14,
-   "y": -1441.27,
+   "x": -2668.47,
+   "y": -1428.55,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8963,8 +8850,8 @@
    "hour": 16.767,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2299.14,
-   "y": -1441.49,
+   "x": -2722.47,
+   "y": -1428.76,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8973,8 +8860,8 @@
    "hour": 16.783,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2353.13,
-   "y": -1441.95,
+   "x": -2746.67,
+   "y": -1399.83,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8983,8 +8870,8 @@
    "hour": 16.8,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2407.13,
-   "y": -1441.52,
+   "x": -2750.93,
+   "y": -1349.19,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -8993,8 +8880,8 @@
    "hour": 16.817,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2461.08,
-   "y": -1440.09,
+   "x": -2789.32,
+   "y": -1336.83,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9003,8 +8890,8 @@
    "hour": 16.833,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2514.7,
-   "y": -1433.72,
+   "x": -2758.85,
+   "y": -1352.19,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9013,8 +8900,8 @@
    "hour": 16.85,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2568.44,
-   "y": -1428.8,
+   "x": -2751.55,
+   "y": -1331.15,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9023,8 +8910,8 @@
    "hour": 16.867,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2622.4,
-   "y": -1428.2,
+   "x": -2746.21,
+   "y": -1375.7,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9033,8 +8920,8 @@
    "hour": 16.883,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2676.4,
-   "y": -1428.58,
+   "x": -2745.44,
+   "y": -1429.69,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9043,8 +8930,8 @@
    "hour": 16.9,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2730.4,
-   "y": -1428.79,
+   "x": -2709.35,
+   "y": -1448.74,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9053,8 +8940,8 @@
    "hour": 16.917,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2746.86,
-   "y": -1391.9,
+   "x": -2655.35,
+   "y": -1448.56,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9063,8 +8950,8 @@
    "hour": 16.933,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2758.84,
-   "y": -1349.84,
+   "x": -2601.35,
+   "y": -1448.37,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9072,10 +8959,10 @@
   {
    "hour": 16.95,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -2789.32,
-   "y": -1336.83,
-   "building_id": 6351,
+   "emb": "on_foot",
+   "x": -2547.45,
+   "y": -1451.02,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -9083,8 +8970,8 @@
    "hour": 16.967,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2753.45,
-   "y": -1352.17,
+   "x": -2493.87,
+   "y": -1457.6,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9092,10 +8979,10 @@
   {
    "hour": 16.983,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -2758.78,
-   "y": -1328.84,
-   "building_id": 6353,
+   "emb": "on_foot",
+   "x": -2440.08,
+   "y": -1462.14,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -9103,8 +8990,8 @@
    "hour": 17.0,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2746.4,
-   "y": -1363.1,
+   "x": -2386.09,
+   "y": -1461.64,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9113,8 +9000,8 @@
    "hour": 17.017,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2745.57,
-   "y": -1417.09,
+   "x": -2332.1,
+   "y": -1460.58,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9123,8 +9010,8 @@
    "hour": 17.033,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2721.95,
-   "y": -1448.78,
+   "x": -2278.11,
+   "y": -1460.22,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9133,8 +9020,8 @@
    "hour": 17.05,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2667.95,
-   "y": -1448.6,
+   "x": -2224.11,
+   "y": -1460.15,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9143,8 +9030,8 @@
    "hour": 17.067,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2613.95,
-   "y": -1448.42,
+   "x": -2170.11,
+   "y": -1460.03,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9153,8 +9040,8 @@
    "hour": 17.083,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2560.02,
-   "y": -1450.14,
+   "x": -2116.11,
+   "y": -1459.85,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9163,8 +9050,8 @@
    "hour": 17.1,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2506.36,
-   "y": -1455.91,
+   "x": -2062.11,
+   "y": -1459.43,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9173,8 +9060,8 @@
    "hour": 17.117,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2452.66,
-   "y": -1461.52,
+   "x": -2008.11,
+   "y": -1459.04,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9183,8 +9070,8 @@
    "hour": 17.133,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2398.68,
-   "y": -1461.9,
+   "x": -1954.11,
+   "y": -1458.64,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9193,8 +9080,8 @@
    "hour": 17.15,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2344.69,
-   "y": -1460.96,
+   "x": -1900.12,
+   "y": -1458.23,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9203,8 +9090,8 @@
    "hour": 17.167,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2290.71,
-   "y": -1460.24,
+   "x": -1846.12,
+   "y": -1457.83,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9213,8 +9100,8 @@
    "hour": 17.183,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2236.71,
-   "y": -1460.17,
+   "x": -1792.24,
+   "y": -1454.34,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9223,8 +9110,8 @@
    "hour": 17.2,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2182.71,
-   "y": -1460.06,
+   "x": -1825.78,
+   "y": -1438.92,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9233,104 +9120,14 @@
    "hour": 17.217,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2128.71,
-   "y": -1459.93,
+   "x": -1847.56,
+   "y": -1422.95,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
   {
    "hour": 17.233,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -2074.71,
-   "y": -1459.53,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 17.25,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -2020.71,
-   "y": -1459.13,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 17.267,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -1966.71,
-   "y": -1458.73,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 17.283,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -1912.71,
-   "y": -1458.33,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 17.3,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -1858.72,
-   "y": -1457.92,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 17.317,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -1804.8,
-   "y": -1455.32,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 17.333,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -1813.19,
-   "y": -1438.57,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 17.35,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -1855.47,
-   "y": -1431.58,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 17.367,
-   "health": "undead",
-   "emb": "on_foot",
-   "x": -1846.28,
-   "y": -1396.76,
-   "building_id": -1,
-   "vehicle_id": null,
-   "band": "route_simulated"
-  },
-  {
-   "hour": 17.383,
    "health": "undead",
    "emb": "inside_building",
    "x": -1851.57,
@@ -9340,11 +9137,101 @@
    "band": "route_simulated"
   },
   {
+   "hour": 17.25,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -1863.77,
+   "y": -1431.93,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 17.267,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -1909.44,
+   "y": -1438.82,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 17.283,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -1963.44,
+   "y": -1439.0,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 17.3,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -2017.43,
+   "y": -1439.61,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 17.317,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -2071.43,
+   "y": -1440.2,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 17.333,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -2125.43,
+   "y": -1440.77,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 17.35,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -2179.43,
+   "y": -1441.0,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 17.367,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -2233.43,
+   "y": -1441.22,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
+   "hour": 17.383,
+   "health": "undead",
+   "emb": "on_foot",
+   "x": -2287.42,
+   "y": -1441.45,
+   "building_id": -1,
+   "vehicle_id": null,
+   "band": "route_simulated"
+  },
+  {
    "hour": 17.4,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1863.8,
-   "y": -1432.83,
+   "x": -2341.41,
+   "y": -1442.05,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9353,8 +9240,8 @@
    "hour": 17.417,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1910.34,
-   "y": -1438.81,
+   "x": -2395.41,
+   "y": -1441.59,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9363,8 +9250,8 @@
    "hour": 17.433,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1964.34,
-   "y": -1439.01,
+   "x": -2449.39,
+   "y": -1440.82,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9373,8 +9260,8 @@
    "hour": 17.45,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2018.33,
-   "y": -1439.62,
+   "x": -2503.09,
+   "y": -1435.33,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9383,8 +9270,8 @@
    "hour": 17.467,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2072.33,
-   "y": -1440.21,
+   "x": -2556.74,
+   "y": -1429.51,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9393,8 +9280,8 @@
    "hour": 17.483,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2126.33,
-   "y": -1440.78,
+   "x": -2610.69,
+   "y": -1428.04,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9403,8 +9290,8 @@
    "hour": 17.5,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2180.33,
-   "y": -1441.0,
+   "x": -2664.68,
+   "y": -1428.53,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9413,8 +9300,8 @@
    "hour": 17.517,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2234.33,
-   "y": -1441.22,
+   "x": -2718.68,
+   "y": -1428.74,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9423,8 +9310,8 @@
    "hour": 17.533,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2288.32,
-   "y": -1441.45,
+   "x": -2746.59,
+   "y": -1403.61,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9433,8 +9320,8 @@
    "hour": 17.55,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2342.31,
-   "y": -1442.04,
+   "x": -2747.84,
+   "y": -1349.62,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9443,8 +9330,8 @@
    "hour": 17.567,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2396.31,
-   "y": -1441.58,
+   "x": -2789.3,
+   "y": -1340.56,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9453,8 +9340,8 @@
    "hour": 17.583,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2450.29,
-   "y": -1440.76,
+   "x": -2763.51,
+   "y": -1355.24,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9463,8 +9350,8 @@
    "hour": 17.6,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2503.99,
-   "y": -1435.21,
+   "x": -2745.98,
+   "y": -1390.45,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9473,8 +9360,8 @@
    "hour": 17.617,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2557.64,
-   "y": -1429.46,
+   "x": -2744.7,
+   "y": -1444.39,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9483,8 +9370,8 @@
    "hour": 17.633,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2611.59,
-   "y": -1428.05,
+   "x": -2694.6,
+   "y": -1448.69,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9493,8 +9380,8 @@
    "hour": 17.65,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2665.58,
-   "y": -1428.54,
+   "x": -2640.6,
+   "y": -1448.51,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9503,8 +9390,8 @@
    "hour": 17.667,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2719.58,
-   "y": -1428.75,
+   "x": -2586.6,
+   "y": -1448.28,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9513,8 +9400,8 @@
    "hour": 17.683,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2746.61,
-   "y": -1402.71,
+   "x": -2532.76,
+   "y": -1452.34,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9523,8 +9410,8 @@
    "hour": 17.7,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2748.06,
-   "y": -1348.95,
+   "x": -2479.2,
+   "y": -1459.16,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9533,8 +9420,8 @@
    "hour": 17.717,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2789.31,
-   "y": -1339.66,
+   "x": -2425.33,
+   "y": -1462.08,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9542,10 +9429,10 @@
   {
    "hour": 17.733,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -2789.32,
-   "y": -1336.83,
-   "building_id": 6351,
+   "emb": "on_foot",
+   "x": -2371.34,
+   "y": -1461.34,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -9553,8 +9440,8 @@
    "hour": 17.75,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2753.68,
-   "y": -1356.35,
+   "x": -2317.36,
+   "y": -1460.27,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9563,8 +9450,8 @@
    "hour": 17.767,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2745.83,
-   "y": -1400.34,
+   "x": -2263.36,
+   "y": -1460.2,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9573,8 +9460,8 @@
    "hour": 17.783,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2738.7,
-   "y": -1448.83,
+   "x": -2209.36,
+   "y": -1460.12,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9583,8 +9470,8 @@
    "hour": 17.8,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2684.7,
-   "y": -1448.65,
+   "x": -2155.36,
+   "y": -1460.0,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9593,8 +9480,8 @@
    "hour": 17.817,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2630.7,
-   "y": -1448.47,
+   "x": -2101.36,
+   "y": -1459.73,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9603,8 +9490,8 @@
    "hour": 17.833,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2576.73,
-   "y": -1448.96,
+   "x": -2047.36,
+   "y": -1459.33,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9613,8 +9500,8 @@
    "hour": 17.85,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2522.95,
-   "y": -1453.66,
+   "x": -1993.36,
+   "y": -1458.93,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9623,8 +9510,8 @@
    "hour": 17.867,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2469.36,
-   "y": -1460.21,
+   "x": -1939.36,
+   "y": -1458.53,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9633,8 +9520,8 @@
    "hour": 17.883,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2415.43,
-   "y": -1462.03,
+   "x": -1885.36,
+   "y": -1458.12,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9643,8 +9530,8 @@
    "hour": 17.9,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2361.44,
-   "y": -1461.15,
+   "x": -1831.38,
+   "y": -1457.24,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9653,8 +9540,8 @@
    "hour": 17.917,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2307.46,
-   "y": -1460.26,
+   "x": -1777.51,
+   "y": -1453.85,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9663,8 +9550,8 @@
    "hour": 17.933,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2253.46,
-   "y": -1460.19,
+   "x": -1725.08,
+   "y": -1441.14,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9673,8 +9560,8 @@
    "hour": 17.95,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2199.46,
-   "y": -1460.1,
+   "x": -1671.68,
+   "y": -1433.34,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9683,8 +9570,8 @@
    "hour": 17.967,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2145.46,
-   "y": -1459.97,
+   "x": -1617.78,
+   "y": -1430.61,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9693,8 +9580,8 @@
    "hour": 17.983,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2091.46,
-   "y": -1459.66,
+   "x": -1563.78,
+   "y": -1430.54,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9703,8 +9590,8 @@
    "hour": 18.0,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2037.46,
-   "y": -1459.25,
+   "x": -1509.79,
+   "y": -1430.5,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9713,8 +9600,8 @@
    "hour": 18.017,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2091.41,
-   "y": -1456.95,
+   "x": -1547.81,
+   "y": -1411.43,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9723,8 +9610,8 @@
    "hour": 18.033,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2137.41,
-   "y": -1441.81,
+   "x": -1601.8,
+   "y": -1410.95,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9733,8 +9620,8 @@
    "hour": 18.05,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2191.4,
-   "y": -1441.05,
+   "x": -1655.78,
+   "y": -1412.28,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9743,8 +9630,8 @@
    "hour": 18.067,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2245.4,
-   "y": -1441.27,
+   "x": -1709.46,
+   "y": -1417.38,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9753,8 +9640,8 @@
    "hour": 18.083,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2299.4,
-   "y": -1441.49,
+   "x": -1761.87,
+   "y": -1430.39,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9763,8 +9650,8 @@
    "hour": 18.1,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2353.38,
-   "y": -1441.95,
+   "x": -1815.21,
+   "y": -1437.87,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9773,8 +9660,8 @@
    "hour": 18.117,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2407.38,
-   "y": -1441.52,
+   "x": -1869.16,
+   "y": -1439.2,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9783,8 +9670,8 @@
    "hour": 18.133,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2461.34,
-   "y": -1440.07,
+   "x": -1923.16,
+   "y": -1438.7,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9793,8 +9680,8 @@
    "hour": 18.15,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2514.95,
-   "y": -1433.69,
+   "x": -1977.16,
+   "y": -1439.16,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9803,8 +9690,8 @@
    "hour": 18.167,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2568.69,
-   "y": -1428.79,
+   "x": -2031.16,
+   "y": -1439.77,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9813,8 +9700,8 @@
    "hour": 18.183,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2622.66,
-   "y": -1428.2,
+   "x": -2085.15,
+   "y": -1440.35,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9823,8 +9710,8 @@
    "hour": 18.2,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2676.65,
-   "y": -1428.58,
+   "x": -2139.15,
+   "y": -1440.83,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9833,8 +9720,8 @@
    "hour": 18.217,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2730.65,
-   "y": -1428.79,
+   "x": -2193.15,
+   "y": -1441.05,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9843,8 +9730,8 @@
    "hour": 18.233,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2746.23,
-   "y": -1391.63,
+   "x": -2247.15,
+   "y": -1441.28,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9853,8 +9740,8 @@
    "hour": 18.25,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2749.41,
-   "y": -1337.93,
+   "x": -2301.15,
+   "y": -1441.5,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9862,10 +9749,10 @@
   {
    "hour": 18.267,
    "health": "undead",
-   "emb": "inside_building",
-   "x": -2758.78,
-   "y": -1328.84,
-   "building_id": 6353,
+   "emb": "on_foot",
+   "x": -2355.14,
+   "y": -1441.93,
+   "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
   },
@@ -9873,8 +9760,8 @@
    "hour": 18.283,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2746.4,
-   "y": -1363.1,
+   "x": -2409.14,
+   "y": -1441.51,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9883,8 +9770,8 @@
    "hour": 18.3,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2745.57,
-   "y": -1417.09,
+   "x": -2463.08,
+   "y": -1439.91,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9893,8 +9780,8 @@
    "hour": 18.317,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2721.95,
-   "y": -1448.78,
+   "x": -2516.69,
+   "y": -1433.45,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9903,8 +9790,8 @@
    "hour": 18.333,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2667.95,
-   "y": -1448.6,
+   "x": -2570.44,
+   "y": -1428.68,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9913,8 +9800,8 @@
    "hour": 18.35,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2613.95,
-   "y": -1448.42,
+   "x": -2624.41,
+   "y": -1428.23,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9923,8 +9810,8 @@
    "hour": 18.367,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2560.02,
-   "y": -1450.14,
+   "x": -2678.41,
+   "y": -1428.59,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9933,8 +9820,8 @@
    "hour": 18.383,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2506.36,
-   "y": -1455.91,
+   "x": -2732.41,
+   "y": -1428.8,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9943,8 +9830,8 @@
    "hour": 18.4,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2452.66,
-   "y": -1461.52,
+   "x": -2746.24,
+   "y": -1389.88,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9953,8 +9840,8 @@
    "hour": 18.417,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2398.68,
-   "y": -1461.9,
+   "x": -2749.76,
+   "y": -1336.21,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9963,8 +9850,8 @@
    "hour": 18.433,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2344.69,
-   "y": -1460.96,
+   "x": -2753.93,
+   "y": -1353.52,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9973,8 +9860,8 @@
    "hour": 18.45,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2290.71,
-   "y": -1460.24,
+   "x": -2745.86,
+   "y": -1398.19,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9983,8 +9870,8 @@
    "hour": 18.467,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2236.71,
-   "y": -1460.17,
+   "x": -2740.85,
+   "y": -1448.84,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -9993,8 +9880,8 @@
    "hour": 18.483,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2182.71,
-   "y": -1460.06,
+   "x": -2686.85,
+   "y": -1448.66,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10003,8 +9890,8 @@
    "hour": 18.5,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2128.71,
-   "y": -1459.93,
+   "x": -2632.85,
+   "y": -1448.48,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10013,8 +9900,8 @@
    "hour": 18.517,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2074.71,
-   "y": -1459.53,
+   "x": -2578.87,
+   "y": -1448.81,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10023,8 +9910,8 @@
    "hour": 18.533,
    "health": "undead",
    "emb": "on_foot",
-   "x": -2020.71,
-   "y": -1459.13,
+   "x": -2525.09,
+   "y": -1453.38,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10033,8 +9920,8 @@
    "hour": 18.55,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1966.71,
-   "y": -1458.73,
+   "x": -2471.5,
+   "y": -1459.99,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10043,8 +9930,8 @@
    "hour": 18.567,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1912.71,
-   "y": -1458.33,
+   "x": -2417.58,
+   "y": -1462.04,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10053,8 +9940,8 @@
    "hour": 18.583,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1858.72,
-   "y": -1457.92,
+   "x": -2363.59,
+   "y": -1461.19,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10063,8 +9950,8 @@
    "hour": 18.6,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1804.76,
-   "y": -1456.07,
+   "x": -2309.61,
+   "y": -1460.26,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10073,8 +9960,8 @@
    "hour": 18.617,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1751.44,
-   "y": -1448.38,
+   "x": -2255.61,
+   "y": -1460.19,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10083,8 +9970,8 @@
    "hour": 18.633,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1698.85,
-   "y": -1436.51,
+   "x": -2201.61,
+   "y": -1460.1,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10093,8 +9980,8 @@
    "hour": 18.65,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1645.13,
-   "y": -1431.33,
+   "x": -2147.61,
+   "y": -1459.98,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10103,8 +9990,8 @@
    "hour": 18.667,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1591.14,
-   "y": -1430.54,
+   "x": -2093.61,
+   "y": -1459.68,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10113,8 +10000,8 @@
    "hour": 18.683,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1537.14,
-   "y": -1430.54,
+   "x": -2039.61,
+   "y": -1459.27,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10123,8 +10010,8 @@
    "hour": 18.7,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1483.15,
-   "y": -1429.76,
+   "x": -1985.61,
+   "y": -1458.87,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10133,8 +10020,8 @@
    "hour": 18.717,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1429.68,
-   "y": -1423.23,
+   "x": -1931.61,
+   "y": -1458.47,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10143,8 +10030,8 @@
    "hour": 18.733,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1380.04,
-   "y": -1402.85,
+   "x": -1877.62,
+   "y": -1458.06,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10153,8 +10040,8 @@
    "hour": 18.75,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1342.6,
-   "y": -1364.49,
+   "x": -1823.64,
+   "y": -1456.9,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10163,8 +10050,8 @@
    "hour": 18.767,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1307.97,
-   "y": -1331.8,
+   "x": -1769.9,
+   "y": -1452.44,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10173,8 +10060,8 @@
    "hour": 18.783,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1272.45,
-   "y": -1338.06,
+   "x": -1717.47,
+   "y": -1439.63,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10183,8 +10070,8 @@
    "hour": 18.8,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1231.13,
-   "y": -1372.82,
+   "x": -1663.97,
+   "y": -1432.56,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10193,8 +10080,8 @@
    "hour": 18.817,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1189.47,
-   "y": -1407.18,
+   "x": -1610.04,
+   "y": -1430.54,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10203,8 +10090,8 @@
    "hour": 18.833,
    "health": "undead",
    "emb": "on_foot",
-   "x": -1147.74,
-   "y": -1441.46,
+   "x": -1556.04,
+   "y": -1430.54,
    "building_id": -1,
    "vehicle_id": null,
    "band": "route_simulated"
@@ -10217,7 +10104,7 @@
   ],
   "O2": [
    "PASS",
-   "9 onward exposures between registered citizens: [(247, 42, 'building:2318', 8.28), (117, 247, 'building:2318', 9.77), (170, 247, 'building:2318', 10.18), (127, 42, 'bite', 10.82), (294, 42, 'bite', 11.12), (87, 117, 'building:2318', 13.77)]"
+   "9 onward exposures between registered citizens: [(247, 42, 'building:2318', 8.28), (117, 247, 'building:2318', 9.77), (170, 247, 'building:2318', 10.18), (127, 42, 'bite', 10.81), (294, 42, 'bite', 11.11), (87, 117, 'building:2318', 13.77)]"
   ],
   "O3": [
    "PASS",
@@ -10237,7 +10124,7 @@
   ],
   "O7": [
    "PASS",
-   "DEATH at 10.37 h in vehicle veh:42 on the street at (-1269.4,-1334.7), exactly where the citizen collapsed (corpse)"
+   "DEATH at 10.37 h in vehicle veh:42 on the street at (-1301.5,-1307.7), exactly where the citizen collapsed (corpse)"
   ],
   "O8": [
    "PASS",
@@ -10249,7 +10136,7 @@
   ],
   "O11": [
    "PASS",
-   "citizen 127 FLEEs (emergency goal, target ent:9578) after undead 42 attacked it in building 6255; 0 bystander THREAT_OBSERVED events"
+   "citizen 127 FLEEs (emergency goal, target ent:9578) after undead 42 attacked it in building 6255; 3 bystander THREAT_OBSERVED events"
   ],
   "O12": [
    "PASS",
@@ -10257,7 +10144,7 @@
   ],
   "O13": [
    "PASS",
-   "WORKPLACE_DISRUPTED [(6255, '1 incapacitated/dead/undead inside'), (2318, '3/6 workers down'), (4075, '1 incapacitated/dead/undead inside'), (8289, '1/1 workers down')] -> 5 workers replanned home; VEHICLE_ABANDONED veh:42 at 9.98 h -> segment bf368bb4 closed to cars (MobilityObstruction wreck:veh:42), wreck fidelity persistent"
+   "WORKPLACE_DISRUPTED [(2318, '3/6 workers down'), (6255, '1/1 workers down'), (8289, '1/1 workers down'), (4075, '1/2 workers down')] -> 3 workers replanned home; VEHICLE_ABANDONED veh:42 at 9.98 h -> segment bf368bb4 closed to cars (MobilityObstruction wreck:veh:42), wreck fidelity persistent"
   ],
   "O14": [
    "PASS",
@@ -10281,7 +10168,7 @@
   ],
   "O18": [
    "PASS",
-   "save with active disruption at 10.83 h: disrupted buildings, obstructions and continuation identical"
+   "save with active disruption at 14.35 h: disrupted buildings, obstructions and continuation identical"
   ],
   "O19": [
    "PASS",
