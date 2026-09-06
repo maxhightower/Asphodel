@@ -299,6 +299,8 @@ def world_state(world: World, *, bundle: str | None = None,
         "cognition": (None if world.cognition is None else world.cognition.to_state()),
         # ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1: conversations, requests, events.
         "dialogue": (None if world.dialogue is None else world.dialogue.to_state()),
+        # ASPHODEL_SURVIVOR_GROUPS_COMMUNITIES_V1: groups, membership, shelters, roles.
+        "groups": (None if world.groups is None else world.groups.to_state()),
         # Package 3: survival runtime (None when the world has no survival loop).
         "survival": (world.survival.to_state() if world.survival is not None
                      else None),
@@ -334,6 +336,7 @@ def load_world(state: dict) -> World:
     world._pending_work_state = state.get("work")
     world._pending_cognition_state = state.get("cognition")
     world._pending_dialogue_state = state.get("dialogue")
+    world._pending_groups_state = state.get("groups")
     world.focus = set(int(z) for z in w["focus"])
     world.reactions_enabled = bool(w["reactions_enabled"])
     world._proximity = {int(k): int(v) for k, v in w["proximity"].items()}

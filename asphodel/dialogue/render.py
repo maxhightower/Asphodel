@@ -144,6 +144,32 @@ def render(act: str, p: Optional[A.Proposition] = None, *, speaker: Optional[int
         return f"Sorry, {why}." if warm else f"No — {why}."
     if act == A.REPORT_PROBLEM:
         return f"My station {request.object_id} is broken." if request and request.object_id else "I have a problem here."
+    if act == A.INVITE_TO_GROUP:
+        return f"Stay with us, {L}." if warm else "You should stick with us."
+    if act == A.ASK_TO_JOIN:
+        return "Can I stay with your group?"
+    if act == A.ACCEPT_MEMBER:
+        return "All right, you're with us."
+    if act == A.REFUSE_MEMBER:
+        why = {"known_threat": "I've seen what you did", "capacity_full": "we've no room",
+               "insufficient_trust": "we don't know you well enough", "distrust": "I don't trust you"}.get(reason, "not now")
+        return f"No — {why}."
+    if act == A.PROPOSE_SHELTER:
+        return f"Let's hole up in building {p.building_id}." if p is not None and p.building_id is not None else "Let's find somewhere safe."
+    if act == A.ASSIGN_ROLE:
+        what = {"guard": "watch the entrance", "scavenger": "run for supplies",
+                "coordinator": "keep us organized", "caregiver": "look after the hurt"}.get(reason, "help out")
+        return f"Can you {what}?"
+    if act == A.REQUEST_SUPPLY_RUN:
+        return "We're low — can you make a supply run?"
+    if act == A.WARN_GROUP:
+        return "Everyone — danger! Regroup!"
+    if act == A.ASK_WHERE_MEMBER_IS:
+        return f"Has anyone seen {who(p.subject if p else None, names, speaker)}?"
+    if act == A.REPORT_MEMBER_LOCATION:
+        return f"{who(p.subject if p else None, names, speaker)} is at {where(p)}." if p is not None else "I found them."
+    if act == A.PROPOSE_EVACUATION:
+        return "We can't stay — we have to move."
     if act == A.CLARIFY:
         return "Which one do you mean?"
     if act == A.EXPRESS_UNCERTAINTY:

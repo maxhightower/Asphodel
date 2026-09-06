@@ -169,6 +169,9 @@ class World:
         # ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1: grounded conversations on top of cognition
         self.dialogue = None
         self._pending_dialogue_state = None
+        # ASPHODEL_SURVIVOR_GROUPS_COMMUNITIES_V1: the survivor-group social layer
+        self.groups = None
+        self._pending_groups_state = None
 
     # ------------------------------------------------------------------ inputs
     def set_focus(self, zones) -> None:
@@ -358,6 +361,28 @@ class World:
     def dialogue_snapshot(self, since_seq: int = 0) -> dict | None:
         return None if self.dialogue is None else self.dialogue.snapshot(since_seq)
 
+    def enable_groups(self):
+        """Attach the GroupRuntime (needs cognition; uses dialogue when present).
+        A pending saved state is restored instead."""
+        from .groups import GroupRuntime
+        if self.cognition is None:
+            raise ValueError("enable_groups needs enable_cognition first")
+        pending = self._pending_groups_state
+        if pending is not None:
+            self.groups = GroupRuntime.from_state(pending, self.cognition, self.dialogue)
+            self._pending_groups_state = None
+            return self.groups
+        self.groups = GroupRuntime(self.cognition, self.dialogue)
+        return self.groups
+
+    def groups_snapshot(self, since_seq: int = 0) -> dict | None:
+        return None if self.groups is None else self.groups.snapshot(since_seq)
+
+    def _merge_groups(self, snap: dict) -> None:
+        g = self.groups
+        for row in snap.get("citizens", []):
+            row["group"] = g.row(int(row["citizen_id"]))
+
     def talk(self, player: int, npc: int, act: str, args: dict | None = None) -> dict | None:
         return None if self.dialogue is None else self.dialogue.player_talk(int(player), int(npc), act, args or {})
 
@@ -437,6 +462,8 @@ class World:
                 self.cognition.advance(step)
             if self.dialogue is not None:
                 self.dialogue.advance(step)
+            if self.groups is not None:
+                self.groups.advance(step)
             hour += step / 3600.0
             remaining -= step
 
@@ -452,6 +479,8 @@ class World:
             self._merge_cognition(snap)
         if self.dialogue is not None:
             self._merge_dialogue(snap)
+        if self.groups is not None:
+            self._merge_groups(snap)
         return snap
 
     def _merge_health(self, snap: dict) -> None:
