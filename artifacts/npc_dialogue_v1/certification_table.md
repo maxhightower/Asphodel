@@ -35,10 +35,10 @@
 | D33 | Save/load after information transfer | PASS | told facts, lineage and the interrupted conversation restored identically |
 | D34 | LOD does not duplicate semantic acts | PASS | citizen 70 promoted to PHYSICAL for a second while a control copy stayed ROUTE_SIMULATED: dialogue and cognition state identical; after a minute back at ROUTE_SIMULATED the whole world state matches the control — no duplicated act, transfer or update |
 | D35 | Godot dialogue UI works in real world | PASS | godot probe: 0 FAIL rows |
-| D36 | CognitionGate remains PASS | NOT_RUN | artifacts/npc_dialogue_v1/regression.json missing |
-| D37 | WorkGate remains PASS | NOT_RUN | artifacts/npc_dialogue_v1/regression.json missing |
-| D38 | OutbreakGate remains PASS | NOT_RUN | artifacts/npc_dialogue_v1/regression.json missing |
-| D39 | MobilityGate remains PASS | NOT_RUN | artifacts/npc_dialogue_v1/regression.json missing |
-| D40 | Existing Godot gates remain PASS | NOT_RUN | artifacts/npc_dialogue_v1/regression.json missing |
+| D36 | CognitionGate remains PASS | PASS | {"status": "PASS", "pass": 30, "fail": 0, "info": 2, "exit": 0, "log": "g_cognition.log"} |
+| D37 | WorkGate remains PASS | PASS | {"status": "PASS", "pass": 22, "fail": 0, "info": 0, "exit": 0, "log": "g_work.log"} |
+| D38 | OutbreakGate remains PASS | PASS | {"status": "PASS", "pass": 18, "fail": 0, "info": 1, "exit": 0, "log": "g_outbreak.log"} |
+| D39 | MobilityGate remains PASS | PASS | {"status": "PASS", "pass": 24, "fail": 0, "info": 1, "exit": 0, "log": "g_mobility.log"} |
+| D40 | Existing Godot gates remain PASS | PASS | {"status": "PASS", "pass": 85, "fail": 0, "exited_nonzero": 0, "scenes": ["tests/PhysicsGate.tscn", "tests/RegionGate.tscn", "tests/NavGate.tscn", "tests/ConvergenceGate.tscn"], "log": "g_rungates.log"} |
 | D41 | Multi-city smoke | PASS | {"houston": "PASS", "madisonville_tx": "PASS", "austin": "PASS", "san_antonio": "PASS", "boulder": "INFO"} |
 | D42 | No city-name special cases | PASS | city-name matches in dialogue/cognition code: [] |

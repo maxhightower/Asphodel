@@ -78147,32 +78147,32 @@
   {
    "gate": "D36",
    "name": "CognitionGate remains PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/npc_dialogue_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 30, \"fail\": 0, \"info\": 2, \"exit\": 0, \"log\": \"g_cognition.log\"}"
   },
   {
    "gate": "D37",
    "name": "WorkGate remains PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/npc_dialogue_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 22, \"fail\": 0, \"info\": 0, \"exit\": 0, \"log\": \"g_work.log\"}"
   },
   {
    "gate": "D38",
    "name": "OutbreakGate remains PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/npc_dialogue_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 18, \"fail\": 0, \"info\": 1, \"exit\": 0, \"log\": \"g_outbreak.log\"}"
   },
   {
    "gate": "D39",
    "name": "MobilityGate remains PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/npc_dialogue_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 24, \"fail\": 0, \"info\": 1, \"exit\": 0, \"log\": \"g_mobility.log\"}"
   },
   {
    "gate": "D40",
    "name": "Existing Godot gates remain PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/npc_dialogue_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 85, \"fail\": 0, \"exited_nonzero\": 0, \"scenes\": [\"tests/PhysicsGate.tscn\", \"tests/RegionGate.tscn\", \"tests/NavGate.tscn\", \"tests/ConvergenceGate.tscn\"], \"log\": \"g_rungates.log\"}"
   },
   {
    "gate": "D41",
