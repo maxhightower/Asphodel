@@ -81,7 +81,7 @@ def content(p: A.Proposition, names=None, me=None, now_s: float = 0.0) -> str:
     if k == A.PLACE_IS_SAFE:
         return f"{where(p)} was fine when I was there"
     if k == A.PERSON_SEEN:
-        return f"I saw {who(p.subject, names, me)} {when(p.t, now_s)}, {where(p)}"
+        return f"{who(p.subject, names, me)} in {where(p)}, {when(p.t, now_s)}"
     if k == A.PERSON_HEARD_OF:
         return f"I only heard about {who(p.subject, names, me)} from {who(p.source_citizen, names, me)}"
     if k == A.HELP_RECEIVED:
@@ -155,7 +155,7 @@ def render(act: str, p: Optional[A.Proposition] = None, *, speaker: Optional[int
             return "I don't know."
         f = frame(p, names, speaker)
         c = content(p, names, speaker, now_s)
-        if p.kind in (A.PERSON_SEEN, A.PERSON_HEARD_OF):
+        if p.kind == A.PERSON_HEARD_OF:              # content self-frames ("I only heard about ...")
             return c[0].upper() + c[1:] + "."
         if p.epistemic == A.EXPERIENCED:
             return f"{f} {c}."

@@ -17,7 +17,8 @@ FACE_TO_FACE = "face_to_face"
 SHOUT = "shout"
 CALL = "call"
 PLAYER = "player"
-CHANNELS = (FACE_TO_FACE, SHOUT, CALL, PLAYER)
+PROBE = "probe"                # a question put to a citizen by the player or the certification harness
+CHANNELS = (FACE_TO_FACE, SHOUT, CALL, PLAYER, PROBE)
 
 ACTIVE = "active"
 ENDED = "ended"

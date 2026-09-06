@@ -74,6 +74,11 @@ var _inventory_label: Label
 var _status_label: Label
 var _pause_layer: CanvasLayer
 
+# --- npc dialogue (ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1) ------------------
+var _dialogue: DialoguePanel = null
+var _speech_bubble: Label3D = null          # the NPC's last line, over its body
+var _last_citizen_seen := -1                # ASK_PERSON fallback subject
+
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -139,7 +144,9 @@ func _ensure_input() -> void:
 	var key_binds := {
 		"move_forward": KEY_W, "move_back": KEY_S,
 		"move_left": KEY_A, "move_right": KEY_D, "sprint": KEY_SHIFT,
-		"interact": KEY_E,
+		"interact": KEY_E, "talk": KEY_T,
+		"dialogue_1": KEY_1, "dialogue_2": KEY_2, "dialogue_3": KEY_3,
+		"dialogue_4": KEY_4, "dialogue_5": KEY_5, "dialogue_6": KEY_6,
 		"cam_rotate_left": KEY_BRACKETLEFT, "cam_rotate_right": KEY_BRACKETRIGHT,
 		"cam_zoom_in": KEY_EQUAL, "cam_zoom_out": KEY_MINUS,
 		"time_pause": KEY_SPACE, "time_fast": KEY_F,
@@ -482,6 +489,8 @@ func _zone_extent(zid: int) -> Vector2:
 
 # ------------------------------------------------------------------ per-frame
 func _physics_process(_delta: float) -> void:
+	if _dialogue != null and _dialogue.is_open():
+		_update_speech_bubble()
 	if _player != null and _player.position.y < FALL_KILL_Y and _inside_building < 0:
 		_player.teleport(_spawn_pos + Vector3(0.0, 2.0, 0.0))
 	_update_live_bubble()
@@ -522,7 +531,11 @@ func _update_highlight() -> void:
 		if _target_label != null:
 			var actions: Array = _interaction.query_affordances(target)
 			var verb := str(actions[0]) if actions.size() > 0 else ""
-			_target_label.text = "%s   [E / click: %s]" % [_interaction.describe(target), verb]
+			var extra := "   [T: Talk]" if actions.has("Talk") else ""
+			_target_label.text = "%s   [E / click: %s]%s" % [_interaction.describe(target), verb, extra]
+		var tk := int(target.get("kind", 0))
+		if tk == IsometricInteraction.CITIZEN or tk == IsometricInteraction.OCCUPANT:
+			_last_citizen_seen = int(target.get("id", -1))
 
 
 # ------------------------------------------------------------------ interaction
@@ -790,7 +803,141 @@ func _build_hud() -> void:
 	layer.add_child(_status_label)
 
 	_build_time_controls(layer)
+	_build_dialogue_panel()
 	_refresh_inventory_hud()
+
+
+# --------------------------------------------- npc dialogue (player <-> NPC)
+func _build_dialogue_panel() -> void:
+	## The panel is a window on the authority: it sends TALK and displays the
+	## lines the DialogueRuntime rendered. Godot writes no dialogue.
+	_dialogue = DialoguePanel.new()
+	_dialogue.name = "DialoguePanel"
+	add_child(_dialogue)
+	_dialogue.player_citizen = int(Session.citizen.get("citizen_id", -1)) \
+		if Session.citizen.has("citizen_id") else -1
+	# Display names only (identity, never truth): the bundle roster, by index.
+	var dir: String = Session.bundle_dir if Session.bundle_dir != "" else "res://sample_bundle"
+	var roster := BundleLoader.load_citizens(dir)
+	var names := {}
+	for i in range(roster.size()):
+		names[i] = str(roster[i].get("name", ""))
+	_dialogue.names = names
+	_dialogue.talked.connect(_on_dialogue_reply)
+
+
+## Open the dialogue panel on one citizen id (the authority decides whether the
+## conversation happens at all). Public so the gate/shots drive the real path.
+func talk_to_citizen(cid: int) -> Dictionary:
+	if _dialogue == null or cid < 0 or not SimBridge.is_connected_to_sim():
+		return {}
+	_dialogue.context_building_id = _inside_building
+	_dialogue.context_room_id = -1
+	_dialogue.context_subject = _last_citizen_seen if _last_citizen_seen != cid else -1
+	_dialogue.context_object_id = _nearest_station_id()
+	var reply: Dictionary = _dialogue.open_with(cid)
+	if reply.get("ok", false) == true:
+		_set_status("Talking to citizen %d — 1..6 to speak, T to close" % cid)
+	else:
+		_set_status("citizen %d will not talk: %s" % [cid, str(reply.get("reason", reply.get("error")))])
+	return reply
+
+
+## Resolve the current interaction target and talk to it if it is a citizen.
+func talk_to_target() -> Dictionary:
+	if _interaction == null:
+		return {}
+	var target: Dictionary = _interaction.resolve_target(true)
+	var kind := int(target.get("kind", 0))
+	if kind != IsometricInteraction.CITIZEN and kind != IsometricInteraction.OCCUPANT:
+		_set_status("Nobody to talk to here")
+		return {}
+	_interaction.set_selected(target)
+	return talk_to_citizen(int(target.get("id", -1)))
+
+
+## Send bounded option i (0..5) of the open panel.
+func dialogue_choose(i: int) -> Dictionary:
+	if _dialogue == null or not _dialogue.is_open():
+		return {}
+	_dialogue.context_building_id = _inside_building
+	_dialogue.context_object_id = _nearest_station_id()
+	var reply: Dictionary = _dialogue.choose(i)
+	if str(DialoguePanel.OPTIONS[i]["act"]) == "END_CONVERSATION":
+		_close_dialogue_soon()
+	return reply
+
+
+func get_dialogue_panel() -> DialoguePanel:
+	return _dialogue
+
+
+func close_dialogue() -> void:
+	if _dialogue != null and _dialogue.is_open():
+		_dialogue.close()
+	_clear_speech_bubble()
+
+
+func _close_dialogue_soon() -> void:
+	# leave the goodbye lines up for a moment, then close
+	await get_tree().create_timer(1.2).timeout
+	close_dialogue()
+
+
+func _on_dialogue_reply(_reply: Dictionary) -> void:
+	_update_speech_bubble()
+
+
+## The smart object nearest the player inside the current building, from the
+## authority's own GET_ROOMS list ("" when outdoors or none). Used only as the
+## optional object_id of an ASK_FOR_HELP.
+func _nearest_station_id() -> String:
+	if _inside_building < 0 or not SimBridge.is_connected_to_sim():
+		return ""
+	var rooms: Dictionary = SimBridge.get_rooms(_inside_building)
+	var best := ""
+	var best_d := INF
+	var pp := _player.global_position if _player != null else Vector3.ZERO
+	for o in rooms.get("objects", []):
+		var w: Vector3 = _interior_offset + Vector3(float(o["x"]), 0.0, float(o["y"]))
+		var d := Vector2(w.x, w.z).distance_to(Vector2(pp.x, pp.z))
+		if d < best_d:
+			best_d = d
+			best = str(o["object_id"])
+	return best
+
+
+## Draw the NPC's last line above its body (the same authority string the panel
+## shows; no second rendering path).
+func _update_speech_bubble() -> void:
+	if _dialogue == null or not _dialogue.is_open() or _embodied == null:
+		_clear_speech_bubble()
+		return
+	var line := str(_dialogue.last_npc_line)
+	var body: Node3D = _embodied.body_of("cit:%d" % _dialogue.npc)
+	if line == "" or body == null or not is_instance_valid(body):
+		_clear_speech_bubble()
+		return
+	if _speech_bubble == null or not is_instance_valid(_speech_bubble):
+		_speech_bubble = Label3D.new()
+		_speech_bubble.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		_speech_bubble.no_depth_test = true
+		_speech_bubble.fixed_size = true
+		_speech_bubble.pixel_size = 0.0016
+		_speech_bubble.font_size = 44
+		_speech_bubble.outline_size = 12
+		_speech_bubble.modulate = Color(1.0, 1.0, 0.85)
+		_speech_bubble.width = 900
+		_speech_bubble.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		add_child(_speech_bubble)
+	_speech_bubble.text = line
+	_speech_bubble.global_position = body.global_position + Vector3(0.0, 2.2, 0.0)
+	_speech_bubble.visible = true
+
+
+func _clear_speech_bubble() -> void:
+	if _speech_bubble != null and is_instance_valid(_speech_bubble):
+		_speech_bubble.visible = false
 
 
 func _build_time_controls(layer: CanvasLayer) -> void:
@@ -920,12 +1067,26 @@ func _to_menu() -> void:
 	get_tree().change_scene_to_file("res://MainMenu.tscn")
 
 
+func _dialogue_key(event: InputEvent) -> int:
+	for i in range(6):
+		if event.is_action_pressed("dialogue_%d" % (i + 1)):
+			return i
+	return -1
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		if _pause_layer != null and _pause_layer.visible:
 			_resume()
 		elif _pause_layer != null:
 			_pause()
+	elif event.is_action_pressed("talk"):
+		if _dialogue != null and _dialogue.is_open():
+			close_dialogue()
+		else:
+			talk_to_target()
+	elif _dialogue != null and _dialogue.is_open() and _dialogue_key(event) >= 0:
+		dialogue_choose(_dialogue_key(event))
 	elif event.is_action_pressed("interact"):
 		interact()
 	elif event.is_action_pressed("time_pause"):

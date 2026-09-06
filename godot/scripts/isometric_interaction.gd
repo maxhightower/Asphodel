@@ -149,7 +149,10 @@ func query_affordances(target: Dictionary) -> Array:
 		return []
 	match int(target.get("kind", NONE)):
 		CITIZEN, OCCUPANT:
-			return ["Interact"]
+			# "Talk" is the dialogue affordance (ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1):
+			# the world sends TALK and the authority decides whether the two can
+			# speak at all (availability + co-presence).
+			return ["Interact", "Talk"]
 		BUILDING:
 			return ["Enter"]
 		FIXTURE:

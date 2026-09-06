@@ -38,7 +38,7 @@ from ..embodied.executor import EmbodimentState
 from . import acts as A
 from . import grounding as G
 from .render import render
-from .session import (ACTIVE, CALL, CHANNELS, Conversation, ENDED, FACE_TO_FACE, INTERRUPTED, PLAYER, SHOUT)
+from .session import (ACTIVE, CALL, CHANNELS, Conversation, ENDED, FACE_TO_FACE, INTERRUPTED, PLAYER, PROBE, SHOUT)
 
 DIALOGUE_SCHEMA_VERSION = 1
 MAX_EVENTS = 5000
@@ -101,12 +101,19 @@ class DialogueRuntime:
             return False, f"override:{ex.override}"
         rt = self.mobility.citizens.get(int(cid))
         g = rt.active_goal if rt is not None else None
-        if channel in (FACE_TO_FACE, PLAYER) and g is not None and g.source == "emergency" and g.kind.value == "flee" \
+        # a fleeing citizen does not stop for a chat; it will shout a warning in
+        # passing (one act) and answer the player briefly (§27)
+        if channel == FACE_TO_FACE and g is not None and g.source == "emergency" and g.kind.value == "flee" \
                 and ex.state not in (EmbodimentState.DOING_ACTIVITY, EmbodimentState.INSIDE_BUILDING):
             return False, "fleeing"
         if channel in (FACE_TO_FACE, PLAYER) and str(ex.activity) == "sleep":
             return False, "asleep"
         return True, ""
+
+    def _fresh_threat(self, cid: int, since_s: float) -> bool:
+        st = self.cog.memories.get(int(cid))
+        return st is not None and any(f.kind in M.THREAT_KINDS and f.first_hand() and f.last_t > since_s
+                                      for f in st.facts.values())
 
     def co_present(self, a: int, b: int) -> Tuple[bool, str]:
         ea, eb = self.mobility.execs.get(a), self.mobility.execs.get(b)
@@ -258,6 +265,11 @@ class DialogueRuntime:
             # a shout through the building, or an alarmed citizen calling out to
             # someone it passes: one act, no exchange to sit through
             ch = SHOUT if channel == SHOUT else FACE_TO_FACE
+            if ch == FACE_TO_FACE and not self.co_present(sender, recipient)[0]:
+                # a warning in passing still needs the two within talking distance (§27);
+                # cognition's encounter radius is wider than the runtime's TALK_RADIUS_M
+                self.event("TALK_REFUSED", speaker=sender, listener=recipient, reason="not_co_present", channel=ch)
+                return False
             conv = self._start(sender, recipient, ch, topic={"kind": fact.kind, "event_ref": fact.fact_id})
             p = self.transmit(conv, sender, recipient, fact, act=A.WARN)
             self._end(conv, "shout" if ch == SHOUT else "warning_in_passing")
@@ -266,6 +278,11 @@ class DialogueRuntime:
             self.event("CALL_REFUSED", speaker=sender, listener=recipient, reason="no_contact_channel")
             return False
         ch = CALL if channel == CALL else FACE_TO_FACE
+        if ch == FACE_TO_FACE and not self.co_present(sender, recipient)[0]:
+            # a sequenced face-to-face warning requires co-presence, the same rule ask()
+            # and _step_plan enforce; without it the telling does not happen face to face
+            self.event("TALK_REFUSED", speaker=sender, listener=recipient, reason="not_co_present", channel=ch)
+            return False
         for k, c in self.conversations.items():
             if c.state == ACTIVE and set(c.participants) == {sender, recipient}:
                 return False           # already talking
@@ -298,6 +315,10 @@ class DialogueRuntime:
             if not ok:
                 self._end(conv, f"separated:{why}", interrupted=True)
                 return
+        if conv.channel != SHOUT and any(self._fresh_threat(c, conv.last_s) for c in (a, b)) and conv.n_acts > 0 \
+                and (conv.topic or {}).get("kind") not in M.THREAT_KINDS:
+            self._end(conv, "threat", interrupted=True)
+            return
         step = conv.plan.pop(0)
         sp = int(step["speaker"])
         st = self.cog.memories.get(sp)
@@ -311,10 +332,11 @@ class DialogueRuntime:
         elif act == A.ASK_LOCATION and step.get("if_place"):
             last = conv.acts[-1].get("proposition") if conv.acts else None
             if not last or last.get("kind") == A.UNKNOWN or last.get("building_id") is None:
-                conv.plan = [s for s in conv.plan if s["act"] not in (A.ANSWER,)] or conv.plan
-                # nothing to locate: skip the where/answer pair
-                conv.plan = [s for s in conv.plan if not s.get("location_of")]
-                self.say(conv, sp, A.ACKNOWLEDGE)
+                # nothing to locate: drop the where/answer pair AND the recipient's own later THANK
+                # so the recipient does not speak twice in a row — it thanks now and yields the turn.
+                conv.plan = [s for s in conv.plan if not s.get("location_of")
+                             and not (int(s["speaker"]) == sp and s["act"] == A.THANK)]
+                self.say(conv, sp, A.THANK)
             else:
                 self.say(conv, sp, A.ASK_LOCATION)
         elif act == A.ANSWER and step.get("location_of"):
@@ -392,8 +414,11 @@ class DialogueRuntime:
                        epistemic=p.epistemic, detail=p.detail, subject=subject, building_id=building_id)
             return row
         f = st.facts.get(p.event_ref) if (st is not None and p.event_ref) else None
-        if f is not None and act in (A.ASK_FACT, A.ASK_PERSON, A.ASK_SAFETY) and p.kind != A.PLACE_IS_SAFE:
-            # an answer that carries a fact is a telling: it goes through cognition like any warning
+        if conv.channel != PROBE and f is not None and act in (A.ASK_FACT, A.ASK_PERSON, A.ASK_SAFETY) \
+                and p.kind != A.PLACE_IS_SAFE:
+            # an answer that carries a fact is a telling: it goes through cognition like any warning.
+            # a PROBE is a read-only inspection ("what would you say"): it renders the answer with its
+            # true epistemic frame but never writes the fact into the asker's store.
             self.transmit(conv, answerer, asker, f, act=A.ANSWER, kind=p.kind)
             return conv.acts[-1] if conv.acts else None
         return self.say(conv, answerer, A.ANSWER, p)
@@ -434,9 +459,13 @@ class DialogueRuntime:
             ok, why = self.available(c, channel)
             if not ok:
                 return None
-        if channel == FACE_TO_FACE:
-            ea, eb = self.mobility.execs.get(requester), self.mobility.execs.get(helper)
-            if not (ea is not None and eb is not None and ea.inside and eb.inside and ea.building_id == eb.building_id):
+        if channel == FACE_TO_FACE and not self.co_present(requester, helper)[0]:
+            # a face-to-face request needs the two in the same room, exactly as ask()/warn() do.
+            # a coworker out of the room but on a workplace tie is asked over a call instead;
+            # with no channel at all the request cannot be made.
+            if self.can_call(requester, helper):
+                channel = CALL
+            else:
                 return None
         self.request_last[key] = self.now_s
         kind_hint = {"unstaffed_queue": "cover_station", "queue_overload": "cover_station",
@@ -528,6 +557,7 @@ class DialogueRuntime:
         conv = self.conversations.get(conv_id) if conv_id else None
         if conv is not None and (conv.state != ACTIVE or npc not in conv.participants):
             conv = None
+        opened = False
         if conv is None:
             ok, why = self.available(npc, PLAYER)
             if not ok:
@@ -537,8 +567,7 @@ class DialogueRuntime:
                 return {"ok": False, "reason": f"not_co_present:{why}", "npc": npc}
             conv = self._start(player, npc, PLAYER)
             self.player_sessions[player] = conv.conv_id
-            self.say(conv, player, A.GREET)
-            self.say(conv, npc, A.GREET)
+            opened = True
         else:
             ok, why = self.available(npc, PLAYER)
             if not ok:
@@ -546,6 +575,10 @@ class DialogueRuntime:
                 return {"ok": False, "reason": why, "npc": npc, "conv_id": conv.conv_id}
         act = str(act).upper()
         lines_before = len(conv.acts)
+        if opened:
+            # the greeting pair opens the exchange and is part of this first reply
+            self.say(conv, player, A.GREET)
+            self.say(conv, npc, A.GREET)
         if act == A.END_CONVERSATION:
             self.say(conv, player, A.END_CONVERSATION)
             self.say(conv, npc, A.END_CONVERSATION)
@@ -657,6 +690,9 @@ class DialogueRuntime:
                 ok, why = self.available(npc, PLAYER)
                 if not ok:
                     self._end(conv, why, interrupted=True)
+                    continue
+                if self._fresh_threat(npc, conv.last_s) or self._fresh_threat(conv.participants[0], conv.last_s):
+                    self._end(conv, "threat", interrupted=True)
                     continue
                 ok, why = self.co_present(conv.participants[0], npc)
                 if not ok:

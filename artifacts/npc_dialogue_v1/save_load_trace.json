@@ -1,0 +1,52 @@
+{
+ "accepted_request_pending": {
+  "hour": 7.633,
+  "dialogue_identical": true,
+  "cognition_identical": true,
+  "requests_identical": true,
+  "goals_identical": true,
+  "continuation_bit_identical": true,
+  "no_reroll_on_load": true,
+  "save_bytes": 4929319
+ },
+ "after_request_completed": {
+  "hour": 7.817,
+  "dialogue_identical": true,
+  "cognition_identical": true,
+  "requests_identical": true,
+  "goals_identical": true,
+  "continuation_bit_identical": true,
+  "no_reroll_on_load": true,
+  "save_bytes": 5355054
+ },
+ "after_refusal": {
+  "hour": 8.0,
+  "dialogue_identical": true,
+  "cognition_identical": true,
+  "requests_identical": true,
+  "goals_identical": true,
+  "continuation_bit_identical": true,
+  "no_reroll_on_load": true,
+  "save_bytes": 3172836
+ },
+ "unanswered_question": {
+  "hour": 10.784,
+  "dialogue_identical": true,
+  "cognition_identical": true,
+  "requests_identical": true,
+  "goals_identical": true,
+  "continuation_bit_identical": true,
+  "no_reroll_on_load": true,
+  "save_bytes": 5174393
+ },
+ "after_fact_transfer": {
+  "hour": 10.784,
+  "dialogue_identical": true,
+  "cognition_identical": true,
+  "requests_identical": true,
+  "goals_identical": true,
+  "continuation_bit_identical": true,
+  "no_reroll_on_load": true,
+  "save_bytes": 5415187
+ }
+}

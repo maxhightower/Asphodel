@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8dlgshot1"]
+
+[ext_resource type="Script" path="res://tests/dialogue_shot.gd" id="1_dgshot"]
+
+[node name="DialogueShot" type="Node"]
+script = ExtResource("1_dgshot")

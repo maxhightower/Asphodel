@@ -59,6 +59,13 @@ var last_rooms: Dictionary = {}
 var cognition_enabled := false
 var last_cognition: Dictionary = {}
 var last_context: Dictionary = {}
+# --- npc dialogue (v8) -----------------------------------------------------------
+# Whether the started world runs the DialogueRuntime (START_WORLD reply
+# `dialogue_enabled`; `dialogue: false` opts out). When true, TALK drives a
+# player<->NPC conversation and GET_DIALOGUE reports every conversation, speech
+# act and request the authority ran. Every line displayed comes from here.
+var dialogue_enabled := false
+var last_dialogue: Dictionary = {}
 
 
 func is_connected_to_sim() -> bool:
@@ -111,6 +118,7 @@ func start_world(bundle: String, opts: Dictionary = {}) -> Dictionary:
 		outbreak_enabled = bool(r.get("outbreak_enabled", false))
 		work_enabled = bool(r.get("work_enabled", false))
 		cognition_enabled = bool(r.get("cognition_enabled", false))
+		dialogue_enabled = bool(r.get("dialogue_enabled", false))
 		world_started.emit(r)
 	return r
 
@@ -230,6 +238,30 @@ func get_citizen_context(citizen_id: int) -> Dictionary:
 	var r := _send("GET_CITIZEN_CONTEXT", {"citizen_id": citizen_id})
 	if _ok(r) and r.has("context") and r["context"] != null:
 		last_context = r["context"]
+	return r
+
+
+# --------------------------------------------------- npc dialogue (v8)
+func talk(citizen_id: int, act: String, args: Dictionary = {}) -> Dictionary:
+	## The player speaks to one NPC. `act` is one of the authority's bounded
+	## player acts (GREET, ASK_FACT, ASK_LOCATION, ASK_PERSON, ASK_SAFETY,
+	## ASK_FOR_HELP, THANK, END_CONVERSATION) and `args` its structured
+	## arguments (building_id / room_id / subject / citizen_id / event_ref /
+	## kind / object_id). The reply carries the authority's own rendered lines
+	## (`acts`, `lines`, `transcript`), the bounded `options`, the relationship
+	## `warmth` — or ok:false with a `reason` when the NPC is unavailable or not
+	## co-present. Godot composes NO dialogue: it displays these lines verbatim.
+	return _send("TALK", {"citizen_id": citizen_id, "act": act, "args": args})
+
+
+func get_dialogue(since_seq: int = 0) -> Dictionary:
+	## Live conversation state: active conversations, open requests and the
+	## event log since `since_seq` (CONVERSATION_STARTED/ENDED/INTERRUPTED,
+	## SPEECH_ACT, QUESTION_ASKED, ANSWERED, ANSWER_UNKNOWN, FACT_SHARED/
+	## RECEIVED, REQUEST_MADE/ACCEPTED/REFUSED/COMPLETED/FAILED, GROUNDING_*).
+	var r := _send("GET_DIALOGUE", {"since_seq": since_seq})
+	if _ok(r) and r.has("dialogue") and r["dialogue"] != null:
+		last_dialogue = r["dialogue"]
 	return r
 
 
@@ -354,6 +386,7 @@ func load(path: String) -> Dictionary:
 		outbreak_enabled = bool(r.get("outbreak_enabled", outbreak_enabled))
 		work_enabled = bool(r.get("work_enabled", work_enabled))
 		cognition_enabled = bool(r.get("cognition_enabled", cognition_enabled))
+		dialogue_enabled = bool(r.get("dialogue_enabled", dialogue_enabled))
 	return r
 
 
