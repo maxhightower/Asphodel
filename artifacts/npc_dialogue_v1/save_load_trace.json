@@ -17,7 +17,7 @@
   "goals_identical": true,
   "continuation_bit_identical": true,
   "no_reroll_on_load": true,
-  "save_bytes": 5354798
+  "save_bytes": 5343552
  },
  "after_refusal": {
   "hour": 8.0,
@@ -27,7 +27,7 @@
   "goals_identical": true,
   "continuation_bit_identical": true,
   "no_reroll_on_load": true,
-  "save_bytes": 3172580
+  "save_bytes": 3161299
  },
  "unanswered_question": {
   "hour": 10.784,
@@ -37,7 +37,7 @@
   "goals_identical": true,
   "continuation_bit_identical": true,
   "no_reroll_on_load": true,
-  "save_bytes": 5163697
+  "save_bytes": 5138943
  },
  "active_conversation": {
   "hour": 10.951,
@@ -47,7 +47,17 @@
   "goals_identical": true,
   "continuation_bit_identical": true,
   "no_reroll_on_load": true,
-  "save_bytes": 5335285
+  "save_bytes": 5309781
+ },
+ "after_threat_interruption": {
+  "hour": 11.118,
+  "dialogue_identical": true,
+  "cognition_identical": true,
+  "requests_identical": true,
+  "goals_identical": true,
+  "continuation_bit_identical": true,
+  "no_reroll_on_load": true,
+  "save_bytes": 5358143
  },
  "after_fact_transfer": {
   "hour": 10.784,
@@ -57,6 +67,6 @@
   "goals_identical": true,
   "continuation_bit_identical": true,
   "no_reroll_on_load": true,
-  "save_bytes": 5384408
+  "save_bytes": 5404497
  }
 }
