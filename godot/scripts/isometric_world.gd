@@ -1149,6 +1149,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("time_fast"):
 		GameClock.set_paused(false)
 		GameClock.time_scale = FAST_TIME_SCALE if GameClock.time_scale < FAST_TIME_SCALE else 1.0
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F3:
+		if _inspector != null:
+			_inspector.toggle()
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F4:
+		if _event_feed != null:
+			_event_feed.toggle()
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		interact()
 

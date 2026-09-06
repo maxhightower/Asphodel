@@ -110,7 +110,9 @@ gameplay team; these are what the current build binds:
 | Talk to a citizen | **T** |
 | Dialogue option 1–6 | **1 … 6** |
 | Rotate camera | **[** and **]** |
-| Developer **Simulation Inspector** | **F3** |
+| Developer **Simulation Inspector** | **F3** (Tab switches PLAYER / DEV-TRUTH) |
+| Developer **event feed** | **F4** |
+| Developer **build overlay** | **F10** |
 
 ### Developer inspector
 Press **F3** in-world to toggle the **Simulation Inspector** — a read-only view
