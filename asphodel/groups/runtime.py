@@ -650,7 +650,7 @@ class GroupRuntime:
                 self.event("ROLE_REFUSED", group_id=g.group_id, role=G.SCAVENGER, citizen_id=cid,
                            reason="no_known_source", obj_id=o.obj_id)
                 return
-            o.building_id, o.detail_node, o.object_id = src[0], src[1], src[2]  # type: ignore[attr-defined]
+            o.building_id, o.detail_node, o.object_id = src[0], src[1], src[2]
             self.event("SUPPLY_RUN_ASSIGNED", group_id=g.group_id, citizen_id=cid, source_building=src[0],
                        object_id=src[2], node=src[1], obj_id=o.obj_id)
         if ex is not None and ex.inside and int(ex.building_id) == int(o.building_id):
@@ -673,7 +673,7 @@ class GroupRuntime:
                 o.reason = "source_empty"
                 g.roles.pop(G.SCAVENGER, None)
             return
-        node = getattr(o, "detail_node", None) or self._entrance_node(g, o.building_id)
+        node = o.detail_node or self._entrance_node(g, o.building_id)
         self._travel_goal(cid, node, priority=0.62, reason="go for supplies", group_id=g.group_id, kind=o.kind)
 
     # ------------------------------------------------------------------ locate member (§25)
@@ -702,7 +702,7 @@ class GroupRuntime:
                                    reason=f"member {missing} missing from shelter")
         o.state = G.OBJ_ACTIVE
         o.building_id = (rt.node_meta.get(node) or {}).get("building_id") if rt is not None else None
-        setattr(o, "detail_node", node)
+        o.detail_node = node
         self.event("GROUP_OBJECTIVE_CREATED", group_id=g.group_id, obj_id=o.obj_id, obj_kind=G.LOCATE_MEMBER,
                    assignee=finder, target_cid=missing)
         return {"finder": finder, "missing": missing}
@@ -721,7 +721,7 @@ class GroupRuntime:
                        building_id=(self.mobility.execs.get(missing).building_id
                                     if self.mobility.execs.get(missing) and self.mobility.execs[missing].inside else None))
             return
-        self._travel_goal(finder, getattr(o, "detail_node", None), priority=0.62,
+        self._travel_goal(finder, o.detail_node, priority=0.62,
                           reason=f"find member {missing}", group_id=g.group_id, kind=o.kind)
 
     # ================================================================= group knowledge (§23, §24)

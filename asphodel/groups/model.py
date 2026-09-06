@@ -116,13 +116,14 @@ class Objective:
     decided_s: float = 0.0
     reason: str = ""
     detail: str = ""
+    detail_node: Optional[str] = None      # a target graph node (supply source / missing member)
 
     def to_dict(self) -> dict:
         return {"obj_id": self.obj_id, "kind": self.kind, "state": self.state,
                 "target_cid": self.target_cid, "building_id": self.building_id, "room_id": self.room_id,
                 "object_id": self.object_id, "role": self.role, "assignee": self.assignee,
                 "request_id": self.request_id, "created_s": self.created_s, "decided_s": self.decided_s,
-                "reason": self.reason, "detail": self.detail}
+                "reason": self.reason, "detail": self.detail, "detail_node": self.detail_node}
 
     @classmethod
     def from_dict(cls, d: dict) -> "Objective":
