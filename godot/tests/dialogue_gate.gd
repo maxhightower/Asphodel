@@ -418,10 +418,10 @@ func _run() -> void:
 	_emb.time_scale = 1.0 / max(get_physics_process_delta_time(), 0.001) * _game_dt
 	GameClock.time_scale = 0.0     # this gate is the only driver of the clock
 
-	# --- (a) protocol v8 + a world with dialogue -----------------------------
+	# --- (a) protocol v9 + a world with dialogue -----------------------------
 	var started: Dictionary = SimBridge.last_summary
 	var pv := int(started.get("protocol_version", -1))
-	_ok("protocol_v8", pv == 8 and SimBridge.PROTOCOL_VERSION == 8,
+	_ok("protocol_v9", pv == 9 and SimBridge.PROTOCOL_VERSION == 9,
 		"START_WORLD reply protocol_version=%d, SimBridge speaks v%d (TALK / GET_DIALOGUE)"
 		% [pv, SimBridge.PROTOCOL_VERSION])
 	var on: bool = bool(started.get("dialogue_enabled", false))

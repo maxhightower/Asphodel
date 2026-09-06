@@ -275,7 +275,7 @@ func get_dialogue(since_seq: int = 0) -> Dictionary:
 	return r
 
 
-func get_groups(since_seq: int = 0) -> Dictionary:
+func get_groups_snapshot(since_seq: int = 0) -> Dictionary:
 	## Live survivor-group state (v9): the roster of groups (membership, shelter,
 	## roles, coordinator, shared record) and the event delta since `since_seq`
 	## (GROUP_FORMED, SHELTER_SELECTED, ROLE_PROPOSED/ACCEPTED, SUPPLY_*,

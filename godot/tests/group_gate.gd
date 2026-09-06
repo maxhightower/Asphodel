@@ -115,7 +115,7 @@ func _load_sidecar() -> bool:
 
 
 func _get_groups(since := 0) -> Dictionary:
-	var r := SimBridge.get_groups(since)
+	var r := SimBridge.get_groups_snapshot(since)
 	var g = r.get("groups", {})
 	return g if g is Dictionary else {}
 
@@ -259,7 +259,7 @@ func _run() -> void:
 		% [str(held), str(roles_d)])
 
 	# --- (h) GROUP_QUERY membership: a member resolves, a non-member is null --
-	var member := active[0]
+	var member: int = active[0]
 	# prefer a member that also holds a role, so the role field is exercised
 	for r in roles_d:
 		if HELD_ROLES.has(str(r)) and active.has(_iv(roles_d[r])):

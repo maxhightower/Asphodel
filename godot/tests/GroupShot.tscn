@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b9grpshot1"]
+
+[ext_resource type="Script" path="res://tests/group_shot.gd" id="1_grshot"]
+
+[node name="GroupShot" type="Node"]
+script = ExtResource("1_grshot")
