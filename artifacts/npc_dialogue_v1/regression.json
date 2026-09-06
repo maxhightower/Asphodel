@@ -1,0 +1,72 @@
+{
+ "python": {
+  "status": "FAIL",
+  "collected": 1552,
+  "passed": 1549,
+  "failed": 3,
+  "xfailed": 0,
+  "deselected": 0,
+  "failed_tests": [
+   "tests/test_work_bridge.py::test_mobility_rows_carry_the_work_context",
+   "tests/test_work_runtime_day.py::test_breaking_the_station_evicts_its_holder",
+   "tests/test_world_from_compiled.py::test_compile_writes_only_presentation_files"
+  ],
+  "summary_line": "3 failed, 1549 passed in 3802.67s (1:03:22)",
+  "command": "python3 -m pytest -q -rf --deselect tests/test_overture_ingest.py",
+  "note": "3 failures, none in the Godot/dialogue surface of this milestone and none fixable from here (this session may not modify asphodel/): (1) tests/test_work_bridge.py::test_mobility_rows_carry_the_work_context asserts the mobility row's `work` block has EXACTLY {role, workplace_id, task, phase, object_id, room_id, zone, carrying}; the authority now also sends `help_for`, so the exact-set assertion fails (the extra key is the only difference). (2) tests/test_work_runtime_day.py::test_breaking_the_station_evicts_its_holder expects holders == [] after SET_OBJECT_STATE(working=false) and the authority leaves citizen 295 holding so:6059:5. Both reproduce on their own in 2 minutes against the current working tree. (3) tests/test_world_from_compiled.py::test_compile_writes_only_presentation_files is the pre-existing failure recorded in artifacts/npc_cognition_v1/regression.json (needs the raw Overture packet); tests/test_overture_ingest.py is deselected for the same reason."
+ },
+ "run_gates": {
+  "status": "PASS",
+  "pass": 85,
+  "fail": 0,
+  "exited_nonzero": 0,
+  "scenes": [
+   "tests/PhysicsGate.tscn",
+   "tests/RegionGate.tscn",
+   "tests/NavGate.tscn",
+   "tests/ConvergenceGate.tscn"
+  ],
+  "log": "g_rungates.log"
+ },
+ "mobility_gate": {
+  "status": "PASS",
+  "pass": 24,
+  "fail": 0,
+  "info": 1,
+  "exit": 0,
+  "log": "g_mobility.log"
+ },
+ "outbreak_gate": {
+  "status": "PASS",
+  "pass": 18,
+  "fail": 0,
+  "info": 1,
+  "exit": 0,
+  "log": "g_outbreak.log"
+ },
+ "work_gate": {
+  "status": "PASS",
+  "pass": 22,
+  "fail": 0,
+  "info": 0,
+  "exit": 0,
+  "log": "g_work.log"
+ },
+ "cognition_gate": {
+  "status": "PASS",
+  "pass": 30,
+  "fail": 0,
+  "info": 2,
+  "exit": 0,
+  "log": "g_cognition.log"
+ },
+ "dialogue_gate": {
+  "status": "PASS",
+  "pass": 22,
+  "fail": 0,
+  "info": 5,
+  "exit": 0,
+  "log": "g_dialogue.log"
+ },
+ "note": "Fresh run for ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1. pass/fail/info per gate are counted in that gate's final RESULTS block (each check is printed once while it runs and once in that block). run_gates is godot/tests/run_gates.sh (PhysicsGate, RegionGate, NavGate, ConvergenceGate) under xvfb; the four live-bridge gates and the new DialogueGate run through their own tools/run_*_gate.sh scripts. The cognition gate's protocol check was updated from the literal v7 to 'the reply's protocol_version equals the version this build speaks and is >= 7' because this milestone bumped the protocol to v8; every other check in it is unchanged."
+}

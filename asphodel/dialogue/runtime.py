@@ -679,9 +679,11 @@ class DialogueRuntime:
             remaining -= step
 
     def _substep(self) -> None:
+        # snapshot the keys: stepping one conversation can end others, and _trim() deletes
+        # ended conversations, so a key sampled here may be gone by the time we reach it
         for k in sorted(self.conversations):
-            conv = self.conversations[k]
-            if conv.state != ACTIVE:
+            conv = self.conversations.get(k)
+            if conv is None or conv.state != ACTIVE:
                 continue
             if conv.plan:
                 self._step_plan(conv)

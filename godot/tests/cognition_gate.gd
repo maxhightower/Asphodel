@@ -436,8 +436,12 @@ func _run() -> void:
 	# --- (a) protocol v7 + a world with cognition ----------------------------
 	var started: Dictionary = SimBridge.last_summary
 	var pv := int(started.get("protocol_version", -1))
-	_ok("protocol_v7", pv == 7 and SimBridge.PROTOCOL_VERSION == 7,
-		"START_WORLD reply protocol_version=%d, SimBridge speaks v%d (GET_COGNITION / GET_CITIZEN_CONTEXT)"
+	# The cognition surfaces of this gate arrived in v7; the protocol has moved on
+	# since (v8 added TALK / GET_DIALOGUE) without changing any of them, so what is
+	# asserted is that the authority speaks the SAME version this build speaks and
+	# that it is at least the version GET_COGNITION / GET_CITIZEN_CONTEXT shipped in.
+	_ok("protocol_at_least_v7", pv == SimBridge.PROTOCOL_VERSION and pv >= 7,
+		"START_WORLD reply protocol_version=%d, SimBridge speaks v%d (>= v7: GET_COGNITION / GET_CITIZEN_CONTEXT)"
 		% [pv, SimBridge.PROTOCOL_VERSION])
 	var cog_on: bool = bool(started.get("cognition_enabled", false))
 	_ok("world_started_with_cognition", cog_on and SimBridge.mobility_enabled and SimBridge.work_enabled,
