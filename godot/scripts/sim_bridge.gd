@@ -67,6 +67,15 @@ var last_context: Dictionary = {}
 var dialogue_enabled := false
 var last_dialogue: Dictionary = {}
 
+# --- survivor groups (v9) --------------------------------------------------------
+# Whether the started world runs the GroupRuntime (START_WORLD / LOAD reply
+# `groups_enabled`; `groups: false` opts out). When true, GET_GROUPS reports the
+# roster of survivor groups (membership, shelter, roles, shared record, event
+# delta) and GROUP_QUERY answers a bounded player question (membership / where /
+# a grounded ask-to-join). Every group fact rendered comes from here.
+var groups_enabled := false
+var last_groups: Dictionary = {}
+
 
 func is_connected_to_sim() -> bool:
 	return _connected
@@ -119,6 +128,7 @@ func start_world(bundle: String, opts: Dictionary = {}) -> Dictionary:
 		work_enabled = bool(r.get("work_enabled", false))
 		cognition_enabled = bool(r.get("cognition_enabled", false))
 		dialogue_enabled = bool(r.get("dialogue_enabled", false))
+		groups_enabled = bool(r.get("groups_enabled", false))
 		world_started.emit(r)
 	return r
 
@@ -265,6 +275,29 @@ func get_dialogue(since_seq: int = 0) -> Dictionary:
 	return r
 
 
+func get_groups(since_seq: int = 0) -> Dictionary:
+	## Live survivor-group state (v9): the roster of groups (membership, shelter,
+	## roles, coordinator, shared record) and the event delta since `since_seq`
+	## (GROUP_FORMED, SHELTER_SELECTED, ROLE_PROPOSED/ACCEPTED, SUPPLY_*,
+	## GROUP_WARNING, MEMBER_LEFT, ...). The authority owns every fact here.
+	var r := _send("GET_GROUPS", {"since_seq": since_seq})
+	if _ok(r) and r.has("groups") and r["groups"] != null:
+		last_groups = r["groups"]
+	return r
+
+
+func group_query(op: String, citizen_id: int, player_citizen: int = -1) -> Dictionary:
+	## A bounded player question into the group layer (v9). `op` is one of:
+	##   membership  -> {in_group, role}         does this citizen belong to a group?
+	##   where       -> {group: {shelter, ...}}  where does its group shelter?
+	##   ask_to_join -> {result: {ok, accept, reason, aggregate}}  a grounded admission
+	## No free text; the reply is authoritative (the same decision NPCs use).
+	var fields := {"op": op, "citizen_id": citizen_id}
+	if player_citizen >= 0:
+		fields["player_citizen"] = player_citizen
+	return _send("GROUP_QUERY", fields)
+
+
 func get_mobility(routes: bool = true) -> Dictionary:
 	var r := _send("GET_MOBILITY", {"routes": routes})
 	if _ok(r) and r.has("mobility") and r["mobility"] != null:
@@ -387,6 +420,7 @@ func load(path: String) -> Dictionary:
 		work_enabled = bool(r.get("work_enabled", work_enabled))
 		cognition_enabled = bool(r.get("cognition_enabled", cognition_enabled))
 		dialogue_enabled = bool(r.get("dialogue_enabled", dialogue_enabled))
+		groups_enabled = bool(r.get("groups_enabled", groups_enabled))
 	return r
 
 

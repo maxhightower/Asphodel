@@ -255,7 +255,10 @@ def day():
     out["saves"]["admission_decision"] = _saveload(w, d, "admission_decision", tape)
 
     # ---- Phase F: collective threat ---------------------------------------
-    reporter = at[0]
+    # the reporter is a member physically at the shelter with company to warn
+    at_shelter_now = [m for m in g.active_members() if gr.at_shelter(g, m)]
+    reporter = at_shelter_now[0] if len(at_shelter_now) >= 2 else g.active_members()[0]
+    out["at_shelter_at_warn"] = at_shelter_now
     st = c.store(reporter)
     threat_fact, _ = st.remember(M.ATTACK_SEEN, c.now_s, actor=888, building_id=g.shelter_building,
                                  room_id=g.entrance_room, source=M.DIRECT, confidence=1.0)
@@ -267,9 +270,12 @@ def day():
     tape.drain()
 
     # ---- Phase G already exercised via saves; one voluntary departure -----
-    # a member whose trust in the group collapses leaves (§21)
-    leaver = g.active_members()[-1]
-    if leaver not in (g.founders[0], g.coordinator):
+    # a member whose trust in the group collapses leaves (§21): pick one who is neither the
+    # founder anchor nor the coordinator, and let its trust in the others fall away
+    cands = [m for m in g.active_members() if m != g.founders[0] and m != g.coordinator]
+    leaver = cands[-1] if cands else None
+    out["leaver"] = leaver
+    if leaver is not None:
         for o in g.active_members():
             if o != leaver:
                 r = c.rels.get(leaver, o, create=True)
@@ -473,7 +479,7 @@ def test_G10_G14_shelter_and_goals(day):
     _status("G11", "PASS" if known_ok else "FAIL", "every shelter candidate came from a member's own knowledge")
     _status("G12", "PASS" if len(day["regrouped"]) >= 3 else "FAIL",
             f"{len(day['regrouped'])} members physically regrouped at the shelter by {day['regroup_hour']}: {day['regrouped']}")
-    used = sorted({o["kind"] for gg in gr.groups.values() for o in gg.objectives.values()})
+    used = sorted({o.kind for gg in gr.groups.values() for o in gg.objectives.values()})
     _status("G13", "PASS" if len(GM.OBJECTIVES) >= 10 and used else "FAIL",
             f"{len(GM.OBJECTIVES)} objective kinds in the grammar; used {used}")
     # G14: a group objective became a real individual goal (source 'group')
@@ -547,10 +553,10 @@ def test_G25_G30_admission_and_decisions(day):
     _status("G28", "PASS" if not ref["accept"] else "FAIL", f"a refused outsider stays out: {ref}")
     dec = _ev(day, "grp", "GROUP_DECISION")
     disagreed = [e for e in dec if e.get("dissent")]
-    _status("G29", "PASS" if any(len(e.get("dissent", [])) >= 1 for e in dec) or True else "FAIL",
-            f"{len(dec)} group decisions, {len(disagreed)} with recorded dissent")
+    _status("G29", "PASS" if disagreed else "FAIL",
+            f"{len(dec)} group decisions, {len(disagreed)} with recorded dissent, e.g. {disagreed[0].get('dissent') if disagreed else None}")
     _status("G30", "PASS" if dec and all(e.get("outcome") is not None for e in dec) else "FAIL",
-            f"the bounded decision protocol resolved every proposal, e.g. {dec[0]['kind']}->{dec[0]['outcome']} tally {dec[0].get('tally')}")
+            f"the bounded decision protocol resolved every proposal, e.g. {dec[0].get('decision_kind')}->{dec[0]['outcome']} tally {dec[0].get('tally')}")
     assert req and grounded and accepted
 
 

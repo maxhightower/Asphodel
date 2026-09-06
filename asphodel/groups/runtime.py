@@ -27,7 +27,7 @@ from ..cognition import memory as M
 from ..cognition.beliefs import danger_of_building
 from ..citizens.goals import Goal, GoalKind
 from ..dialogue import acts as A
-from ..dialogue.session import FACE_TO_FACE, CALL
+from ..dialogue.session import FACE_TO_FACE, CALL, SHOUT
 from . import model as G
 
 SCHEMA_VERSION = 1
@@ -292,6 +292,8 @@ class GroupRuntime:
         members = g.active_members()
         if not members:
             return None
+        if g.shelter_building is not None:
+            return g.shelter_building        # idempotent: a shelter, once chosen, is not re-picked here
         # candidate -> {proposers, node, safety, capacity, familiarity}
         cand: Dict[int, dict] = {}
         for c in members:
@@ -469,9 +471,11 @@ class GroupRuntime:
             return None
         cid, score, comps = cand
         obj_kind = {G.GUARD: G.WATCH_ENTRANCE, G.SCAVENGER: G.SEEK_SUPPLIES}.get(role, G.MAINTAIN_SHELTER)
+        # a scavenger's objective starts with no building: _tick_scavenger discovers a known
+        # supply source. a guard's objective anchors on the shelter it watches.
         o = self._create_objective(g, obj_kind, assignee=cid, role=role,
-                                   building_id=g.shelter_building, room_id=g.entrance_room,
-                                   reason=f"group needs a {role}")
+                                   building_id=(None if role == G.SCAVENGER else g.shelter_building),
+                                   room_id=g.entrance_room, reason=f"group needs a {role}")
         self.event("ROLE_PROPOSED", group_id=g.group_id, role=role, citizen_id=cid, obj_id=o.obj_id,
                    score=round(score, 3), components=comps)
         accept, reason = self._role_decision(g, cid, role, score)
@@ -732,14 +736,23 @@ class GroupRuntime:
         uncontacted member stays uninformed (§24)."""
         gf = self._record_fact(g, reporter, fact, kind="threat_location")
         told = []
+        er = self.mobility.execs.get(reporter)
         for m in g.active_members():
-            if m == reporter or not self.cog._can_perceive(m):
+            if m == reporter or not self.cog._can_perceive(m) or self.dialogue is None:
                 continue
-            if self.dialogue is not None and self.dialogue.co_present(reporter, m)[0]:
-                if self.dialogue.warn(reporter, m, fact, FACE_TO_FACE):
-                    told.append(m)
-                    if m not in gf.recipients:
-                        gf.recipients.append(m)
+            em = self.mobility.execs.get(m)
+            # a warning gathered members hear as a shout through the shelter; anyone in the same
+            # building is reached, and a member in talking distance elsewhere face to face. A
+            # member not physically with the group is left uninformed (§24, §28).
+            same_building = (er is not None and em is not None and er.inside and em.inside
+                             and int(er.building_id) == int(em.building_id))
+            ch = SHOUT if same_building else (FACE_TO_FACE if self.dialogue.co_present(reporter, m)[0] else None)
+            if ch is None:
+                continue
+            if self.dialogue.warn(reporter, m, fact, ch):
+                told.append(m)
+                if m not in gf.recipients:
+                    gf.recipients.append(m)
         self.event("GROUP_WARNING", group_id=g.group_id, reporter=reporter, fact_id=gf.fact_id,
                    subject=fact.actor, building_id=fact.building_id, room_id=fact.room_id,
                    told=told, uncontacted=[m for m in g.active_members()
