@@ -449,32 +449,40 @@ def _scenario_c(w, tape, shop, attack, d, saves, blobs):
                 saves["active_conversation"] = _saveload(w, d, "active_conversation", w.current_hour())
                 break
 
-    # --- D24/D25 + after_threat_interruption: a fleeing NPC in a live player ----
-    # conversation. Its flight breaks co-presence (or a fresh sighting fires the
-    # threat override) and the runtime interrupts the conversation before the
-    # player timeout. Retry anchors until one actually interrupts.
-    for _ in range(30):
-        anchor = next((a for a in sorted(w.mobility.execs) if _fleeing(a) and dl.available(a, PLAYER)[0]
-                       and _copresent_partner(w, dl, a, PLAYER, want="still") is not None), None)
-        if anchor is not None:
-            partner = _copresent_partner(w, dl, anchor, PLAYER, want="still")
-            r = w.talk(partner, anchor, A.GREET)
-            if r and r.get("ok"):
-                cid = r["conv_id"]
-                cv = dl.conversations.get(cid)
-                while cv is not None and cv.state == "active" and w.dialogue.now_s - cv.last_s < 115:
-                    w.advance_seconds(1.0, focus_xy=FAR)
-                    tape.drain()
-                    cv = dl.conversations.get(cid)
-                if cv is not None and cv.state == "interrupted":
-                    out["interruption_conv"] = {"player": partner, "npc": anchor, "conv_id": cid}
-                    out["pre_attack_conversation"] = cv.to_state()
-                    if "after_threat_interruption" not in saves:
-                        saves["after_threat_interruption"] = _saveload(w, d, "after_threat_interruption",
-                                                                       w.current_hour())
-                    break
-        w.advance_seconds(1.0, focus_xy=FAR)
+    # --- D24/D25 + after_threat_interruption: a fresh first-hand threat perceived --
+    # mid-conversation interrupts it (§9, §28). We open a live player conversation
+    # and then have the NPC perceive an attack in its own location — the exact
+    # MemoryStore write the perception system makes when a citizen sees an attack —
+    # and step the runtime once: _substep drops the conversation with reason "threat".
+    attacker = attack.get("citizen_id")
+    for a in sorted(w.mobility.execs):
+        if not dl.available(a, PLAYER)[0] or not c._can_perceive(a):
+            continue
+        m = _copresent_partner(w, dl, a, PLAYER)
+        if m is None:
+            continue
+        r = w.talk(m, a, A.GREET)
+        if not (r and r.get("ok")):
+            continue
+        cid = r["conv_id"]
+        w.advance_seconds(1.0, focus_xy=FAR)          # the conversation is idle-active
         tape.drain()
+        exa = w.mobility.execs[a]
+        bid = int(exa.building_id) if exa.inside else None
+        rid = c._ctx(a).get("room_id") if exa.inside else None
+        c.store(a).remember(M.ATTACK_SEEN, w.cognition.now_s, actor=attacker, building_id=bid, room_id=rid,
+                            source=M.DIRECT, confidence=1.0)
+        w.advance_seconds(1.0, focus_xy=FAR)          # _substep sees the fresh threat -> interrupt
+        tape.drain()
+        cv = dl.conversations.get(cid)
+        if cv is not None and cv.state == "interrupted":
+            out["interruption_conv"] = {"player": m, "npc": a, "conv_id": cid, "perceived_attacker": attacker}
+            out["pre_attack_conversation"] = cv.to_state()
+            if "after_threat_interruption" not in saves:
+                saves["after_threat_interruption"] = _saveload(w, d, "after_threat_interruption", w.current_hour())
+            break
+        elif cv is not None:
+            dl._end(cv, "cleanup")                     # not interrupted (already fleeing etc.); try another pair
     return out
 
 

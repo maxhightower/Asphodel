@@ -805,7 +805,8 @@ class CognitionRuntime:
                     cands = [h for h in helpers if h != ben and h not in used
                              and not (pr["kind"] in ("cleaning_workload", "restock_workload")
                                       and w.activities[h].role == ben_role)
-                             and self.help_pairs.get((h, ben), 0) < HELP_MAX_PER_PAIR]
+                             and self.help_pairs.get((h, ben), 0) < HELP_MAX_PER_PAIR
+                             and self.dialogue.co_present(ben, h)[0]]
                     if not cands:
                         continue
                     asked = max(cands, key=lambda h: (self._closeness(ben, h), -h))

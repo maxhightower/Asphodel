@@ -502,10 +502,15 @@ def test_a_call_between_npcs_is_a_sequenced_exchange(day):
     for conv in calls:
         acts = [r["act"] for r in conv["acts"]]
         assert acts[0] == A.GREET, acts
-        assert A.WARN in acts and A.ASK_LOCATION in acts and A.ANSWER in acts
+        assert A.WARN in acts, acts
+        # the "where was that?" / location pair only when the warning carried a place;
+        # a warning about a dangerous person with no location is a shorter clean exchange
+        warn_rows = [r for r in conv["acts"] if r["act"] == A.WARN and r.get("proposition")]
+        if any(r["proposition"].get("building_id") is not None for r in warn_rows):
+            assert A.ASK_LOCATION in acts and A.ANSWER in acts, acts
         assert A.THANK in acts and acts[-1] == A.END_CONVERSATION, acts
         seconds = {r["t"] for r in conv["acts"]}
-        assert len(seconds) >= 5, f"a six-act call happened in {len(seconds)} seconds: {sorted(seconds)}"
+        assert len(seconds) == len(conv["acts"]), f"acts not one-per-second: {[r['t'] for r in conv['acts']]}"
         assert sorted(seconds) == [conv["acts"][0]["t"] + i for i in range(len(conv["acts"]))], seconds
         speakers = [r["speaker"] for r in conv["acts"]]
         assert all(x != y for x, y in zip(speakers, speakers[1:])), speakers

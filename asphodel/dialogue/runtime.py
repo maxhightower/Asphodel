@@ -245,10 +245,15 @@ class DialogueRuntime:
                    fact_id=fact.fact_id, origin_id=fact.origin_id, origin_witness=fact.origin_witness,
                    hops=fact.hops + 1, epistemic=g.get("epistemic"), confidence=g.get("confidence"),
                    channel=conv.channel, building_id=fact.building_id, room_id=fact.room_id, fact_kind=fact.kind)
+        # report the lineage that was actually TOLD (origin witness, origin id, hop count),
+        # the same values cognition logs in WARNING_RECEIVED and this method logs in
+        # FACT_SHARED. When the telling merged into a fact the listener already held from
+        # a different source, the stored copy keeps its own lineage, but the dialogue and
+        # cognition streams must not disagree about who said what.
         self.event("FACT_RECEIVED", conv_id=conv.conv_id, speaker=int(speaker), listener=int(listener),
-                   fact_id=told.fact_id, origin_id=told.origin_id, origin_witness=told.origin_witness, hops=told.hops,
-                   confidence=round(conf, 3), created=created, channel=conv.channel, fact_kind=told.kind,
-                   building_id=told.building_id, room_id=told.room_id)
+                   fact_id=told.fact_id, origin_id=fact.origin_id, origin_witness=fact.origin_witness,
+                   hops=fact.hops + 1, confidence=round(conf, 3), created=created, channel=conv.channel,
+                   fact_kind=told.kind, building_id=told.building_id, room_id=told.room_id)
         return A.Proposition.from_dict(g)
 
     # ------------------------------------------------------------------ NPC <-> NPC (§12, §13)
@@ -460,13 +465,8 @@ class DialogueRuntime:
             if not ok:
                 return None
         if channel == FACE_TO_FACE and not self.co_present(requester, helper)[0]:
-            # a face-to-face request needs the two in the same room, exactly as ask()/warn() do.
-            # a coworker out of the room but on a workplace tie is asked over a call instead;
-            # with no channel at all the request cannot be made.
-            if self.can_call(requester, helper):
-                channel = CALL
-            else:
-                return None
+            # a face-to-face request needs the two in the same room, exactly as ask()/warn() do
+            return None
         self.request_last[key] = self.now_s
         kind_hint = {"unstaffed_queue": "cover_station", "queue_overload": "cover_station",
                      "station_failed": "repair_station", "cleaning_workload": "help_clean",
@@ -557,7 +557,6 @@ class DialogueRuntime:
         conv = self.conversations.get(conv_id) if conv_id else None
         if conv is not None and (conv.state != ACTIVE or npc not in conv.participants):
             conv = None
-        opened = False
         if conv is None:
             ok, why = self.available(npc, PLAYER)
             if not ok:
@@ -567,7 +566,10 @@ class DialogueRuntime:
                 return {"ok": False, "reason": f"not_co_present:{why}", "npc": npc}
             conv = self._start(player, npc, PLAYER)
             self.player_sessions[player] = conv.conv_id
-            opened = True
+            # the greeting pair opens the session; it lands in the transcript, not in
+            # this turn's returned lines
+            self.say(conv, player, A.GREET)
+            self.say(conv, npc, A.GREET)
         else:
             ok, why = self.available(npc, PLAYER)
             if not ok:
@@ -575,10 +577,6 @@ class DialogueRuntime:
                 return {"ok": False, "reason": why, "npc": npc, "conv_id": conv.conv_id}
         act = str(act).upper()
         lines_before = len(conv.acts)
-        if opened:
-            # the greeting pair opens the exchange and is part of this first reply
-            self.say(conv, player, A.GREET)
-            self.say(conv, npc, A.GREET)
         if act == A.END_CONVERSATION:
             self.say(conv, player, A.END_CONVERSATION)
             self.say(conv, npc, A.END_CONVERSATION)
