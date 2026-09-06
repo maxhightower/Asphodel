@@ -87,8 +87,11 @@ def day():
     _houston_or_skip()
     s = WorldSession()
     assert s.handle({"cmd": Command.HELLO, "protocol_version": PROTOCOL_VERSION})["ok"]
+    # this exercises the WorkRuntime in isolation; dialogue (on by default since
+    # ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1) would add emergent help conversations that
+    # perturb which coworker services a broken station, so keep it off here
     r = s.handle({"cmd": Command.START_WORLD, "bundle": CITY, "seed": 0,
-                  "start_hour": START_HOUR, "player_citizen": PLAYER})
+                  "start_hour": START_HOUR, "player_citizen": PLAYER, "dialogue": False})
     assert r["ok"], r
     assert r["work_enabled"] is True
     w = s.world

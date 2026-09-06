@@ -217,7 +217,7 @@ def test_mobility_rows_carry_the_work_context(session):
         assert "work" in row, row["citizen_id"]
         w = row["work"]
         assert set(w) == {"role", "workplace_id", "task", "phase", "object_id", "room_id",
-                          "zone", "carrying"}
+                          "zone", "carrying", "help_for"}
     working = [row for row in rows if row["work"]["object_id"]]
     assert working, "no citizen was using an object"
     for row in working:
