@@ -177,6 +177,10 @@ class WorldSession:
         # on by default whenever mobility is on (`work: false` opts out).
         if world.mobility is not None and bool(msg.get("work", True)):
             world.enable_work()
+        # ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1: perception / memory / social
+        # decisions, on by default whenever mobility is on (`cognition: false` opts out).
+        if world.mobility is not None and bool(msg.get("cognition", True)):
+            world.enable_cognition()
         self.world = world
         self.paused = False
         self.bundle = bundle
@@ -338,6 +342,24 @@ class WorldSession:
             raise _BadArg(f"unknown object {oid}")
         return P.response(Command.SET_OBJECT_STATE, id=rid, object=o.to_row(),
                           holders=w.ledger.holders_of(oid), **self._summary())
+
+    # ---------------------------------------------------- npc cognition (v7)
+    def _cmd_get_cognition(self, msg, rid) -> dict:
+        self._require_world(Command.GET_COGNITION)
+        since = _opt_int(msg.get("since_seq"), "since_seq") or 0
+        return P.response(Command.GET_COGNITION, id=rid,
+                          cognition=self.world.cognition_snapshot(since_seq=since),
+                          **self._summary())
+
+    def _cmd_get_citizen_context(self, msg, rid) -> dict:
+        self._require_world(Command.GET_CITIZEN_CONTEXT)
+        if self.world.cognition is None:
+            raise _BadArg("cognition runtime not enabled")
+        cid = _req_int(msg.get("citizen_id"), "citizen_id")
+        if cid not in self.world.mobility.execs:
+            raise _BadArg(f"citizen {cid} is not a registered citizen")
+        return P.response(Command.GET_CITIZEN_CONTEXT, id=rid,
+                          context=self.world.citizen_context(cid), **self._summary())
 
     def _cmd_get_mobility(self, msg, rid) -> dict:
         self._require_world(Command.GET_MOBILITY)
@@ -562,6 +584,9 @@ class WorldSession:
                 # Smart objects / work: restore sessions, reservations and object state.
                 if world._pending_work_state is not None and world.mobility is not None:
                     world.enable_work()
+                # Cognition: restore memories, beliefs, relationships, social state.
+                if world._pending_cognition_state is not None and world.mobility is not None:
+                    world.enable_cognition()
         except Exception:
             pass
         return P.response(Command.LOAD, id=rid, path=path, **self._summary())
@@ -592,6 +617,7 @@ class WorldSession:
             "mobility_enabled": self.world.mobility is not None,
             "outbreak_enabled": self.world.outbreak is not None,
             "work_enabled": self.world.work is not None,
+            "cognition_enabled": self.world.cognition is not None,
         }
 
 

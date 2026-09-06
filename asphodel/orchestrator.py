@@ -162,6 +162,10 @@ class World:
         # ASPHODEL_SMART_OBJECTS_WORK_V1: rooms / smart objects / work execution
         self.work = None
         self._pending_work_state = None
+        # ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1: perception / memory / beliefs /
+        # relationships / social decisions (an input to the planner, never a mover)
+        self.cognition = None
+        self._pending_cognition_state = None
 
     # ------------------------------------------------------------------ inputs
     def set_focus(self, zones) -> None:
@@ -312,6 +316,38 @@ class World:
     def work_snapshot(self, since_seq: int = 0) -> dict | None:
         return None if self.work is None else self.work.snapshot(since_seq)
 
+    # ------------------------------------------------ npc cognition
+    def enable_cognition(self, priors: bool = True):
+        """Attach the CognitionRuntime (needs mobility; uses the work and
+        outbreak runtimes when present). Household/workplace priors are the
+        only non-experience relationship source. A pending saved state is
+        restored instead (no re-rolls)."""
+        from .cognition import CognitionRuntime
+        if self.mobility is None:
+            raise ValueError("enable_cognition needs enable_mobility first")
+        pending = self._pending_cognition_state
+        if pending is not None:
+            self.cognition = CognitionRuntime.from_state(pending, self.mobility, work=self.work,
+                                                         outbreak_fn=lambda: self.outbreak)
+            self._pending_cognition_state = None
+            return self.cognition
+        c = CognitionRuntime(self.mobility, self._seed, work=self.work, outbreak_fn=lambda: self.outbreak)
+        self.cognition = c
+        if priors:
+            c.init_priors(self.citizens)
+        return c
+
+    def cognition_snapshot(self, since_seq: int = 0) -> dict | None:
+        return None if self.cognition is None else self.cognition.snapshot(since_seq)
+
+    def citizen_context(self, cid: int) -> dict | None:
+        return None if self.cognition is None else self.cognition.citizen_context(int(cid))
+
+    def _merge_cognition(self, snap: dict) -> None:
+        c = self.cognition
+        for row in snap.get("citizens", []):
+            row["cognition"] = c.row(int(row["citizen_id"]))
+
     def _merge_work(self, snap: dict) -> None:
         """Stamp each mobility citizen row with its room/object/task context."""
         w = self.work
@@ -337,11 +373,7 @@ class World:
             room = self.tick_seconds - self._subtick_s
             chunk = min(remaining, room) if auto_tick else remaining
             if self.mobility is not None:
-                self.mobility.advance(chunk, self.current_hour())
-                if self.outbreak is not None:
-                    self.outbreak.advance(chunk)
-                if self.work is not None:
-                    self.work.advance(chunk)
+                self._advance_runtimes(chunk)
             self._subtick_s += chunk
             remaining -= chunk
             if auto_tick and self._subtick_s >= self.tick_seconds - 1e-9:
@@ -353,6 +385,30 @@ class World:
         return {"seconds": seconds, "ticks": ticks, "tick": int(self.sim.tick),
                 "hour": self.current_hour(), "game_seconds": self.game_seconds}
 
+    def _advance_runtimes(self, chunk: float) -> None:
+        """Movement, outbreak, work and cognition interleaved in 1 s substeps.
+
+        Every runtime integrates in 1 s substeps internally; running them in
+        lock-step (rather than each over the whole chunk in turn) means an
+        event of one second is visible to the others in that same second —
+        a warning shouted at an attack reaches the next room before the
+        attacker does, whatever chunk size the caller advances by. The result
+        is therefore independent of the caller's step size.
+        """
+        hour = self.current_hour()
+        remaining = float(chunk)
+        while remaining > 1e-9:
+            step = min(1.0, remaining)
+            self.mobility.advance(step, hour)
+            if self.outbreak is not None:
+                self.outbreak.advance(step)
+            if self.work is not None:
+                self.work.advance(step)
+            if self.cognition is not None:
+                self.cognition.advance(step)
+            hour += step / 3600.0
+            remaining -= step
+
     def mobility_snapshot(self, include_routes: bool = True) -> dict | None:
         if self.mobility is None:
             return None
@@ -361,6 +417,8 @@ class World:
             self._merge_health(snap)
         if self.work is not None:
             self._merge_work(snap)
+        if self.cognition is not None:
+            self._merge_cognition(snap)
         return snap
 
     def _merge_health(self, snap: dict) -> None:

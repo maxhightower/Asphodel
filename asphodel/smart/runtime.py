@@ -25,7 +25,7 @@ from typing import Callable, Dict, List, Optional, Tuple
 
 from ..embodied.executor import EmbodimentState, TripExecutor
 from ..world_source.detrand import hash64
-from .jobs import ROLES, Employment, JobRole, TaskDefinition, employment_for, task_duration
+from .jobs import HELP_TASKS, ROLES, Employment, JobRole, TaskDefinition, employment_for, task_duration
 from .objects import SmartObject, SmartObjectRegistry
 from .reservations import ReservationLedger
 from .rooms import RoomGraph
@@ -41,13 +41,15 @@ DIRT_ROLL = 0.30               # chance a completed use dirties the object
 DEPLETE_PER_BROWSE = 8
 RESTOCK_BELOW = 45
 MAX_EVENTS = 5000
+WORKLOAD_HELP_AT = 6           # a cleaning/restocking backlog this size is a problem a coworker can see
 
 # event vocabulary
 EV = ("EMPLOYED", "CLOCK_IN", "TASK_START", "MOVE_TO_OBJECT", "RESERVED", "RESERVATION_DENIED",
       "WAIT", "USE_START", "USE_END", "TASK_END", "STATE_CHANGE", "CUSTOMER_ARRIVED",
       "CUSTOMER_QUEUED", "SERVED", "CUSTOMER_UNSERVED", "BREAK_START", "BREAK_END",
       "WORK_INTERRUPTED", "RESERVATION_RELEASED", "CLOCK_OUT", "OBJECT_UNAVAILABLE",
-      "WORKPLACE_REDUCED_FUNCTION", "WORKPLACE_RESTORED", "SESSION_START", "SESSION_END")
+      "WORKPLACE_REDUCED_FUNCTION", "WORKPLACE_RESTORED", "SESSION_START", "SESSION_END",
+      "HELP_TASK", "HELP_DONE", "QUEUE_MOVED")
 
 
 @dataclass
@@ -78,6 +80,8 @@ class ActivityState:
     interrupted: str = ""
     accomplished: List[str] = field(default_factory=list)
     next_s: float = 0.0            # nothing to do before this clock time (wake scheduling)
+    help_for: int = -1             # the coworker a running help task is for (-1: none)
+    helped: int = 0                # help tasks completed this session
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -115,6 +119,10 @@ class WorkRuntime:
         self.counts: Dict[str, int] = {}                # event kind -> total ever (the ring drops old rows)
         self._pending_deltas: Dict[int, dict] = {}      # object state loaded before registry build
         self._next_minute_s = self.now_s
+        # room-level constraint hook (ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1
+        # §23): (citizen, building) -> set of room ids this citizen will not
+        # use objects in. Supplied by the cognition layer; None = no constraint.
+        self.room_filter: Optional[Callable[[int, int], set]] = None
         mobility.work = self
 
     # -- building semantics (regenerable) ----------------------------------------
@@ -314,7 +322,7 @@ class WorkRuntime:
             return f"health:{ex.override}"
         rt = self.mobility.citizens.get(cid)
         g = rt.active_goal if rt is not None else None
-        if g is not None and g.source in ("emergency", "health", "disruption"):
+        if g is not None and g.source in ("emergency", "health", "disruption", "belief", "social"):
             return f"{g.source}:{g.kind.value}"
         if g is not None and g.source == "schedule":
             return "shift_end"
@@ -441,22 +449,29 @@ class WorkRuntime:
                 for o in reg.objects.values())
         return True
 
-    def _candidates(self, task: TaskDefinition, reg: SmartObjectRegistry) -> List[SmartObject]:
+    def _avoided(self, cid: int, bid: int) -> set:
+        if self.room_filter is None:
+            return set()
+        return self.room_filter(int(cid), int(bid)) or set()
+
+    def _candidates(self, task: TaskDefinition, reg: SmartObjectRegistry,
+                    cid: Optional[int] = None) -> List[SmartObject]:
         objs = reg.with_affordance(task.affordance) if task.affordance else list(reg.objects.values())
         if task.caps:
             objs = [o for o in objs if o.has(*task.caps)]
-        return [o for o in objs if o.available()]
+        avoid = self._avoided(cid, reg.building_id) if cid is not None else set()
+        return [o for o in objs if o.available() and o.room_id not in avoid]
 
     def _select_target(self, task: TaskDefinition, a: ActivityState, reg: SmartObjectRegistry,
                        emp: Employment, cid: int) -> Optional[SmartObject]:
-        cands = self._candidates(task, reg)
+        cands = self._candidates(task, reg, cid)
         if not cands:
             return None
         sel = task.selector
         if sel == "assigned":
             if emp.assigned_object:
                 o = reg.get(emp.assigned_object)
-                if o is not None and o.available():
+                if o is not None and o.available() and o.room_id not in self._avoided(cid, reg.building_id):
                     return o
             return self._nearest_free(cands, a, cid)
         if sel == "dirtiest":
@@ -483,7 +498,7 @@ class WorkRuntime:
 
     def _alternative(self, task: TaskDefinition, a: ActivityState, reg: SmartObjectRegistry,
                      emp: Employment, cid: int, exclude: str) -> Optional[SmartObject]:
-        cands = [o for o in self._candidates(task, reg) if o.object_id != exclude
+        cands = [o for o in self._candidates(task, reg, cid) if o.object_id != exclude
                  and self.ledger.is_free(o, o.exclusive)]
         return self._nearest_free(cands, a, cid) if cands else None
 
@@ -531,8 +546,9 @@ class WorkRuntime:
         a.wait_since_s = self.now_s
         # stand in the role's idle zone (its first zone that exists here)
         target = None
+        avoid = self._avoided(cid, a.building_id)
         for z in role.workplace_zones:
-            rooms = g.rooms_of_zone(z)
+            rooms = [r for r in g.rooms_of_zone(z) if r not in avoid]
             if rooms:
                 target = g.rooms[rooms[0]].center()
                 break
@@ -555,13 +571,13 @@ class WorkRuntime:
 
     def _use(self, cid: int, ex: TripExecutor, a: ActivityState, reg: SmartObjectRegistry, dt: float) -> None:
         obj = reg.get(a.object_id) if a.object_id else None
-        if obj is None or not obj.available():
+        if obj is None or (not obj.available() and a.task_id != "repair_station"):
             self._object_lost(cid, ex, a, "object unavailable")
             return
         a.progress_s += dt
         if a.kind == "worker" and a.task_id != "take_break":
             a.worked_s += dt
-        if a.task_id == "man_register":
+        if a.task_id in ("man_register", "cover_station"):
             # serve whoever is queued while manning the station
             q = self.queues.get(obj.object_id)
             if q:
@@ -630,14 +646,30 @@ class WorkRuntime:
         elif effect == "rest":
             a.worked_s = 0.0
             self.event("BREAK_END", citizen_id=cid, **self._where(ex, a))
+        elif effect == "repair":
+            if not obj.state.get("working", True):
+                obj.state["working"] = True
+                a.accomplished.append(f"repaired:{obj.object_id}")
+                self.event("STATE_CHANGE", citizen_id=cid, object_id=obj.object_id, key="working",
+                           value=True, building_id=a.building_id, room_id=obj.room_id)
+                self._minute_scan()
         elif effect == "served":
             pass
+        covering = a.task_id == "cover_station" and bool(self.queues.get(obj.object_id))
+        if a.help_for >= 0 and not covering:
+            a.helped += 1
+            a.accomplished.append(f"helped:{a.help_for}:{a.task_id}:{obj.object_id}")
+            self.event("HELP_DONE", citizen_id=cid, beneficiary=a.help_for, task_id=a.task_id,
+                       object_id=obj.object_id, effect=effect, building_id=a.building_id, room_id=obj.room_id)
+            a.help_for = -1
         # residents / customers
         if a.kind == "customer" and effect == "" and task is None and a.task_id == "browse":
             self._deplete(obj, cid)
         self.event("TASK_END", citizen_id=cid, effect=effect, **self._where(ex, a))
         keep_station = (a.kind == "worker" and a.task_id in ("man_register", "serve_customer")
                         and self._task_def(a) is not None)
+        if a.kind == "worker" and a.task_id == "cover_station" and self.queues.get(obj.object_id):
+            keep_station = True            # customers still queued here: keep covering
         if not keep_station:
             for oid in self.ledger.release(cid, obj.object_id):
                 self.event("RESERVATION_RELEASED", citizen_id=cid, object_id=oid, reason="task complete")
@@ -652,11 +684,13 @@ class WorkRuntime:
             a.task_id = ""
         a.phase = "idle"
         a.next_s = 0.0
-        if a.kind == "worker" and keep_station:
-            # stay on station: a new instance of the same station task unless a break is due
-            pass
+        if a.kind == "worker" and covering:
+            # customers still queued at the covered station: another covering instance
+            self._begin_task(cid, ex, a, self.graphs[a.building_id], HELP_TASKS["cover_station"], obj)
 
     def _task_def(self, a: ActivityState) -> Optional[TaskDefinition]:
+        if a.task_id in HELP_TASKS:
+            return HELP_TASKS[a.task_id]
         role = ROLES.get(a.role)
         if role is None:
             return None
@@ -691,9 +725,10 @@ class WorkRuntime:
     # -- customers -------------------------------------------------------------------
     def _customer_next(self, cid: int, ex: TripExecutor, a: ActivityState,
                        reg: SmartObjectRegistry, g: RoomGraph) -> None:
-        stations = reg.with_caps("station", "transact")
+        avoid = self._avoided(cid, a.building_id)
+        stations = [o for o in reg.with_caps("station", "transact") if o.room_id not in avoid]
         if a.task_id == "":
-            shelves = [o for o in reg.with_affordance("browse") if o.available()]
+            shelves = [o for o in reg.with_affordance("browse") if o.available() and o.room_id not in avoid]
             if shelves and stations:
                 k = hash64(self.seed, "browse", cid, a.session_start_s) % len(shelves)
                 o = shelves[k]
@@ -835,6 +870,162 @@ class WorkRuntime:
         self.event("RESERVED", citizen_id=cid, object_id=o.object_id, exclusive=o.exclusive, task_id=want)
         self.event("TASK_START", citizen_id=cid, affordance=want, duration_s=a.duration_s, **self._where(ex, a))
         self._go_to(cid, ex, a, g, o.use_xy)
+
+    # -- helping (ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1 §12) --------------------
+    def problems(self, bid: int) -> List[dict]:
+        """Observable work problems inside one building right now — what a
+        co-present citizen can see: a queue nobody is serving, a coworker
+        displaced from a broken station, a cleaning or restocking workload
+        beyond one worker. Each row names the citizen it is a problem for."""
+        bid = int(bid)
+        reg = self.registry(bid)
+        out: List[dict] = []
+        workers = {c: a for c, a in self.activities.items() if a.building_id == bid and a.kind == "worker"}
+        # unstaffed queues (the beneficiary is the station's assigned cashier, or the queue itself)
+        for oid, q in sorted(self.queues.items()):
+            if not oid.startswith(f"so:{bid}:") or not q:
+                continue
+            if self.ledger.holders_of(oid):
+                if len(q) >= 3:
+                    out.append({"kind": "queue_overload", "object_id": oid, "queue": len(q),
+                                "citizen_id": self.ledger.holders_of(oid)[0]})
+                continue
+            owner = next((c for c, e in sorted(self.employment.items()) if e.assigned_object == oid), None)
+            out.append({"kind": "unstaffed_queue", "object_id": oid, "queue": len(q), "citizen_id": owner})
+        # broken stations whose assigned worker is present (displaced or waiting)
+        for c, a in sorted(workers.items()):
+            emp = self.employment.get(c)
+            if emp is None or not emp.assigned_object:
+                continue
+            o = reg.get(emp.assigned_object)
+            if o is not None and not o.available():
+                out.append({"kind": "station_failed", "object_id": o.object_id, "citizen_id": c,
+                            "displaced_to": a.object_id, "phase": a.phase})
+        # workloads
+        for c, a in sorted(workers.items()):
+            if a.role == "cleaner":
+                dirty = [o.object_id for o in reg.objects.values() if o.state.get("dirty") and o.affordance("clean")]
+                if len(dirty) >= WORKLOAD_HELP_AT:
+                    out.append({"kind": "cleaning_workload", "citizen_id": c, "objects": len(dirty),
+                                "object_id": None})
+            elif a.role == "stocker":
+                low = [o.object_id for o in reg.objects.values()
+                       if o.has("shelf", "stock") and int(o.state.get("stock", 100)) < RESTOCK_BELOW]
+                if len(low) >= WORKLOAD_HELP_AT:
+                    out.append({"kind": "restock_workload", "citizen_id": c, "objects": len(low),
+                                "object_id": None})
+        return out
+
+    def help_target(self, helper: int, problem: dict) -> Optional[Tuple[str, str]]:
+        """(task_id, object_id) a helper would run for this problem, or None."""
+        a = self.activities.get(helper)
+        if a is None or a.kind != "worker":
+            return None
+        reg = self.registry(a.building_id)
+        kind = problem.get("kind")
+        avoid = self._avoided(helper, a.building_id)
+        if kind in ("unstaffed_queue",):
+            o = reg.get(problem["object_id"])
+            if o is not None and o.available() and o.room_id not in avoid and not self.ledger.holders_of(o.object_id):
+                return ("cover_station", o.object_id)
+            return None
+        if kind == "queue_overload":
+            free = [o for o in reg.with_caps("station", "transact") if o.available()
+                    and o.room_id not in avoid and self.ledger.is_free(o, True)]
+            if not free:
+                return None
+            src = reg.get(problem["object_id"])
+            o = min(free, key=lambda x: (_d(x.use_xy, src.use_xy) if src else 0.0, x.object_id))
+            return ("cover_station", o.object_id)
+        if kind == "station_failed":
+            o = reg.get(problem["object_id"])
+            if o is not None and o.affordance("clean") and not o.available() \
+                    and o.room_id not in avoid and self.ledger.is_free(o, True):
+                return ("repair_station", o.object_id)
+            return None
+        if kind == "cleaning_workload":
+            objs = [o for o in reg.objects.values() if o.state.get("dirty") and o.affordance("clean")
+                    and o.available() and o.room_id not in avoid and self.ledger.is_free(o, True)]
+            o = self._nearest_free(objs, a, helper)
+            return None if o is None else ("help_clean", o.object_id)
+        if kind == "restock_workload":
+            objs = [o for o in reg.objects.values() if o.has("shelf", "stock") and o.available()
+                    and int(o.state.get("stock", 100)) < RESTOCK_BELOW and o.room_id not in avoid
+                    and self.ledger.is_free(o, False)]
+            o = self._nearest_free(objs, a, helper)
+            return None if o is None else ("help_restock", o.object_id)
+        return None
+
+    def assist(self, helper: int, task_id: str, object_id: str, beneficiary: int) -> bool:
+        """Run one help task for a coworker: the helper leaves what it was doing
+        (its holds released, a kept station released too), reserves the given
+        object and walks to it through the ordinary task path. Returns False
+        when the helper is not a worker here or the object cannot be held."""
+        a = self.activities.get(helper)
+        task = HELP_TASKS.get(task_id)
+        if a is None or a.kind != "worker" or task is None or a.help_for >= 0:
+            return False
+        reg = self.registry(a.building_id)
+        obj = reg.get(object_id)
+        if obj is None or obj.building_id != a.building_id:
+            return False
+        if task_id == "repair_station":
+            if obj.available():
+                return False
+        elif not obj.available():
+            return False
+        if not self.ledger.is_free(obj, task.hold == "exclusive" or obj.exclusive) \
+                and helper not in self.ledger.holders_of(obj.object_id):
+            return False
+        ex = self.mobility.execs[helper]
+        g = self.graphs[a.building_id]
+        if a.phase in ("using", "to_object") and a.task_id and a.task_id != task_id:
+            self.event("TASK_END", citizen_id=helper, effect="abandoned", reason=f"helping {beneficiary}",
+                       **self._where(ex, a))
+        for oid in self.ledger.release(helper):
+            self.event("RESERVATION_RELEASED", citizen_id=helper, object_id=oid, reason=f"helping {beneficiary}")
+        if not self._take(helper, obj, task, a):
+            return False
+        a.help_for = int(beneficiary)
+        a.waypoints = []
+        self.event("HELP_TASK", citizen_id=helper, beneficiary=int(beneficiary), task_id=task_id,
+                   object_id=obj.object_id, building_id=a.building_id, room_id=obj.room_id)
+        self._begin_task(helper, ex, a, g, task, obj)
+        if task_id == "cover_station":
+            self._move_queue_to(obj, helper, beneficiary)
+        return True
+
+    def _move_queue_to(self, station: SmartObject, helper: int, beneficiary: int) -> None:
+        """A newly covered station takes the back half of the longest queue in
+        the building (or the whole unstaffed one)."""
+        bid = station.building_id
+        best, bq = None, []
+        for oid, q in sorted(self.queues.items()):
+            if oid.startswith(f"so:{bid}:") and oid != station.object_id and len(q) > len(bq):
+                best, bq = oid, q
+        if best is None:
+            return
+        staffed = bool(self.ledger.holders_of(best))
+        movers = list(bq) if not staffed else bq[len(bq) // 2:]
+        if not movers:
+            return
+        for c in movers:
+            bq.remove(c)
+        if not bq:
+            self.queues.pop(best, None)
+        nq = self.queues.setdefault(station.object_id, [])
+        for c in movers:
+            nq.append(c)
+            ca = self.activities.get(c)
+            if ca is not None:
+                ca.object_id = station.object_id
+                ca.progress_s = 0.0
+                qi = len(nq) - 1
+                ux, uy = station.use_xy
+                ca.waypoints = [[ux + math.cos(station.facing) * QUEUE_SPACING_M * (qi + 1),
+                                 uy + math.sin(station.facing) * QUEUE_SPACING_M * (qi + 1)]]
+        self.event("QUEUE_MOVED", citizen_id=helper, beneficiary=beneficiary, from_object=best,
+                   object_id=station.object_id, customers=list(movers), building_id=bid)
 
     # -- workplace function --------------------------------------------------------
     def workplace_status(self, bid: int) -> dict:

@@ -101,6 +101,25 @@ ROLES: Dict[str, JobRole] = {
         required_caps=("shelf", "stock")),
 }
 
+# Help tasks (ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1 §12): what a coworker can
+# do for another through the same grammar. They are not part of any role's
+# pool; the cognition layer asks the WorkRuntime to run one (``assist``) once a
+# citizen has decided to help. Targets are given, not selected.
+HELP_TASKS: Dict[str, TaskDefinition] = {
+    # take over a station's queue (the beneficiary's queue moves to it)
+    "cover_station": TaskDefinition("cover_station", "transact", "given", ("station", "transact"),
+                                    (1200.0, 1200.0), 0.95, True, "", "staffed"),
+    # clean one object of a coworker's cleaning workload
+    "help_clean": TaskDefinition("help_clean", "clean", "given", (), (90.0, 180.0), 0.95, True,
+                                 "", "clean"),
+    # restock one depleted shelf of a coworker's workload
+    "help_restock": TaskDefinition("help_restock", "restock", "given", ("shelf", "stock"),
+                                   (240.0, 300.0), 0.95, True, "", "restock", "shared"),
+    # put a broken station back into service (maintenance through the object's clean affordance)
+    "repair_station": TaskDefinition("repair_station", "clean", "given", ("station",),
+                                     (300.0, 420.0), 0.95, True, "", "repair"),
+}
+
 # occupation -> preferred roles in order; the workplace's objects decide which applies
 _OCCUPATION_ROLES: Dict[str, Tuple[str, ...]] = {
     "grocery_clerk": ("cashier", "stocker", "cleaner"),

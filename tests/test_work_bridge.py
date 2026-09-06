@@ -64,7 +64,7 @@ def session():
 # --------------------------------------------------------------------------- #
 def test_hello_advertises_v6_and_the_work_commands():
     _s, r = _hello()
-    assert PROTOCOL_VERSION == 6 and r["protocol_version"] == 6
+    assert PROTOCOL_VERSION >= 6 and r["protocol_version"] == PROTOCOL_VERSION
     for cmd in (Command.GET_WORK, Command.GET_ROOMS, Command.SET_OBJECT_STATE):
         assert cmd in r["commands"], cmd
     assert r["server"] == "asphodel-bridge"

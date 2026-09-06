@@ -35,7 +35,10 @@ from typing import Any
 #      (ASPHODEL_OUTBREAK_V1: per-citizen health, events, disruptions).
 # v6: + GET_WORK / GET_ROOMS / SET_OBJECT_STATE and the START_WORLD `work`
 #      option (ASPHODEL_SMART_OBJECTS_WORK_V1: rooms, smart objects, work).
-PROTOCOL_VERSION = 6
+# v7: + GET_COGNITION / GET_CITIZEN_CONTEXT and the START_WORLD `cognition`
+#      option (ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1: memory, beliefs,
+#      relationships, social actions; the context API for dialogue).
+PROTOCOL_VERSION = 7
 
 
 class Command:
@@ -79,6 +82,9 @@ class Command:
     GET_WORK = "GET_WORK"                    # sessions, reservations, queues, events since seq
     GET_ROOMS = "GET_ROOMS"                  # rooms, zones, smart objects and occupants of a building
     SET_OBJECT_STATE = "SET_OBJECT_STATE"    # authoritative external object state change
+    # --- npc cognition (v7) ---------------------------------------------
+    GET_COGNITION = "GET_COGNITION"          # cognition events since seq, counts, who is avoiding what
+    GET_CITIZEN_CONTEXT = "GET_CITIZEN_CONTEXT"  # the structured context of one citizen (dialogue input)
 
     ALL = frozenset({
         HELLO, START_WORLD, SET_FOCUS, ADVANCE, INTERVENE, INTERACT_WITH,
@@ -89,6 +95,7 @@ class Command:
         ADVANCE_TIME, MOBILITY_REPORT, GET_MOBILITY,
         SEED_OUTBREAK, GET_OUTBREAK,
         GET_WORK, GET_ROOMS, SET_OBJECT_STATE,
+        GET_COGNITION, GET_CITIZEN_CONTEXT,
     })
 
 

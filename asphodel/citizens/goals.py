@@ -30,6 +30,7 @@ SOURCE_BASE_PRIORITY = {
     "need": 0.35,
     "schedule": 0.55,
     "social": 0.45,
+    "belief": 0.66,      # a citizen acting on what it knows (cognition layer); above any schedule goal
     "emergency": 0.92,
     "player": 1.0,
 }

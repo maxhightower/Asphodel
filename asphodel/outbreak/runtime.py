@@ -200,7 +200,7 @@ class OutbreakRuntime:
         if ex.state == EmbodimentState.DRIVING and ex.vehicle_id:
             self._abandon_vehicle(cid, ex, "driver incapacitated")
         ex.set_override("incapacitated", self.now_s)
-        _drop_goals(rt, "health", "emergency", "disruption")
+        _drop_goals(rt, "health", "emergency", "disruption", "belief")
         self.event("INCAPACITATED", citizen_id=cid, **self._where(ex))
         self.event("PLAN_INVALIDATED", citizen_id=cid, reason="incapacitated", **self._where(ex))
 
@@ -232,7 +232,7 @@ class OutbreakRuntime:
         rt.has_vehicle = False
         rt.in_vehicle = False
         rt.inside_building = ex.inside
-        _drop_goals(rt, "schedule", "health", "emergency", "disruption", "idle", "need", "social", "player")
+        _drop_goals(rt, "schedule", "health", "emergency", "disruption", "idle", "need", "social", "player", "belief")
         rt.goals.goals = []
         rt.active_goal = None
         rt.goals._active = None
@@ -501,6 +501,17 @@ class OutbreakRuntime:
         self._known_threats.setdefault(vcid, set()).add(ucid)
 
     # -- fear / observation -----------------------------------------------------------
+    def _same_room(self, a: int, b: int) -> bool:
+        """Room-level line of sight indoors (ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1
+        §22/§23): with the smart-object layer on, a citizen sees what happens in
+        its own room, not through walls. Without it the building is one room."""
+        work = getattr(self.mobility, "work", None)
+        if work is None:
+            return True
+        ra = work.context(int(a)).get("room_id")
+        rb = work.context(int(b)).get("room_id")
+        return ra is None or rb is None or ra == rb
+
     def _witnesses(self) -> None:
         execs = self.mobility.execs
         threats = [(cid, r) for cid, r in sorted(self.records.items())
@@ -520,7 +531,8 @@ class OutbreakRuntime:
                 if tcid in seen or tcid == wcid:
                     continue
                 tx = execs[tcid]
-                near = (wx.inside and tx.inside and wx.building_id == tx.building_id) or \
+                near = (wx.inside and tx.inside and wx.building_id == tx.building_id
+                        and self._same_room(wcid, tcid)) or \
                        (not wx.inside and not tx.inside and _d(wx.pos, tx.pos) <= THREAT_RADIUS_M)
                 if not near:
                     continue
@@ -538,7 +550,8 @@ class OutbreakRuntime:
                 vx = execs.get(e["victim_citizen"])
                 if vx is None:
                     continue
-                near = (wx.inside and vx.inside and wx.building_id == vx.building_id) or \
+                near = (wx.inside and vx.inside and wx.building_id == vx.building_id
+                        and self._same_room(wcid, e["victim_citizen"])) or \
                        (not wx.inside and _d(wx.pos, vx.pos) <= THREAT_RADIUS_M)
                 key = ("attack", e["seq"])
                 if near and key not in seen:

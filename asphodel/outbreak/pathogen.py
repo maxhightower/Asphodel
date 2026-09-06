@@ -70,6 +70,20 @@ def classic_zombie() -> OutbreakPathogen:
     return OutbreakPathogen()
 
 
+def classic_zombie_fast() -> OutbreakPathogen:
+    """The classic zombie with an accelerated onset: symptoms in ~6 minutes,
+    collapse, death and reanimation within another ~4. Used where a
+    certification day needs the threat to emerge where citizens are (a case
+    seeded inside a busy shop rises at its door while customers are still
+    arriving) rather than hours later at home. Transmission and undead
+    behaviour are the classic values."""
+    return OutbreakPathogen(
+        name="classic_zombie_fast", incubation_s=6.0 * 60.0, symptomatic_s=60.0,
+        incapacitated_s=60.0, presymptomatic_s=2.0 * 60.0, jitter=0.2,
+        asymptomatic_fraction=0.0, mortality_fraction=1.0, reanimation_fraction=1.0,
+        reanimation_delay_s=2.0 * 60.0)
+
+
 def classic_shambler() -> OutbreakPathogen:
     """Donor archetype, values in days as the donor wrote them."""
     return OutbreakPathogen(
@@ -109,6 +123,7 @@ def necro_latent() -> OutbreakPathogen:
 
 ARCHETYPES: Dict[str, callable] = {
     "classic_zombie": classic_zombie,
+    "classic_zombie_fast": classic_zombie_fast,
     "classic_shambler": classic_shambler,
     "rage_virus": rage_virus,
     "cordyceps": cordyceps,
