@@ -21,7 +21,8 @@ const ExteriorWorld = preload("res://scripts/exterior_world.gd")
 var _bundle := "houston"
 var _cid := 42
 var _trace_path := "/tmp/asph_outbreak_probe.json"
-var _save_path := "/tmp/asph_outbreak_gate_save.json"
+var _save_path := OS.get_user_data_dir().path_join("asph_outbreak_gate_save.json")
+var _port := 8765
 var _game_dt := 0.25
 var _fail := 0
 var _log: Array[String] = []
@@ -55,6 +56,10 @@ func _ready() -> void:
 			_cid = int(args[i + 1])
 		elif args[i] == "--trace" and i + 1 < args.size():
 			_trace_path = args[i + 1]
+		elif args[i] == "--save" and i + 1 < args.size():
+			_save_path = args[i + 1]
+		elif args[i] == "--port" and i + 1 < args.size():
+			_port = int(args[i + 1])
 		elif args[i] == "--game-dt" and i + 1 < args.size():
 			_game_dt = float(args[i + 1])
 	await get_tree().physics_frame
@@ -158,7 +163,7 @@ func _run() -> void:
 	add_child(_ext)
 	_have_ext = _ext.setup("res://bundles/" + _bundle)
 	_info("exterior", "compiled world streamed: %s" % str(_have_ext))
-	if not SimBridge.connect_to_sim():
+	if not SimBridge.connect_to_sim("127.0.0.1", _port):
 		_ok("bridge_connected", false, "start python -m asphodel.bridge.server first")
 		return
 	var started: Dictionary = SimBridge.start_world(_bundle, {"seed": 0, "start_hour": 5.0,

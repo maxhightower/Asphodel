@@ -629,29 +629,33 @@ class WorldSession:
         path = msg.get("path")
         if not isinstance(path, str) or not path:
             raise _BadArg("LOAD requires a string 'path'")
-        from ..save import load_world_file, SaveError
+        from ..save import load_world, SaveError
         import json as _json
         try:
-            world = load_world_file(path)
-        except SaveError as e:
+            with open(path) as f:
+                state = _json.load(f)
+            world = load_world(state)
+        except (SaveError, OSError, ValueError) as e:
             raise _BadArg(str(e))
-        self.world = world
-        self.paused = False
+        gi = state.get("game_identity", {})
+        bundle = gi.get("bundle")
+        player_citizen = gi.get("player_citizen")
+        runtime_names = ("mobility", "outbreak", "work", "cognition", "dialogue", "groups")
+        required = [name for name in runtime_names
+                    if getattr(world, f"_pending_{name}_state", None) is not None]
+        if required and not bundle:
+            raise _BadArg("LOAD cannot restore saved runtimes without bundle identity")
         # Restore game identity + re-attach the bundle's static geometry so
         # embodiment (Package 2) resolves real buildings/roads after reload.
         try:
-            with open(path) as f:
-                gi = _json.load(f).get("game_identity", {})
-            self.bundle = gi.get("bundle")
-            self.player_citizen = gi.get("player_citizen")
-            if self.bundle:
+            if bundle:
                 from ..embodiment import CitySpatialContext
                 from .worldfactory import resolve_bundle_dir
-                bdir = resolve_bundle_dir(self.bundle)
+                bdir = resolve_bundle_dir(bundle)
                 world.set_spatial_context(CitySpatialContext.from_bundle_dir(bdir))
                 # Embodied mobility: restore trips exactly where they were.
                 if world._pending_mobility_state is not None:
-                    self._enable_mobility(world, bdir, True)
+                    world.enable_mobility(bundle_dir=bdir)
                 # Outbreak: restore health records/events; never re-seed.
                 if world._pending_outbreak_state is not None and world.mobility is not None:
                     world.enable_outbreak()
@@ -665,8 +669,20 @@ class WorldSession:
                         world.enable_dialogue()
                     if world._pending_groups_state is not None:
                         world.enable_groups()
-        except Exception:
-            pass
+        except Exception as e:
+            # Legacy macro-only saves may have no attachable city geometry.
+            # A save that contains live runtimes must never degrade silently.
+            if required:
+                raise _BadArg(f"LOAD runtime restoration failed: {type(e).__name__}: {e}") from e
+        missing = [name for name in required if getattr(world, name, None) is None]
+        if missing:
+            raise _BadArg(f"LOAD failed to restore runtimes: {', '.join(missing)}")
+        # Publish only after every required runtime has been reconstructed.
+        self.world = world
+        self.bundle = bundle
+        self.player_citizen = player_citizen
+        self.seed = world._seed
+        self.paused = False
         return P.response(Command.LOAD, id=rid, path=path, **self._summary())
 
     def _cmd_shutdown(self, msg, rid) -> dict:

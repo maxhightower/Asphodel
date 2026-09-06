@@ -66,6 +66,13 @@ func ensure_authority(host: String = "127.0.0.1") -> Dictionary:
 			return _fail("authority_crashed",
 				"authority process exited before it began serving (see logs)")
 		if SimBridge.connect_to_sim(host, port, HEALTH_RETRY_MS):
+			if not OS.has_feature("editor"):
+				var stamp := OS.get_executable_path().get_base_dir().path_join("SIM_SHA")
+				if not FileAccess.file_exists(stamp):
+					return _fail("build_mismatch", "client SIM_SHA stamp missing")
+				var expected := FileAccess.get_file_as_string(stamp).strip_edges()
+				if expected == "" or expected == "unknown" or expected != str(SimBridge.last_hello.get("sim_sha", "")):
+					return _fail("build_mismatch", "client and authority source identities differ")
 			authority_port = port
 			running = true
 			last_error_code = ""
@@ -145,6 +152,8 @@ func _resolve_authority() -> Dictionary:
 			return {"ok": true, "exe": bundled, "args": []}
 
 	# Dev: run tools/authority_launch.py with the interpreter we can find.
+	if not OS.has_feature("editor"):
+		return {"ok": false, "code": "authority_missing", "detail": "export requires its bundled authority"}
 	var repo := _repo_root()
 	var launch := repo.path_join("tools").path_join("authority_launch.py")
 	if not FileAccess.file_exists(launch):

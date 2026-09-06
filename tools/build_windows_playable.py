@@ -117,7 +117,7 @@ def run_export(godot: str, preset: str, out_file: Path) -> tuple[bool, str]:
     cmd = [godot, "--headless", "--path", str(GODOT_PROJECT),
            "--export-release", preset, str(out_file)]
     proc = subprocess.run(cmd, capture_output=True, text=True)
-    ok = out_file.exists() and (out_file.stat().st_size > 0)
+    ok = proc.returncode == 0 and out_file.exists() and (out_file.stat().st_size > 0)
     tail = (proc.stdout + proc.stderr)
     # keep only interesting lines
     interesting = [l for l in tail.splitlines()
@@ -148,6 +148,28 @@ def make_zip(src_dir: Path, zip_path: Path) -> None:
         for f in sorted(src_dir.rglob("*")):
             if f.is_file():
                 zf.write(f, f.relative_to(src_dir.parent))
+
+
+def validate_authority(out_dir: Path, target: str) -> list[str]:
+    """Reject missing or wrong-platform authorities, including cross-export stubs.
+
+    This is a packaging check, not a native execution certificate.
+    """
+    root = out_dir / "authority"
+    executable = root / ("authority.exe" if target == "windows" else "authority")
+    if not executable.is_file():
+        return [f"matching {target} authority executable missing"]
+    with executable.open("rb") as stream:
+        magic = stream.read(4)
+    expected = b"MZ" if target == "windows" else b"\x7fELF"
+    problems = []
+    if not magic.startswith(expected):
+        problems.append(f"authority executable is not a {target} binary")
+    if not (root / "SIM_SHA").is_file():
+        problems.append("authority SIM_SHA missing")
+    elif (root / "SIM_SHA").read_text().strip() != source_sha():
+        problems.append("authority SIM_SHA differs from current source")
+    return problems
 
 
 def main(argv=None) -> int:
@@ -246,7 +268,9 @@ def main(argv=None) -> int:
     auth_root = DIST / "authority"
     if auth_root.exists():
         try:
-            (auth_root / "SIM_SHA").write_text(source_sha() + "\n")
+            stamp = auth_root / "SIM_SHA"
+            if not stamp.is_file() or stamp.read_text().strip() != source_sha():
+                raise ValueError("refusing to restamp or stage a stale authority; freeze it again")
             staged = 0
             for city in cities:
                 src = REPO / "godot" / "bundles" / city
@@ -285,6 +309,7 @@ def main(argv=None) -> int:
     # ---- 4. bundle (verify PCK packing + colocate authority) ----
     s = Step("bundle"); steps.append(s)
     if export_ok:
+        (out_dir / "SIM_SHA").write_text(source_sha() + "\n")
         pck = out_dir / (client.stem + ".pck")
         packed_ok, packed_detail = verify_pck_packing(pck, cities)
         # Colocate the frozen authority ONLY when its OS matches the target,
@@ -312,8 +337,11 @@ def main(argv=None) -> int:
                 f"folder next to the client executable.\n")
             auth_note = (f"authority NOT bundled (cross-build {host}->{target}); "
                          f"wrote placeholder + build instructions")
-        if packed_ok:
+        authority_problems = validate_authority(out_dir, target)
+        if packed_ok and not authority_problems:
             s.set(STATUS_OK, f"{packed_detail}; {auth_note}")
+        elif packed_ok:
+            s.set(STATUS_FAIL, "; ".join(authority_problems))
         else:
             s.set(STATUS_FAIL, packed_detail)
     else:
@@ -337,6 +365,7 @@ def main(argv=None) -> int:
     s = Step("validate"); steps.append(s)
     problems = []
     if export_ok:
+        problems.extend(validate_authority(out_dir, target))
         if not client.exists() or client.stat().st_size < 1_000_000:
             problems.append(f"{client.name} missing/too small")
         pck = out_dir / (client.stem + ".pck")
@@ -351,7 +380,8 @@ def main(argv=None) -> int:
 
     # ---- 7. zip ----
     s = Step("zip"); steps.append(s)
-    if args.zip and export_ok:
+    if args.zip and export_ok and all(
+            st.status == STATUS_OK for st in steps if st.name in ("bundle", "validate")):
         make_zip(out_dir, archive_path)
         s.set(STATUS_OK, f"{archive_path.relative_to(REPO)} "
                          f"({archive_path.stat().st_size:,} B)")
@@ -362,7 +392,7 @@ def main(argv=None) -> int:
                         "--archive", str(archive_path)],
                        capture_output=True, text=True)
     elif args.zip:
-        s.set(STATUS_SKIP, "no client to zip")
+        s.set(STATUS_SKIP, "no complete validated package to zip")
     else:
         s.set(STATUS_SKIP, "not requested (--zip)")
 

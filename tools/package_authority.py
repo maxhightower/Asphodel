@@ -173,6 +173,15 @@ def freeze(target: str, clean: bool = True) -> dict:
         return result
 
     result["status"] = "OK"
+    # Stamp the binary at freeze time, not when an old freeze is later staged.
+    try:
+        sha = subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"],
+                                      text=True).strip()
+    except (OSError, subprocess.CalledProcessError):
+        result["status"] = "FAIL"
+        result["blocked_reason"] = "cannot establish frozen authority source identity"
+        return result
+    (out_dir / "SIM_SHA").write_text(sha + "\n")
     result["dist_path"] = str(out_dir.relative_to(REPO))
     result["executable"] = str(exe.relative_to(REPO))
     result["build_seconds"] = round(dt, 1)

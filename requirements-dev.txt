@@ -1,0 +1,6 @@
+-r requirements.txt
+pytest>=8,<10
+shapely>=2,<3
+pyarrow>=16,<26
+requests>=2.32,<3
+pyinstaller>=6,<7

@@ -1,0 +1,53 @@
+name: Release certification
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: release-certification-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  windows-native:
+    runs-on: windows-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Python build and test dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Install pinned Godot 4.4 and export templates
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $godotTools = Join-Path $env:RUNNER_TEMP 'asphodel-godot'
+          New-Item -ItemType Directory -Force $godotTools | Out-Null
+          Invoke-WebRequest 'https://github.com/godotengine/godot/releases/download/4.4-stable/Godot_v4.4-stable_win64.exe.zip' -OutFile "$godotTools/godot.zip"
+          Expand-Archive "$godotTools/godot.zip" "$godotTools/bin"
+          Copy-Item "$godotTools/bin/Godot_v4.4-stable_win64.exe" "$godotTools/bin/godot.exe"
+          "$godotTools/bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+          Invoke-WebRequest 'https://github.com/godotengine/godot/releases/download/4.4-stable/Godot_v4.4-stable_export_templates.tpz' -OutFile "$godotTools/templates.zip"
+          Expand-Archive "$godotTools/templates.zip" "$godotTools/unpacked"
+          $templateDir = Join-Path $env:APPDATA 'Godot/export_templates/4.4.stable'
+          New-Item -ItemType Directory -Force $templateDir | Out-Null
+          Copy-Item "$godotTools/unpacked/templates/*" $templateDir
+      - name: Import project
+        run: godot --headless --path godot --import
+      - name: Sequential regressions W48 through W51
+        run: python tools/certify_release.py --output artifacts/release_closure/windows-regression
+      - name: Build native Windows package
+        run: python tools/build_windows_playable.py --target windows --zip
+      - name: Run exported client without repository or system Python
+        run: python tools/certify_packaged.py --package dist/asphodel-windows-v2 --output artifacts/release_closure/windows-packaged
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-release-evidence
+          path: |
+            artifacts/release_closure/
+            artifacts/windows_playable_v2/build_manifest.json
+            artifacts/windows_playable_v2/SHA256SUMS.txt
+            dist/Asphodel-Windows-V2.zip

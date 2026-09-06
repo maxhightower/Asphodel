@@ -13,7 +13,7 @@ extends Node
 
 var _bundle := "houston"
 var _player := 82
-var _save_path := "/tmp/asph_playable_save.json"
+var _save_path := OS.get_user_data_dir().path_join("asph_playable_save.json")
 var _trace_path := "artifacts/windows_playable_v2/playable_convergence_trace.json"
 
 var _fail := 0
