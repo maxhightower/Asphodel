@@ -30,7 +30,7 @@ SOURCE_BASE_PRIORITY = {
     "need": 0.35,
     "schedule": 0.55,
     "social": 0.45,
-    "group": 0.58,       # a survivor-group objective the citizen accepted; above routine, below belief/health/emergency
+    "group": 0.62,       # a survivor-group objective the citizen accepted; clears the schedule preempt margin, below belief/health/emergency
     "belief": 0.66,      # a citizen acting on what it knows (cognition layer); above any schedule goal
     "emergency": 0.92,
     "player": 1.0,

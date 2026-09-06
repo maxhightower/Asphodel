@@ -263,6 +263,21 @@ class GroupRuntime:
                 out[int(bid)] = node
         return out
 
+    def _teach_shelter(self, cid: int, bid: int, node: Optional[str]) -> None:
+        """Record the shelter address in a member's node metadata so it can
+        navigate to and enter a building it was told about (a told location)."""
+        rt = self.mobility.citizens.get(cid)
+        if rt is None or node is None:
+            return
+        if node in rt.node_meta:
+            return
+        xy = None
+        try:
+            xy = self.mobility.graph.nodes.get(node)
+        except Exception:
+            xy = None
+        rt.node_meta[node] = {"building_id": int(bid), "xy": tuple(xy) if xy is not None else None}
+
     def _entrance_node(self, g: G.SurvivorGroup, bid: int) -> Optional[str]:
         for c in g.active_members():
             kb = self._known_buildings(c)
@@ -304,7 +319,9 @@ class GroupRuntime:
                 self.event("SHELTER_PROPOSED", group_id=g.group_id, building_id=bid, rejected=True,
                            proposers=sorted(row["proposers"]), danger=round(row["danger"], 3), capacity=capacity)
                 continue
-            score = (len(set(row["proposers"])) * 1.0 + row["home"] * 0.8 + row["work"] * 0.6
+            # a member's home is a defensible, familiar shelter; a workplace is public and
+            # exposed, so it earns no shelter bonus even though more members know it.
+            score = (len(set(row["proposers"])) * 0.5 + row["home"] * 2.5
                      + (1.0 - row["danger"]) + min(1.0, capacity / 6.0) * 0.5)
             scored.append((score, bid, row, capacity))
             self.event("SHELTER_PROPOSED", group_id=g.group_id, building_id=bid, rejected=False,
@@ -326,6 +343,11 @@ class GroupRuntime:
         g.entrance_room = g.shelter_room
         g.shelter_history.append({"t": round(self.now_s, 1), "building_id": bid, "from": old,
                                   "capacity": capacity})
+        # the group communicates the shelter address so every member knows where to regroup
+        # (§23 "shelter address"; §34). A member who was told the address can now navigate to
+        # and enter it; a member the address never reaches cannot (the GQ2 counterfactual).
+        for c in members:
+            self._teach_shelter(c, bid, node)
         self.event("SHELTER_SELECTED", group_id=g.group_id, building_id=bid, room_id=g.shelter_room,
                    node=node, capacity=capacity, proposers=sorted(set(row["proposers"])),
                    danger=round(row["danger"], 3))
@@ -349,9 +371,9 @@ class GroupRuntime:
             return SHELTER_MIN_CAPACITY
         try:
             occ = self.work.occupants_by_room(int(bid))
-            return max(SHELTER_MIN_CAPACITY, len(occ) + 2)
+            return max(6, len(occ) + 4)     # a building can shelter several beyond its usual rooms
         except Exception:
-            return SHELTER_MIN_CAPACITY
+            return 6
 
     def _entrance_room(self, bid: int) -> Optional[int]:
         if self.work is None:
@@ -381,21 +403,19 @@ class GroupRuntime:
             if not g.is_member(cid):
                 o.state = G.OBJ_CANCELLED
                 return
-            ex = self.mobility.execs.get(cid)
-            if ex is not None and ex.inside and int(ex.building_id) == int(o.building_id):
-                if o.state != G.OBJ_DONE:
-                    o.state = G.OBJ_DONE
-                    o.decided_s = self.now_s
-                    self._clear_goal(cid)
-                    self.event("ROLE_COMPLETED", group_id=g.group_id, obj_id=o.obj_id, obj_kind=o.kind,
-                               citizen_id=cid, building_id=o.building_id)
-                return
-            # push/refresh the travel goal (source "group") if the member is free to take it
             if o.state == G.OBJ_OPEN:
                 o.state = G.OBJ_ACTIVE
-            self._travel_goal(cid, g.shelter_node, priority=0.58,
+            ex = self.mobility.execs.get(cid)
+            if ex is not None and ex.inside and int(ex.building_id) == int(o.building_id) and o.detail != "arrived":
+                o.detail = "arrived"
+                o.decided_s = self.now_s
+                self.event("ROLE_COMPLETED", group_id=g.group_id, obj_id=o.obj_id, obj_kind=o.kind,
+                           citizen_id=cid, building_id=o.building_id)
+            # a DO_ACTIVITY rest holds the member AT the shelter once it arrives (it does not
+            # wander back to a schedule), which is how the group keeps everyone regrouped.
+            self._travel_goal(cid, g.shelter_node, priority=0.62,
                               reason=f"regroup at group {g.group_id} shelter {o.building_id}",
-                              group_id=g.group_id, kind=o.kind)
+                              group_id=g.group_id, kind=o.kind, hold=True)
         elif o.kind == G.WATCH_ENTRANCE and o.assignee is not None and o.state == G.OBJ_ACTIVE:
             self._tick_guard(g, o)
         elif o.kind == G.SEEK_SUPPLIES and o.assignee is not None and o.state == G.OBJ_ACTIVE:
@@ -404,7 +424,7 @@ class GroupRuntime:
             self._tick_locator(g, o)
 
     def _travel_goal(self, cid: int, node: Optional[str], *, priority: float, reason: str,
-                     group_id: str, kind: str, activity: str = "rest") -> None:
+                     group_id: str, kind: str, activity: str = "rest", hold: bool = False) -> None:
         if node is None:
             return
         rt = self.mobility.citizens.get(cid)
@@ -417,7 +437,10 @@ class GroupRuntime:
         held = self.group_goals.get(cid)
         if held and held.get("node") == node and any(x.id == held.get("goal_id") for x in rt.goals.goals):
             return
-        goal = Goal(GoalKind.ARRIVE_AT, target=node, source="group", priority=priority,
+        # a "hold" goal (DO_ACTIVITY rest) both travels to the node and keeps the member there;
+        # a transient goal (ARRIVE_AT) just gets it there (a scavenger leaving, a locator searching).
+        kind_g = GoalKind.DO_ACTIVITY if hold else GoalKind.ARRIVE_AT
+        goal = Goal(kind_g, target=node, source="group", priority=priority,
                     activity=activity, reason=reason)
         rt.push_goal(goal, self.mobility.graph)
         self.group_goals[cid] = {"goal_id": goal.id, "node": node, "group_id": group_id, "kind": kind}
@@ -560,8 +583,8 @@ class GroupRuntime:
             self._raise_alert(g, cid)
             return
         # otherwise hold the post
-        self._travel_goal(cid, node, priority=0.58, reason="watch the entrance",
-                          group_id=g.group_id, kind=o.kind, activity="rest")
+        self._travel_goal(cid, node, priority=0.62, reason="watch the entrance",
+                          group_id=g.group_id, kind=o.kind, activity="rest", hold=True)
 
     # ------------------------------------------------------------------ supply (§26, §27)
     def check_supplies(self, g: G.SurvivorGroup) -> Optional[dict]:
@@ -609,7 +632,7 @@ class GroupRuntime:
                 self.event("SUPPLY_RETURNED", group_id=g.group_id, citizen_id=cid, resource="food",
                            amount=SUPPLY_PER_RUN, have=round(g.supplies["food"], 2), building_id=g.shelter_building)
                 return
-            self._travel_goal(cid, g.shelter_node, priority=0.58, reason="return supplies",
+            self._travel_goal(cid, g.shelter_node, priority=0.62, reason="return supplies",
                               group_id=g.group_id, kind=o.kind)
             return
         if o.building_id is None:
@@ -637,7 +660,7 @@ class GroupRuntime:
                 self.event("SUPPLY_ACQUIRED", group_id=g.group_id, citizen_id=cid, resource="food",
                            source_building=o.building_id, object_id=o.object_id, obj_id=o.obj_id)
                 self._clear_goal(cid)
-                self._travel_goal(cid, g.shelter_node, priority=0.58, reason="return supplies",
+                self._travel_goal(cid, g.shelter_node, priority=0.62, reason="return supplies",
                                   group_id=g.group_id, kind=o.kind)
             else:
                 o.state = G.OBJ_FAILED
@@ -645,7 +668,7 @@ class GroupRuntime:
                 g.roles.pop(G.SCAVENGER, None)
             return
         node = getattr(o, "detail_node", None) or self._entrance_node(g, o.building_id)
-        self._travel_goal(cid, node, priority=0.58, reason="go for supplies", group_id=g.group_id, kind=o.kind)
+        self._travel_goal(cid, node, priority=0.62, reason="go for supplies", group_id=g.group_id, kind=o.kind)
 
     # ------------------------------------------------------------------ locate member (§25)
     def locate_member(self, g: G.SurvivorGroup, missing: int) -> Optional[dict]:
@@ -692,7 +715,7 @@ class GroupRuntime:
                        building_id=(self.mobility.execs.get(missing).building_id
                                     if self.mobility.execs.get(missing) and self.mobility.execs[missing].inside else None))
             return
-        self._travel_goal(finder, getattr(o, "detail_node", None), priority=0.58,
+        self._travel_goal(finder, getattr(o, "detail_node", None), priority=0.62,
                           reason=f"find member {missing}", group_id=g.group_id, kind=o.kind)
 
     # ================================================================= group knowledge (§23, §24)

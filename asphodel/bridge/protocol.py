@@ -40,7 +40,10 @@ from typing import Any
 #      relationships, social actions; the context API for dialogue).
 # v8: + TALK / GET_DIALOGUE and the START_WORLD `dialogue` option
 #      (ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1: grounded conversations).
-PROTOCOL_VERSION = 8
+# v9: + GET_GROUPS / GROUP_QUERY and the START_WORLD `groups` option
+#      (ASPHODEL_SURVIVOR_GROUPS_COMMUNITIES_V1: survivor groups, membership,
+#      shelters, roles; a bounded player ask-to-join).
+PROTOCOL_VERSION = 9
 
 
 class Command:
@@ -90,6 +93,9 @@ class Command:
     # --- npc dialogue (v8) ------------------------------------------------
     TALK = "TALK"                            # the player speaks one structured act to a NEAR citizen
     GET_DIALOGUE = "GET_DIALOGUE"            # dialogue events since seq, active conversations, requests
+    # --- survivor groups (v9) --------------------------------------------
+    GET_GROUPS = "GET_GROUPS"                # group events since seq, group snapshots, counts
+    GROUP_QUERY = "GROUP_QUERY"              # bounded player query: is X in a group / where / ask-to-join
 
     ALL = frozenset({
         HELLO, START_WORLD, SET_FOCUS, ADVANCE, INTERVENE, INTERACT_WITH,
@@ -102,6 +108,7 @@ class Command:
         GET_WORK, GET_ROOMS, SET_OBJECT_STATE,
         GET_COGNITION, GET_CITIZEN_CONTEXT,
         TALK, GET_DIALOGUE,
+        GET_GROUPS, GROUP_QUERY,
     })
 
 

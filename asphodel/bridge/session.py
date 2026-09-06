@@ -184,6 +184,9 @@ class WorldSession:
             # ASPHODEL_NPC_DIALOGUE_COMMUNICATION_V1: conversations, on with cognition
             if bool(msg.get("dialogue", True)):
                 world.enable_dialogue()
+                # ASPHODEL_SURVIVOR_GROUPS_COMMUNITIES_V1: survivor groups, on with dialogue
+                if bool(msg.get("groups", True)):
+                    world.enable_groups()
         self.world = world
         self.paused = False
         self.bundle = bundle
@@ -389,6 +392,46 @@ class WorldSession:
         since = _opt_int(msg.get("since_seq"), "since_seq") or 0
         return P.response(Command.GET_DIALOGUE, id=rid,
                           dialogue=self.world.dialogue_snapshot(since_seq=since), **self._summary())
+
+    def _cmd_get_groups(self, msg, rid) -> dict:
+        self._require_world(Command.GET_GROUPS)
+        if self.world.groups is None:
+            raise _BadArg("groups runtime not enabled")
+        since = _opt_int(msg.get("since_seq"), "since_seq") or 0
+        return P.response(Command.GET_GROUPS, id=rid,
+                          groups=self.world.groups_snapshot(since_seq=since), **self._summary())
+
+    def _cmd_group_query(self, msg, rid) -> dict:
+        """A bounded player query into the group layer (§34): whether a citizen
+        belongs to a group, where the group shelters, and (if it applies) a
+        grounded ask-to-join. No free text; the result is authoritative."""
+        self._require_world(Command.GROUP_QUERY)
+        gr = self.world.groups
+        if gr is None:
+            raise _BadArg("groups runtime not enabled")
+        op = str(msg.get("op", "membership"))
+        cid = _opt_int(msg.get("citizen_id"), "citizen_id")
+        if op == "membership":
+            g = gr.group_of(int(cid)) if cid is not None else None
+            return P.response(Command.GROUP_QUERY, id=rid, op=op, citizen_id=cid,
+                              in_group=(g.group_id if g is not None else None),
+                              role=(next((r for r, c in g.roles.items() if c == cid), None) if g else None),
+                              **self._summary())
+        if op == "where":
+            info = gr.where_is_group(int(cid)) if cid is not None else None
+            return P.response(Command.GROUP_QUERY, id=rid, op=op, citizen_id=cid, group=info, **self._summary())
+        if op == "ask_to_join":
+            # the player (a registered citizen) asks the group of `citizen_id` to join
+            player = _opt_int(msg.get("player_citizen", self.player_citizen), "player_citizen")
+            g = gr.group_of(int(cid)) if cid is not None else None
+            if g is None or player is None:
+                return P.response(Command.GROUP_QUERY, id=rid, op=op, citizen_id=cid,
+                                  result={"ok": False, "reason": "no_group"}, **self._summary())
+            res = gr.request_admission(g, int(player), via_member=int(cid))
+            return P.response(Command.GROUP_QUERY, id=rid, op=op, citizen_id=cid,
+                              result={"ok": True, **{k: res[k] for k in ("accept", "reason", "aggregate")}},
+                              **self._summary())
+        raise _BadArg(f"unknown GROUP_QUERY op {op!r}")
 
     def _cmd_get_mobility(self, msg, rid) -> dict:
         self._require_world(Command.GET_MOBILITY)
@@ -618,6 +661,8 @@ class WorldSession:
                     world.enable_cognition()
                     if world._pending_dialogue_state is not None:
                         world.enable_dialogue()
+                    if world._pending_groups_state is not None:
+                        world.enable_groups()
         except Exception:
             pass
         return P.response(Command.LOAD, id=rid, path=path, **self._summary())
@@ -650,6 +695,7 @@ class WorldSession:
             "work_enabled": self.world.work is not None,
             "cognition_enabled": self.world.cognition is not None,
             "dialogue_enabled": self.world.dialogue is not None,
+            "groups_enabled": self.world.groups is not None,
         }
 
 
