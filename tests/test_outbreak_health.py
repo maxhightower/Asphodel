@@ -249,7 +249,7 @@ def test_alive_and_infected_partitions():
 # pathogen grammar
 # --------------------------------------------------------------------------- #
 def test_every_archetype_builds_and_progresses():
-    assert set(ARCHETYPES) == {"classic_zombie", "classic_shambler", "rage_virus",
+    assert set(ARCHETYPES) == {"classic_zombie", "classic_zombie_fast", "classic_shambler", "rage_virus",
                                "cordyceps", "necro_latent"}
     for name in sorted(ARCHETYPES):
         p = pathogen_by_name(name)

@@ -1,0 +1,56 @@
+{
+ "python": {
+  "status": "PASS",
+  "collected": 1329,
+  "passed": 1328,
+  "failed": 1,
+  "failed_tests": [
+   "tests/test_world_from_compiled.py::test_compile_writes_only_presentation_files"
+  ],
+  "note": "tests/test_world_from_compiled.py::test_compile_writes_only_presentation_files needs the raw Overture packet (pre-existing, unrelated); tests/test_overture_ingest.py deselected for the same reason; test_outbreak_health's archetype set was updated for classic_zombie_fast and re-run green"
+ },
+ "run_gates": {
+  "status": "PASS",
+  "pass": 85,
+  "fail": 0,
+  "exited_nonzero": 0,
+  "scenes": [
+   "tests/PhysicsGate.tscn",
+   "tests/RegionGate.tscn",
+   "tests/NavGate.tscn",
+   "tests/ConvergenceGate.tscn"
+  ]
+ },
+ "mobility_gate": {
+  "status": "PASS",
+  "pass": 48,
+  "fail": 0,
+  "info": 2,
+  "exit": 0,
+  "log": "g_mobility.log"
+ },
+ "outbreak_gate": {
+  "status": "PASS",
+  "pass": 36,
+  "fail": 0,
+  "info": 2,
+  "exit": 0,
+  "log": "g_outbreak.log"
+ },
+ "work_gate": {
+  "status": "PASS",
+  "pass": 44,
+  "fail": 0,
+  "info": 0,
+  "exit": 0,
+  "log": "g_work.log"
+ },
+ "cognition_gate": {
+  "status": "PASS",
+  "pass": 60,
+  "fail": 0,
+  "info": 4,
+  "exit": 0,
+  "log": "g_cognition.log"
+ }
+}

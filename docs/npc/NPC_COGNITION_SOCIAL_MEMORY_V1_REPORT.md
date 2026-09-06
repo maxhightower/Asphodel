@@ -246,7 +246,31 @@ caption stating what pixels prove and what only the authority rows prove:
 
 ## 14. Performance (`tools/cognition_perf.py`, Houston, 297 citizens, 4-core shared container; artifact `performance.json`)
 
-PERF_PLACEHOLDER
+All numbers from `artifacts/npc_cognition_v1/performance.json` (final code,
+median of 3 where cheap; a shared 4-core container).
+
+| measurement | result |
+|---|---|
+| perception scan (work + outbreak drains, 60 calls per game minute) | 0.24 ms per game minute at 08:00 (4 µs per call), 0.49 ms in the threat window, 0.01 ms at 16:00 when nothing is emitted |
+| memory insertion / update (`remember`, 1e5 ops on a 60-fact store) | 2.4 µs new fact, 0.5 µs reinforcement; `consolidate()` of a 64-fact store 0.02 ms |
+| memory lookup (64 facts, 1e5 ops) | `find` 1.5–1.9 µs, `about` 2.1 µs, `salient(8)` 30 µs (a full sort with decay per fact) |
+| belief derivation (`derive`) | 23 µs at 5 facts, 52 µs at 20, 159 µs at 64 |
+| relationship evaluation (1e5 ops) | `apply` 1.2 µs (one dimension) / 1.7 µs (`helped_by`, four); `help_score` 2.5 µs |
+| decision evaluation (per game minute) | help 1.13 ms, avoid 0.05 ms, safety 0.02 ms at 08:00; help 0.87, avoid 0.33, safety 0.12 ms at 11:00 with a threat in the city |
+| social interaction processing | co-presence 0.63 ms per game minute (57 pairs per scan) at 08:00, 2.3 ms (376 pairs) at 11:00; alarmed encounters 5.2 ms per game minute at 11:00 (per-second scans by the alarmed citizens) |
+| rumour propagation (10:35–11:35, one fast case) | 5 tellings, max 2 per sender, 1 per pair, hops ≤ 2, told-set 7 (the certified day with the crowd in the shop: 145 tellings, max 13 per sender, hops ≤ 2) |
+| FAR vs NEAR (09:00, focus far vs at the helper's workplace) | cognition 2.2 vs 1.8 ms per game minute — cognition reads neither the focus nor the band |
+| full Houston day 05:00→20:00 | cognition on: 115 s wall, 127.5 ms per game minute (mobility 109.0, work 16.6, cognition 1.8); cognition off: 116 s wall, 128.4 ms — the difference is noise |
+| work + outbreak + cognition (10:35→11:35, fast case) | 106 ms per game minute (mobility 45.7, work 33.5, outbreak 18.9, cognition 7.8); worst minute 276 ms (cognition 15 ms) |
+| memory growth | 946 facts over 162 citizens at 20:00, max 30 per citizen (cap 64), 708 relationships, 14 facts forgotten |
+| budget (24× clock: 2 500 ms per game minute) | heaviest block mean 131 ms = 5.2 %; the worst single minute of the day is the 07:30 mobility departure spike (11.6 s, of which 11.6 s route planning, 3 ms cognition) — inherited, documented since mobility V1 |
+
+Profile of `cognition.advance` alone: `TripExecutor.inside` (23 %, the
+outdoor room-mates scan), the perception list comprehensions (15 %), `sorted`
+(5 %), `occupants_by_room` (3 %). The first version of the drains scanned the
+whole 5 000-row event ring every second (56 % of cognition time); the final
+code walks the ring from its tail (`_since`), which cut cognition from 13.5 to
+1.8 ms per game minute.
 
 ## 15. Multi-city smoke (`tools/cognition_city_smoke.py`, 05:00→17:00, 60 s steps, fast case seeded in the busiest shop at 10:35)
 
@@ -264,7 +288,21 @@ does not arise there; warnings, room avoidance and relationship change do.
 
 ## 16. Regression
 
-REGRESSION_PLACEHOLDER
+| suite | result |
+|---|---|
+| Python (`pytest`, 1 329 collected) | 1 328 passed; 1 pre-existing, unrelated failure (`test_world_from_compiled::test_compile_writes_only_presentation_files` needs the raw Overture packet; `test_overture_ingest` deselected for the same reason) |
+| `tests/test_cognition_*.py` (this milestone) | 145 passed |
+| `tests/test_npc_v1_day.py` | N1–N36 as tabled above |
+| `godot/tests/run_gates.sh` (Physics, Region, Nav, Convergence gates) | 85 PASS / 0 FAIL (N34) |
+| MobilityGate | 24 PASS / 0 FAIL, exit 0 (N33) |
+| OutbreakGate | 18 PASS / 0 FAIL, exit 0 (N32) — with the room-level witness refinement |
+| WorkGate | 22 PASS / 0 FAIL, exit 0 (N31) |
+| CognitionGate | 30 PASS / 0 FAIL / 2 INFO, exit 0 (N30) |
+
+Two tests were updated for the milestone: the outbreak disruption test
+samples the minute before the disruption (the interleaved clock now reacts
+within the same minute), and the outbreak archetype set includes
+`classic_zombie_fast`. (`artifacts/npc_cognition_v1/regression.json`.)
 
 ## 17. Multi-agent interaction
 
