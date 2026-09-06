@@ -42,6 +42,14 @@ import zipfile
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+
+def source_sha() -> str:
+    try:
+        return subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"],
+                                       stderr=subprocess.DEVNULL).decode().strip()
+    except Exception:
+        return "unknown"
+
 GODOT_PROJECT = REPO / "godot"
 DIST = REPO / "dist"
 ARTIFACTS = REPO / "artifacts" / "windows_playable_v2"
@@ -229,6 +237,29 @@ def main(argv=None) -> int:
             s.set(STATUS_OK, note)
         else:
             s.set(STATUS_FAIL, rc.stderr[-400:] or "freeze/serve failed")
+
+    # ---- 2b. stage the authority's own bundle data + SIM_SHA (Convergence V2
+    # §7/§38): a shipped frozen authority has no repo, so it needs the top-level
+    # bundle JSONs (streetmap/roads/buildings/citizens/meta/zones/mobility/...) —
+    # NOT the Godot-only world/ chunk tiles — beside its executable, plus a
+    # SIM_SHA stamp so build identity survives without git.
+    auth_root = DIST / "authority"
+    if auth_root.exists():
+        try:
+            (auth_root / "SIM_SHA").write_text(source_sha() + "\n")
+            staged = 0
+            for city in cities:
+                src = REPO / "godot" / "bundles" / city
+                if not (src / "meta.json").exists():
+                    continue
+                dst = auth_root / "bundles" / city
+                dst.mkdir(parents=True, exist_ok=True)
+                for jf in src.glob("*.json"):
+                    shutil.copy2(jf, dst / jf.name)
+                staged += 1
+            print(f"   staged authority bundle data for {staged} cities + SIM_SHA")
+        except Exception as e:
+            print(f"   WARN: could not stage authority bundle data: {e}")
 
     # ---- 3. export ----
     s = Step("export"); steps.append(s)

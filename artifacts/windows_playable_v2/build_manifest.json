@@ -1,8 +1,8 @@
 {
   "schema": "asphodel.windows_playable.build_manifest/v2",
-  "build_timestamp_utc": "2026-09-06T21:00:51Z",
+  "build_timestamp_utc": "2026-09-06T21:50:13Z",
   "build_host_os": "Linux",
-  "source_sha": "f77d9033d4a0f8a4727bc20d897a4e5a4742dd04",
+  "source_sha": "fcf99041a527cb748eb30086b6c8f10436a789ab",
   "godot_version": "4.4.stable.official.4c311cbee",
   "protocol_version": 9,
   "save_version": 3,
@@ -42,8 +42,8 @@
     "os": "linux",
     "dir": "dist/authority",
     "executable": "dist/authority/authority",
-    "executable_sha256": "b11d825724fa566a76c3f6a97d3387214e9380b3bb46550729dee52daaf7ee7b",
-    "served_hello": true,
+    "executable_sha256": "7860e07f7c2428bf746f50f9c9c2e4b7e9d308f0692c0c3e66bd7fc0b7620dde",
+    "served_hello": false,
     "blocked_reason": "This is the LINUX frozen authority (proof-of-approach). The shipped WINDOWS authority must be frozen on a Windows host with `python tools\\package_authority.py --target windows`."
   },
   "files": [
@@ -64,8 +64,8 @@
     },
     {
       "path": "dist/asphodel-linux-v2/Asphodel.pck",
-      "sha256": "6e275ebea557f7b3c87958df9956a682db4f304a58866b92eb19addeadd6f1d0",
-      "bytes": 132387376
+      "sha256": "c2547995af28211d23ecdd7a0ab2b8c3bcfdfb18148f3a20a94207c639908efc",
+      "bytes": 132390800
     },
     {
       "path": "dist/asphodel-linux-v2/Asphodel.x86_64",
@@ -73,9 +73,219 @@
       "bytes": 69659512
     },
     {
+      "path": "dist/asphodel-linux-v2/authority/SIM_SHA",
+      "sha256": "de28305da50388f455256c113e4ee20bf1d9859f35d4e9e2105b7b9d8c7c5699",
+      "bytes": 41
+    },
+    {
       "path": "dist/asphodel-linux-v2/authority/authority",
-      "sha256": "b11d825724fa566a76c3f6a97d3387214e9380b3bb46550729dee52daaf7ee7b",
-      "bytes": 12457680
+      "sha256": "7860e07f7c2428bf746f50f9c9c2e4b7e9d308f0692c0c3e66bd7fc0b7620dde",
+      "bytes": 12458480
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/san_antonio/buildings.json",
+      "sha256": "09da51ba8b4c94c2f40f44ca7ece0bc30d3e1b1775cc2566e5ccd006ae7da94c",
+      "bytes": 7629210
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/san_antonio/citizens.json",
+      "sha256": "b84e29127f092186d715a934010feba00dc95443145459127e836a9379d2443d",
+      "bytes": 88179
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/san_antonio/meta.json",
+      "sha256": "f8c5d8e6f74f706715618e7ae16bebb5428a55d4a254a64cfc7d18d902393040",
+      "bytes": 774
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/san_antonio/mobility.json",
+      "sha256": "062446afce622fb4f531fc05700b66e85b5277bae38d2de70633530b471aef46",
+      "bytes": 19937
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/san_antonio/physics.json",
+      "sha256": "cb956ac633071ddf526e7cfbfa1bcffe0a8869f0faf971c3a08e2c4562090f49",
+      "bytes": 4617
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/san_antonio/region.json",
+      "sha256": "ba8f1518aaadbcd087c34080e6d46ca4f1e462db1c89b348b56ae644ca9e6d18",
+      "bytes": 390816
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/san_antonio/roads.json",
+      "sha256": "fa577ebb0b66eed8482aad31c1d6414bb943c0d7a7e2bffca914a04a2d75e9d7",
+      "bytes": 467875
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/san_antonio/streetmap.json",
+      "sha256": "043b28d52a46e34f7a03602488a9bc66004937ea6afd9e4664903c6c2d9d43a4",
+      "bytes": 17486379
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/san_antonio/timeline.json",
+      "sha256": "21a161efce8b0991b9f2f18f7f8665a97e0e9a7a54eb9754fc0bd7b8909f7c0c",
+      "bytes": 973840
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/san_antonio/zones.json",
+      "sha256": "913c876cd4b769a2dd9206653673f3382d9ec85af74e29ddea05bd6378fc8e1d",
+      "bytes": 79520
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/madisonville_tx/buildings.json",
+      "sha256": "50b20c1c96888e8e78eb0e9c425316e08bbb1dddaf67b201378cd017e75e791c",
+      "bytes": 611065
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/madisonville_tx/citizens.json",
+      "sha256": "7d9e4ba0db996261af8b6a0c3fa485f37f8a27aeccd6b875316d778509d0ec15",
+      "bytes": 87767
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/madisonville_tx/meta.json",
+      "sha256": "8b5c48872cf6b664c98f0f55d53723ef26d14a1638c263820bb638c7f6ff3cef",
+      "bytes": 761
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/madisonville_tx/mobility.json",
+      "sha256": "02d5657475f5cbd5036d53791c412c2a7facf6d235a48e20f77fb978c06ca6d4",
+      "bytes": 7322
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/madisonville_tx/physics.json",
+      "sha256": "cb956ac633071ddf526e7cfbfa1bcffe0a8869f0faf971c3a08e2c4562090f49",
+      "bytes": 4617
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/madisonville_tx/region.json",
+      "sha256": "e378ac5e7ca6cb21ac54b778d3a15cbdc20019d56e267a6eb1d629e088b8d023",
+      "bytes": 390898
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/madisonville_tx/roads.json",
+      "sha256": "96f68858beddaa09331f4f05ec5587b7096270bc0ee8a206da7fc714e95a98a1",
+      "bytes": 35481
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/madisonville_tx/streetmap.json",
+      "sha256": "0c8a4d98163d189eafabe9d7605e92f84f4d1fc2060cb29016726419be883a2c",
+      "bytes": 679157
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/madisonville_tx/timeline.json",
+      "sha256": "f1860c3139b8baaf1ba8a3d4314c10f8dee2edce4b72aa99bcf662ac3ce7ca08",
+      "bytes": 300509
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/madisonville_tx/zones.json",
+      "sha256": "ff3c8ebecf8c7c68a780e37447563116f123c4d8442982bfedb27443b5fe0383",
+      "bytes": 46957
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/austin/buildings.json",
+      "sha256": "aab383d524f14fc91b4368d98197ac01af78dfe22a32091765eb8e3087025d15",
+      "bytes": 8227769
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/austin/citizens.json",
+      "sha256": "a57a2edf91c9f9acabef1c746f34d535445c819b3b580593d64d05a63dbbad82",
+      "bytes": 87663
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/austin/meta.json",
+      "sha256": "c454103344e51e9df699be89ebc9d9b1668d7232e8cdda1ace6157a79d52cc45",
+      "bytes": 757
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/austin/mobility.json",
+      "sha256": "d154e0a7d73d6ed933df0dd7c307a2bd2162bc59c87aadbf8f1e93460539f29f",
+      "bytes": 22731
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/austin/physics.json",
+      "sha256": "cb956ac633071ddf526e7cfbfa1bcffe0a8869f0faf971c3a08e2c4562090f49",
+      "bytes": 4617
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/austin/region.json",
+      "sha256": "1fa288aaa4dd33678deef74d1f3edae9b22d40a546efc630439bcfc73317a9ff",
+      "bytes": 390714
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/austin/roads.json",
+      "sha256": "c6a92100852d20045e0e287c0475bcef889aeef25071223d46c0c3bca2ae39f9",
+      "bytes": 341279
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/austin/streetmap.json",
+      "sha256": "2879649463ed685352e498dfcdd8cfe29cc388344051d90049f927a508e5253d",
+      "bytes": 19537720
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/austin/timeline.json",
+      "sha256": "81d9dc4aa0fb17a6458a771512a173a640d1935f81d1fe490586e0390948b121",
+      "bytes": 1022991
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/austin/zones.json",
+      "sha256": "495bf57dc4fcb3cc236cfe96f7fc7e206c584bf89bc9890824504233a11a2fda",
+      "bytes": 96989
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/houston/buildings.json",
+      "sha256": "eadd841662cefe185aad6ba581e2cad1f7a4ca679367811e5f2b13fa446c8c2b",
+      "bytes": 4999414
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/houston/citizens.json",
+      "sha256": "eb235fe1bc7e8a7d3b92070abcad6385cf06636f5b4914156446951a51635177",
+      "bytes": 439572
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/houston/meta.json",
+      "sha256": "b2cb4b4ee2bc6f4557f461e36c1c4a4b1fbe9c74aae320e26a6d833159b6d883",
+      "bytes": 759
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/houston/mobility.json",
+      "sha256": "195ffca5d30c915c10543e85fa1ef38e56091ac93acd346dcd5925ed557065af",
+      "bytes": 19945
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/houston/physics.json",
+      "sha256": "cb956ac633071ddf526e7cfbfa1bcffe0a8869f0faf971c3a08e2c4562090f49",
+      "bytes": 4617
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/houston/playback.json",
+      "sha256": "c55aa568b2d884b9e73c27a8a56bee5996eb334c73816680c61d81adfe3425fd",
+      "bytes": 273784
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/houston/region.json",
+      "sha256": "998def85cd07b81fd928c1c3c4a53a10f5b4383388f919a114ad4a5473dbbdca",
+      "bytes": 366242
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/houston/roads.json",
+      "sha256": "c221c2616a32cc3435b100d7e325ec23f09e319fab3810c88f1c1dafec40fa1e",
+      "bytes": 512996
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/houston/streetmap.json",
+      "sha256": "22e1defb76e30e93d84a65b7c50ae4ccebf92fbad56d8f907a0ab7dbd353cef5",
+      "bytes": 10592250
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/houston/timeline.json",
+      "sha256": "6709a239e5a7908d1170411bbacbfd9fdeb4d712b5ff27b7b50f85d4c179c0c3",
+      "bytes": 998238
+    },
+    {
+      "path": "dist/asphodel-linux-v2/authority/bundles/houston/zones.json",
+      "sha256": "e03be8bc6e8bd5442774f2e133fe8a03d3b03363be7f585184114c8f597e5f97",
+      "bytes": 180530
     },
     {
       "path": "dist/asphodel-linux-v2/authority/_internal/81d243bd2c585b0f4821__mypyc.cpython-311-x86_64-linux-gnu.so",
@@ -84,7 +294,7 @@
     },
     {
       "path": "dist/asphodel-linux-v2/authority/_internal/base_library.zip",
-      "sha256": "5eb569f452b429ff7d345a400157f3a5bba56a77f917b626e4c2a174156404f8",
+      "sha256": "79ca959dfef44d3611a0b159459241410a3dbdc7a4ffd32b854ef835ae45d0cc",
       "bytes": 1443218
     },
     {
@@ -828,9 +1038,219 @@
       "bytes": 35488
     },
     {
+      "path": "dist/authority/SIM_SHA",
+      "sha256": "de28305da50388f455256c113e4ee20bf1d9859f35d4e9e2105b7b9d8c7c5699",
+      "bytes": 41
+    },
+    {
       "path": "dist/authority/authority",
-      "sha256": "b11d825724fa566a76c3f6a97d3387214e9380b3bb46550729dee52daaf7ee7b",
-      "bytes": 12457680
+      "sha256": "7860e07f7c2428bf746f50f9c9c2e4b7e9d308f0692c0c3e66bd7fc0b7620dde",
+      "bytes": 12458480
+    },
+    {
+      "path": "dist/authority/bundles/san_antonio/buildings.json",
+      "sha256": "09da51ba8b4c94c2f40f44ca7ece0bc30d3e1b1775cc2566e5ccd006ae7da94c",
+      "bytes": 7629210
+    },
+    {
+      "path": "dist/authority/bundles/san_antonio/citizens.json",
+      "sha256": "b84e29127f092186d715a934010feba00dc95443145459127e836a9379d2443d",
+      "bytes": 88179
+    },
+    {
+      "path": "dist/authority/bundles/san_antonio/meta.json",
+      "sha256": "f8c5d8e6f74f706715618e7ae16bebb5428a55d4a254a64cfc7d18d902393040",
+      "bytes": 774
+    },
+    {
+      "path": "dist/authority/bundles/san_antonio/mobility.json",
+      "sha256": "062446afce622fb4f531fc05700b66e85b5277bae38d2de70633530b471aef46",
+      "bytes": 19937
+    },
+    {
+      "path": "dist/authority/bundles/san_antonio/physics.json",
+      "sha256": "cb956ac633071ddf526e7cfbfa1bcffe0a8869f0faf971c3a08e2c4562090f49",
+      "bytes": 4617
+    },
+    {
+      "path": "dist/authority/bundles/san_antonio/region.json",
+      "sha256": "ba8f1518aaadbcd087c34080e6d46ca4f1e462db1c89b348b56ae644ca9e6d18",
+      "bytes": 390816
+    },
+    {
+      "path": "dist/authority/bundles/san_antonio/roads.json",
+      "sha256": "fa577ebb0b66eed8482aad31c1d6414bb943c0d7a7e2bffca914a04a2d75e9d7",
+      "bytes": 467875
+    },
+    {
+      "path": "dist/authority/bundles/san_antonio/streetmap.json",
+      "sha256": "043b28d52a46e34f7a03602488a9bc66004937ea6afd9e4664903c6c2d9d43a4",
+      "bytes": 17486379
+    },
+    {
+      "path": "dist/authority/bundles/san_antonio/timeline.json",
+      "sha256": "21a161efce8b0991b9f2f18f7f8665a97e0e9a7a54eb9754fc0bd7b8909f7c0c",
+      "bytes": 973840
+    },
+    {
+      "path": "dist/authority/bundles/san_antonio/zones.json",
+      "sha256": "913c876cd4b769a2dd9206653673f3382d9ec85af74e29ddea05bd6378fc8e1d",
+      "bytes": 79520
+    },
+    {
+      "path": "dist/authority/bundles/madisonville_tx/buildings.json",
+      "sha256": "50b20c1c96888e8e78eb0e9c425316e08bbb1dddaf67b201378cd017e75e791c",
+      "bytes": 611065
+    },
+    {
+      "path": "dist/authority/bundles/madisonville_tx/citizens.json",
+      "sha256": "7d9e4ba0db996261af8b6a0c3fa485f37f8a27aeccd6b875316d778509d0ec15",
+      "bytes": 87767
+    },
+    {
+      "path": "dist/authority/bundles/madisonville_tx/meta.json",
+      "sha256": "8b5c48872cf6b664c98f0f55d53723ef26d14a1638c263820bb638c7f6ff3cef",
+      "bytes": 761
+    },
+    {
+      "path": "dist/authority/bundles/madisonville_tx/mobility.json",
+      "sha256": "02d5657475f5cbd5036d53791c412c2a7facf6d235a48e20f77fb978c06ca6d4",
+      "bytes": 7322
+    },
+    {
+      "path": "dist/authority/bundles/madisonville_tx/physics.json",
+      "sha256": "cb956ac633071ddf526e7cfbfa1bcffe0a8869f0faf971c3a08e2c4562090f49",
+      "bytes": 4617
+    },
+    {
+      "path": "dist/authority/bundles/madisonville_tx/region.json",
+      "sha256": "e378ac5e7ca6cb21ac54b778d3a15cbdc20019d56e267a6eb1d629e088b8d023",
+      "bytes": 390898
+    },
+    {
+      "path": "dist/authority/bundles/madisonville_tx/roads.json",
+      "sha256": "96f68858beddaa09331f4f05ec5587b7096270bc0ee8a206da7fc714e95a98a1",
+      "bytes": 35481
+    },
+    {
+      "path": "dist/authority/bundles/madisonville_tx/streetmap.json",
+      "sha256": "0c8a4d98163d189eafabe9d7605e92f84f4d1fc2060cb29016726419be883a2c",
+      "bytes": 679157
+    },
+    {
+      "path": "dist/authority/bundles/madisonville_tx/timeline.json",
+      "sha256": "f1860c3139b8baaf1ba8a3d4314c10f8dee2edce4b72aa99bcf662ac3ce7ca08",
+      "bytes": 300509
+    },
+    {
+      "path": "dist/authority/bundles/madisonville_tx/zones.json",
+      "sha256": "ff3c8ebecf8c7c68a780e37447563116f123c4d8442982bfedb27443b5fe0383",
+      "bytes": 46957
+    },
+    {
+      "path": "dist/authority/bundles/austin/buildings.json",
+      "sha256": "aab383d524f14fc91b4368d98197ac01af78dfe22a32091765eb8e3087025d15",
+      "bytes": 8227769
+    },
+    {
+      "path": "dist/authority/bundles/austin/citizens.json",
+      "sha256": "a57a2edf91c9f9acabef1c746f34d535445c819b3b580593d64d05a63dbbad82",
+      "bytes": 87663
+    },
+    {
+      "path": "dist/authority/bundles/austin/meta.json",
+      "sha256": "c454103344e51e9df699be89ebc9d9b1668d7232e8cdda1ace6157a79d52cc45",
+      "bytes": 757
+    },
+    {
+      "path": "dist/authority/bundles/austin/mobility.json",
+      "sha256": "d154e0a7d73d6ed933df0dd7c307a2bd2162bc59c87aadbf8f1e93460539f29f",
+      "bytes": 22731
+    },
+    {
+      "path": "dist/authority/bundles/austin/physics.json",
+      "sha256": "cb956ac633071ddf526e7cfbfa1bcffe0a8869f0faf971c3a08e2c4562090f49",
+      "bytes": 4617
+    },
+    {
+      "path": "dist/authority/bundles/austin/region.json",
+      "sha256": "1fa288aaa4dd33678deef74d1f3edae9b22d40a546efc630439bcfc73317a9ff",
+      "bytes": 390714
+    },
+    {
+      "path": "dist/authority/bundles/austin/roads.json",
+      "sha256": "c6a92100852d20045e0e287c0475bcef889aeef25071223d46c0c3bca2ae39f9",
+      "bytes": 341279
+    },
+    {
+      "path": "dist/authority/bundles/austin/streetmap.json",
+      "sha256": "2879649463ed685352e498dfcdd8cfe29cc388344051d90049f927a508e5253d",
+      "bytes": 19537720
+    },
+    {
+      "path": "dist/authority/bundles/austin/timeline.json",
+      "sha256": "81d9dc4aa0fb17a6458a771512a173a640d1935f81d1fe490586e0390948b121",
+      "bytes": 1022991
+    },
+    {
+      "path": "dist/authority/bundles/austin/zones.json",
+      "sha256": "495bf57dc4fcb3cc236cfe96f7fc7e206c584bf89bc9890824504233a11a2fda",
+      "bytes": 96989
+    },
+    {
+      "path": "dist/authority/bundles/houston/buildings.json",
+      "sha256": "eadd841662cefe185aad6ba581e2cad1f7a4ca679367811e5f2b13fa446c8c2b",
+      "bytes": 4999414
+    },
+    {
+      "path": "dist/authority/bundles/houston/citizens.json",
+      "sha256": "eb235fe1bc7e8a7d3b92070abcad6385cf06636f5b4914156446951a51635177",
+      "bytes": 439572
+    },
+    {
+      "path": "dist/authority/bundles/houston/meta.json",
+      "sha256": "b2cb4b4ee2bc6f4557f461e36c1c4a4b1fbe9c74aae320e26a6d833159b6d883",
+      "bytes": 759
+    },
+    {
+      "path": "dist/authority/bundles/houston/mobility.json",
+      "sha256": "195ffca5d30c915c10543e85fa1ef38e56091ac93acd346dcd5925ed557065af",
+      "bytes": 19945
+    },
+    {
+      "path": "dist/authority/bundles/houston/physics.json",
+      "sha256": "cb956ac633071ddf526e7cfbfa1bcffe0a8869f0faf971c3a08e2c4562090f49",
+      "bytes": 4617
+    },
+    {
+      "path": "dist/authority/bundles/houston/playback.json",
+      "sha256": "c55aa568b2d884b9e73c27a8a56bee5996eb334c73816680c61d81adfe3425fd",
+      "bytes": 273784
+    },
+    {
+      "path": "dist/authority/bundles/houston/region.json",
+      "sha256": "998def85cd07b81fd928c1c3c4a53a10f5b4383388f919a114ad4a5473dbbdca",
+      "bytes": 366242
+    },
+    {
+      "path": "dist/authority/bundles/houston/roads.json",
+      "sha256": "c221c2616a32cc3435b100d7e325ec23f09e319fab3810c88f1c1dafec40fa1e",
+      "bytes": 512996
+    },
+    {
+      "path": "dist/authority/bundles/houston/streetmap.json",
+      "sha256": "22e1defb76e30e93d84a65b7c50ae4ccebf92fbad56d8f907a0ab7dbd353cef5",
+      "bytes": 10592250
+    },
+    {
+      "path": "dist/authority/bundles/houston/timeline.json",
+      "sha256": "6709a239e5a7908d1170411bbacbfd9fdeb4d712b5ff27b7b50f85d4c179c0c3",
+      "bytes": 998238
+    },
+    {
+      "path": "dist/authority/bundles/houston/zones.json",
+      "sha256": "e03be8bc6e8bd5442774f2e133fe8a03d3b03363be7f585184114c8f597e5f97",
+      "bytes": 180530
     },
     {
       "path": "dist/authority/_internal/81d243bd2c585b0f4821__mypyc.cpython-311-x86_64-linux-gnu.so",
@@ -839,7 +1259,7 @@
     },
     {
       "path": "dist/authority/_internal/base_library.zip",
-      "sha256": "5eb569f452b429ff7d345a400157f3a5bba56a77f917b626e4c2a174156404f8",
+      "sha256": "79ca959dfef44d3611a0b159459241410a3dbdc7a4ffd32b854ef835ae45d0cc",
       "bytes": 1443218
     },
     {
@@ -1583,11 +2003,7 @@
       "bytes": 35488
     }
   ],
-  "archive": {
-    "path": "dist/Asphodel-Windows-V2.zip",
-    "sha256": "87e325d25811c3102f90059c819e7ed56cce90f622da19ab9b3504d258b8295f",
-    "bytes": 99753904
-  },
-  "file_count": 307,
-  "total_bytes": 682894622
+  "archive": null,
+  "file_count": 391,
+  "total_bytes": 837754244
 }

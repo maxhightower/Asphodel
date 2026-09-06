@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from dataclasses import replace
 
 from ..config import (
@@ -32,19 +33,44 @@ _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__f
 _BUNDLES_DIR = os.path.join(_REPO_ROOT, "godot", "bundles")
 
 
+def _bundle_search_roots() -> list:
+    """Directories that may hold ``<city>/meta.json`` bundles, most specific first.
+
+    A shipped (frozen) authority has no repo, so it also looks in a ``bundles/``
+    dir beside its executable and inside the PyInstaller onedir payload, plus an
+    explicit ``ASPHODEL_BUNDLES`` override (Convergence V2 §7/§38).
+    """
+    roots = []
+    env = os.environ.get("ASPHODEL_BUNDLES")
+    if env:
+        roots.append(env)
+    if getattr(sys, "frozen", False):
+        exe_dir = os.path.dirname(os.path.abspath(sys.executable))
+        roots.append(os.path.join(exe_dir, "bundles"))
+        meipass = getattr(sys, "_MEIPASS", None)
+        if meipass:
+            roots.append(os.path.join(meipass, "bundles"))
+    roots.append(_BUNDLES_DIR)
+    return roots
+
+
 def resolve_bundle_dir(bundle: str) -> str:
     """Resolve a bundle reference to a directory.
 
     Accepts an explicit path (absolute, or relative to cwd) containing the bundle
-    JSONs, or a bare city name resolved under ``godot/bundles/<name>``.
+    JSONs, or a bare city name resolved under any of the bundle search roots
+    (``godot/bundles/`` in a checkout; a shipped ``bundles/`` beside a frozen
+    authority; ``ASPHODEL_BUNDLES``).
     """
     if os.path.isdir(bundle) and os.path.exists(os.path.join(bundle, "meta.json")):
         return os.path.abspath(bundle)
-    candidate = os.path.join(_BUNDLES_DIR, bundle)
-    if os.path.isdir(candidate) and os.path.exists(os.path.join(candidate, "meta.json")):
-        return candidate
-    raise FileNotFoundError(f"no bundle found for {bundle!r} "
-                            f"(looked at {bundle!r} and {candidate!r})")
+    tried = []
+    for root in _bundle_search_roots():
+        candidate = os.path.join(root, bundle)
+        tried.append(candidate)
+        if os.path.isdir(candidate) and os.path.exists(os.path.join(candidate, "meta.json")):
+            return candidate
+    raise FileNotFoundError(f"no bundle found for {bundle!r} (looked at {bundle!r} and {tried})")
 
 
 def config_from_bundle(bundle: str, seed: int | None = None) -> ScenarioConfig:

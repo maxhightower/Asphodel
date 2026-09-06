@@ -1,0 +1,26 @@
+{
+  "test": "clean_environment_launch",
+  "description": "The exported Linux build copied to a repo-free temp directory (PYTHONPATH unset) auto-starts its own bundled frozen authority, handshakes v9 with real build identity, and starts the real houston world with the full system stack \u2014 no system Python, no source tree.",
+  "clean_dir": "/tmp/asph_clean_env2 (outside the repo working tree)",
+  "env": "PYTHONPATH unset; HOME=clean_dir; launched ./Asphodel.x86_64 --headless -- --selftest-convergence",
+  "result": {
+    "ok": true,
+    "steps": [
+      {
+        "auto_start": true,
+        "port": 36041
+      },
+      {
+        "handshake": true,
+        "sim_sha": "fcf99041a527"
+      },
+      {
+        "city": "houston",
+        "full_stack": true,
+        "n_citizens": 300.0,
+        "start_world": true
+      }
+    ]
+  },
+  "recorded_utc": "2026-09-06T21:50:13.105801Z"
+}
