@@ -1076,7 +1076,9 @@ func _dialogue_key(event: InputEvent) -> int:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		if _pause_layer != null and _pause_layer.visible:
+		if _dialogue != null and _dialogue.is_open():
+			close_dialogue()
+		elif _pause_layer != null and _pause_layer.visible:
 			_resume()
 		elif _pause_layer != null:
 			_pause()

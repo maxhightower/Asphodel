@@ -212,7 +212,10 @@ func _place_player(row: Dictionary, off: Vector2 = Vector2(3.0, 2.5)) -> void:
 	if _scene.inside_building() >= 0 and _scene.inside_building() == bid:
 		p.teleport(_staged(float(row["x"]), float(row["y"])) + Vector3(off.x, 1.0, off.y))
 	elif _scene.inside_building() < 0:
-		p.teleport(Vector3(float(row["x"]) + off.x, 1.5, float(row["y"]) + off.y))
+		# teleport_player (not the raw body move) so the exterior stream
+		# materializes the block and the focus zone follows: outdoor frames are
+		# worthless if the city around the citizen has not been streamed in.
+		_scene.teleport_player(float(row["x"]) + off.x, float(row["y"]) + off.y)
 	SimBridge.focus_xy = Vector2(float(row["x"]), float(row["y"]))
 	SimBridge.has_focus_xy = true
 
@@ -229,6 +232,27 @@ func _settle(frames: int) -> void:
 		if ext != null and _scene.inside_building() < 0:
 			ext.update_focus(_scene.get_camera().get_focus())
 		await get_tree().physics_frame
+
+
+## Let the world run a few game seconds at the new focus so the NEAR band
+## materializes the bodies around it, and give the streamer frames to catch up.
+func _live_settle(steps: int) -> void:
+	for i in range(steps):
+		_step(1.0)
+		var ext = _scene.get_exterior()
+		if ext != null and _scene.inside_building() < 0:
+			ext.update_focus(_scene.get_camera().get_focus())
+		await get_tree().physics_frame
+		await get_tree().physics_frame
+
+
+## Which of these citizens the renderer actually has a body for right now.
+func _bodies_of(ids: Array) -> Array:
+	var out := []
+	for cid in ids:
+		if _emb.body_of("cit:%d" % int(cid)) != null:
+			out.append(int(cid))
+	return out
 
 
 func _bodies_here() -> Array:
@@ -554,13 +578,16 @@ func _run() -> void:
 				_witness = n
 				witness_reply = ans
 				var wrow := _row(SimBridge.last_mobility, n)
+				_zoom(16.0 if _scene.inside_building() >= 0 else 30.0)
 				_place_player(wrow, Vector2(2.0, 1.6))
+				await _live_settle(6)
 				await _settle(12)
 				_reached = attacked
 				await _shot("02_grounded_answer.png", _caption(
-					"%s — the player asked citizen %d \"What happened?\" (option 1, ASK_FACT scoped to building %d) minutes after the attack, and the panel shows the authority's answer verbatim: \"%s\" carrying epistemic status %s, proposition %s about citizen %s in room %s. The attack itself: %s. PIXELS: the panel text, the label over the speaker's body, and bodies in the world. AUTHORITY ONLY: that this citizen actually saw it — the epistemic status and the supporting memory fact (%s) live in its own store."
+					"%s — the player asked citizen %d \"What happened?\" (option 1, ASK_FACT scoped to building %d) minutes after the attack, and the panel shows the authority's answer verbatim: \"%s\" carrying epistemic status %s, proposition %s about citizen %s in room %s. The attack itself: %s. The renderer has a body for %s of the citizens around the player right now (%s), and the label over the speaker carries the same authority string as the panel — but at this camera angle a roof, a wall or a fixture can hide a body, so the pixels prove a panel and a street, not which body is the speaker. AUTHORITY ONLY: that this citizen actually saw it — the epistemic status and the supporting memory fact (%s) live in its own store."
 					% [_hhmm(), n, _shop, str(act.get("line")), epi, str(p.get("kind")),
 						str(p.get("subject")), str(p.get("room_id")), str(first_attack),
+						str(_bodies_of(_people_nearby(_player)).size()), str(_bodies_of(_people_nearby(_player))),
 						str(p.get("event_ref"))]),
 					{"talk_reply": ans, "answer_proposition": p, "attack_event": first_attack})
 				_panel.choose(5)
@@ -569,7 +596,9 @@ func _run() -> void:
 				_uninformed = n
 				unknown_reply = ans
 				var urow := _row(SimBridge.last_mobility, n)
+				_zoom(16.0 if _scene.inside_building() >= 0 else 30.0)
 				_place_player(urow, Vector2(2.0, 1.6))
+				await _live_settle(6)
 				await _settle(12)
 				_reached = true
 				await _shot("03_i_dont_know.png", _caption(
@@ -625,15 +654,17 @@ func _run() -> void:
 	var pr3 := _row(SimBridge.last_mobility, _player)
 	if _scene.inside_building() >= 0:
 		await _leave()
-	_place_player(pr3, Vector2(6.0, 6.0))
-	_zoom(24.0)
+	_zoom(34.0)
+	_place_player(pr3, Vector2(4.0, 4.0))
+	await _live_settle(8)
 	await _settle(20)
 	_reached = not warns.is_empty()
 	await _shot("04_npc_warning_exchange.png", _caption(
-		"%s — the warning wave the authority ran between NPCs after the attack in shop %d: %d conversations about it so far (%s of them by shout, %s by call, %s face to face). The first of them, verbatim: %s. PIXELS: the street and the bodies on it around the player — a shout and a telephone call look exactly like nothing at all. AUTHORITY ONLY: everything about the exchange; the rows are in this manifest."
+		"%s — the warning wave the authority ran between NPCs after the attack in shop %d: %d conversations about it so far (%s of them by shout, %s by call, %s face to face). The first of them, verbatim: %s. PIXELS: the block around the player's own citizen; the renderer has bodies for %s of the citizens the authority reports near it (%s), and a shout or a telephone call looks exactly like nothing at all. AUTHORITY ONLY: everything about the exchange — who spoke to whom, over which channel, and in which words; the rows are in this manifest."
 		% [_hhmm(), _shop, warns.size(), str(_count_channel(warns, "shout")),
 			str(_count_channel(warns, "call")), str(_count_channel(warns, "face_to_face")),
-			str(rows.slice(0, 2))]),
+			str(rows.slice(0, 2)), str(_bodies_of(_people_nearby(_player)).size()),
+			str(_bodies_of(_people_nearby(_player)))]),
 		{"warning_conversations": rows, "dialogue_kinds": _kinds})
 
 	# --- 08 a conversation the threat cut short --------------------------------
@@ -662,13 +693,16 @@ func _run() -> void:
 	if not wrow2.is_empty():
 		if _scene.inside_building() >= 0:
 			await _leave()
-		_place_player(wrow2, Vector2(7.0, 7.0))
+		_zoom(34.0)
+		_place_player(wrow2, Vector2(5.0, 5.0))
+		await _live_settle(8)
 	await _settle(20)
 	_reached = not (pick.is_empty() and single.is_empty())
 	await _shot("08_interrupted.png", _caption(
-		"%s — a conversation the threat did not let finish. The authority's row: %s; and %d warning(s) in this run were delivered as a SINGLE act with no exchange to sit through, which is what an alarmed citizen does instead of talking (e.g. %s). The frame is centred on citizen %d (state %s, building %s) — one of the participants. PIXELS: bodies moving through the city. AUTHORITY ONLY: that a conversation was cut short, and why."
+		"%s — a conversation the threat did not let finish. The authority's row: %s; and %d warning(s) in this run were delivered as a SINGLE act with no exchange to sit through, which is what an alarmed citizen does instead of talking (e.g. %s). The frame is centred on citizen %d (state %s, building %s) — one of the participants, and the renderer has a body for it right now: %s. PIXELS: the block that citizen is crossing. AUTHORITY ONLY: that a conversation was cut short, and why — an interrupted conversation has no visual channel at all."
 		% [_hhmm(), str(pick), single.size(), str(single[0]) if not single.is_empty() else "-",
-			who, str(wrow2.get("state")), str(wrow2.get("building_id"))]),
+			who, str(wrow2.get("state")), str(wrow2.get("building_id")),
+			str(_emb.body_of("cit:%d" % who) != null)]),
 		{"interrupted": pick, "single_act_warnings": single.size(),
 			"interrupted_count": interrupted.size()})
 	_finish()

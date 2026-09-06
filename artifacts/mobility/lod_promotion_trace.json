@@ -2,7 +2,7 @@
  "citizen_id": 4,
  "transitions": [
   {
-   "t": 15.0,
+   "t": 1.0,
    "citizen_id": 4,
    "from": "route_simulated",
    "to": "physical",
@@ -15,56 +15,30 @@
    "state": "doing_activity"
   },
   {
-   "t": 9060.0,
+   "t": 9055.0,
    "citizen_id": 4,
    "from": "physical",
    "to": "route_simulated",
-   "distance": 231.0,
+   "distance": 191.1,
    "pos": [
-    1439.8,
-    706.7
+    1399.8,
+    705.9
    ],
    "step": 3,
    "state": "driving"
   },
   {
-   "t": 39975.0,
+   "t": 39968.0,
    "citizen_id": 4,
    "from": "route_simulated",
    "to": "physical",
-   "distance": 87.9,
+   "distance": 143.4,
    "pos": [
-    1295.9,
-    703.7
+    1351.9,
+    704.9
    ],
    "step": 3,
    "state": "driving"
-  },
-  {
-   "t": 41580.0,
-   "citizen_id": 4,
-   "from": "physical",
-   "to": "route_simulated",
-   "distance": 193.8,
-   "pos": [
-    1268.0,
-    871.4
-   ],
-   "step": 1,
-   "state": "on_foot"
-  },
-  {
-   "t": 46905.0,
-   "citizen_id": 4,
-   "from": "route_simulated",
-   "to": "physical",
-   "distance": 148.4,
-   "pos": [
-    1259.9,
-    826.2
-   ],
-   "step": 1,
-   "state": "on_foot"
   }
  ],
  "godot": {
@@ -78,7 +52,7 @@
   ],
   "progressed_far": [
    "PASS",
-   "authoritative position moved 163 m while no body existed"
+   "authoritative position moved 170 m while no body existed"
   ]
  }
 }
