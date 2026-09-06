@@ -45,12 +45,12 @@
 | G43 | Save/load group task passes | PASS | group task (role/supply) save-load identical |
 | G44 | Save/load admission passes | PASS | admission decision save-load identical |
 | G45 | LOD preserves group/member state | PASS | LOD promotion/demotion preserves group state: {'ok': True, 'citizen': 0, 'band_near': 'PHYSICAL', 'band_control': 'ROUTE_SIMULATED', 'group_same_while_physical': True, 'group_same_ |
-| G46 | Godot demonstrates group behavior | NOT_RUN | artifacts/survivor_groups_v1/regression.json missing |
-| G47 | DialogueGate remains PASS | NOT_RUN | artifacts/survivor_groups_v1/regression.json missing |
-| G48 | CognitionGate remains PASS | NOT_RUN | artifacts/survivor_groups_v1/regression.json missing |
-| G49 | WorkGate remains PASS | NOT_RUN | artifacts/survivor_groups_v1/regression.json missing |
-| G50 | OutbreakGate remains PASS | NOT_RUN | artifacts/survivor_groups_v1/regression.json missing |
-| G51 | MobilityGate remains PASS | NOT_RUN | artifacts/survivor_groups_v1/regression.json missing |
-| G52 | Existing Godot gates remain PASS | NOT_RUN | artifacts/survivor_groups_v1/regression.json missing |
-| G53 | Multi-city smoke | NOT_RUN | artifacts/survivor_groups_v1/city_smoke.json missing |
+| G46 | Godot demonstrates group behavior | PASS | {"status": "PASS", "pass": 12, "fail": 0, "info": 1, "exit": 0, "gate": "G46", "log": "logs/groups_gate.log", "wall_s": 59.9} |
+| G47 | DialogueGate remains PASS | PASS | {"status": "PASS", "pass": 22, "fail": 0, "info": 5, "exit": 0, "gate": "G47", "log": "logs/dialogue_gate.log", "wall_s": 406.5} |
+| G48 | CognitionGate remains PASS | PASS | {"status": "PASS", "pass": 30, "fail": 0, "info": 2, "exit": 0, "gate": "G48", "log": "logs/cognition_gate.log", "wall_s": 207.0} |
+| G49 | WorkGate remains PASS | PASS | {"status": "PASS", "pass": 22, "fail": 0, "info": 0, "exit": 0, "gate": "G49", "log": "logs/work_gate.log", "wall_s": 244.4} |
+| G50 | OutbreakGate remains PASS | PASS | {"status": "PASS", "pass": 18, "fail": 0, "info": 1, "exit": 0, "gate": "G50", "log": "logs/outbreak_gate.log", "wall_s": 816.3} |
+| G51 | MobilityGate remains PASS | PASS | {"status": "PASS", "pass": 24, "fail": 0, "info": 1, "exit": 0, "gate": "G51", "log": "logs/mobility_gate.log", "wall_s": 1362.5} |
+| G52 | Existing Godot gates remain PASS | PASS | {"status": "PASS", "pass": 85, "fail": 0, "info": 1, "exited_nonzero": 0, "scenes": ["tests/PhysicsGate.tscn", "tests/RegionGate.tscn", "tests/NavGate.tscn", "tests/ConvergenceGate |
+| G53 | Multi-city smoke | PASS | {"houston": "PASS", "madisonville_tx": "PASS", "austin": "PASS", "san_antonio": "PASS", "boulder": "INFO"} |
 | G54 | No city-name special cases | PASS | no city-name special cases in the groups package: [] |

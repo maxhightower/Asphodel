@@ -658,10 +658,14 @@ def test_G46_G53_external(day):
     sm = os.path.join(ART, "city_smoke.json")
     if os.path.exists(sm):
         s = json.load(open(sm))
-        cities = s.get("cities", s)
-        rows = {k: (v.get("status") if isinstance(v, dict) else v) for k, v in cities.items()}
+        # per-city outcomes live under "results" (a dict city->{status,...}); "cities"
+        # is just the list of names the smoke ran.
+        res = s.get("results", {})
+        rows = ({k: (v.get("status") if isinstance(v, dict) else v) for k, v in res.items()}
+                if isinstance(res, dict) else {})
         req = [k for k in rows if any(x in k for x in ("houston", "madisonville", "austin", "san_antonio"))]
-        ok = req and all(rows[k] in ("PASS", "INFO") for k in req) and not any(v == "FAIL" for v in rows.values())
+        ok = (bool(req) and all(rows[k] in ("PASS", "INFO") for k in req)
+              and not any(v == "FAIL" for v in rows.values()) and s.get("overall") != "FAIL")
         _status("G53", "PASS" if ok else "FAIL", json.dumps(rows))
     else:
         _status("G53", "NOT_RUN", "artifacts/survivor_groups_v1/city_smoke.json missing")

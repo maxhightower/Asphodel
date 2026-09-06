@@ -98,7 +98,52 @@ The causal chain is provable by removal — the certification bar is met.
 
 ## 6. Save/load, LOD, performance, multi-city, regression
 
-<!-- FILLED FROM ARTIFACTS -->
+**Save/load (§36) — 8 moments, byte-identical.** The day captures the world at
+`before_formation`, `after_formation`, `during_shelter`, `role_assignment`,
+`mid_supply_run`, `admission_decision`, `threat_response` and `after_departure`;
+each round-trips through `to_state`/`from_state` and reloads to a **byte-identical**
+group state (formation, shelter, roles, supplies, membership and the admission
+decision all survive).
+
+**LOD (§35).** Promoting member 0 to `PHYSICAL` and demoting it back leaves
+group, membership and role state **identical to a control copy**
+(`group_same_while_physical`, `group_same_after_demotion`, `world_same_after_demotion`
+all true) — the group layer keeps no band-specific state.
+
+**Performance (§42)** (`performance.json`, houston, population 297). `groups.advance`
+costs **1.47 ms per game-minute** in a normal window and **1.37 ms** in the
+outbreak window; the edge-indexed formation scan medians **2.29 ms** and runs at
+most once every 120 s. The worst case measured — two simultaneous groups — is
+**23.69 ms per game-minute = 0.95 % of the 2500 ms real-time budget**. The layer
+is a small fraction of the frame; there is no O(N²) matching (formation is
+edge-driven) and group knowledge reuses the single dialogue transmission path.
+
+**Multiple groups (§43).** The performance run forms two independent groups
+(`group:1` = [42, 87, 117], `group:2` = [120, 129, 225]) that coexist with
+separate membership, shelter and role state; per-group cost is linear.
+
+**Multi-city (§44)** (`city_smoke.json`, seed 0, 120-minute warm-up). Overall
+**PASS**: `houston`, `madisonville_tx`, `austin`, `san_antonio` each PASS —
+a group forms from real cooperation, shelters in a **member-known** building,
+keeps its membership through save/load, and **rebuilds identically on replay** —
+and `boulder` is INFO (no compiled world). The identical driver runs every city;
+there is no city-name logic anywhere in the groups package (G54).
+
+**Regression (§39, G46–G53).** Every gate re-run on this branch:
+| gate | check | result |
+|---|---|---|
+| G46 | live GroupGate (bridge v9) | **PASS** — 12 checks, 0 fail |
+| G47 | Dialogue V1 gate under groups | **PASS** — 22/0 |
+| G48 | Cognition gate | **PASS** — 30/0 |
+| G49 | Work gate | **PASS** — 22/0 |
+| G50 | Outbreak gate | **PASS** — 18/0 |
+| G51 | Mobility gate | **PASS** — 24/0 |
+| G52 | Godot run_gates (Physics/Region/Nav/Convergence) | **PASS** — 85/0 across 4 scenes |
+| G53 | Multi-city smoke | **PASS** — houston/madisonville_tx/austin/san_antonio PASS, boulder INFO |
+| — | Full Python suite (1574 tests) | **PASS** — 1573 passed; the one deselected/failing test is the pre-existing Overture packet dependency, unrelated to this layer |
+
+The one pre-existing repository failure (`test_overture_ingest`, unrelated to this
+layer) is deselected exactly as the dialogue milestone recorded it.
 
 ## 7. Certification table (G1–G54)
 

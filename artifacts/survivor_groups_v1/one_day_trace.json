@@ -1375,50 +1375,50 @@
   {
    "gate": "G46",
    "name": "Godot demonstrates group behavior",
-   "status": "NOT_RUN",
-   "detail": "artifacts/survivor_groups_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 12, \"fail\": 0, \"info\": 1, \"exit\": 0, \"gate\": \"G46\", \"log\": \"logs/groups_gate.log\", \"wall_s\": 59.9}"
   },
   {
    "gate": "G47",
    "name": "DialogueGate remains PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/survivor_groups_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 22, \"fail\": 0, \"info\": 5, \"exit\": 0, \"gate\": \"G47\", \"log\": \"logs/dialogue_gate.log\", \"wall_s\": 406.5}"
   },
   {
    "gate": "G48",
    "name": "CognitionGate remains PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/survivor_groups_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 30, \"fail\": 0, \"info\": 2, \"exit\": 0, \"gate\": \"G48\", \"log\": \"logs/cognition_gate.log\", \"wall_s\": 207.0}"
   },
   {
    "gate": "G49",
    "name": "WorkGate remains PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/survivor_groups_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 22, \"fail\": 0, \"info\": 0, \"exit\": 0, \"gate\": \"G49\", \"log\": \"logs/work_gate.log\", \"wall_s\": 244.4}"
   },
   {
    "gate": "G50",
    "name": "OutbreakGate remains PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/survivor_groups_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 18, \"fail\": 0, \"info\": 1, \"exit\": 0, \"gate\": \"G50\", \"log\": \"logs/outbreak_gate.log\", \"wall_s\": 816.3}"
   },
   {
    "gate": "G51",
    "name": "MobilityGate remains PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/survivor_groups_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 24, \"fail\": 0, \"info\": 1, \"exit\": 0, \"gate\": \"G51\", \"log\": \"logs/mobility_gate.log\", \"wall_s\": 1362.5}"
   },
   {
    "gate": "G52",
    "name": "Existing Godot gates remain PASS",
-   "status": "NOT_RUN",
-   "detail": "artifacts/survivor_groups_v1/regression.json missing"
+   "status": "PASS",
+   "detail": "{\"status\": \"PASS\", \"pass\": 85, \"fail\": 0, \"info\": 1, \"exited_nonzero\": 0, \"scenes\": [\"tests/PhysicsGate.tscn\", \"tests/RegionGate.tscn\", \"tests/NavGate.tscn\", \"tests/ConvergenceGate.tscn\"], \"gate\": \"G52\", \"log\": \"logs/run_gates.log\", \"wall_s\": 49.7}"
   },
   {
    "gate": "G53",
    "name": "Multi-city smoke",
-   "status": "NOT_RUN",
-   "detail": "artifacts/survivor_groups_v1/city_smoke.json missing"
+   "status": "PASS",
+   "detail": "{\"houston\": \"PASS\", \"madisonville_tx\": \"PASS\", \"austin\": \"PASS\", \"san_antonio\": \"PASS\", \"boulder\": \"INFO\"}"
   },
   {
    "gate": "G54",
