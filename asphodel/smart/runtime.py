@@ -1121,7 +1121,8 @@ class WorkRuntime:
                 "task": a.task_id if a else None, "phase": a.phase if a else None,
                 "object_id": a.object_id if a else None, "room_id": rid,
                 "zone": (self.graphs[a.building_id].zone(a.room_id) if a else None),
-                "carrying": a.carrying if a else ""}
+                "carrying": a.carrying if a else "",
+                "help_for": (a.help_for if a is not None and a.help_for >= 0 else None)}
 
     def snapshot(self, since_seq: int = 0) -> dict:
         return {"now_s": self.now_s, "n_employed": len(self.employment),

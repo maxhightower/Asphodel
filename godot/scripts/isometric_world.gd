@@ -408,6 +408,10 @@ func _connect_live_world(dir: String, meta: Dictionary) -> void:
 	var pcid := int(Session.citizen.get("citizen_id", -1)) if Session.citizen.has("citizen_id") else -1
 	if pcid >= 0:
 		opts["player_citizen_id"] = pcid
+	# A harness may ask for a specific in-game start hour (Session.start_hour);
+	# the authority owns the clock either way.
+	if Session.start_hour >= 0.0:
+		opts["start_hour"] = Session.start_hour
 	var started: Dictionary = SimBridge.start_world(bundle_name, opts)
 	if not started.get("ok", false):
 		push_warning("isometric_world: START_WORLD failed: %s" % str(started))

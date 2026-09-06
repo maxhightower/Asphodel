@@ -51,6 +51,14 @@ var last_outbreak: Dictionary = {}
 var work_enabled := false
 var last_work: Dictionary = {}
 var last_rooms: Dictionary = {}
+# --- npc cognition / social memory (v7) ------------------------------------------
+# Whether the started world runs the CognitionRuntime (START_WORLD reply
+# `cognition_enabled`; `cognition: false` opts out). When true, GET_COGNITION
+# reports the perception/memory/social event log and GET_CITIZEN_CONTEXT the
+# structured context of one citizen.
+var cognition_enabled := false
+var last_cognition: Dictionary = {}
+var last_context: Dictionary = {}
 
 
 func is_connected_to_sim() -> bool:
@@ -102,6 +110,7 @@ func start_world(bundle: String, opts: Dictionary = {}) -> Dictionary:
 		mobility_enabled = bool(r.get("mobility_enabled", false))
 		outbreak_enabled = bool(r.get("outbreak_enabled", false))
 		work_enabled = bool(r.get("work_enabled", false))
+		cognition_enabled = bool(r.get("cognition_enabled", false))
 		world_started.emit(r)
 	return r
 
@@ -197,6 +206,31 @@ func set_object_state(object_id: String, key: String, value) -> Dictionary:
 	## value false breaks a station: Python evicts its holders and they re-select).
 	## Godot asks; Python decides and reports the consequences.
 	return _send("SET_OBJECT_STATE", {"object_id": object_id, "key": key, "value": value})
+
+
+# ------------------------------------------------------- npc cognition (v7)
+func get_cognition(since_seq: int = 0) -> Dictionary:
+	## Live cognition state: the event log since `since_seq` (PERCEIVED,
+	## WARNING_SHARED/RECEIVED, HELP_DECIDED/STARTED/COMPLETED, RECIPROCATED,
+	## AVOID_ROOM_DECIDED, AVOID_DECIDED, AVOID_ENDED, SOCIAL_ACTION, ...), the
+	## per-kind counts, who is avoiding what, and the memory/relationship totals.
+	## Read-only truth: Godot never invents a memory, a belief or a decision.
+	var r := _send("GET_COGNITION", {"since_seq": since_seq})
+	if _ok(r) and r.has("cognition") and r["cognition"] != null:
+		last_cognition = r["cognition"]
+	return r
+
+
+func get_citizen_context(citizen_id: int) -> Dictionary:
+	## The structured context of one citizen: location, task, goal, needs,
+	## health, personality, salient memories (+ n_memories), people nearby,
+	## relationships, beliefs, perceived danger, what it is avoiding and the
+	## recent social events it took part in. The authority's own row — the gate
+	## and the dialogue layer read it, neither of them writes it.
+	var r := _send("GET_CITIZEN_CONTEXT", {"citizen_id": citizen_id})
+	if _ok(r) and r.has("context") and r["context"] != null:
+		last_context = r["context"]
+	return r
 
 
 func get_mobility(routes: bool = true) -> Dictionary:
@@ -319,6 +353,7 @@ func load(path: String) -> Dictionary:
 		mobility_enabled = bool(r.get("mobility_enabled", mobility_enabled))
 		outbreak_enabled = bool(r.get("outbreak_enabled", outbreak_enabled))
 		work_enabled = bool(r.get("work_enabled", work_enabled))
+		cognition_enabled = bool(r.get("cognition_enabled", cognition_enabled))
 	return r
 
 

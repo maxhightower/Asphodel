@@ -68,6 +68,17 @@ def _d(a: Vec2, b: Vec2) -> float:
     return math.hypot(a[0] - b[0], a[1] - b[1])
 
 
+def _since(events: List[dict], seq: int) -> List[dict]:
+    """The rows of an append-only event ring with ``seq`` above ``seq`` —
+    found from the end, so a quiet second costs nothing, not a scan of the
+    whole ring."""
+    n = len(events)
+    i = n
+    while i > 0 and events[i - 1]["seq"] > seq:
+        i -= 1
+    return events[i:] if i < n else []
+
+
 class CognitionRuntime:
     def __init__(self, mobility, world_seed: int, work=None, outbreak_fn: Optional[Callable] = None):
         self.mobility = mobility
@@ -286,7 +297,7 @@ class CognitionRuntime:
         w = self.work
         if w.event_seq <= self._work_seq:
             return
-        rows = [e for e in w.events if e["seq"] > self._work_seq]
+        rows = _since(w.events, self._work_seq)
         self._work_seq = w.event_seq
         for e in rows:
             k = e["event"]
@@ -357,9 +368,9 @@ class CognitionRuntime:
     def _perceive_outbreak(self, ob) -> None:
         if ob.event_seq <= self._ob_seq:
             return
-        rows = [e for e in ob.events if e["seq"] > self._ob_seq]
+        rows = _since(ob.events, self._ob_seq)
         self._ob_seq = ob.event_seq
-        attacks = [e for e in ob.events[-200:] if e["event"] == "ATTACK"]
+        attacks = None                       # the recent ATTACK rows, looked up only when needed
         for e in rows:
             k = e["event"]
             if k == "THREAT_OBSERVED":
@@ -379,6 +390,8 @@ class CognitionRuntime:
                 elif kind == "corpse":
                     self._threat_memory(w, M.CORPSE_SEEN, target=t, building_id=bid, room_id=rid, rule=None)
                 elif kind == "attack":
+                    if attacks is None:
+                        attacks = [e for e in ob.events[-200:] if e["event"] == "ATTACK"]
                     victim = next((a["victim_citizen"] for a in reversed(attacks) if a["citizen_id"] == t), None)
                     self._threat_memory(w, M.ATTACK_SEEN, actor=t, target=victim, building_id=bid, room_id=rid,
                                         rule="attack_seen")
