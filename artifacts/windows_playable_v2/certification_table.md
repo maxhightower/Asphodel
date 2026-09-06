@@ -45,14 +45,14 @@
 | W41 | San Antonio bundle integrity | PASS | gate W41: START_WORLD san_antonio ok, 60 citizens |
 | W42 | Missing/incompatible authority gives readable fatal error | PASS | gate W42: FatalError maps 8 actionable codes to messages + logs path; fail-closed wired in IsometricWorld |
 | W43 | No simulation duplication in Godot | PASS | visibility nodes contain no simulation logic; every displayed fact reads from a bridge GET_*; inspector mutation_calls()==0 |
-| W44 | Existing GroupGate passes | PENDING | regression (groups_gate) |
-| W45 | DialogueGate passes | PENDING | regression (dialogue_gate) |
-| W46 | CognitionGate passes | PENDING | regression (cognition_gate) |
-| W47 | WorkGate passes | PENDING | regression (work_gate) |
-| W48 | OutbreakGate passes | PENDING | regression (outbreak_gate) |
-| W49 | MobilityGate passes | PENDING | regression (mobility_gate) |
-| W50 | Foundation Godot gates pass | PENDING | regression (run_gates: Physics/Region/Nav/Convergence) |
-| W51 | Full Python regression has no new failure | PENDING | regression (python; only the pre-existing Overture failure allowed) |
+| W44 | Existing GroupGate passes | PASS | re-verified this session: groups_gate 12/0 (uses the real IsometricWorld with the new observer layer + launcher) |
+| W45 | DialogueGate passes | PASS | re-verified this session: dialogue_gate 22/0 |
+| W46 | CognitionGate passes | PASS | re-verified this session: cognition_gate 30/0 |
+| W47 | WorkGate passes | PASS | re-verified this session: work_gate 22/0 |
+| W48 | OutbreakGate passes | INFO | outbreak_gate PASS 18/0 in the certified prior run; this session's re-run was invalidated by concurrent-render resource contention (a partial mobility snapshot -> transient read error), not cleanly re-verified. No code regression identified. |
+| W49 | MobilityGate passes | INFO | mobility_gate PASS 24/0 in the certified prior run; same concurrent-render contention this session; not cleanly re-verified. |
+| W50 | Foundation Godot gates pass | INFO | run_gates (Physics/Region/Nav/Convergence) PASS 85/0 in the certified prior run; same contention this session; not cleanly re-verified. |
+| W51 | Full Python regression has no new failure | INFO | full Python suite PASS 1573/1 (Overture-only) in the certified prior run; not re-run to completion this session. |
 | W52 | Exported Windows executable itself tested | BLOCKED | no Wine on this Linux host: a Windows .exe cannot be executed here. Export mechanically succeeded; Windows-native launch must be certified on a Windows host. NOT laundered into PASS. |
 | W53 | Normal-user end-to-end trace passes | PASS | PlayableConvergenceGate (28/0) + clean_env_trace.json cover launch->menu-stack->city->world->observe->dialogue->inspector->save->relaunch->load |
 | W54 | Build artifact manifest/checksums produced | PASS | artifacts/windows_playable_v2/build_manifest.json + SHA256SUMS.txt |

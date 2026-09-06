@@ -31,3 +31,4 @@ data/raw/
 # artifacts/windows_playable_v2/ and IS committed.
 /dist/
 godot/dist/
+artifacts/windows_playable_v2/logs/
