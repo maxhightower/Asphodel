@@ -9,7 +9,7 @@
   "position_identical": true,
   "continuation_bit_identical": true,
   "no_reseed": true,
-  "save_bytes": 857412
+  "save_bytes": 857430
  },
  "symptomatic": {
   "hour": 9.9,
@@ -21,7 +21,7 @@
   "position_identical": true,
   "continuation_bit_identical": true,
   "no_reseed": true,
-  "save_bytes": 1762371
+  "save_bytes": 1762389
  },
  "corpse": {
   "hour": 10.383,
@@ -33,7 +33,7 @@
   "position_identical": true,
   "continuation_bit_identical": true,
   "no_reseed": true,
-  "save_bytes": 1768027
+  "save_bytes": 1768045
  },
  "undead": {
   "hour": 10.6,
@@ -45,7 +45,7 @@
   "position_identical": true,
   "continuation_bit_identical": true,
   "no_reseed": true,
-  "save_bytes": 2392890
+  "save_bytes": 2392908
  },
  "disruption": {
   "hour": 14.35,
@@ -57,6 +57,6 @@
   "position_identical": true,
   "continuation_bit_identical": true,
   "no_reseed": true,
-  "save_bytes": 2635564
+  "save_bytes": 2635582
  }
 }
