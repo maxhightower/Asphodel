@@ -116,6 +116,7 @@ func _ready() -> void:
 
 	_spawn_player(_bundle_roads(bundle))
 	_setup_camera()
+	_attach_player_body()
 	_setup_interaction()
 	_build_hud()
 	_build_pause_overlay()
@@ -383,6 +384,43 @@ func _setup_camera() -> void:
 		_exterior.force_materialize(_camera.get_focus())
 
 
+## Give the embodied player a VISIBLE character model, built from the same
+## humanoid system as the crowd (CitizenAvatar + the shared NPC shader) so the
+## person you inhabit is shaded and animated exactly like everyone else. The look
+## is presentation-only: a deterministic function of the citizen's name (see
+## player_appearance), so it never touches the authority or simulation identity.
+func _attach_player_body() -> void:
+	if _player == null:
+		return
+	var appearance := player_appearance(Session.citizen)
+	var material := CitizenVisualIdentity.build_material()
+	var avatar := CitizenAvatar.new()
+	# cid = -1: the body is not an interaction candidate and must never masquerade
+	# as a persisted, identified citizen — appearance is passed in directly.
+	avatar.configure(-1, appearance, material, 0.0, CitizenMeshes.LOD_NEAR)
+	_player.set_body(avatar)
+
+
+## The player's appearance, derived deterministically from their citizen name so
+## the same person always looks the same across sessions, without depending on a
+## citizen id the roster does not carry. No name => the anonymous seed-0 look.
+static func player_appearance(citizen: Dictionary) -> Dictionary:
+	var name := str(citizen.get("name", ""))
+	if name == "":
+		return CitizenVisualIdentity.appearance_from_seed(0)
+	return CitizenVisualIdentity.appearance_from_seed(_name_seed(name))
+
+
+## Stable 31-bit hash of a name (FNV-1a). Independent of the citizen-id seed used
+## by the crowd, but every bit as deterministic.
+static func _name_seed(name: String) -> int:
+	var h := 2166136261
+	for b in name.to_utf8_buffer():
+		h = (h ^ int(b)) & 0xFFFFFFFF
+		h = (h * 16777619) & 0xFFFFFFFF
+	return h & 0x7FFFFFFF
+
+
 func _find_clear_spawn(desired: Vector2) -> Vector2:
 	if not _inside_building_footprint(desired):
 		return desired
@@ -531,6 +569,7 @@ func _update_highlight() -> void:
 	if _highlight == null or _interaction == null or _player == null:
 		return
 	_highlight.mark_player(_player.global_position)
+	_update_cursor()
 	var target: Dictionary = _interaction.resolve_target(true)
 	if target.is_empty():
 		_highlight.clear_target()
@@ -546,6 +585,51 @@ func _update_highlight() -> void:
 		var tk := int(target.get("kind", 0))
 		if tk == IsometricInteraction.CITIZEN or tk == IsometricInteraction.OCCUPANT:
 			_last_citizen_seen = int(target.get("id", -1))
+
+
+## Place the cursor reticle at the ground point under the mouse. Prefer the real
+## surface (a physics ray against the world's static geometry — ground, roads,
+## buildings), so the reticle rides roofs and slopes; fall back to the flat ground
+## plane, and hide when the cursor points at nothing (e.g. off the world, or the
+## far city plane while inside a staged interior).
+func _update_cursor() -> void:
+	if _highlight == null or _camera == null or not is_instance_valid(_camera):
+		return
+	var vp := _camera.get_viewport()
+	if vp == null:
+		_highlight.hide_cursor()
+		return
+	var mouse := vp.get_mouse_position()
+	var from := _camera.project_ray_origin(mouse)
+	var dir := _camera.project_ray_normal(mouse)
+	var space := get_world_3d().direct_space_state
+	var q := PhysicsRayQueryParameters3D.create(
+		from, from + dir * 4000.0, CollisionLayers.WORLD_STATIC)
+	var hit := space.intersect_ray(q)
+	if not hit.is_empty():
+		_highlight.show_cursor(hit["position"])
+		return
+	if _inside_building >= 0:
+		_highlight.hide_cursor()
+		return
+	var ground_y := -0.5 if _has_compiled_world else 0.0
+	var p = ray_ground_point(from, dir, ground_y)
+	if p == null:
+		_highlight.hide_cursor()
+	else:
+		_highlight.show_cursor(p)
+
+
+## Intersect the ray origin + t*dir with the horizontal plane y = ground_y for the
+## first t >= 0. Returns a Vector3, or null when the ray is parallel to the plane
+## or points away from it. Pure and continuous — no snapping, unit-tested.
+static func ray_ground_point(origin: Vector3, dir: Vector3, ground_y: float) -> Variant:
+	if absf(dir.y) < 0.000001:
+		return null
+	var t := (ground_y - origin.y) / dir.y
+	if t < 0.0:
+		return null
+	return origin + dir * t
 
 
 # ------------------------------------------------------------------ interaction
@@ -1164,6 +1248,7 @@ func get_player() -> Node3D: return _player
 func get_camera() -> Camera3D: return _camera
 func get_exterior() -> ExteriorWorld: return _exterior
 func get_interaction() -> Node: return _interaction
+func get_highlight() -> Node3D: return _highlight
 func get_cutaway() -> Node: return _cutaway
 func active_interior() -> Node3D: return _active_interior
 func inside_building() -> int: return _inside_building
