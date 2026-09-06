@@ -26,6 +26,7 @@ var _peer: StreamPeerTCP = null
 var _id := 0
 var _connected := false
 var last_summary: Dictionary = {}
+var last_hello: Dictionary = {}   # the HELLO reply (server/sim_sha/protocol/save_version)
 
 # The most recent authoritative snapshot (World.snapshot()), or {} if none.
 var last_world: Dictionary = {}
@@ -99,6 +100,7 @@ func connect_to_sim(host: String = "127.0.0.1", port: int = 8765, timeout_ms: in
 		push_error("SimBridge: not connected (status %d)" % _peer.get_status())
 		return false
 	var reply := _send("HELLO", {"protocol_version": PROTOCOL_VERSION})
+	last_hello = reply
 	if not _ok(reply):
 		push_error("SimBridge: HELLO rejected: %s" % str(reply))
 		return false
@@ -252,7 +254,7 @@ func get_citizen_context(citizen_id: int) -> Dictionary:
 
 
 # --------------------------------------------------- npc dialogue (v8)
-func talk(citizen_id: int, act: String, args: Dictionary = {}) -> Dictionary:
+func talk(citizen_id: int, act: String, args: Dictionary = {}, player_citizen: int = -1) -> Dictionary:
 	## The player speaks to one NPC. `act` is one of the authority's bounded
 	## player acts (GREET, ASK_FACT, ASK_LOCATION, ASK_PERSON, ASK_SAFETY,
 	## ASK_FOR_HELP, THANK, END_CONVERSATION) and `args` its structured
@@ -261,7 +263,10 @@ func talk(citizen_id: int, act: String, args: Dictionary = {}) -> Dictionary:
 	## (`acts`, `lines`, `transcript`), the bounded `options`, the relationship
 	## `warmth` — or ok:false with a `reason` when the NPC is unavailable or not
 	## co-present. Godot composes NO dialogue: it displays these lines verbatim.
-	return _send("TALK", {"citizen_id": citizen_id, "act": act, "args": args})
+	var f := {"citizen_id": citizen_id, "act": act, "args": args}
+	if player_citizen >= 0:
+		f["player_citizen"] = player_citizen
+	return _send("TALK", f)
 
 
 func get_dialogue(since_seq: int = 0) -> Dictionary:

@@ -85,6 +85,22 @@ func set_ground_y(y: float) -> void:
 	_ground_y = y
 
 
+var _height_provider = null                    # ExteriorWorld (surface_height_at), or null
+
+
+func set_height_provider(p) -> void:
+	## Seat exterior bodies on the real rendered ground instead of a flat datum
+	## (Convergence V2 §17). `p` must expose surface_height_at(x, z) -> float.
+	_height_provider = p
+
+
+func _gy(x: float, z: float) -> float:
+	if _height_provider != null and is_instance_valid(_height_provider) \
+			and _height_provider.has_method("surface_height_at"):
+		return _height_provider.surface_height_at(x, z)
+	return _ground_y
+
+
 func set_interior(building_id: int, offset: Vector3, root: Node3D = null, floor_y: float = 0.0) -> void:
 	## Enter interior mode for `building_id`. `offset` MUST be the offset the
 	## interior was staged with (IsometricWorld.interior_offset()), else bodies
@@ -136,7 +152,7 @@ func apply(block: Dictionary, game_dt: float = 0.0) -> void:
 		var health: String = str(row.get("health", "susceptible"))
 		if st in ["on_foot", "approaching_vehicle", "entering_vehicle", "exiting_vehicle", "undead"]:
 			var body := _ensure_citizen(id, row)
-			var target := Vector3(float(row["x"]), _ground_y + body_height, float(row["y"]))
+			var target := Vector3(float(row["x"]), _gy(float(row["x"]), float(row["y"])) + body_height, float(row["y"]))
 			body.set_follow_target(target, float(row.get("speed", 0.0)) * time_scale)
 			# Materialization safety (2): a body that stays blocked without any
 			# progress is inside something it cannot leave (a hull it was spawned
@@ -159,7 +175,7 @@ func apply(block: Dictionary, game_dt: float = 0.0) -> void:
 				and row.get("vehicle_id") == null:
 			# a body on the street at the authoritative death location: solid, lying down
 			var body := _ensure_citizen(id, row)
-			body.set_follow_target(Vector3(float(row["x"]), _ground_y + body_height, float(row["y"])), 0.0)
+			body.set_follow_target(Vector3(float(row["x"]), _gy(float(row["x"]), float(row["y"])) + body_height, float(row["y"])), 0.0)
 			_apply_health_look(body, health, st)
 			keep[id] = true
 	# --- vehicles -------------------------------------------------------------
@@ -171,7 +187,7 @@ func apply(block: Dictionary, game_dt: float = 0.0) -> void:
 		var driving: bool = row.get("driver") != null and float(row.get("speed", 0.0)) >= 0.0 \
 			and str(row.get("fidelity", "")) in ["physical_controlled", "route_simulated"] \
 			and not bool(row.get("parked", false))
-		var pose := Vector3(float(row["x"]), _ground_y + 0.7, float(row["y"]))
+		var pose := Vector3(float(row["x"]), _gy(float(row["x"]), float(row["y"])) + 0.7, float(row["y"]))
 		if driving:
 			body.set_follow_target(pose, float(row.get("heading", 0.0)), float(row.get("speed", 0.0)) * time_scale)
 		elif body.follow_mode or not body.has_meta("parked_at") or body.get_meta("parked_at") != pose:
@@ -302,7 +318,7 @@ func _ensure_citizen(id: String, row: Dictionary, interior: bool = false) -> Cit
 		# Materialization safety (1): never spawn inside a static collider (a
 		# building hull at its own entrance anchor, a wreck) — the nearest free
 		# spot within a few metres, else the authoritative point itself.
-		b.position = _free_spot(Vector3(float(row["x"]), _ground_y + body_height, float(row["y"])))
+		b.position = _free_spot(Vector3(float(row["x"]), _gy(float(row["x"]), float(row["y"])) + body_height, float(row["y"])))
 	var cid := int(row["citizen_id"])
 	b.set_meta("citizen_id", cid)
 	# The same deterministic look as the crowd (citizen_visual_identity.gd).
@@ -381,7 +397,7 @@ func _ensure_vehicle(vid: String, row: Dictionary) -> VehicleBody:
 	# Real-speed ceiling scales with the clock pacing so the body can track a
 	# time-compressed authoritative car (40 m/s of game speed).
 	b.max_speed = 40.0 * time_scale
-	b.position = Vector3(float(row["x"]), _ground_y + 0.7, float(row["y"]))
+	b.position = Vector3(float(row["x"]), _gy(float(row["x"]), float(row["y"])) + 0.7, float(row["y"]))
 	b.rotation.y = -float(row.get("heading", 0.0))
 	b.set_meta("vehicle_id", vid)
 	var mi := MeshInstance3D.new()

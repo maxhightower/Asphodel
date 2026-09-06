@@ -405,9 +405,12 @@ func _inside_building_footprint(p: Vector2) -> bool:
 # ------------------------------------------------------------------ live world
 func _connect_live_world(dir: String, meta: Dictionary) -> void:
 	var bundle_name := dir.get_file()
-	if not SimBridge.connect_to_sim():
-		push_warning("isometric_world: no live World bridge — outbreak holds. "
-			+ "Start it with: python -m asphodel.bridge.server")
+	# Convergence V2: bring up the owned authority automatically (no manual server,
+	# no terminal) and FAIL CLOSED — never fall back to a silent, dead viewer.
+	var boot: Dictionary = AuthorityLauncher.ensure_authority()
+	if not boot.get("ok", false):
+		FatalError.show_error(get_tree(), AuthorityLauncher.last_error_code,
+			AuthorityLauncher.last_error_detail)
 		return
 	var opts := {"seed": int(meta.get("seed", 0))}
 	# If the flow told us which citizen the player embodies, pass it so the player's
@@ -421,8 +424,8 @@ func _connect_live_world(dir: String, meta: Dictionary) -> void:
 		opts["start_hour"] = Session.start_hour
 	var started: Dictionary = SimBridge.start_world(bundle_name, opts)
 	if not started.get("ok", false):
-		push_warning("isometric_world: START_WORLD failed: %s" % str(started))
-		SimBridge.disconnect_from_sim()
+		FatalError.show_error(get_tree(), "authority_crashed",
+			"START_WORLD failed: %s" % str(started))
 		return
 	var phz = started.get("player_home_zone")
 	_player_home_zone = int(phz) if phz != null else -1
@@ -440,6 +443,9 @@ func _connect_live_world(dir: String, meta: Dictionary) -> void:
 		_embodied = EmbodiedMobility.new()
 		_embodied.name = "EmbodiedMobility"
 		_embodied.process_mode = Node.PROCESS_MODE_PAUSABLE
+		# Seat exterior bodies on the real rendered ground, not a flat datum (§17).
+		if _exterior != null:
+			_embodied.set_height_provider(_exterior)
 		# Bodies must keep up with the clock's pacing (game seconds per real second).
 		_embodied.time_scale = (24.0 * 3600.0 / GameClock.REAL_SECONDS_PER_DAY) * GameClock.time_scale
 		add_child(_embodied)

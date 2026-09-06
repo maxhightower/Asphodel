@@ -2108,6 +2108,37 @@ func _build_t3(chunk: Dictionary, root: Node3D) -> Dictionary:
 	return {"quads": 0, "verts": 0, "buildings": 0, "mm_instances": mm_count, "collisions": 0}
 
 
+var _height_cells: Dictionary = {}   # chunk key -> decoded land-cover raster (for height sampling)
+
+
+func surface_height_at(wx: float, wz: float) -> float:
+	## Visual ground height at a continuous world position, sampled from the SAME
+	## land-cover raster the terrain mesh was built from. Embodied bodies are seated
+	## on this instead of a flat datum so they never sink under raised sidewalks /
+	## lots (Convergence V2 §17). Returns 0.0 (the road datum) when no chunk resolves.
+	var c := _chunk_of(wx, wz)
+	var key := _key(c.x, c.y)
+	var cells: PackedByteArray
+	if _height_cells.has(key):
+		cells = _height_cells[key]
+	else:
+		if _height_cells.size() > 96:
+			_height_cells.clear()
+		var chunk := _get_chunk(c.x, c.y)
+		var runs: Array = chunk.get("surface", []) if chunk is Dictionary else []
+		cells = _decode_rle(runs, CELLS * CELLS) if not runs.is_empty() else PackedByteArray()
+		_height_cells[key] = cells
+	if cells.is_empty():
+		return 0.0
+	var origin := _chunk_origin(c.x, c.y)
+	var klass := _surface_class(cells, origin, wx, wz)
+	if klass < 0:
+		return 0.0
+	if klass == S_ROAD:
+		return ROAD_CORRIDOR_Y
+	return _cell_h(klass)
+
+
 func _surface_class(cells: PackedByteArray, origin: Vector2, wx: float, wz: float) -> int:
 	## Land-cover class at a continuous world position (or -1 out of chunk / no raster).
 	if cells.is_empty():

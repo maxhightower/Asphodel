@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 Session="*res://scripts/session.gd"
 SimBridge="*res://scripts/sim_bridge.gd"
+AuthorityLauncher="*res://scripts/authority_launcher.gd"
 GameClock="*res://scripts/game_clock.gd"
 CollisionLayers="*res://scripts/collision_layers.gd"
 

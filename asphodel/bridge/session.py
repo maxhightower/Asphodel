@@ -25,6 +25,7 @@ from dataclasses import replace
 from ..config import MicroParams
 from ..micro import STATE_NAMES
 from . import protocol as P
+from ..buildinfo import build_info
 from .protocol import Command, ErrorCode
 from .worldfactory import world_from_bundle, bundle_summary
 
@@ -84,7 +85,8 @@ class WorldSession:
         return P.response(Command.HELLO, id=rid,
                           server="asphodel-bridge",
                           commands=sorted(Command.ALL),
-                          started=self.world is not None)
+                          started=self.world is not None,
+                          **build_info())
 
     def _cmd_start_world(self, msg, rid) -> dict:
         if self.world is not None:
@@ -696,6 +698,8 @@ class WorldSession:
             "cognition_enabled": self.world.cognition is not None,
             "dialogue_enabled": self.world.dialogue is not None,
             "groups_enabled": self.world.groups is not None,
+            "city": self.bundle,
+            **build_info(),
         }
 
 
