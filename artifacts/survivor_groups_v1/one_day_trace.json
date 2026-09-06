@@ -81,12 +81,6 @@
     "building_id": 6353,
     "from": null,
     "capacity": 6
-   },
-   {
-    "t": 8400.0,
-    "building_id": 6353,
-    "from": 6353,
-    "capacity": 6
    }
   ]
  },
@@ -110,10 +104,10 @@
   "score": 0.56864
  },
  "supplies_after": {
-  "food": 0.0
+  "food": 3.0
  },
  "admission": {
-  "app_id": "group:1:app:11",
+  "app_id": "group:1:app:7",
   "accept": true,
   "reason": "group_agrees",
   "aggregate": 0.145,
@@ -133,8 +127,10 @@
   }
  },
  "warn": {
-  "fact_id": "group:1:fact:13",
-  "told": []
+  "fact_id": "group:1:fact:9",
+  "told": [
+   117
+  ]
  },
  "evacuate": {
   "members": [
@@ -145,7 +141,16 @@
   ],
   "from": 6353
  },
- "departures": [],
+ "departures": [
+  {
+   "seq": 37,
+   "t": 36600.0,
+   "event": "MEMBER_LEFT",
+   "group_id": "group:1",
+   "citizen_id": 87,
+   "cause": "lost_trust"
+  }
+ ],
  "counterfactuals": {
   "GQ1_no_cooperation": {
    "trio": [
@@ -175,7 +180,9 @@
    "changed": true
   },
   "GQ4_warning": {
-   "told": [],
+   "told": [
+    117
+   ],
    "uncontacted_uninformed": true
   },
   "GQ5_role_refusal": {
@@ -192,7 +199,9 @@
    "changed": true
   },
   "GQ6_departure": {
-   "left": []
+   "left": [
+    87
+   ]
   }
  },
  "lod": {
@@ -274,17 +283,21 @@
   "GROUP_PROPOSED": 1,
   "GROUP_FORMED": 1,
   "ROLE_ACCEPTED": 3,
-  "SHELTER_PROPOSED": 14,
+  "SHELTER_PROPOSED": 7,
   "GROUP_DECISION": 3,
-  "SHELTER_SELECTED": 2,
-  "GROUP_OBJECTIVE_CREATED": 8,
-  "ROLE_COMPLETED": 6,
+  "SHELTER_SELECTED": 1,
+  "GROUP_OBJECTIVE_CREATED": 5,
+  "ROLE_COMPLETED": 4,
   "ROLE_PROPOSED": 2,
   "SUPPLY_NEED": 1,
+  "SUPPLY_RUN_ASSIGNED": 1,
+  "SUPPLY_ACQUIRED": 1,
+  "SUPPLY_RETURNED": 1,
   "ADMISSION_REQUESTED": 1,
   "ADMISSION_ACCEPTED": 1,
-  "GROUP_WARNING": 1,
-  "GROUP_EVACUATED": 1
+  "GROUP_WARNING": 2,
+  "GROUP_EVACUATED": 1,
+  "MEMBER_LEFT": 1
  },
  "groups": {
   "group:1": {
@@ -298,7 +311,7 @@
    "members": {
     "0": "provisional",
     "42": "member",
-    "87": "member",
+    "87": "departed",
     "117": "member"
    },
    "joined_s": {
@@ -335,6 +348,13 @@
      "old": null,
      "new": "provisional",
      "cause": "admitted"
+    },
+    {
+     "t": 36600.0,
+     "cid": 87,
+     "old": "member",
+     "new": "departed",
+     "cause": "lost_trust"
     }
    ],
    "shelter_building": 6353,
@@ -347,32 +367,9 @@
      "building_id": 6353,
      "from": null,
      "capacity": 6
-    },
-    {
-     "t": 8400.0,
-     "building_id": 6353,
-     "from": 6353,
-     "capacity": 6
     }
    ],
    "objectives": {
-    "group:1:obj:10": {
-     "obj_id": "group:1:obj:10",
-     "kind": "SEEK_SUPPLIES",
-     "state": "failed",
-     "target_cid": null,
-     "building_id": 6353,
-     "room_id": 0,
-     "object_id": null,
-     "role": "scavenger",
-     "assignee": 42,
-     "request_id": null,
-     "created_s": 13200.0,
-     "decided_s": 13200.0,
-     "reason": "source_empty",
-     "detail": "",
-     "detail_node": null
-    },
     "group:1:obj:2": {
      "obj_id": "group:1:obj:2",
      "kind": "REACH_SHELTER",
@@ -424,61 +421,10 @@
      "detail": "arrived",
      "detail_node": null
     },
-    "group:1:obj:6": {
-     "obj_id": "group:1:obj:6",
-     "kind": "REACH_SHELTER",
-     "state": "cancelled",
-     "target_cid": null,
-     "building_id": 6353,
-     "room_id": 0,
-     "object_id": null,
-     "role": null,
-     "assignee": 42,
-     "request_id": null,
-     "created_s": 8400.0,
-     "decided_s": 8401.0,
-     "reason": "regroup at chosen shelter",
-     "detail": "arrived",
-     "detail_node": null
-    },
-    "group:1:obj:7": {
-     "obj_id": "group:1:obj:7",
-     "kind": "REACH_SHELTER",
-     "state": "cancelled",
-     "target_cid": null,
-     "building_id": 6353,
-     "room_id": 0,
-     "object_id": null,
-     "role": null,
-     "assignee": 87,
-     "request_id": null,
-     "created_s": 8400.0,
-     "decided_s": 8401.0,
-     "reason": "regroup at chosen shelter",
-     "detail": "arrived",
-     "detail_node": null
-    },
-    "group:1:obj:8": {
-     "obj_id": "group:1:obj:8",
-     "kind": "REACH_SHELTER",
-     "state": "cancelled",
-     "target_cid": null,
-     "building_id": 6353,
-     "room_id": 0,
-     "object_id": null,
-     "role": null,
-     "assignee": 117,
-     "request_id": null,
-     "created_s": 8400.0,
-     "decided_s": 8401.0,
-     "reason": "regroup at chosen shelter",
-     "detail": "arrived",
-     "detail_node": null
-    },
-    "group:1:obj:9": {
-     "obj_id": "group:1:obj:9",
+    "group:1:obj:5": {
+     "obj_id": "group:1:obj:5",
      "kind": "WATCH_ENTRANCE",
-     "state": "cancelled",
+     "state": "done",
      "target_cid": null,
      "building_id": 6353,
      "room_id": 0,
@@ -491,40 +437,74 @@
      "reason": "group needs a guard",
      "detail": "",
      "detail_node": null
+    },
+    "group:1:obj:6": {
+     "obj_id": "group:1:obj:6",
+     "kind": "SEEK_SUPPLIES",
+     "state": "done",
+     "target_cid": null,
+     "building_id": 2318,
+     "room_id": 0,
+     "object_id": "so:2318:1",
+     "role": "scavenger",
+     "assignee": 42,
+     "request_id": null,
+     "created_s": 13200.0,
+     "decided_s": 14125.0,
+     "reason": "group needs a scavenger",
+     "detail": "acquired",
+     "detail_node": "ent:2318"
     }
    },
    "roles": {
-    "coordinator": 117,
-    "guard": 87
+    "coordinator": 117
    },
    "coordinator": 117,
    "influence": {
     "0": 0.363,
-    "42": 0.8494,
-    "87": 0.8043,
-    "117": 0.8306
+    "42": 0.8583,
+    "87": 0.8164,
+    "117": 0.8305
    },
    "shared_record": {
-    "group:1:fact:13": {
-     "fact_id": "group:1:fact:13",
+    "group:1:fact:10": {
+     "fact_id": "group:1:fact:10",
      "kind": "threat_location",
      "subject": 888,
      "building_id": 6353,
      "room_id": 0,
      "object_id": null,
-     "origin_witness": 42,
-     "source_citizen": 42,
+     "origin_witness": 87,
+     "source_citizen": 87,
+     "confidence": 1.0,
+     "t": 36001.0,
+     "detail": "",
+     "recipients": [
+      87,
+      117
+     ]
+    },
+    "group:1:fact:9": {
+     "fact_id": "group:1:fact:9",
+     "kind": "threat_location",
+     "subject": 888,
+     "building_id": 6353,
+     "room_id": 0,
+     "object_id": null,
+     "origin_witness": 87,
+     "source_citizen": 87,
      "confidence": 1.0,
      "t": 36000.0,
      "detail": "",
      "recipients": [
-      42
+      87,
+      117
      ]
     }
    },
    "applications": {
-    "group:1:app:11": {
-     "app_id": "group:1:app:11",
+    "group:1:app:7": {
+     "app_id": "group:1:app:7",
      "subject": 0,
      "kind": "application",
      "by": null,
@@ -577,8 +557,8 @@
      "resolved_s": 7801.0,
      "detail": "tally={'6353': 0.82, '7928': 0.83, '19087': 0.79} dissent=[42, 87]"
     },
-    "group:1:dec:12": {
-     "dec_id": "group:1:dec:12",
+    "group:1:dec:8": {
+     "dec_id": "group:1:dec:8",
      "kind": "admission",
      "options": [
       "accept",
@@ -603,42 +583,14 @@
      "created_s": 35400.0,
      "resolved_s": 35400.0,
      "detail": "tally={'accept': 0.84, 'refuse': 1.63} dissent=[87, 117]"
-    },
-    "group:1:dec:5": {
-     "dec_id": "group:1:dec:5",
-     "kind": "shelter",
-     "options": [
-      "6353",
-      "7928",
-      "19087"
-     ],
-     "votes": {
-      "42": [
-       "6353",
-       0.825
-      ],
-      "87": [
-       "6353",
-       0.786
-      ],
-      "117": [
-       "6353",
-       0.827
-      ]
-     },
-     "outcome": "6353",
-     "resolved_by": 117,
-     "created_s": 8400.0,
-     "resolved_s": 8400.0,
-     "detail": "tally={'6353': 2.44, '7928': 0.0, '19087': 0.0} dissent=[]"
     }
    },
    "supplies": {
-    "food": 0.0
+    "food": 3.0
    },
    "threat_state": "evacuating",
    "formed_reason": "workplace:42-87; helped:42-87; trust:42-87; workplace:42-117; helped:42-117; trust:42-117",
-   "_seq": 13
+   "_seq": 11
   }
  },
  "group_events": [
@@ -911,218 +863,10 @@
   },
   {
    "seq": 19,
-   "t": 8400.0,
-   "event": "SHELTER_PROPOSED",
-   "group_id": "group:1",
-   "building_id": 6353,
-   "rejected": false,
-   "proposers": [
-    42,
-    87,
-    117
-   ],
-   "danger": 0.0,
-   "capacity": 6,
-   "score": 5.5
-  },
-  {
-   "seq": 20,
-   "t": 8400.0,
-   "event": "SHELTER_PROPOSED",
-   "group_id": "group:1",
-   "building_id": 2318,
-   "rejected": false,
-   "proposers": [
-    42,
-    87,
-    117
-   ],
-   "danger": 0.0,
-   "capacity": 6,
-   "score": 3.0
-  },
-  {
-   "seq": 21,
-   "t": 8400.0,
-   "event": "SHELTER_PROPOSED",
-   "group_id": "group:1",
-   "building_id": 6351,
-   "rejected": false,
-   "proposers": [
-    42
-   ],
-   "danger": 0.0,
-   "capacity": 6,
-   "score": 2.0
-  },
-  {
-   "seq": 22,
-   "t": 8400.0,
-   "event": "SHELTER_PROPOSED",
-   "group_id": "group:1",
-   "building_id": 19087,
-   "rejected": false,
-   "proposers": [
-    87
-   ],
-   "danger": 0.0,
-   "capacity": 6,
-   "score": 4.5
-  },
-  {
-   "seq": 23,
-   "t": 8400.0,
-   "event": "SHELTER_PROPOSED",
-   "group_id": "group:1",
-   "building_id": 19180,
-   "rejected": false,
-   "proposers": [
-    87
-   ],
-   "danger": 0.0,
-   "capacity": 6,
-   "score": 2.0
-  },
-  {
-   "seq": 24,
-   "t": 8400.0,
-   "event": "SHELTER_PROPOSED",
-   "group_id": "group:1",
-   "building_id": 7928,
-   "rejected": false,
-   "proposers": [
-    117
-   ],
-   "danger": 0.0,
-   "capacity": 6,
-   "score": 4.5
-  },
-  {
-   "seq": 25,
-   "t": 8400.0,
-   "event": "SHELTER_PROPOSED",
-   "group_id": "group:1",
-   "building_id": 8036,
-   "rejected": false,
-   "proposers": [
-    117
-   ],
-   "danger": 0.0,
-   "capacity": 6,
-   "score": 2.0
-  },
-  {
-   "seq": 26,
-   "t": 8400.0,
-   "event": "GROUP_DECISION",
-   "group_id": "group:1",
-   "dec_id": "group:1:dec:5",
-   "decision_kind": "shelter",
-   "outcome": "6353",
-   "options": [
-    "6353",
-    "7928",
-    "19087"
-   ],
-   "tally": {
-    "6353": 2.438,
-    "7928": 0.0,
-    "19087": 0.0
-   },
-   "dissent": [],
-   "resolved_by": 117
-  },
-  {
-   "seq": 27,
-   "t": 8400.0,
-   "event": "SHELTER_SELECTED",
-   "group_id": "group:1",
-   "building_id": 6353,
-   "room_id": 0,
-   "node": "ent:6353",
-   "capacity": 6,
-   "proposers": [
-    42,
-    87,
-    117
-   ],
-   "danger": 0.0
-  },
-  {
-   "seq": 28,
-   "t": 8400.0,
-   "event": "GROUP_OBJECTIVE_CREATED",
-   "group_id": "group:1",
-   "obj_id": "group:1:obj:6",
-   "obj_kind": "REACH_SHELTER",
-   "assignee": 42,
-   "building_id": 6353,
-   "room_id": 0,
-   "role": null,
-   "reason": "regroup at chosen shelter"
-  },
-  {
-   "seq": 29,
-   "t": 8400.0,
-   "event": "GROUP_OBJECTIVE_CREATED",
-   "group_id": "group:1",
-   "obj_id": "group:1:obj:7",
-   "obj_kind": "REACH_SHELTER",
-   "assignee": 87,
-   "building_id": 6353,
-   "room_id": 0,
-   "role": null,
-   "reason": "regroup at chosen shelter"
-  },
-  {
-   "seq": 30,
-   "t": 8400.0,
-   "event": "GROUP_OBJECTIVE_CREATED",
-   "group_id": "group:1",
-   "obj_id": "group:1:obj:8",
-   "obj_kind": "REACH_SHELTER",
-   "assignee": 117,
-   "building_id": 6353,
-   "room_id": 0,
-   "role": null,
-   "reason": "regroup at chosen shelter"
-  },
-  {
-   "seq": 31,
-   "t": 8401.0,
-   "event": "ROLE_COMPLETED",
-   "group_id": "group:1",
-   "obj_id": "group:1:obj:6",
-   "obj_kind": "REACH_SHELTER",
-   "citizen_id": 42,
-   "building_id": 6353
-  },
-  {
-   "seq": 32,
-   "t": 8401.0,
-   "event": "ROLE_COMPLETED",
-   "group_id": "group:1",
-   "obj_id": "group:1:obj:7",
-   "obj_kind": "REACH_SHELTER",
-   "citizen_id": 87,
-   "building_id": 6353
-  },
-  {
-   "seq": 33,
-   "t": 8401.0,
-   "event": "ROLE_COMPLETED",
-   "group_id": "group:1",
-   "obj_id": "group:1:obj:8",
-   "obj_kind": "REACH_SHELTER",
-   "citizen_id": 117,
-   "building_id": 6353
-  },
-  {
-   "seq": 34,
    "t": 12600.0,
    "event": "GROUP_OBJECTIVE_CREATED",
    "group_id": "group:1",
-   "obj_id": "group:1:obj:9",
+   "obj_id": "group:1:obj:5",
    "obj_kind": "WATCH_ENTRANCE",
    "assignee": 87,
    "building_id": 6353,
@@ -1131,13 +875,13 @@
    "reason": "group needs a guard"
   },
   {
-   "seq": 35,
+   "seq": 20,
    "t": 12600.0,
    "event": "ROLE_PROPOSED",
    "group_id": "group:1",
    "role": "guard",
    "citizen_id": 87,
-   "obj_id": "group:1:obj:9",
+   "obj_id": "group:1:obj:5",
    "score": 0.898,
    "components": {
     "influence": 0.788,
@@ -1148,16 +892,16 @@
    }
   },
   {
-   "seq": 36,
+   "seq": 21,
    "t": 12600.0,
    "event": "ROLE_ACCEPTED",
    "group_id": "group:1",
    "role": "guard",
    "citizen_id": 87,
-   "obj_id": "group:1:obj:9"
+   "obj_id": "group:1:obj:5"
   },
   {
-   "seq": 37,
+   "seq": 22,
    "t": 13200.0,
    "event": "SUPPLY_NEED",
    "group_id": "group:1",
@@ -1166,26 +910,26 @@
    "threshold": 1.0
   },
   {
-   "seq": 38,
+   "seq": 23,
    "t": 13200.0,
    "event": "GROUP_OBJECTIVE_CREATED",
    "group_id": "group:1",
-   "obj_id": "group:1:obj:10",
+   "obj_id": "group:1:obj:6",
    "obj_kind": "SEEK_SUPPLIES",
    "assignee": 42,
-   "building_id": 6353,
+   "building_id": null,
    "room_id": 0,
    "role": "scavenger",
    "reason": "group needs a scavenger"
   },
   {
-   "seq": 39,
+   "seq": 24,
    "t": 13200.0,
    "event": "ROLE_PROPOSED",
    "group_id": "group:1",
    "role": "scavenger",
    "citizen_id": 42,
-   "obj_id": "group:1:obj:10",
+   "obj_id": "group:1:obj:6",
    "score": 0.569,
    "components": {
     "influence": 0.827,
@@ -1196,29 +940,62 @@
    }
   },
   {
-   "seq": 40,
+   "seq": 25,
    "t": 13200.0,
    "event": "ROLE_ACCEPTED",
    "group_id": "group:1",
    "role": "scavenger",
    "citizen_id": 42,
-   "obj_id": "group:1:obj:10"
+   "obj_id": "group:1:obj:6"
   },
   {
-   "seq": 41,
+   "seq": 26,
+   "t": 13201.0,
+   "event": "SUPPLY_RUN_ASSIGNED",
+   "group_id": "group:1",
+   "citizen_id": 42,
+   "source_building": 2318,
+   "object_id": "so:2318:1",
+   "node": "ent:2318",
+   "obj_id": "group:1:obj:6"
+  },
+  {
+   "seq": 27,
+   "t": 13676.0,
+   "event": "SUPPLY_ACQUIRED",
+   "group_id": "group:1",
+   "citizen_id": 42,
+   "resource": "food",
+   "source_building": 2318,
+   "object_id": "so:2318:1",
+   "obj_id": "group:1:obj:6"
+  },
+  {
+   "seq": 28,
+   "t": 14125.0,
+   "event": "SUPPLY_RETURNED",
+   "group_id": "group:1",
+   "citizen_id": 42,
+   "resource": "food",
+   "amount": 3.0,
+   "have": 3.0,
+   "building_id": 6353
+  },
+  {
+   "seq": 29,
    "t": 35400.0,
    "event": "ADMISSION_REQUESTED",
    "group_id": "group:1",
-   "app_id": "group:1:app:11",
+   "app_id": "group:1:app:7",
    "subject": 0,
    "via_member": null
   },
   {
-   "seq": 42,
+   "seq": 30,
    "t": 35400.0,
    "event": "GROUP_DECISION",
    "group_id": "group:1",
-   "dec_id": "group:1:dec:12",
+   "dec_id": "group:1:dec:8",
    "decision_kind": "admission",
    "outcome": "accept",
    "options": [
@@ -1236,34 +1013,73 @@
    "resolved_by": 117
   },
   {
-   "seq": 43,
+   "seq": 31,
    "t": 35400.0,
    "event": "ADMISSION_ACCEPTED",
    "group_id": "group:1",
-   "app_id": "group:1:app:11",
+   "app_id": "group:1:app:7",
    "subject": 0,
    "aggregate": 0.145,
    "reason": "group_agrees"
   },
   {
-   "seq": 44,
+   "seq": 32,
    "t": 36000.0,
    "event": "GROUP_WARNING",
    "group_id": "group:1",
-   "reporter": 42,
-   "fact_id": "group:1:fact:13",
+   "reporter": 87,
+   "fact_id": "group:1:fact:9",
    "subject": 888,
    "building_id": 6353,
    "room_id": 0,
-   "told": [],
+   "told": [
+    117
+   ],
    "uncontacted": [
     0,
-    87,
-    117
+    42
    ]
   },
   {
-   "seq": 45,
+   "seq": 33,
+   "t": 36001.0,
+   "event": "GROUP_WARNING",
+   "group_id": "group:1",
+   "reporter": 87,
+   "fact_id": "group:1:fact:10",
+   "subject": 888,
+   "building_id": 6353,
+   "room_id": 0,
+   "told": [
+    117
+   ],
+   "uncontacted": [
+    0,
+    42
+   ]
+  },
+  {
+   "seq": 34,
+   "t": 36001.0,
+   "event": "ROLE_COMPLETED",
+   "group_id": "group:1",
+   "obj_id": "group:1:obj:5",
+   "obj_kind": "WATCH_ENTRANCE",
+   "citizen_id": 87,
+   "reason": "threat_at_post"
+  },
+  {
+   "seq": 35,
+   "t": 36001.0,
+   "event": "GROUP_DECISION",
+   "group_id": "group:1",
+   "dec_id": "group:1:dec:11",
+   "decision_kind": "threat_posture",
+   "outcome": "alerted",
+   "reporter": 87
+  },
+  {
+   "seq": 36,
    "t": 36600.0,
    "event": "GROUP_EVACUATED",
    "group_id": "group:1",
@@ -1275,6 +1091,14 @@
     117
    ],
    "from_building": 6353
+  },
+  {
+   "seq": 37,
+   "t": 36600.0,
+   "event": "MEMBER_LEFT",
+   "group_id": "group:1",
+   "citizen_id": 87,
+   "cause": "lost_trust"
   }
  ],
  "gates": [
@@ -1312,7 +1136,7 @@
    "gate": "G6",
    "name": "Membership states persist",
    "status": "PASS",
-   "detail": "4 membership transitions, states ['member', 'provisional']"
+   "detail": "5 membership transitions, states ['departed', 'member', 'provisional']"
   },
   {
    "gate": "G7",
@@ -1324,19 +1148,19 @@
    "gate": "G8",
    "name": "No omniscient group knowledge",
    "status": "PASS",
-   "detail": "a group warning reached only co-present members [], not the whole group"
+   "detail": "a group warning reached only co-present members [117], not the whole group"
   },
   {
    "gate": "G9",
    "name": "Group information preserves provenance",
    "status": "PASS",
-   "detail": "1 shared-record facts, each with origin witness + source + confidence"
+   "detail": "2 shared-record facts, each with origin witness + source + confidence"
   },
   {
    "gate": "G10",
    "name": "Real shelter selected",
    "status": "PASS",
-   "detail": "shelter 6353 room 0 selected from 14 proposals"
+   "detail": "shelter 6353 room 0 selected from 7 proposals"
   },
   {
    "gate": "G11",
@@ -1353,14 +1177,14 @@
   {
    "gate": "G13",
    "name": "Shared goal grammar exists",
-   "status": "NOT_RUN",
-   "detail": ""
+   "status": "PASS",
+   "detail": "10 objective kinds in the grammar; used ['REACH_SHELTER', 'SEEK_SUPPLIES', 'WATCH_ENTRANCE']"
   },
   {
    "gate": "G14",
    "name": "Group objective becomes individual goal",
-   "status": "NOT_RUN",
-   "detail": ""
+   "status": "PASS",
+   "detail": "3 members carried a group-source goal to the shelter, e.g. {'member': 42, 'goals': [{'id': 1, 'kind': 'do_activity', 'target': 'ent:6353', 'reason': 'regroup at group group:1 shelter 6353', 'source': 'group', 'priority': 0.62, 'deadline': None, 'activity': 'rest'}]}"
   },
   {
    "gate": "G15",
@@ -1384,7 +1208,7 @@
    "gate": "G18",
    "name": "Accepted role creates real action",
    "status": "PASS",
-   "detail": "guard 87 accepted -> objective WATCH_ENTRANCE cancelled"
+   "detail": "guard 87 accepted -> objective WATCH_ENTRANCE done"
   },
   {
    "gate": "G19",
@@ -1396,7 +1220,7 @@
    "gate": "G20",
    "name": "Guard/watch behavior occurs physically",
    "status": "PASS",
-   "detail": "guard 87 physically holding the shelter post: True"
+   "detail": "guard None physically holding the shelter post: True"
   },
   {
    "gate": "G21",
@@ -1407,20 +1231,20 @@
   {
    "gate": "G22",
    "name": "Supply run uses known source",
-   "status": "FAIL",
-   "detail": "supply run to a known source building None"
+   "status": "PASS",
+   "detail": "supply run to a known source building 2318"
   },
   {
    "gate": "G23",
    "name": "Supply runner physically travels and interacts",
-   "status": "FAIL",
-   "detail": "scavenger physically reached and used Smart Object None"
+   "status": "PASS",
+   "detail": "scavenger physically reached and used Smart Object so:2318:1"
   },
   {
    "gate": "G24",
    "name": "Supply result changes group state",
-   "status": "FAIL",
-   "detail": "supplies returned: group food now 0.0"
+   "status": "PASS",
+   "detail": "supplies returned: group food now 3.0"
   },
   {
    "gate": "G25",
@@ -1450,25 +1274,25 @@
    "gate": "G29",
    "name": "Members can disagree",
    "status": "PASS",
-   "detail": "3 group decisions, 2 with recorded dissent"
+   "detail": "3 group decisions, 2 with recorded dissent, e.g. [42, 87]"
   },
   {
    "gate": "G30",
    "name": "Bounded decision protocol resolves a disagreement",
-   "status": "NOT_RUN",
-   "detail": ""
+   "status": "PASS",
+   "detail": "the bounded decision protocol resolved every proposal, e.g. shelter->7928 tally {'6353': 0.824, '7928': 0.827, '19087': 0.786}"
   },
   {
    "gate": "G31",
    "name": "Threat warning propagates through legitimate channels",
-   "status": "FAIL",
-   "detail": "group warning told [] through the legitimate dialogue channel"
+   "status": "PASS",
+   "detail": "group warning told [117] through the legitimate dialogue channel"
   },
   {
    "gate": "G32",
    "name": "Unwarned member remains uninformed",
    "status": "PASS",
-   "detail": "uncontacted members stayed uninformed: [0, 87, 117]"
+   "detail": "uncontacted members stayed uninformed: [0, 42]"
   },
   {
    "gate": "G33",
@@ -1485,14 +1309,14 @@
   {
    "gate": "G35",
    "name": "Member can voluntarily leave",
-   "status": "FAIL",
-   "detail": "a member voluntarily left: []"
+   "status": "PASS",
+   "detail": "a member voluntarily left: [87]"
   },
   {
    "gate": "G36",
    "name": "Relationships change through group experience",
    "status": "PASS",
-   "detail": "2770 relationship changes over the group's life"
+   "detail": "2774 relationship changes over the group's life"
   },
   {
    "gate": "G37",

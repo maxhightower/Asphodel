@@ -218,8 +218,13 @@ def day():
     out["shelter"] = {"building": g.shelter_building, "room": g.shelter_room, "node": g.shelter_node,
                       "history": list(g.shelter_history)}
     out["saves"]["during_shelter"] = _saveload(w, d, "during_shelter", tape)
+    out["group_goals_seen"] = []
     for _ in range(6):
         _run(w, 60, tape)
+        for m in g.active_members():                # proof a group objective became an individual goal
+            gg = [gl.to_dict() for gl in w.mobility.citizens[m].goals.goals if gl.source == "group"]
+            if gg and not any(x["member"] == m for x in out["group_goals_seen"]):
+                out["group_goals_seen"].append({"member": m, "goals": gg})
         if len([m for m in g.active_members() if gr.at_shelter(g, m)]) >= 3:
             break
     out["regrouped"] = sorted(m for m in g.active_members() if gr.at_shelter(g, m))
@@ -281,6 +286,7 @@ def day():
                 r = c.rels.get(leaver, o, create=True)
                 r.trust = 0.0
         gr._check_departures(g)
+    tape.drain()
     out["after_departure_members"] = g.active_members()
     out["departures"] = [e for e in tape.grp if e["event"] == "MEMBER_LEFT"]
     out["saves"]["after_departure"] = _saveload(w, d, "after_departure", tape)
@@ -482,12 +488,11 @@ def test_G10_G14_shelter_and_goals(day):
     used = sorted({o.kind for gg in gr.groups.values() for o in gg.objectives.values()})
     _status("G13", "PASS" if len(GM.OBJECTIVES) >= 10 and used else "FAIL",
             f"{len(GM.OBJECTIVES)} objective kinds in the grammar; used {used}")
-    # G14: a group objective became a real individual goal (source 'group')
-    grp_goals = [(m, [gl.to_dict() for gl in day['w'].mobility.citizens[m].goals.goals if gl.source == 'group'])
-                 for m in g.active_members()]
-    any_goal = any(gl for _, gl in grp_goals)
+    # G14: a group objective became a real individual goal (source 'group') during the regroup
+    seen = day.get("group_goals_seen", [])
+    any_goal = bool(seen)
     _status("G14", "PASS" if any_goal else "FAIL",
-            f"group objectives became individual 'group'-source goals, e.g. {next((gl for _,gl in grp_goals if gl), None)}")
+            f"{len(seen)} members carried a group-source goal to the shelter, e.g. {seen[0] if seen else None}")
     assert sel and known_ok and len(day["regrouped"]) >= 3 and any_goal
 
 
