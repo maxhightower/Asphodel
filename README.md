@@ -176,6 +176,26 @@ PYTHONPATH=. python3 tools/work_city_smoke.py && PYTHONPATH=. python3 tools/work
 
 See `docs/work/SMART_OBJECTS_WORK_V1_ARCHITECTURE.md` and `SMART_OBJECTS_WORK_V1_REPORT.md`.
 
+## NPC cognition and social memory (ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1)
+
+Citizens perceive only what happens in their own room, what they take part in
+and what other citizens tell them (`asphodel/cognition/`); they keep bounded
+structured memories with provenance, derive beliefs that can be wrong, hold
+six-dimensional relationships that move only through shared experience, help
+coworkers through real smart-object tasks, warn others, and refuse rooms and
+buildings they believe dangerous — all as inputs to the existing planner and
+work runtime. Certification:
+
+```bash
+PYTHONPATH=. python3 -m pytest -q tests/test_cognition_*.py
+PYTHONPATH=. python3 -m pytest -q tests/test_npc_v1_day.py -s          # the N1–N36 table (Houston, one day, counterfactuals)
+tools/run_cognition_gate.sh                  # in-engine gate (live bridge, helper / warned bodies)
+tools/run_cognition_shots.sh                 # rendered evidence (xvfb) -> docs/npc/evidence/
+PYTHONPATH=. python3 tools/cognition_city_smoke.py && PYTHONPATH=. python3 tools/cognition_perf.py
+```
+
+See `docs/npc/NPC_COGNITION_SOCIAL_MEMORY_V1_ARCHITECTURE.md` and `NPC_COGNITION_SOCIAL_MEMORY_V1_REPORT.md`.
+
 ## Key experiments
 
 | Experiment | Question | Plot |

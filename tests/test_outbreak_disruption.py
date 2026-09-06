@@ -145,7 +145,11 @@ def test_workers_still_at_the_disrupted_workplace_are_sent_home(day):
     ob, samples = day["ob"], day["samples"]
     e = next(x for x in ob.events if x["event"] == "WORKPLACE_DISRUPTED"
              and x["building_id"] == WORK)
-    at_disruption = next(s for s in samples if s["t"] >= e["t"])
+    # the workers present in the last minute before the disruption: the world
+    # clock interleaves movement and outbreak per second, so by the sample
+    # after the disruption the reaction (leaving) may already have happened
+    before = [s for s in samples if s["t"] < e["t"]]
+    at_disruption = before[-1] if before else next(s for s in samples if s["t"] >= e["t"])
     still_at_work = [c for c, w in at_disruption["workers"].items()
                      if w["alive"] and w["building_id"] == WORK]
     assert still_at_work, "nobody was left at the workplace to react"

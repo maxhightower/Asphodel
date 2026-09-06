@@ -38,6 +38,10 @@ class Relationship:
             d[k] = round(d[k], 4)
         return d
 
+    def to_state(self) -> dict:
+        """Exact (unrounded) persistence; ``to_dict`` is the rounded view."""
+        return asdict(self)
+
     @classmethod
     def from_dict(cls, d: dict) -> "Relationship":
         return cls(**{k: d.get(k) for k in cls.__dataclass_fields__ if k in d})
@@ -125,7 +129,7 @@ class RelationshipGraph:
         return changes
 
     def to_state(self) -> dict:
-        return {"rels": [self.rels[k].to_dict() for k in sorted(self.rels)]}
+        return {"rels": [self.rels[k].to_state() for k in sorted(self.rels)]}
 
     @classmethod
     def from_state(cls, st: dict) -> "RelationshipGraph":

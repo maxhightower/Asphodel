@@ -100,6 +100,21 @@ planner/executor interrupt work exactly as they interrupt trips. See
 `docs/work/SMART_OBJECTS_WORK_V1_ARCHITECTURE.md` and
 `docs/work/SMART_OBJECTS_WORK_V1_REPORT.md`.
 
+## NPC cognition and social memory (2026-09-06)
+
+`ASPHODEL_NPC_COGNITION_SOCIAL_MEMORY_V1` added the cognition underneath
+future dialogue (`asphodel/cognition/`): a perception pipeline limited to the
+citizen's own room, participation and what others tell it; bounded structured
+memory with decay, merging and provenance; beliefs derived from evidence;
+six-dimensional relationships with household/workplace priors and
+experience-driven rules; deterministic personality; a social-action grammar
+(help through real smart-object tasks, warnings with lineage, room- and
+building-level avoidance) that feeds the existing CitizenRuntime and
+WorkRuntime instead of replacing them; a structured context API for dialogue.
+The world clock now interleaves movement, outbreak, work and cognition per
+second. See `docs/npc/NPC_COGNITION_SOCIAL_MEMORY_V1_ARCHITECTURE.md` and
+`docs/npc/NPC_COGNITION_SOCIAL_MEMORY_V1_REPORT.md`.
+
 ## Historical reports
 
 The milestone findings that used to sit at the repository root are in

@@ -56,8 +56,8 @@ PAIR_CAP = 6                   # co-presence partners per citizen per scan in a 
 HELP_THRESHOLD = 0.40
 HELP_COOLDOWN_S = 300.0        # after a completed help task before the same helper helps again
 HELP_MAX_PER_PAIR = 6          # help tasks one citizen runs for another per day
-HELP_COST = {"unstaffed_queue": 0.10, "queue_overload": 0.15, "station_failed": 0.15,
-             "cleaning_workload": 0.20, "restock_workload": 0.20}
+HELP_COST = {"unstaffed_queue": 0.10, "queue_overload": 0.15, "station_failed": 0.25,
+             "cleaning_workload": 0.15, "restock_workload": 0.15}
 AVOID_HOLD_S = 4.0 * 3600.0    # a building-avoidance goal is held this long before re-evaluation
 SAFE_OBSERVATION_S = 600.0     # in a "dangerous" room for this long with no threat => PLACE_SAFE
 FALSE_WARNING_WINDOW_S = 900.0 # a told threat contradicted within this window of its time is a false warning
@@ -616,10 +616,12 @@ class CognitionRuntime:
         st = self.memories.get(int(cid))
         if st is None:
             return {}
-        stamp = (st.seq, len(st.facts))
+        # derived at most once per game minute per citizen unless the store
+        # changed; keyed by the minute (not "age of the cache") so a restored
+        # world derives the same values at the same seconds
+        stamp = (st.seq, len(st.facts), int(self.now_s // 60))
         c = self._beliefs.get(int(cid))
-        # derive at most once per game minute per citizen unless the store changed
-        if c is not None and c[0] == stamp and self.now_s - c[2] < 60.0:
+        if c is not None and c[0] == stamp:
             return c[1]
         b = derive(st, self.now_s)
         self._beliefs[int(cid)] = (stamp, b, self.now_s)
@@ -695,7 +697,7 @@ class CognitionRuntime:
         fear = r.fear if r else 0.0
         host = r.hostility if r else 0.0
         cost = HELP_COST.get(problem.get("kind"), 0.2)
-        comps = {"helpfulness": round(0.50 * p.helpfulness, 3), "familiarity": round(0.50 * fam, 3),
+        comps = {"helpfulness": round(0.50 * p.helpfulness, 3), "familiarity": round(0.25 * fam, 3),
                  "affinity": round(0.35 * aff, 3), "obligation": round(0.60 * (0.7 + 0.6 * p.loyalty) * obl, 3),
                  "trust": round(0.15 * trust, 3), "fear_hostility": round(-0.5 * (fear + host), 3),
                  "cost": -cost}
@@ -1018,6 +1020,7 @@ class CognitionRuntime:
                 "safe_since": {f"{c}:{b}:{r}": t for (c, b, r), t in sorted(self.safe_since.items())},
                 "pending_help": {str(c): v for c, v in sorted(self.pending_help.items())},
                 "room_avoid_reported": sorted([list(k) for k in self.room_avoid_reported]),
+                "alarmed": list(self._alarmed),
                 "events": list(self.events), "event_seq": self.event_seq,
                 "counts": dict(sorted(self.counts.items()))}
 
@@ -1046,6 +1049,7 @@ class CognitionRuntime:
                         for k, v in (st.get("safe_since") or {}).items()}
         c.pending_help = {int(k): v for k, v in (st.get("pending_help") or {}).items()}
         c.room_avoid_reported = {(int(a), int(b)) for a, b in (st.get("room_avoid_reported") or [])}
+        c._alarmed = [int(x) for x in (st.get("alarmed") or [])]
         c.events = list(st.get("events") or [])
         c.event_seq = int(st.get("event_seq", 0))
         c.counts = {str(k): int(v) for k, v in (st.get("counts") or {}).items()}
