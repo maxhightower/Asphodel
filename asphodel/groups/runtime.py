@@ -481,6 +481,12 @@ class GroupRuntime:
             g.roles[role] = cid
             o.state = G.OBJ_ACTIVE
             o.decided_s = self.now_s
+            # the member now does the role rather than just resting: retire its regroup hold
+            # so the role objective (a guard post, a supply run) drives its goal cleanly
+            for oo in g.objectives.values():
+                if oo.kind == G.REACH_SHELTER and oo.assignee == cid and oo is not o:
+                    oo.state = G.OBJ_CANCELLED
+            self._clear_goal(cid)
             self.event("ROLE_ACCEPTED", group_id=g.group_id, role=role, citizen_id=cid, obj_id=o.obj_id)
             # relationship: taking a risk for the group raises obligation toward the coordinator
             if g.coordinator is not None and g.coordinator != cid:
@@ -608,7 +614,7 @@ class GroupRuntime:
                 continue
             if reg is None:
                 continue
-            shelves = [o for o in reg.with_affordance("browse")] if hasattr(reg, "with_affordance") else []
+            shelves = reg.with_caps("stock") if hasattr(reg, "with_caps") else []
             for o in shelves:
                 if o.state.get("stock", 0) > 0:
                     return int(bid), node, o.object_id
