@@ -217,6 +217,25 @@ def day():
                 scen_c = _scenario_c(w, tape, shop, att[0], d, saves, blobs)
                 player_conv = scen_c.get("player_conv")
                 tape.drain()
+        # D7: the instant a citizen receives a fresh two-hop rumour it had no prior
+        # knowledge of, its only fact about that place is that rumour — asked, it speaks
+        # as hearsay two hops from the witness. Probe at that moment (read-only), before
+        # any closer telling or first-hand sighting can supersede it.
+        if scen_a and "weak_holder" not in scen_a:
+            for e in new:
+                if e["event"] != "FACT_RECEIVED" or e.get("hops", 0) < 2 or not e.get("created"):
+                    continue
+                listener = e["listener"]
+                asker = next((a for a in sorted(w.mobility.execs) if a != listener and c._can_perceive(a)), None)
+                if asker is None or not c._can_perceive(listener):
+                    continue
+                ans = _probe(dl, asker, listener, A.ASK_FACT, building_id=e.get("building_id"))
+                p = (ans or {}).get("proposition")
+                if p and p.get("epistemic") in (A.HEARSAY, A.UNCERTAIN) and (p.get("hops") or 0) >= 2:
+                    scen_a["weak_holder"] = listener
+                    scen_a["weak_answer"] = ans
+                    tape.drain()
+                    break
         # Scenario B reciprocity: the first helper's assigned station breaks at 13:00
         if broke is None and hour >= 13.0 and first_req is not None:
             h = first_req["speaker"]
@@ -244,26 +263,6 @@ def day():
             k = pending.pop(0)
             saves[k] = _saveload(w, d, k, hour)
             tape.drain()
-    # D7: a citizen holding a weak / two-hop told fact — captured from the end-of-day
-    # state, where multi-hop rumours have had time to spread (they do not exist yet
-    # in the minute right after the first attack).
-    if scen_a and scen_a.get("A_witness") is not None:
-        # a citizen asked about a place where its only knowledge is a two-hop rumour speaks
-        # as hearsay two hops from the witness. Probe each holder about that fact's building
-        # and accept the first whose answer really is hearsay (a holder that also saw the
-        # event first-hand would answer first-hand instead, and is skipped).
-        weak = sorted([(cid, f) for cid, st in c.memories.items() for f in st.facts.values()
-                       if f.kind in THREAT and f.source == M.TOLD and f.hops >= 2
-                       and f.effective(c.now_s) >= G.RETRIEVAL_FLOOR and c._can_perceive(cid)],
-                      key=lambda x: (-x[1].hops, x[0]))
-        for cid, f in weak:
-            asker = next((a for a in sorted(w.mobility.execs) if a != cid and c._can_perceive(a)), scen_a["A_witness"])
-            ans = _probe(dl, asker, cid, A.ASK_FACT, building_id=f.building_id)
-            p = (ans or {}).get("proposition")
-            if p and p.get("epistemic") in (A.HEARSAY, A.UNCERTAIN) and (p.get("hops") or 0) >= 2:
-                scen_a["weak_holder"] = cid
-                scen_a["weak_answer"] = ans
-                break
     return {"w": w, "c": c, "wk": wk, "ob": ob, "dl": dl, "d": d, "shop": shop, "visitors": visitors,
             "seeded": seeded, "broke": broke, "first_req": first_req, "tape": tape, "saves": saves,
             "blobs": blobs, "lod": lod, "scen_a": scen_a, "scen_c": scen_c, "player_conv": player_conv}

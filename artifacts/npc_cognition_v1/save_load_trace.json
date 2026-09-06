@@ -7,7 +7,7 @@
   "told_set_identical": true,
   "goals_identical": true,
   "continuation_bit_identical": true,
-  "save_bytes": 4924380
+  "save_bytes": 4924398
  },
  "after_relationship_change": {
   "hour": 7.817,
@@ -17,7 +17,7 @@
   "told_set_identical": true,
   "goals_identical": true,
   "continuation_bit_identical": true,
-  "save_bytes": 5332401
+  "save_bytes": 5332419
  },
  "after_direct_observation": {
   "hour": 10.784,
@@ -27,7 +27,7 @@
   "told_set_identical": true,
   "goals_identical": true,
   "continuation_bit_identical": true,
-  "save_bytes": 4614984
+  "save_bytes": 4615002
  },
  "mid_social_interaction": {
   "hour": 10.967,
@@ -37,7 +37,7 @@
   "told_set_identical": true,
   "goals_identical": true,
   "continuation_bit_identical": true,
-  "save_bytes": 4888653
+  "save_bytes": 4888671
  },
  "after_threat_memory": {
   "hour": 11.15,
@@ -47,7 +47,7 @@
   "told_set_identical": true,
   "goals_identical": true,
   "continuation_bit_identical": true,
-  "save_bytes": 4937401
+  "save_bytes": 4937419
  },
  "after_avoidance_decision": {
   "hour": 11.334,
@@ -57,7 +57,7 @@
   "told_set_identical": true,
   "goals_identical": true,
   "continuation_bit_identical": true,
-  "save_bytes": 5005840
+  "save_bytes": 5005858
  },
  "after_rumor_transmission": {
   "hour": 11.517,
@@ -67,6 +67,6 @@
   "told_set_identical": true,
   "goals_identical": true,
   "continuation_bit_identical": true,
-  "save_bytes": 5078440
+  "save_bytes": 5078458
  }
 }
